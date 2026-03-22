@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>StockSaathi — Textile Stock Manager</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>StockSaathi — Kapda Stock Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -13,493 +13,431 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
 :root{
-  --bg:#0c0b09;
-  --s1:#131210;
-  --s2:#1a1815;
-  --s3:#222018;
-  --border:rgba(255,255,255,0.06);
-  --border2:rgba(255,255,255,0.11);
-  --text:#ede6d6;
-  --muted:#6b6050;
-  --muted2:#9c8f7a;
-  --gold:#c4913a;
-  --gold2:#e8b96a;
-  --gold-dim:rgba(196,145,58,0.1);
-  --green:#2a7348;
-  --green2:#3d9e62;
-  --green-dim:rgba(42,115,72,0.12);
+  --bg:#faf7f0;
+  --white:#ffffff;
+  --card:#fffdf8;
+  --border:#e8dfc8;
+  --border2:#d4c9a8;
+  --text:#2d2416;
+  --muted:#8a7a5a;
+  --muted2:#6b5c3e;
+  --gold:#b8860b;
+  --gold2:#d4a017;
+  --gold-light:#fef3d0;
+  --gold-btn:#c8973a;
+  --green:#1a6b3a;
+  --green2:#22873f;
+  --green-light:#e8f5ed;
   --red:#c0392b;
-  --red-dim:rgba(192,57,43,0.12);
-  --amber:#c97d2a;
-  --amber-dim:rgba(201,125,42,0.12);
-  --ff-d:'Cormorant Garamond',serif;
-  --ff-b:'DM Sans',sans-serif;
+  --red-light:#fdecea;
+  --orange:#d4600a;
+  --orange-light:#fef0e6;
+  --shadow:0 2px 8px rgba(45,36,22,0.08);
+  --shadow-md:0 4px 20px rgba(45,36,22,0.12);
+  --ff-h:'Baloo 2',cursive;
+  --ff-b:'Noto Sans',sans-serif;
   --r:10px;
-  --r2:14px;
+  --r2:16px;
 }
 
-html,body{height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:14px;display:flex}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:15px;display:flex;overflow:hidden}
 
-/* ═══════════════ SIDEBAR ═══════════════ */
+/* ══ SIDEBAR ══ */
 .sb{
-  width:230px;flex-shrink:0;
-  background:var(--s1);
-  border-right:1px solid var(--border);
+  width:240px;flex-shrink:0;
+  background:var(--white);
+  border-right:2px solid var(--border);
   display:flex;flex-direction:column;
-  transition:transform 0.25s ease;
+  box-shadow:2px 0 12px rgba(45,36,22,0.06);
 }
 
-.sb-logo{
-  padding:24px 20px 20px;
-  border-bottom:1px solid var(--border);
+.sb-top{
+  padding:22px 20px 18px;
+  border-bottom:2px solid var(--border);
+  background:linear-gradient(135deg,#2d2416 0%,#4a3820 100%);
 }
 
-.sb-logo-row{display:flex;align-items:center;gap:11px;margin-bottom:3px}
-
-.sb-icon{
-  width:36px;height:36px;
-  background:linear-gradient(135deg,var(--gold),#a07030);
-  border-radius:9px;
+.sb-logo{display:flex;align-items:center;gap:12px}
+.sb-ico{
+  width:42px;height:42px;
+  background:linear-gradient(135deg,var(--gold2),var(--gold));
+  border-radius:10px;
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--ff-d);font-size:18px;font-style:italic;
-  color:#0c0b09;font-weight:600;flex-shrink:0;
+  font-family:var(--ff-h);font-size:20px;font-weight:800;color:#2d2416;
 }
+.sb-name{font-family:var(--ff-h);font-size:20px;font-weight:700;color:#faf7f0}
+.sb-tag{font-size:11px;color:#b8a888;margin-top:3px;padding-left:54px}
 
-.sb-name{font-family:var(--ff-d);font-size:20px;color:var(--text);letter-spacing:0.3px}
-.sb-tag{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding-left:47px}
-
-.sb-nav{padding:14px 10px;flex:1;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
-
-.sb-sec{
-  font-size:9px;font-weight:600;color:var(--muted);
-  letter-spacing:1.5px;text-transform:uppercase;
-  padding:12px 10px 4px;
-}
+.sb-nav{padding:16px 12px;flex:1;overflow-y:auto}
+.sb-sec{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:14px 8px 6px}
 
 .sb-item{
-  display:flex;align-items:center;gap:10px;
-  padding:9px 12px;border-radius:8px;
-  cursor:pointer;color:var(--muted2);font-size:13px;
-  transition:all 0.12s;user-select:none;position:relative;
+  display:flex;align-items:center;gap:12px;
+  padding:11px 14px;border-radius:10px;
+  cursor:pointer;color:var(--muted2);font-size:14px;font-weight:500;
+  transition:all 0.15s;margin-bottom:2px;
 }
-.sb-item:hover{background:var(--s3);color:var(--text)}
-.sb-item.active{background:var(--gold-dim);color:var(--gold);font-weight:500}
-
-.sb-ic{font-size:14px;width:20px;text-align:center;flex-shrink:0}
-
-.sb-badge{
-  margin-left:auto;background:var(--red-dim);color:var(--red);
-  font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;display:none;
-}
+.sb-item:hover{background:#f5efe0;color:var(--text)}
+.sb-item.active{background:var(--gold-light);color:var(--gold);border:1px solid #e8d090;font-weight:600}
+.sb-ic{font-size:18px;width:22px;text-align:center}
+.sb-badge{margin-left:auto;background:var(--red-light);color:var(--red);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;display:none}
 .sb-badge.on{display:block}
 
-.sb-foot{
-  padding:14px 20px;border-top:1px solid var(--border);
-  font-size:11px;color:var(--muted);line-height:1.6;
-}
+.sb-foot{padding:16px 20px;border-top:2px solid var(--border);font-size:12px;color:var(--muted)}
 
-/* ═══════════════ MAIN ═══════════════ */
+/* ══ MAIN ══ */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 
-/* ─── TOPBAR ─── */
 .topbar{
-  height:54px;background:var(--s1);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0;
+  height:60px;background:var(--white);
+  border-bottom:2px solid var(--border);
+  display:flex;align-items:center;padding:0 28px;gap:14px;
+  box-shadow:0 2px 8px rgba(45,36,22,0.06);flex-shrink:0;
 }
 
-.tb-title{font-family:var(--ff-d);font-size:19px;color:var(--text);font-style:italic}
-.tb-sub{font-size:11px;color:var(--muted)}
+.tb-title{font-family:var(--ff-h);font-size:20px;font-weight:700;color:var(--text)}
+.tb-sub{font-size:12px;color:var(--muted)}
 .tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
 
 .ai-btn{
   display:flex;align-items:center;gap:7px;
-  background:var(--green-dim);border:1px solid rgba(42,115,72,0.2);
-  color:var(--green2);font-size:11px;font-weight:500;
-  padding:6px 14px;border-radius:20px;cursor:pointer;transition:all 0.12s;
+  background:var(--green-light);border:1.5px solid #aadec0;
+  color:var(--green);font-size:13px;font-weight:600;
+  padding:8px 16px;border-radius:22px;cursor:pointer;transition:all 0.15s;
   font-family:var(--ff-b);
 }
-.ai-btn:hover{background:rgba(42,115,72,0.2)}
-.ai-dot{width:6px;height:6px;background:var(--green2);border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.ai-btn:hover{background:#d0f0de}
+
+50%{opacity:0.4}}
 
 .add-btn{
-  padding:8px 18px;background:var(--gold);border:none;border-radius:8px;
-  font-family:var(--ff-b);font-size:12px;font-weight:600;color:#0c0b09;
-  cursor:pointer;transition:all 0.12s;
+  padding:10px 22px;
+  background:linear-gradient(135deg,var(--gold-btn),var(--gold));
+  border:none;border-radius:10px;
+  font-family:var(--ff-h);font-size:14px;font-weight:700;color:var(--white);
+  cursor:pointer;transition:all 0.15s;
+  box-shadow:0 3px 10px rgba(184,134,11,0.3);
 }
-.add-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.add-btn:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(184,134,11,0.4)}
 
-.menu-btn{
-  display:none;width:36px;height:36px;background:transparent;border:1px solid var(--border);
-  border-radius:8px;color:var(--muted2);font-size:18px;cursor:pointer;
-  align-items:center;justify-content:center;
-}
-
-/* ─── PAGES ─── */
+/* ══ PAGES ══ */
 .page{display:none;flex:1;flex-direction:column;overflow:hidden}
 .page.on{display:flex}
 
-/* ─── STATS ─── */
-.stats{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  border-bottom:1px solid var(--border);flex-shrink:0;
-}
-.stat{padding:18px 22px;border-right:1px solid var(--border);transition:background 0.12s}
+/* ══ STATS ══ */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:2px solid var(--border);flex-shrink:0;background:var(--white)}
+.stat{padding:20px 24px;border-right:2px solid var(--border);cursor:default}
 .stat:last-child{border-right:none}
-.stat:hover{background:var(--s2)}
-.stat-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:500;margin-bottom:5px}
-.stat-v{font-family:var(--ff-d);font-size:28px;line-height:1;color:var(--text)}
+.stat:hover{background:#fdf9ef}
+.stat-l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:6px}
+.stat-v{font-family:var(--ff-h);font-size:30px;font-weight:800;line-height:1;color:var(--text)}
 .stat-v.red{color:var(--red)}
 .stat-v.gold{color:var(--gold)}
-.stat-h{font-size:11px;color:var(--muted);margin-top:3px}
+.stat-h{font-size:11px;color:var(--muted);margin-top:4px}
 
-/* ─── CONTENT ─── */
-.content{flex:1;overflow-y:auto;padding:24px}
-.content::-webkit-scrollbar{width:3px}
-.content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+/* ══ CONTENT ══ */
+.content{flex:1;overflow-y:auto;padding:28px}
+.content::-webkit-scrollbar{width:5px}
+.content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
-/* ─── SECTION HEAD ─── */
-.sh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
-.sh-title{font-family:var(--ff-d);font-size:22px;font-style:italic;color:var(--text)}
-.sh-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.sh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
+.sh-title{font-family:var(--ff-h);font-size:24px;font-weight:700;color:var(--text)}
+.sh-sub{font-size:12px;color:var(--muted);margin-top:2px}
 
-/* ─── CATEGORY PILLS ─── */
-.cat-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-.cat-pill{
-  padding:5px 14px;border-radius:20px;font-size:11px;font-weight:500;
-  border:1px solid var(--border);color:var(--muted2);cursor:pointer;
-  background:transparent;font-family:var(--ff-b);transition:all 0.12s;
+/* ══ FABRIC CARDS ══ */
+.fab-grid{display:flex;flex-direction:column;gap:12px}
+
+.fab-card{
+  background:var(--white);
+  border:2px solid var(--border);
+  border-radius:var(--r2);
+  padding:18px 20px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:16px;
+  align-items:center;
+  transition:all 0.15s;
+  box-shadow:var(--shadow);
 }
-.cat-pill:hover{border-color:var(--border2);color:var(--text)}
-.cat-pill.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+.fab-card:hover{border-color:var(--gold2);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.fab-card.low{border-left:4px solid var(--red)}
+.fab-card.med{border-left:4px solid var(--orange)}
+.fab-card.ok{border-left:4px solid var(--green2)}
 
-/* ─── TABLE ─── */
-.tbl{background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.fab-left{display:flex;align-items:center;gap:16px}
 
-.tbl-head{
-  display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr 1fr 60px;
-  padding:11px 18px;border-bottom:1px solid var(--border);background:var(--s1);
+.fab-icon{
+  width:52px;height:52px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;
 }
-.th{font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
 
-.tbl-row{
-  display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr 1fr 60px;
-  padding:13px 18px;border-bottom:1px solid var(--border);align-items:center;
-  transition:background 0.1s;animation:rowIn 0.2s ease;
+.fab-info{}
+.fab-name{font-family:var(--ff-h);font-size:17px;font-weight:700;color:var(--text);margin-bottom:3px}
+.fab-meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.fab-tag{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;color:var(--muted2)}
+
+.fab-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
+
+.fab-meter-box{text-align:center;min-width:90px}
+.fab-meter-num{font-family:var(--ff-h);font-size:28px;font-weight:800;line-height:1;color:var(--text)}
+.fab-meter-lbl{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+
+.fab-bar-wrap{min-width:80px}
+.fab-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:4px}
+.fab-bar-f{height:100%;border-radius:3px;transition:width 0.4s}
+
+.fab-rate{font-size:13px;color:var(--muted2);font-weight:600;text-align:center;min-width:70px}
+.fab-val{font-size:13px;color:var(--muted2);font-weight:600;text-align:right;min-width:80px}
+
+.fab-actions{display:flex;gap:8px;flex-shrink:0}
+
+.fab-btn{
+  padding:9px 16px;border-radius:8px;font-family:var(--ff-b);
+  font-size:13px;font-weight:600;cursor:pointer;border:none;
+  transition:all 0.15s;display:flex;align-items:center;gap:5px;white-space:nowrap;
 }
-@keyframes rowIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.tbl-row:last-child{border-bottom:none}
-.tbl-row:hover{background:var(--s3)}
+.fab-btn-add{background:var(--green-light);color:var(--green);border:1.5px solid #aadec0}
+.fab-btn-add:hover{background:#c0ecd4;transform:translateY(-1px)}
+.fab-btn-sell{background:var(--orange-light);color:var(--orange);border:1.5px solid #f4c09a}
+.fab-btn-sell:hover{background:#fde0c0;transform:translateY(-1px)}
+.fab-btn-del{background:var(--red-light);color:var(--red);border:1.5px solid #f4c0ba;padding:9px 12px}
+.fab-btn-del:hover{background:#f8d0cc}
 
-.row-name{font-weight:500;font-size:13px;color:var(--text)}
-.row-meta{font-size:10px;color:var(--muted);margin-top:2px}
+.pill{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.3px}
+.pill-r{background:var(--red-light);color:var(--red)}
+.pill-o{background:var(--orange-light);color:var(--orange)}
+.pill-g{background:var(--green-light);color:var(--green)}
 
-.row-m{font-family:var(--ff-d);font-size:20px;color:var(--text)}
-
-.pill{display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:0.5px}
-.pill-r{background:var(--red-dim);color:var(--red)}
-.pill-a{background:var(--amber-dim);color:var(--amber)}
-.pill-g{background:var(--green-dim);color:var(--green2)}
-
-.mbar{height:3px;background:var(--border);border-radius:2px;margin-top:5px;width:70px}
-.mbar-f{height:100%;border-radius:2px;transition:width 0.4s}
-
-.row-act{display:flex;gap:5px}
-.act-btn{
-  width:26px;height:26px;border-radius:6px;border:1px solid var(--border);
-  background:transparent;color:var(--muted);cursor:pointer;font-size:12px;
-  display:flex;align-items:center;justify-content:center;transition:all 0.1s;
+/* ══ CATEGORY PILLS ══ */
+.cat-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.cat-p{
+  padding:7px 16px;border-radius:22px;font-size:13px;font-weight:600;
+  border:1.5px solid var(--border);color:var(--muted2);cursor:pointer;
+  background:var(--white);font-family:var(--ff-b);transition:all 0.15s;
 }
-.act-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-dim)}
+.cat-p:hover{border-color:var(--gold2);color:var(--gold)}
+.cat-p.active{background:var(--gold-light);border-color:var(--gold2);color:var(--gold)}
 
-.tbl-empty{padding:50px 20px;text-align:center;color:var(--muted)}
-.tbl-empty-ic{font-size:36px;margin-bottom:10px;opacity:0.4}
-
-/* ─── SEARCH ─── */
-.search-row{display:flex;gap:10px;margin-bottom:16px}
+/* ══ SEARCH ══ */
+.search-big{
+  display:flex;gap:10px;margin-bottom:20px;
+}
+.search-big input{
+  font-size:15px;padding:12px 16px 12px 42px;
+  border-radius:10px;border:2px solid var(--border);
+  background:var(--white);
+}
+.search-big input:focus{border-color:var(--gold2)}
 .search-wrap{position:relative;flex:1}
-.search-wrap input{padding-left:32px}
-.search-ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+.search-ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--muted);pointer-events:none}
 
+/* ══ FORM ══ */
 input,select,textarea{
-  width:100%;background:var(--s1);border:1px solid var(--border);
-  border-radius:8px;color:var(--text);font-family:var(--ff-b);font-size:13px;
-  padding:9px 13px;outline:none;transition:border-color 0.15s,box-shadow 0.15s;
+  width:100%;background:var(--white);border:2px solid var(--border);
+  border-radius:10px;color:var(--text);font-family:var(--ff-b);font-size:14px;
+  padding:11px 14px;outline:none;transition:border-color 0.15s,box-shadow 0.15s;
 }
-input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+input:focus,select:focus{border-color:var(--gold2);box-shadow:0 0 0 3px rgba(212,160,23,0.12)}
 input::placeholder{color:var(--muted)}
-select option{background:var(--s2)}
+select option{background:var(--white)}
 
-/* ─── FORM CARD ─── */
-.fc{background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:20px;margin-bottom:18px}
-.fc-title{font-size:11px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.fg{margin-bottom:12px}
-.fl{display:block;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:5px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.fc{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);padding:22px;margin-bottom:18px;box-shadow:var(--shadow)}
+.fc-title{font-family:var(--ff-h);font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px}
+.fl-hindi{font-size:13px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 
-.btn{padding:10px 20px;border:none;border-radius:8px;font-family:var(--ff-b);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.12s;display:inline-flex;align-items:center;gap:6px}
-.btn-gold{background:var(--gold);color:#0c0b09;font-weight:600}
-.btn-gold:hover{filter:brightness(1.1);transform:translateY(-1px)}
-.btn-ghost{background:transparent;color:var(--muted2);border:1px solid var(--border)}
+.btn{padding:12px 24px;border:none;border-radius:10px;font-family:var(--ff-h);font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:8px}
+.btn-gold{background:linear-gradient(135deg,var(--gold-btn),var(--gold));color:var(--white);box-shadow:0 3px 10px rgba(184,134,11,0.3)}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(184,134,11,0.4)}
+.btn-ghost{background:transparent;color:var(--muted2);border:2px solid var(--border)}
 .btn-ghost:hover{border-color:var(--border2);color:var(--text)}
-.btn-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(192,57,43,0.2)}
-.btn-red:hover{background:rgba(192,57,43,0.2)}
+.btn-green{background:var(--green);color:var(--white)}
+.btn-green:hover{background:var(--green2);transform:translateY(-1px)}
 .btn-full{width:100%;justify-content:center}
 
-/* ─── RESULT BOX ─── */
-.res-box{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-top:10px;display:flex;justify-content:space-between;align-items:center}
-.res-l{font-size:11px;color:var(--muted)}
-.res-v{font-family:var(--ff-d);font-size:22px;color:var(--gold)}
+.res-box{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:10px;display:flex;justify-content:space-between;align-items:center}
+.res-l{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.res-v{font-family:var(--ff-h);font-size:24px;font-weight:800;color:var(--gold)}
 
-/* ─── SALES TABLE ─── */
-.sale-row{
-  display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;
-  padding:12px 18px;border-bottom:1px solid var(--border);
-  align-items:center;transition:background 0.1s;animation:rowIn 0.2s ease;
-}
-.sale-row:last-child{border-bottom:none}
-.sale-row:hover{background:var(--s3)}
-.sale-amt{font-family:var(--ff-d);font-size:16px;color:var(--green2)}
+/* ══ SALES TABLE ══ */
+.sale-card{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:14px 18px;margin-bottom:8px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;align-items:center;gap:12px;box-shadow:var(--shadow)}
+.sale-card:hover{border-color:var(--border2)}
+.sale-amt{font-family:var(--ff-h);font-size:18px;font-weight:700;color:var(--green)}
 
-/* ─── CALC ─── */
-.calc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+/* ══ CALC ══ */
+.calc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 
-/* ─── REPORT ─── */
-.rpt-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.rpt-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-.rpt-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:20px}
-.rpt-card-title{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
-.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.bar-lbl{font-size:11px;color:var(--muted2);width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
-.bar-fill{height:100%;border-radius:3px;background:var(--gold);transition:width 0.4s}
-.bar-val{font-size:11px;color:var(--muted2);width:55px;text-align:right}
+/* ══ REPORT ══ */
+.rpt-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.rpt-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
+.rpt-card{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);padding:22px;box-shadow:var(--shadow)}
+.rpt-card-t{font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--text);margin-bottom:16px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.bar-lbl{font-size:12px;color:var(--muted2);width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.bar-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:var(--gold2);transition:width 0.4s}
+.bar-val{font-size:12px;color:var(--muted2);width:55px;text-align:right;font-weight:600}
 
-/* ─── AI OVERLAY ─── */
-.ai-ov{
-  position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:600;
-  display:none;align-items:flex-end;justify-content:flex-end;padding:20px;
-}
-.ai-ov.on{display:flex;animation:fadeIn 0.2s ease}
+/* ══ QUICK MODAL (Add Stock / Quick Sell) ══ */
+.qmodal-bg{position:fixed;inset:0;background:rgba(45,36,22,0.5);z-index:600;display:none;align-items:center;justify-content:center}
+.qmodal-bg.on{display:flex;animation:fadeIn 0.15s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.qmodal{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);width:420px;max-width:95vw;padding:28px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
+@keyframes popIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+.qmodal-title{font-family:var(--ff-h);font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px}
+.qmodal-fab{font-size:13px;color:var(--muted);margin-bottom:20px;font-weight:600}
+.qmodal-foot{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
 
-.ai-box{
-  width:360px;height:500px;background:var(--s2);
-  border:1px solid var(--border2);border-radius:16px;
-  display:flex;flex-direction:column;overflow:hidden;
-  animation:slideUp 0.25s ease;
-  box-shadow:0 24px 64px rgba(0,0,0,0.6);
-}
-@keyframes slideUp{from{opacity:0;transform:translateY(20px) scale(0.96)}to{opacity:1;transform:translateY(0) scale(1)}}
-
-.ai-head{
-  padding:15px 18px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:10px;background:var(--s1);flex-shrink:0;
-}
-.ai-av{width:32px;height:32px;border-radius:50%;background:var(--green-dim);border:1px solid rgba(42,115,72,0.25);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.ai-hname{font-weight:500;font-size:13px}
-.ai-hstat{font-size:10px;color:var(--green2)}
-.ai-close{margin-left:auto;width:26px;height:26px;background:var(--s3);border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all 0.1s}
-.ai-close:hover{color:var(--text);border-color:var(--border2)}
-
-.ai-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
-.ai-msgs::-webkit-scrollbar{width:3px}
-.ai-msgs::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-
-.msg{display:flex;gap:8px;max-width:90%;animation:rowIn 0.2s ease}
-.msg.u{align-self:flex-end;flex-direction:row-reverse}
-.msg-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;background:var(--s1);border:1px solid var(--border)}
-.msg.ai .msg-av{background:var(--green-dim);border-color:rgba(42,115,72,0.25)}
-.msg-bbl{padding:9px 12px;border-radius:11px;font-size:12px;line-height:1.6;background:var(--s1);border:1px solid var(--border);color:var(--text);border-top-left-radius:3px}
-.msg.u .msg-bbl{background:var(--green);color:#fff;border-color:var(--green);border-top-left-radius:11px;border-top-right-radius:3px}
-
-.typing{display:flex;gap:4px;padding:2px 0}
-.typing span{width:5px;height:5px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite}
-.typing span:nth-child(2){animation-delay:.2s}
-.typing span:nth-child(3){animation-delay:.4s}
-@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-4px);opacity:1}}
-
-.ai-quick{padding:10px 14px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:5px}
-.ai-q{background:var(--s1);border:1px solid var(--border);color:var(--muted2);padding:4px 10px;border-radius:14px;font-size:11px;cursor:pointer;font-family:var(--ff-b);transition:all 0.1s}
-.ai-q:hover{border-color:var(--gold);color:var(--gold)}
-
-.ai-inp-row{padding:11px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;background:var(--s1)}
-#ai-inp{flex:1;border-radius:20px;font-size:12px;padding:8px 14px}
-.ai-send{width:32px;height:32px;background:var(--gold);border:none;border-radius:50%;color:#0c0b09;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.1s}
-.ai-send:hover{filter:brightness(1.1);transform:scale(1.05)}
-
-/* ─── MODAL ─── */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;display:none;align-items:center;justify-content:center}
+/* ══ MAIN MODAL ══ */
+.modal-bg{position:fixed;inset:0;background:rgba(45,36,22,0.5);z-index:500;display:none;align-items:center;justify-content:center}
 .modal-bg.on{display:flex}
-.modal{background:var(--s2);border:1px solid var(--border2);border-radius:16px;width:480px;max-width:95vw;max-height:92vh;overflow-y:auto;padding:28px;animation:slideUp 0.2s ease}
-.modal-title{font-family:var(--ff-d);font-size:22px;font-style:italic;margin-bottom:4px}
-.modal-sub{font-size:12px;color:var(--muted);margin-bottom:22px}
-.modal-foot{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+.modal{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);width:500px;max-width:95vw;max-height:92vh;overflow-y:auto;padding:30px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
+.modal-title{font-family:var(--ff-h);font-size:22px;font-weight:800;margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:22px}
+.modal-foot{display:flex;gap:10px;margin-top:22px;justify-content:flex-end}
 
-/* ─── TOAST ─── */
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;display:none;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,0.4);white-space:nowrap;animation:toastIn 0.2s ease}
+
+
+/* ══ TOAST ══ */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#2d2416;color:#faf7f0;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;display:none;z-index:999;box-shadow:0 8px 24px rgba(45,36,22,0.3);white-space:nowrap;animation:toastIn 0.2s ease}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
-/* ─── LOGIN ─── */
+/* ══ LOW BANNER ══ */
+.low-banner{background:var(--red-light);border:2px solid #f4b0ac;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:none}
+.low-banner-t{font-family:var(--ff-h);font-weight:700;color:var(--red);font-size:15px;margin-bottom:3px}
+.low-banner-s{font-size:13px;color:#8b2a22}
+
+/* ══ EMPTY ══ */
+.empty{padding:60px 20px;text-align:center;color:var(--muted)}
+.empty-ic{font-size:48px;margin-bottom:14px}
+.empty-t{font-family:var(--ff-h);font-size:18px;font-weight:700;margin-bottom:6px}
+.empty-s{font-size:13px}
+
+/* ══ LOGIN ══ */
 #login-screen{
   position:fixed;inset:0;z-index:9999;
-  background:radial-gradient(ellipse at 30% 50%, #1a1408 0%, #0c0b09 60%);
+  background:linear-gradient(135deg,#2d2416 0%,#4a3820 40%,#6b5030 100%);
   display:flex;align-items:center;justify-content:center;
 }
+.login-wrap{display:grid;grid-template-columns:1fr 1fr;max-width:900px;width:95%;gap:0;border-radius:24px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,0.4)}
+.login-left{background:linear-gradient(160deg,#c8973a,#8b6020);padding:50px 40px;display:flex;flex-direction:column;justify-content:center}
+.login-left-ico{font-size:50px;margin-bottom:20px}
+.login-left-t{font-family:var(--ff-h);font-size:34px;font-weight:800;color:#faf7f0;line-height:1.2;margin-bottom:12px}
+.login-left-s{font-size:14px;color:rgba(250,247,240,0.8);line-height:1.7}
+.login-feat{margin-top:24px;display:flex;flex-direction:column;gap:10px}
+.login-feat-item{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(250,247,240,0.9)}
+.login-feat-dot{width:8px;height:8px;background:#faf7f0;border-radius:50%;flex-shrink:0}
+.login-right{background:var(--white);padding:50px 40px;display:flex;flex-direction:column;justify-content:center}
+.login-right-t{font-family:var(--ff-h);font-size:26px;font-weight:800;color:var(--text);margin-bottom:6px}
+.login-right-s{font-size:13px;color:var(--muted);margin-bottom:32px}
+.login-google{width:100%;padding:15px 20px;background:var(--white);border:2px solid var(--border);border-radius:12px;font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;transition:all 0.15s;margin-bottom:16px;box-shadow:var(--shadow)}
+.login-google:hover{border-color:var(--gold2);background:var(--gold-light);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.login-note{font-size:12px;color:var(--muted);text-align:center;line-height:1.7}
+.login-pow{margin-top:24px;padding-top:20px;border-top:2px solid var(--border);font-size:11px;color:var(--muted);text-align:center;letter-spacing:0.5px}
 
-.login-card{
-  text-align:center;max-width:400px;width:92%;
-  padding:48px 40px;
-  background:var(--s2);
-  border:1px solid var(--border2);
-  border-radius:20px;
-  box-shadow:0 40px 80px rgba(0,0,0,0.5);
-}
-
-.login-icon{width:60px;height:60px;background:linear-gradient(135deg,var(--gold),#a07030);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--ff-d);font-size:28px;font-style:italic;font-weight:600;color:#0c0b09;margin:0 auto 18px}
-
-.login-title{font-family:var(--ff-d);font-size:32px;font-style:italic;color:var(--text);margin-bottom:6px}
-.login-sub{font-size:12px;color:var(--muted);margin-bottom:10px;letter-spacing:0.5px}
-
-.login-divider{width:40px;height:1px;background:var(--border2);margin:20px auto}
-
-.login-google{
-  width:100%;padding:14px 20px;
-  background:#fff;border:none;border-radius:10px;
-  font-family:var(--ff-b);font-size:14px;font-weight:600;color:#1a1815;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:11px;
-  transition:all 0.15s;margin-bottom:14px;
-}
-.login-google:hover{background:#f0f0f0;transform:translateY(-1px)}
-
-.login-note{font-size:11px;color:var(--muted);line-height:1.6}
-
-/* ─── MOBILE ─── */
+/* ══ MOBILE ══ */
 @media(max-width:768px){
   body{flex-direction:column;overflow:auto}
   html,body{height:auto}
-
-  .sb{
-    width:100%;height:auto;border-right:none;
-    border-bottom:1px solid var(--border);
-    flex-direction:row;position:sticky;top:0;z-index:100;
-  }
-
-  .sb-logo{padding:10px 14px;border-bottom:none;border-right:1px solid var(--border);flex-shrink:0}
+  .sb{width:100%;height:auto;flex-direction:row;border-right:none;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:200}
+  .sb-top{padding:10px 14px;flex-shrink:0}
   .sb-tag{display:none}
   .sb-name{font-size:16px}
-  .sb-icon{width:30px;height:30px;font-size:14px}
-
-  .sb-nav{flex-direction:row;padding:0 8px;overflow-x:auto;align-items:center;gap:0}
+  .sb-ico{width:34px;height:34px;font-size:16px}
+  .sb-nav{flex-direction:row;padding:0 8px;align-items:center;overflow-x:auto;gap:0}
   .sb-sec{display:none}
-  .sb-item{flex-shrink:0;padding:12px 11px;border-radius:0;font-size:12px;border-bottom:2px solid transparent;gap:5px}
-  .sb-item.active{background:transparent;color:var(--gold);border-bottom-color:var(--gold)}
-  .sb-ic{font-size:13px;width:auto}
+  .sb-item{flex-shrink:0;padding:12px 10px;border-radius:0;border:none!important;border-bottom:3px solid transparent!important;font-size:12px}
+  .sb-item.active{background:transparent;border-bottom-color:var(--gold)!important;color:var(--gold)}
   .sb-foot{display:none}
-
   .main{height:auto;overflow:visible}
   .page{overflow:visible;height:auto}
   .page.on{display:flex;flex-direction:column}
-
-  .topbar{padding:0 14px;height:48px}
-  .tb-title{font-size:15px}
+  .topbar{padding:0 14px;height:52px}
+  .tb-title{font-size:16px}
   .tb-sub{display:none}
-  .menu-btn{display:flex}
-
   .stats{grid-template-columns:1fr 1fr}
   .stat{padding:14px 16px}
-  .stat-v{font-size:22px}
-
+  .stat-v{font-size:24px}
   .content{padding:14px}
-  .tbl-head{display:none}
-  .tbl-row{grid-template-columns:1fr auto!important;gap:4px;padding:12px 14px}
-  .tbl-row>div:nth-child(3),.tbl-row>div:nth-child(4),.tbl-row>div:nth-child(5){display:none}
-
+  .fab-card{grid-template-columns:1fr;gap:12px}
+  .fab-right{flex-wrap:wrap;justify-content:space-between}
   .calc-grid{grid-template-columns:1fr}
   .rpt-grid{grid-template-columns:1fr}
   .rpt-stats{grid-template-columns:1fr 1fr}
-
   [style*="grid-template-columns:340px"]{display:flex!important;flex-direction:column!important}
-
-  .ai-box{width:100%!important;height:80vh!important;border-radius:16px 16px 0 0}
-  .ai-ov{padding:0!important;align-items:flex-end!important}
-
-  .modal{width:95vw;padding:20px}
+  .modal,.qmodal{width:95vw;padding:20px}
   .g2{grid-template-columns:1fr;gap:0}
-
-  #toast{width:90%;text-align:center;white-space:normal}
+  .login-wrap{grid-template-columns:1fr}
+  .login-left{display:none}
+  .login-right{padding:36px 28px}
 }
-
 @media print{
-  .sb,.topbar,.ai-ov,.modal-bg,#toast,#login-screen,.btn,.row-act,.search-row{display:none!important}
-  body{background:white;color:black}
-  .main{overflow:visible}
-  .content{padding:0;overflow:visible}
+  .sb,.topbar,.modal-bg,.qmodal-bg,#toast,#login-screen,.fab-actions,.search-big,.cat-row{display:none!important}
+  body{background:white;color:black;overflow:visible}
+  .main,.page,.content{overflow:visible;height:auto}
 }
 </style>
 </head>
 <body>
 
 <!-- SIDEBAR -->
-<div class="sb" id="sb">
-  <div class="sb-logo">
-    <div class="sb-logo-row">
-      <div class="sb-icon">S</div>
+<div class="sb">
+  <div class="sb-top">
+    <div class="sb-logo">
+      <div class="sb-ico">S</div>
       <span class="sb-name">StockSaathi</span>
     </div>
-    <div class="sb-tag">Textile Stock Manager</div>
+    <div class="sb-tag">Kapda Stock Manager</div>
   </div>
   <nav class="sb-nav">
     <div class="sb-sec">Main</div>
-    <div class="sb-item active" onclick="goto('dash',this)"><span class="sb-ic">◈</span>Dashboard</div>
-    <div class="sb-item" onclick="goto('inv',this)"><span class="sb-ic">☰</span>Inventory<span class="sb-badge" id="low-badge">0</span></div>
+    <div class="sb-item active" onclick="goto('dash',this)"><span class="sb-ic">🏠</span>Dashboard</div>
+    <div class="sb-item" onclick="goto('inv',this)"><span class="sb-ic">📦</span>Inventory<span class="sb-badge" id="low-badge">0</span></div>
     <div class="sb-sec">Manage</div>
-    <div class="sb-item" onclick="goto('sales',this)"><span class="sb-ic">↗</span>Sales</div>
-    <div class="sb-item" onclick="goto('calc',this)"><span class="sb-ic">⊞</span>Calculator</div>
-    <div class="sb-sec">Insights</div>
-    <div class="sb-item" onclick="goto('report',this)"><span class="sb-ic">◎</span>Monthly Report</div>
+    <div class="sb-item" onclick="goto('sales',this)"><span class="sb-ic">💰</span>Bikri</div>
+    <div class="sb-item" onclick="goto('calc',this)"><span class="sb-ic">🧮</span>Calculator</div>
+    <div class="sb-sec">Reports</div>
+    <div class="sb-item" onclick="goto('report',this)"><span class="sb-ic">📊</span>Monthly Report</div>
   </nav>
-  <div class="sb-foot" id="sb-foot">Powered by Niori &nbsp;·&nbsp; v3.0</div>
+  <div class="sb-foot" id="sb-foot">Powered by Niori · v4.0</div>
 </div>
 
 <!-- MAIN -->
 <div class="main">
-
-  <!-- TOPBAR -->
   <div class="topbar">
     <div>
       <span class="tb-title" id="pg-title">Dashboard</span>
       <span class="tb-sub" id="pg-sub"></span>
     </div>
     <div class="tb-right">
-      <div class="ai-btn" onclick="openAI()"><div class="ai-dot"></div>Saathi AI</div>
-      <button class="add-btn" onclick="openModal()">+ Add Fabric</button>
+      
+      <button class="add-btn" onclick="openModal()">+ Naya Kapda</button>
     </div>
   </div>
 
   <!-- ══ DASHBOARD ══ -->
   <div class="page on" id="pg-dash">
     <div class="stats">
-      <div class="stat"><div class="stat-l">Total Fabrics</div><div class="stat-v" id="st-c">0</div><div class="stat-h">types in stock</div></div>
-      <div class="stat"><div class="stat-l">Total Stock</div><div class="stat-v" id="st-m">0m</div><div class="stat-h">across all fabrics</div></div>
-      <div class="stat"><div class="stat-l">Low Alerts</div><div class="stat-v red" id="st-l">0</div><div class="stat-h">need reorder</div></div>
-      <div class="stat"><div class="stat-l">Inventory Value</div><div class="stat-v gold" id="st-v">₹0</div><div class="stat-h">total value</div></div>
+      <div class="stat"><div class="stat-l">Kul Kapde</div><div class="stat-v" id="st-c">0</div><div class="stat-h">prakar</div></div>
+      <div class="stat"><div class="stat-l">Kul Meter</div><div class="stat-v" id="st-m">0</div><div class="stat-h">meter stock mein</div></div>
+      <div class="stat"><div class="stat-l">Kam Stock</div><div class="stat-v red" id="st-l">0</div><div class="stat-h">order karna hai</div></div>
+      <div class="stat"><div class="stat-l">Stock Ki Kimat</div><div class="stat-v gold" id="st-v">₹0</div><div class="stat-h">kul value</div></div>
     </div>
     <div class="content">
       <div class="sh">
-        <div><div class="sh-title">Overview</div><div class="sh-sub">Your inventory at a glance</div></div>
-        <button class="btn btn-ghost" style="font-size:11px" onclick="goto('inv',document.querySelectorAll('.sb-item')[1])">View All →</button>
+        <div><div class="sh-title">Aaj Ka Hisaab 📋</div><div class="sh-sub">Apna poora stock ek nazar mein</div></div>
+        <button class="btn btn-ghost" style="font-size:13px" onclick="goto('inv',document.querySelectorAll('.sb-item')[1])">Sab Dekho →</button>
       </div>
-      <div id="low-banner" style="display:none;background:var(--red-dim);border:1px solid rgba(192,57,43,0.2);border-radius:10px;padding:14px 18px;margin-bottom:18px">
-        <div style="font-weight:600;color:var(--red);font-size:13px;margin-bottom:3px">⚠ Low Stock Alert</div>
-        <div id="low-banner-txt" style="font-size:11px;color:var(--muted2)"></div>
+      <div class="low-banner" id="low-banner">
+        <div class="low-banner-t">⚠️ Kam Stock Alert!</div>
+        <div class="low-banner-s" id="low-banner-txt"></div>
       </div>
-      <div class="tbl" id="dash-tbl">
-        <div class="tbl-empty"><div class="tbl-empty-ic">🧵</div><div>No fabrics yet — click "+ Add Fabric"</div></div>
-      </div>
+      <div class="fab-grid" id="dash-grid"></div>
     </div>
   </div>
 
@@ -507,64 +445,54 @@ select option{background:var(--s2)}
   <div class="page" id="pg-inv">
     <div class="content">
       <div class="sh">
-        <div><div class="sh-title">Inventory</div><div class="sh-sub">All fabrics and stock levels</div></div>
-        <button class="btn btn-gold" onclick="openModal()">+ Add Fabric</button>
+        <div><div class="sh-title">📦 Inventory</div><div class="sh-sub">Sabhi kapdon ka stock</div></div>
+        <button class="btn btn-gold" onclick="openModal()">+ Naya Kapda</button>
       </div>
-      <div class="cat-row" id="cat-row">
-        <button class="cat-pill active" onclick="filterCat('',this)">All</button>
-        <button class="cat-pill" onclick="filterCat('Georgette',this)">Georgette</button>
-        <button class="cat-pill" onclick="filterCat('Chiffon',this)">Chiffon</button>
-        <button class="cat-pill" onclick="filterCat('Silk',this)">Silk</button>
-        <button class="cat-pill" onclick="filterCat('Cotton',this)">Cotton</button>
-        <button class="cat-pill" onclick="filterCat('Velvet',this)">Velvet</button>
-        <button class="cat-pill" onclick="filterCat('Satin',this)">Satin</button>
-        <button class="cat-pill" onclick="filterCat('Net',this)">Net</button>
-        <button class="cat-pill" onclick="filterCat('Linen',this)">Linen</button>
-        <button class="cat-pill" onclick="filterCat('Rayon',this)">Rayon</button>
+      <div class="cat-row">
+        <button class="cat-p active" onclick="filterCat('',this)">🧵 Sab</button>
+        <button class="cat-p" onclick="filterCat('Georgette',this)">Georgette</button>
+        <button class="cat-p" onclick="filterCat('Chiffon',this)">Chiffon</button>
+        <button class="cat-p" onclick="filterCat('Silk',this)">Silk</button>
+        <button class="cat-p" onclick="filterCat('Cotton',this)">Cotton</button>
+        <button class="cat-p" onclick="filterCat('Velvet',this)">Velvet</button>
+        <button class="cat-p" onclick="filterCat('Satin',this)">Satin</button>
+        <button class="cat-p" onclick="filterCat('Net',this)">Net</button>
+        <button class="cat-p" onclick="filterCat('Linen',this)">Linen</button>
+        <button class="cat-p" onclick="filterCat('Rayon',this)">Rayon</button>
       </div>
-      <div class="search-row">
+      <div class="search-big">
         <div class="search-wrap">
           <span class="search-ic">🔍</span>
-          <input id="inv-q" placeholder="Search fabric, color, supplier..." oninput="renderInv()"/>
+          <input id="inv-q" placeholder="Kapde ka naam, rang ya supplier dhundho..." oninput="renderInv()"/>
         </div>
       </div>
-      <div class="tbl">
-        <div class="tbl-head">
-          <div class="th">Fabric</div><div class="th">Stock</div><div class="th">Status</div>
-          <div class="th">Rate</div><div class="th">Value</div><div class="th"></div>
-        </div>
-        <div id="inv-body"></div>
-      </div>
+      <div class="fab-grid" id="inv-grid"></div>
     </div>
   </div>
 
   <!-- ══ SALES ══ -->
   <div class="page" id="pg-sales">
     <div class="content">
-      <div class="sh"><div><div class="sh-title">Sales</div><div class="sh-sub">Record and track sales</div></div></div>
-      <div style="display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start">
-        <div>
-          <div class="fc">
-            <div class="fc-title">New Sale</div>
-            <div class="fg"><label class="fl">Fabric</label><select id="s-fab" onchange="onFabChange()"></select></div>
-            <div class="g2">
-              <div class="fg"><label class="fl">Meters Sold</label><input id="s-m" type="number" placeholder="0" min="0" oninput="calcAmt()"/></div>
-              <div class="fg"><label class="fl">Rate ₹/m</label><input id="s-r" type="number" placeholder="auto" oninput="calcAmt()"/></div>
-            </div>
-            <div class="res-box" style="margin-bottom:12px">
-              <span class="res-l">Sale Amount</span>
-              <span class="res-v" id="s-amt">₹0</span>
-            </div>
-            <div class="fg"><label class="fl">Customer</label><input id="s-c" placeholder="e.g. Rajesh Bhai"/></div>
-            <div class="fg"><label class="fl">Note</label><input id="s-n" placeholder="Optional"/></div>
-            <button class="btn btn-gold btn-full" onclick="recSale()">Record Sale</button>
+      <div class="sh"><div><div class="sh-title">💰 Bikri</div><div class="sh-sub">Sale record karo</div></div></div>
+      <div style="display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start">
+        <div class="fc">
+          <div class="fc-title">🛒 Nai Bikri</div>
+          <div class="fg"><label class="fl">Kapda <span class="fl-hindi">चुनो</span></label><select id="s-fab" onchange="onFabChange()"></select></div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Meter <span class="fl-hindi">बेचे</span></label><input id="s-m" type="number" placeholder="0" min="0" oninput="calcAmt()"/></div>
+            <div class="fg"><label class="fl">Daam <span class="fl-hindi">₹/m</span></label><input id="s-r" type="number" placeholder="auto" oninput="calcAmt()"/></div>
           </div>
+          <div class="res-box" style="margin-bottom:14px">
+            <span class="res-l">Kul Raqam / Total</span>
+            <span class="res-v" id="s-amt">₹0</span>
+          </div>
+          <div class="fg"><label class="fl">Grahak <span class="fl-hindi">का नाम</span></label><input id="s-c" placeholder="e.g. Rajesh Bhai, Mehta & Sons"/></div>
+          <div class="fg"><label class="fl">Note <span class="fl-hindi">(Optional)</span></label><input id="s-n" placeholder="Koi note..."/></div>
+          <button class="btn btn-gold btn-full" onclick="recSale()">✅ Bikri Record Karo</button>
         </div>
-        <div class="tbl">
-          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;padding:11px 18px;border-bottom:1px solid var(--border);background:var(--s1)">
-            <div class="th">Fabric</div><div class="th">Meters</div><div class="th">Customer</div><div class="th">Date</div><div class="th">Amount</div>
-          </div>
-          <div id="sales-body"><div class="tbl-empty" style="padding:30px"><div class="tbl-empty-ic" style="font-size:26px">📋</div><div>No sales yet</div></div></div>
+        <div>
+          <div class="fc-title" style="font-family:var(--ff-h);font-size:16px;font-weight:700;margin-bottom:14px">📋 Bikri Ka Hisaab</div>
+          <div id="sales-list"><div class="empty"><div class="empty-ic">📋</div><div class="empty-t">Koi Bikri Nahi</div><div class="empty-s">Pehli bikri record karo</div></div></div>
         </div>
       </div>
     </div>
@@ -573,36 +501,36 @@ select option{background:var(--s2)}
   <!-- ══ CALCULATOR ══ -->
   <div class="page" id="pg-calc">
     <div class="content">
-      <div class="sh"><div><div class="sh-title">Calculator</div><div class="sh-sub">Quick textile calculations</div></div></div>
+      <div class="sh"><div><div class="sh-title">🧮 Calculator</div><div class="sh-sub">Jaldi hisaab lagao</div></div></div>
       <div class="calc-grid">
         <div class="fc">
-          <div class="fc-title">Fabric Cost</div>
-          <div class="fg"><label class="fl">Meters</label><input id="c1m" type="number" placeholder="100" oninput="c1()"/></div>
-          <div class="fg"><label class="fl">Rate ₹/m</label><input id="c1r" type="number" placeholder="120" oninput="c1()"/></div>
-          <div class="res-box"><span class="res-l">Total Cost</span><span class="res-v" id="c1-r">₹0</span></div>
+          <div class="fc-title">💰 Kapde Ki Kimat</div>
+          <div class="fg"><label class="fl">Meter <span class="fl-hindi">kitne</span></label><input id="c1m" type="number" placeholder="100" oninput="c1()"/></div>
+          <div class="fg"><label class="fl">Daam <span class="fl-hindi">₹/meter</span></label><input id="c1r" type="number" placeholder="120" oninput="c1()"/></div>
+          <div class="res-box"><span class="res-l">Kul Kimat / Total Cost</span><span class="res-v" id="c1-r">₹0</span></div>
         </div>
         <div class="fc">
-          <div class="fc-title">Profit Calculator</div>
+          <div class="fc-title">📈 Munafa / Profit</div>
           <div class="g2">
-            <div class="fg"><label class="fl">Buy ₹/m</label><input id="c2b" type="number" placeholder="100" oninput="c2()"/></div>
-            <div class="fg"><label class="fl">Sell ₹/m</label><input id="c2s" type="number" placeholder="140" oninput="c2()"/></div>
+            <div class="fg"><label class="fl">Kharidi <span class="fl-hindi">₹/m</span></label><input id="c2b" type="number" placeholder="100" oninput="c2()"/></div>
+            <div class="fg"><label class="fl">Becha <span class="fl-hindi">₹/m</span></label><input id="c2s" type="number" placeholder="140" oninput="c2()"/></div>
           </div>
-          <div class="fg"><label class="fl">Meters</label><input id="c2m" type="number" placeholder="50" oninput="c2()"/></div>
-          <div class="res-box" style="margin-bottom:6px"><span class="res-l">Profit/meter</span><span class="res-v" id="c2-pm">₹0</span></div>
-          <div class="res-box"><span class="res-l">Total Profit</span><span class="res-v" id="c2-r">₹0</span></div>
+          <div class="fg"><label class="fl">Meter <span class="fl-hindi">kitne</span></label><input id="c2m" type="number" placeholder="50" oninput="c2()"/></div>
+          <div class="res-box" style="margin-bottom:8px"><span class="res-l">Munafa / Meter</span><span class="res-v" id="c2-pm">₹0</span></div>
+          <div class="res-box"><span class="res-l">Kul Munafa / Total Profit</span><span class="res-v" id="c2-r">₹0</span></div>
         </div>
         <div class="fc">
-          <div class="fc-title">GST Calculator</div>
-          <div class="fg"><label class="fl">GST Rate</label>
+          <div class="fc-title">🧾 GST Calculator</div>
+          <div class="fg"><label class="fl">GST <span class="fl-hindi">kitna %</span></label>
             <select id="c3g" onchange="c3()">
-              <option value="5">5% (Textile)</option>
+              <option value="5">5% (Textile/Kapda)</option>
               <option value="12">12%</option>
               <option value="18">18%</option>
             </select>
           </div>
-          <div class="fg"><label class="fl">Amount ₹</label><input id="c3a" type="number" placeholder="5000" oninput="c3()"/></div>
-          <div class="res-box" style="margin-bottom:6px"><span class="res-l">GST Amount</span><span class="res-v" id="c3-g">₹0</span></div>
-          <div class="res-box"><span class="res-l">Total with GST</span><span class="res-v" id="c3-t">₹0</span></div>
+          <div class="fg"><label class="fl">Raqam <span class="fl-hindi">₹ mein</span></label><input id="c3a" type="number" placeholder="5000" oninput="c3()"/></div>
+          <div class="res-box" style="margin-bottom:8px"><span class="res-l">GST Amount</span><span class="res-v" id="c3-g">₹0</span></div>
+          <div class="res-box"><span class="res-l">GST Samet Kul / Total</span><span class="res-v" id="c3-t">₹0</span></div>
         </div>
       </div>
     </div>
@@ -612,494 +540,481 @@ select option{background:var(--s2)}
   <div class="page" id="pg-report">
     <div class="content">
       <div class="sh">
-        <div><div class="sh-title">Monthly Report</div><div class="sh-sub" id="rpt-month">—</div></div>
-        <button class="btn btn-ghost" style="font-size:11px" onclick="window.print()">🖨 Print</button>
+        <div><div class="sh-title">📊 Monthly Report</div><div class="sh-sub" id="rpt-month">—</div></div>
+        <button class="btn btn-ghost" style="font-size:13px" onclick="window.print()">🖨️ Print Karo</button>
       </div>
       <div class="rpt-stats" id="rpt-stats"></div>
       <div class="rpt-grid">
-        <div class="rpt-card"><div class="rpt-card-title">Stock Levels</div><div id="rpt-stock"></div></div>
-        <div class="rpt-card"><div class="rpt-card-title">Sales This Month</div><div id="rpt-sales"></div></div>
+        <div class="rpt-card"><div class="rpt-card-t">📦 Stock Kitna Bacha</div><div id="rpt-stock"></div></div>
+        <div class="rpt-card"><div class="rpt-card-t">💰 Is Mahine Ki Bikri</div><div id="rpt-sales"></div></div>
       </div>
-      <div class="tbl">
-        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px;padding:11px 18px;border-bottom:1px solid var(--border);background:var(--s1)">
-          <div class="th">Fabric</div><div class="th">Opening</div><div class="th">Sold</div><div class="th">Remaining</div><div class="th">Value</div><div class="th">Status</div>
+      <div style="background:var(--white);border:2px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--shadow)">
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 100px;padding:14px 20px;border-bottom:2px solid var(--border);background:var(--bg)">
+          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Kapda</div>
+          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Shuruaat</div>
+          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Becha</div>
+          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Bacha</div>
+          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Kimat</div>
+          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Haal</div>
         </div>
         <div id="rpt-body"></div>
       </div>
     </div>
   </div>
-
 </div><!-- /main -->
+
+<!-- ADD STOCK QUICK MODAL -->
+<div class="qmodal-bg" id="addstock-modal">
+  <div class="qmodal">
+    <div class="qmodal-title">📥 Stock Add Karo</div>
+    <div class="qmodal-fab" id="addstock-fab-name">—</div>
+    <div class="fg"><label class="fl">Kitna Meter Aaya? <span class="fl-hindi">नया</span></label><input id="as-m" type="number" placeholder="e.g. 100" min="0"/></div>
+    <div class="fg"><label class="fl">Daam <span class="fl-hindi">₹/meter (Optional)</span></label><input id="as-r" type="number" placeholder="Same as before"/></div>
+    <div class="fg"><label class="fl">Supplier <span class="fl-hindi">(Optional)</span></label><input id="as-s" placeholder="e.g. Rajan Textiles"/></div>
+    <div class="qmodal-foot">
+      <button class="btn btn-ghost" onclick="closeAddStock()">Ruk Jao</button>
+      <button class="btn btn-green" onclick="saveAddStock()">✅ Add Karo</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK SELL MODAL -->
+<div class="qmodal-bg" id="quicksell-modal">
+  <div class="qmodal">
+    <div class="qmodal-title">💰 Jaldi Becho</div>
+    <div class="qmodal-fab" id="qs-fab-name">—</div>
+    <div class="fg"><label class="fl">Kitna Meter Becha? <span class="fl-hindi">मीटर</span></label><input id="qs-m" type="number" placeholder="e.g. 20" min="0" oninput="calcQSAmt()"/></div>
+    <div class="fg"><label class="fl">Daam <span class="fl-hindi">₹/meter</span></label><input id="qs-r" type="number" placeholder="auto" oninput="calcQSAmt()"/></div>
+    <div class="res-box" style="margin-bottom:14px"><span class="res-l">Kul Raqam</span><span class="res-v" id="qs-amt">₹0</span></div>
+    <div class="fg"><label class="fl">Grahak <span class="fl-hindi">का नाम</span></label><input id="qs-c" placeholder="e.g. Rajesh Bhai"/></div>
+    <div class="qmodal-foot">
+      <button class="btn btn-ghost" onclick="closeQS()">Ruk Jao</button>
+      <button class="btn btn-gold" onclick="saveQS()">✅ Bikri Karo</button>
+    </div>
+  </div>
+</div>
 
 <!-- ADD FABRIC MODAL -->
 <div class="modal-bg" id="add-modal">
   <div class="modal">
-    <div class="modal-title">Add Fabric</div>
-    <div class="modal-sub">Add a new fabric to your inventory</div>
-    <div class="fg"><label class="fl">Fabric Name *</label><input id="m-name" placeholder="e.g. Red Banarasi Silk"/></div>
+    <div class="modal-title">🧵 Naya Kapda Daalo</div>
+    <div class="modal-sub">Inventory mein naya kapda add karo</div>
+    <div class="fg"><label class="fl">Kapde Ka Naam *</label><input id="m-name" placeholder="e.g. Lal Banarasi Georgette"/></div>
     <div class="g2">
-      <div class="fg"><label class="fl">Category *</label>
+      <div class="fg"><label class="fl">Category <span class="fl-hindi">prakar</span> *</label>
         <select id="m-type">
           <option>Georgette</option><option>Chiffon</option><option>Silk</option>
           <option>Cotton</option><option>Velvet</option><option>Satin</option>
           <option>Net</option><option>Rayon</option><option>Linen</option><option>Other</option>
         </select>
       </div>
-      <div class="fg"><label class="fl">Color</label><input id="m-color" placeholder="e.g. Deep Red"/></div>
+      <div class="fg"><label class="fl">Rang <span class="fl-hindi">color</span></label><input id="m-color" placeholder="e.g. Lal, Neela"/></div>
     </div>
     <div class="g2">
-      <div class="fg"><label class="fl">Meters *</label><input id="m-m" type="number" placeholder="0" min="0"/></div>
-      <div class="fg"><label class="fl">Low Alert (m)</label><input id="m-t" type="number" placeholder="50" min="0"/></div>
+      <div class="fg"><label class="fl">Meter <span class="fl-hindi">kitna</span> *</label><input id="m-m" type="number" placeholder="0" min="0"/></div>
+      <div class="fg"><label class="fl">Alert <span class="fl-hindi">kitne pe</span></label><input id="m-t" type="number" placeholder="50" min="0"/></div>
     </div>
     <div class="g2">
-      <div class="fg"><label class="fl">Rate ₹/m</label><input id="m-r" type="number" placeholder="0" min="0"/></div>
-      <div class="fg"><label class="fl">Supplier</label><input id="m-s" placeholder="Optional"/></div>
+      <div class="fg"><label class="fl">Daam <span class="fl-hindi">₹/meter</span></label><input id="m-r" type="number" placeholder="0" min="0"/></div>
+      <div class="fg"><label class="fl">Supplier</label><input id="m-s" placeholder="e.g. Rajan Textiles"/></div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-gold" onclick="saveModal()">Add to Inventory</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Ruk Jao</button>
+      <button class="btn btn-gold" onclick="saveModal()">✅ Add Karo</button>
     </div>
   </div>
 </div>
 
-<!-- AI OVERLAY -->
-<div class="ai-ov" id="ai-ov" onclick="closeAIOut(event)">
-  <div class="ai-box">
-    <div class="ai-head">
-      <div class="ai-av">🤖</div>
-      <div><div class="ai-hname">Saathi AI</div><div class="ai-hstat">● Online</div></div>
-      <button class="ai-close" onclick="closeAI()">✕</button>
-    </div>
-    <div class="ai-msgs" id="ai-msgs">
-      <div class="msg ai">
-        <div class="msg-av">🤖</div>
-        <div class="msg-bbl">Namaste! 🙏 Main <strong>Saathi AI</strong> hoon. Stock, sales, value — kuch bhi poochho Hindi ya English mein!</div>
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-left">
+      <div class="login-left-ico">🧵</div>
+      <div class="login-left-t">StockSaathi</div>
+      <div class="login-left-s">Surat ke textile vyapariyon ke liye bana ek smart stock manager. Simple, fast, aur bilkul aapki bhasha mein.</div>
+      <div class="login-feat">
+        <div class="login-feat-item"><div class="login-feat-dot"></div>Meter by meter stock tracking</div>
+        <div class="login-feat-item"><div class="login-feat-dot"></div>Kam stock pe automatic alert</div>
+        <div class="login-feat-item"><div class="login-feat-dot"></div>Bikri ka poora hisaab</div>
+        <div class="login-feat-item"><div class="login-feat-dot"></div>Monthly report & profit calculator</div>
+        <div class="login-feat-item"><div class="login-feat-dot"></div>AI assistant — Hindi mein</div>
       </div>
     </div>
-    <div class="ai-quick">
-      <button class="ai-q" onclick="qask('Total stock kitna hai?')">Total stock?</button>
-      <button class="ai-q" onclick="qask('Low stock mein kaun hai?')">Low alerts?</button>
-      <button class="ai-q" onclick="qask('Sabse mehenga fabric?')">Costly fabric?</button>
-      <button class="ai-q" onclick="qask('Is mahine ki sales?')">This month?</button>
+    <div class="login-right">
+      <div class="login-right-t">Login Karo</div>
+      <div class="login-right-s">Apne Google account se seedha login karo. Bilkul free hai.</div>
+      <button class="login-google" onclick="signInGoogle()">
+        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Google se Login Karo
+      </button>
+      <div class="login-note">Aapka data sirf aapke paas rehta hai.<br>Koi sharing nahi, bilkul secure.</div>
+      <div class="login-pow">POWERED BY NIORI · SURAT</div>
     </div>
-    <div class="ai-inp-row">
-      <input id="ai-inp" placeholder="Kuch bhi poochho..." onkeydown="if(event.key==='Enter')sendAI()"/>
-      <button class="ai-send" onclick="sendAI()">➤</button>
-    </div>
-  </div>
-</div>
-
-<!-- LOGIN SCREEN -->
-<div id="login-screen">
-  <div class="login-card">
-    <div class="login-icon">S</div>
-    <div class="login-title">StockSaathi</div>
-    <div class="login-sub">TEXTILE STOCK MANAGER</div>
-    <div class="login-divider"></div>
-    <button class="login-google" onclick="signInGoogle()">
-      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      Continue with Google
-    </button>
-    <div class="login-note">Har account ka data alag rehta hai<br>Free & Secure — Powered by Niori</div>
   </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-// ═══════════════ CONFIG ═══════════════
-const GEMINI_KEY = 'AIzaSyB_Es1kckZDBXV0WB7_zbJGX8CXNrLOcC0';
-const EJS_SVC    = 'service_j84y5ge';
-const EJS_TPL    = 'template_8pvu8qc';
-const EJS_KEY    = 'Ux_cTro8ToCSm2LUY';
-
+// ══ CONFIG ══
+const EJS_SVC='service_j84y5ge',EJS_TPL='template_8pvu8qc',EJS_KEY='Ux_cTro8ToCSm2LUY';
 emailjs.init(EJS_KEY);
 
-// ═══════════════ FIREBASE ═══════════════
+// ══ FIREBASE ══
 firebase.initializeApp({
-  apiKey:"AIzaSyB5oBVuaur5Yl_gxfde9NFYtanLZdr6Qjs",
-  authDomain:"stock-98c39.firebaseapp.com",
-  projectId:"stock-98c39",
-  storageBucket:"stock-98c39.firebasestorage.app",
-  messagingSenderId:"728990720851",
-  appId:"1:728990720851:web:eada0eac44cef8424cb7a6"
+  apiKey:'AIzaSyB5oBVuaur5Yl_gxfde9NFYtanLZdr6Qjs',
+  authDomain:'stock-98c39.firebaseapp.com',
+  projectId:'stock-98c39',
+  storageBucket:'stock-98c39.firebasestorage.app',
+  messagingSenderId:'728990720851',
+  appId:'1:728990720851:web:eada0eac44cef8424cb7a6'
 });
+const auth=firebase.auth(),db=firebase.firestore();
+let user=null;
 
-const auth = firebase.auth();
-const db   = firebase.firestore();
-let user   = null;
-
-// ═══════════════ SAMPLE DATA ═══════════════
-const SAMPLE = [
-  {id:1,name:'Red Banarasi Georgette',type:'Georgette',color:'Deep Red',meters:320,threshold:60,rate:185,supplier:'Rajan Textiles'},
-  {id:2,name:'Royal Blue Chiffon',type:'Chiffon',color:'Royal Blue',meters:45,threshold:80,rate:110,supplier:'Mehta Fabrics'},
-  {id:3,name:'Golden Katan Silk',type:'Silk',color:'Gold',meters:280,threshold:40,rate:480,supplier:'Surat Silk House'},
-  {id:4,name:'Ivory Pure Cotton',type:'Cotton',color:'Ivory',meters:18,threshold:50,rate:65,supplier:'Gujarat Cotton Co.'},
-  {id:5,name:'Black Velvet Premium',type:'Velvet',color:'Black',meters:195,threshold:30,rate:320,supplier:'Royal Fabrics'},
-  {id:6,name:'Pastel Pink Satin',type:'Satin',color:'Pastel Pink',meters:140,threshold:35,rate:145,supplier:'Shree Textiles'},
-  {id:7,name:'Bridal Net Embroidered',type:'Net',color:'Off White',meters:95,threshold:25,rate:260,supplier:'Bridal House Surat'},
+// ══ SAMPLE DATA ══
+const SAMPLE=[
+  {id:1,name:'Lal Banarasi Georgette',type:'Georgette',color:'Lal (Red)',meters:320,threshold:60,rate:185,supplier:'Rajan Textiles'},
+  {id:2,name:'Neela Chiffon',type:'Chiffon',color:'Neela (Blue)',meters:45,threshold:80,rate:110,supplier:'Mehta Fabrics'},
+  {id:3,name:'Sona Katan Silk',type:'Silk',color:'Sona (Gold)',meters:280,threshold:40,rate:480,supplier:'Surat Silk House'},
+  {id:4,name:'Safed Pure Cotton',type:'Cotton',color:'Safed (White)',meters:18,threshold:50,rate:65,supplier:'Gujarat Cotton Co.'},
+  {id:5,name:'Kaala Velvet Premium',type:'Velvet',color:'Kaala (Black)',meters:195,threshold:30,rate:320,supplier:'Royal Fabrics'},
+  {id:6,name:'Gulabi Satin',type:'Satin',color:'Gulabi (Pink)',meters:140,threshold:35,rate:145,supplier:'Shree Textiles'},
+  {id:7,name:'Dulhan Net Embroidered',type:'Net',color:'Off White',meters:95,threshold:25,rate:260,supplier:'Bridal House Surat'},
 ];
 
-// ═══════════════ STATE ═══════════════
-let inv = [], sales = [], activeCat = '';
+// ══ STATE ══
+let inv=[],sales=[],selCat='',qsFabId=null,asFabId=null;
 
-// ═══════════════ AUTH ═══════════════
-function signInGoogle() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  const mob = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  if (mob) {
-    auth.signInWithRedirect(provider).catch(e => toast('Login error: ' + e.message));
-  } else {
-    auth.signInWithPopup(provider).catch(e => toast('Login error: ' + e.message));
-  }
+// ══ FABRIC ICONS ══
+const fabIcons={'Georgette':'🟥','Chiffon':'🔵','Silk':'✨','Cotton':'🤍','Velvet':'🖤','Satin':'💗','Net':'🕸️','Rayon':'🟤','Linen':'🟨','Other':'🧵'};
+const fabColors={'Georgette':'#fdecea','Chiffon':'#e8f0fe','Silk':'#fef9e0','Cotton':'#f8f8f8','Velvet':'#f0e8f8','Satin':'#fde8f0','Net':'#e8f5f0','Rayon':'#fdecd8','Linen':'#fdf8e8','Other':'#f5efe0'};
+
+// ══ AUTH ══
+function signInGoogle(){
+  const p=new firebase.auth.GoogleAuthProvider();
+  const mob=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if(mob){auth.signInWithRedirect(p).catch(e=>toast('Login error: '+e.message))}
+  else{auth.signInWithPopup(p).catch(e=>toast('Login error: '+e.message))}
 }
-
-auth.getRedirectResult().catch(e => {
-  if (e.code !== 'auth/no-current-user') toast('Login error: ' + e.message);
-});
-
-auth.onAuthStateChanged(async u => {
-  if (u) {
-    user = u;
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('sb-foot').innerHTML =
-      '<strong style="color:var(--text)">' + u.displayName + '</strong><br>' +
-      '<span style="cursor:pointer;color:var(--red)" onclick="signOut()">Sign Out</span>';
+auth.getRedirectResult().catch(e=>{if(e.code!=='auth/no-current-user')toast('Error: '+e.message)});
+auth.onAuthStateChanged(async u=>{
+  if(u){
+    user=u;
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('sb-foot').innerHTML='<strong>'+u.displayName+'</strong><br><span style="cursor:pointer;color:var(--red)" onclick="signOut()">Sign Out</span>';
     await loadCloud();
-    updateStats(); renderDash();
+    updateStats();renderDash();
   } else {
-    user = null;
-    document.getElementById('login-screen').style.display = 'flex';
+    user=null;
+    document.getElementById('login-screen').style.display='flex';
   }
 });
+function signOut(){if(confirm('Sign out karna hai?'))auth.signOut()}
 
-function signOut() {
-  if (confirm('Sign out karna chahte ho?')) auth.signOut();
+// ══ CLOUD ══
+async function saveCloud(){if(!user)return;try{await db.collection('users').doc(user.uid).set({inv,sales})}catch(e){}}
+async function loadCloud(){
+  if(!user)return;
+  try{
+    const doc=await db.collection('users').doc(user.uid).get();
+    if(doc.exists){const d=doc.data();inv=d.inv||[];sales=d.sales||[]}
+    else{inv=SAMPLE.map(f=>({...f,addedAt:new Date().toISOString()}));sales=[];await saveCloud()}
+  }catch(e){inv=SAMPLE.map(f=>({...f,addedAt:new Date().toISOString()}))}
+}
+function save(){saveCloud()}
+
+// ══ NAV ══
+const pgMap={dash:['Dashboard',''],inv:['📦 Inventory','— Sabhi Kapde'],sales:['💰 Bikri','— Sale Record'],calc:['🧮 Calculator',''],report:['📊 Monthly Report','']};
+function goto(pg,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('pg-'+pg).classList.add('on');
+  if(el)el.classList.add('active');
+  const[t,s]=pgMap[pg]||[pg,''];
+  document.getElementById('pg-title').textContent=t;
+  document.getElementById('pg-sub').textContent=s;
+  if(pg==='inv')renderInv();
+  if(pg==='sales'){fillSaleDrop();renderSales()}
+  if(pg==='report')renderReport();
+  if(pg==='dash')renderDash();
 }
 
-// ═══════════════ CLOUD ═══════════════
-async function saveCloud() {
-  if (!user) return;
-  try { await db.collection('users').doc(user.uid).set({inv, sales}); } catch(e) {}
+// ══ STATS ══
+function updateStats(){
+  const tot=inv.reduce((a,f)=>a+f.meters,0);
+  const low=inv.filter(f=>f.meters<f.threshold).length;
+  const val=inv.reduce((a,f)=>a+f.meters*f.rate,0);
+  document.getElementById('st-c').textContent=inv.length;
+  document.getElementById('st-m').textContent=tot.toLocaleString('en-IN')+'m';
+  document.getElementById('st-l').textContent=low;
+  document.getElementById('st-v').textContent=fv(val);
+  const b=document.getElementById('low-badge');b.textContent=low;b.classList.toggle('on',low>0);
+  const ban=document.getElementById('low-banner');
+  if(low>0){
+    const n=inv.filter(f=>f.meters<f.threshold).map(f=>f.name).join(', ');
+    document.getElementById('low-banner-txt').textContent=n+' — abhi order karo!';
+    ban.style.display='block';
+  } else ban.style.display='none';
 }
 
-async function loadCloud() {
-  if (!user) return;
-  try {
-    const doc = await db.collection('users').doc(user.uid).get();
-    if (doc.exists) {
-      const d = doc.data();
-      inv   = d.inv   || [];
-      sales = d.sales || [];
-    } else {
-      // First time — load sample data
-      inv = SAMPLE.map(f => ({...f, addedAt: new Date().toISOString()}));
-      sales = [];
-      await saveCloud();
-    }
-  } catch(e) {
-    inv = SAMPLE.map(f => ({...f, addedAt: new Date().toISOString()}));
-  }
+function fv(v){
+  if(v>=10000000)return '₹'+(v/10000000).toFixed(1)+'Cr';
+  if(v>=100000)return '₹'+(v/100000).toFixed(1)+'L';
+  return '₹'+Math.round(v).toLocaleString('en-IN');
 }
 
-function save() { saveCloud(); }
-
-// ═══════════════ NAVIGATION ═══════════════
-const pgMap = {
-  dash:  ['Dashboard', ''],
-  inv:   ['Inventory', '— All Fabrics'],
-  sales: ['Sales', '— Record & History'],
-  calc:  ['Calculator', '— Quick Calculations'],
-  report:['Monthly Report', '']
-};
-
-function goto(pg, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
-  document.querySelectorAll('.sb-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('pg-' + pg).classList.add('on');
-  if (el) el.classList.add('active');
-  const [t, s] = pgMap[pg] || [pg, ''];
-  document.getElementById('pg-title').textContent = t;
-  document.getElementById('pg-sub').textContent = s;
-  if (pg === 'inv')    renderInv();
-  if (pg === 'sales')  { fillSaleDrop(); renderSales(); }
-  if (pg === 'report') renderReport();
-  if (pg === 'dash')   renderDash();
+// ══ FABRIC CARD HTML ══
+function fabCardHTML(f){
+  const pct=Math.min(100,Math.round(f.meters/Math.max(f.threshold*3,1)*100));
+  const st=f.meters===0?'low':f.meters<f.threshold?'low':f.meters<f.threshold*1.5?'med':'ok';
+  const pill=st==='low'?'<span class="pill pill-r">⚠️ Kam Stock</span>':st==='med'?'<span class="pill pill-o">🔶 Thoda Kam</span>':'<span class="pill pill-g">✅ Theek Hai</span>';
+  const bc=st==='ok'?'var(--green2)':st==='med'?'var(--orange)':'var(--red)';
+  const ic=fabIcons[f.type]||'🧵';
+  const bg=fabColors[f.type]||'#f5efe0';
+  return `<div class="fab-card ${st}">
+    <div class="fab-left">
+      <div class="fab-icon" style="background:${bg}">${ic}</div>
+      <div class="fab-info">
+        <div class="fab-name">${esc(f.name)}</div>
+        <div class="fab-meta">
+          <span class="fab-tag">${f.type}</span>
+          <span class="fab-tag">${f.color}</span>
+          <span class="fab-tag">${esc(f.supplier)}</span>
+          ${pill}
+        </div>
+        <div class="fab-bar-wrap" style="margin-top:8px">
+          <div class="fab-bar"><div class="fab-bar-f" style="width:${pct}%;background:${bc}"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="fab-right">
+      <div class="fab-meter-box">
+        <div class="fab-meter-num">${f.meters.toLocaleString('en-IN')}</div>
+        <div class="fab-meter-lbl">Meter</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--muted2)">₹${f.rate}/m</div>
+        <div style="font-size:12px;color:var(--muted)">${fv(f.meters*f.rate)}</div>
+      </div>
+      <div class="fab-actions">
+        <button class="fab-btn fab-btn-add" onclick="openAddStock(${f.id})">📥 Stock Add</button>
+        <button class="fab-btn fab-btn-sell" onclick="openQS(${f.id})">💰 Becho</button>
+        <button class="fab-btn fab-btn-del" onclick="delFab(${f.id})" title="Delete">🗑️</button>
+      </div>
+    </div>
+  </div>`;
 }
 
-// ═══════════════ STATS ═══════════════
-function updateStats() {
-  const tot = inv.reduce((a,f) => a+f.meters, 0);
-  const low = inv.filter(f => f.meters < f.threshold).length;
-  const val = inv.reduce((a,f) => a+f.meters*f.rate, 0);
-  document.getElementById('st-c').textContent = inv.length;
-  document.getElementById('st-m').textContent = tot.toLocaleString('en-IN') + 'm';
-  document.getElementById('st-l').textContent = low;
-  document.getElementById('st-v').textContent = fv(val);
-  const b = document.getElementById('low-badge');
-  b.textContent = low; b.classList.toggle('on', low > 0);
-  const ban = document.getElementById('low-banner');
-  if (low > 0) {
-    const n = inv.filter(f => f.meters < f.threshold).map(f => f.name).join(', ');
-    document.getElementById('low-banner-txt').textContent = n + ' — needs reorder';
-    ban.style.display = 'block';
-  } else { ban.style.display = 'none'; }
+function renderDash(){
+  const el=document.getElementById('dash-grid');
+  if(!inv.length){el.innerHTML='<div class="empty"><div class="empty-ic">🧵</div><div class="empty-t">Koi Kapda Nahi</div><div class="empty-s">+ Naya Kapda pe click karo</div></div>';return}
+  el.innerHTML=inv.slice(0,7).map(fabCardHTML).join('');
 }
 
-function fv(v) {
-  if (v >= 10000000) return '₹' + (v/10000000).toFixed(1) + 'Cr';
-  if (v >= 100000)   return '₹' + (v/100000).toFixed(1) + 'L';
-  return '₹' + Math.round(v).toLocaleString('en-IN');
-}
-
-// ═══════════════ INVENTORY TABLE HTML ═══════════════
-function invHTML(list) {
-  if (!list.length) return `<div class="tbl-empty"><div class="tbl-empty-ic">🔍</div><div>No fabrics found</div></div>`;
-  return list.map(f => {
-    const pct = Math.min(100, Math.round(f.meters / Math.max(f.threshold*3,1) * 100));
-    const st  = f.meters===0?'out':f.meters<f.threshold?'low':f.meters<f.threshold*1.5?'mid':'ok';
-    const pill = st==='out'?'<span class="pill pill-r">OUT</span>'
-               : st==='low'?'<span class="pill pill-r">LOW</span>'
-               : st==='mid'?'<span class="pill pill-a">MED</span>'
-               : '<span class="pill pill-g">OK</span>';
-    const bc = st==='ok'?'var(--green2)':st==='mid'?'var(--amber)':'var(--red)';
-    return `<div class="tbl-row">
-      <div><div class="row-name">${esc(f.name)}</div><div class="row-meta">${f.type} · ${f.color} · ${esc(f.supplier)}</div></div>
-      <div><div class="row-m">${f.meters.toLocaleString('en-IN')}m</div><div class="mbar"><div class="mbar-f" style="width:${pct}%;background:${bc}"></div></div></div>
-      <div>${pill}</div>
-      <div style="color:var(--muted2)">₹${f.rate}/m</div>
-      <div style="color:var(--muted2)">${fv(f.meters*f.rate)}</div>
-      <div class="row-act"><button class="act-btn" title="Delete" onclick="delFab(${f.id})">✕</button></div>
-    </div>`;
-  }).join('');
-}
-
-function renderDash() {
-  const el = document.getElementById('dash-tbl');
-  if (!inv.length) { el.innerHTML=`<div class="tbl-empty"><div class="tbl-empty-ic">🧵</div><div>No fabrics yet — click "+ Add Fabric"</div></div>`; return; }
-  el.innerHTML = '<div class="tbl-head"><div class="th">Fabric</div><div class="th">Stock</div><div class="th">Status</div><div class="th">Rate</div><div class="th">Value</div><div class="th"></div></div>' + invHTML(inv.slice(0,7));
-}
-
-let selCat = '';
-function filterCat(cat, el) {
-  selCat = cat;
-  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+let selCatV='';
+function filterCat(cat,el){
+  selCatV=cat;
+  document.querySelectorAll('.cat-p').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
   renderInv();
 }
 
-function renderInv() {
-  const q = (document.getElementById('inv-q')?.value||'').toLowerCase();
-  const list = inv.filter(f =>
-    (!selCat || f.type === selCat) &&
-    (f.name.toLowerCase().includes(q) || f.type.toLowerCase().includes(q) || f.color.toLowerCase().includes(q))
-  );
-  document.getElementById('inv-body').innerHTML = invHTML(list);
+function renderInv(){
+  const q=(document.getElementById('inv-q')?.value||'').toLowerCase();
+  const list=inv.filter(f=>(!selCatV||f.type===selCatV)&&(f.name.toLowerCase().includes(q)||f.type.toLowerCase().includes(q)||f.color.toLowerCase().includes(q)));
+  const el=document.getElementById('inv-grid');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">Koi Kapda Nahi Mila</div></div>';return}
+  el.innerHTML=list.map(fabCardHTML).join('');
 }
 
-function delFab(id) {
-  if (!confirm('Delete this fabric?')) return;
-  inv = inv.filter(f => f.id !== id);
-  save(); updateStats(); renderDash(); renderInv();
-  toast('Fabric deleted');
+function delFab(id){
+  if(!confirm('Yeh kapda delete karna hai?'))return;
+  inv=inv.filter(f=>f.id!==id);
+  save();updateStats();renderDash();renderInv();
+  toast('Kapda delete ho gaya');
 }
 
-// ═══════════════ MODAL ═══════════════
-function openModal() { document.getElementById('add-modal').classList.add('on'); document.getElementById('m-name').focus(); }
-function closeModal() {
+// ══ ADD STOCK QUICK MODAL ══
+function openAddStock(id){
+  asFabId=id;
+  const f=inv.find(f=>f.id===id);
+  if(!f)return;
+  document.getElementById('addstock-fab-name').textContent=f.name+' — Abhi: '+f.meters+'m available';
+  document.getElementById('as-m').value='';
+  document.getElementById('as-r').value='';
+  document.getElementById('as-s').value='';
+  document.getElementById('addstock-modal').classList.add('on');
+  document.getElementById('as-m').focus();
+}
+
+function closeAddStock(){document.getElementById('addstock-modal').classList.remove('on')}
+
+function saveAddStock(){
+  const m=parseFloat(document.getElementById('as-m').value);
+  if(!m||m<=0){toast('Meter daalo!');return}
+  const f=inv.find(f=>f.id===asFabId);
+  if(!f)return;
+  f.meters+=m;
+  const r=parseFloat(document.getElementById('as-r').value);
+  if(r>0)f.rate=r;
+  const s=document.getElementById('as-s').value.trim();
+  if(s)f.supplier=s;
+  save();updateStats();renderDash();renderInv();
+  closeAddStock();
+  toast('✅ '+m+'m '+f.name+' mein add ho gaya!');
+}
+
+// ══ QUICK SELL MODAL ══
+function openQS(id){
+  qsFabId=id;
+  const f=inv.find(f=>f.id===id);
+  if(!f)return;
+  document.getElementById('qs-fab-name').textContent=f.name+' — Abhi: '+f.meters+'m available';
+  document.getElementById('qs-m').value='';
+  document.getElementById('qs-r').value=f.rate||'';
+  document.getElementById('qs-c').value='';
+  document.getElementById('qs-amt').textContent='₹0';
+  document.getElementById('quicksell-modal').classList.add('on');
+  document.getElementById('qs-m').focus();
+}
+
+function closeQS(){document.getElementById('quicksell-modal').classList.remove('on')}
+
+function calcQSAmt(){
+  const m=parseFloat(document.getElementById('qs-m').value)||0;
+  const r=parseFloat(document.getElementById('qs-r').value)||0;
+  document.getElementById('qs-amt').textContent=fv(m*r);
+}
+
+function saveQS(){
+  const m=parseFloat(document.getElementById('qs-m').value);
+  const r=parseFloat(document.getElementById('qs-r').value);
+  const cust=document.getElementById('qs-c').value.trim()||'Walk-in';
+  const f=inv.find(f=>f.id===qsFabId);
+  if(!f){toast('Error!');return}
+  if(!m||m<=0){toast('Meter daalo!');return}
+  if(m>f.meters){toast('Sirf '+f.meters+'m available hai!');return}
+  const rate=r||f.rate;
+  f.meters-=m;
+  sales.unshift({id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate,total:m*rate,customer:cust,note:'',date:new Date().toISOString()});
+  save();updateStats();renderDash();renderInv();closeQS();
+  toast('✅ '+m+'m '+f.name+' becha — '+fv(m*rate));
+  if(f.meters<f.threshold){
+    setTimeout(()=>addAIMsg('⚠️ Alert: **'+f.name+'** ka stock kam ho gaya — sirf **'+f.meters+'m** bacha hai! Reorder karo.'),800);
+    emailjs.send(EJS_SVC,EJS_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold}).then(()=>toast('📧 Email alert bheja!')).catch(()=>{});
+  }
+}
+
+// ══ ADD FABRIC MODAL ══
+function openModal(){document.getElementById('add-modal').classList.add('on');document.getElementById('m-name').focus()}
+function closeModal(){
   document.getElementById('add-modal').classList.remove('on');
-  ['m-name','m-color','m-m','m-t','m-r','m-s'].forEach(id => document.getElementById(id).value = '');
+  ['m-name','m-color','m-m','m-t','m-r','m-s'].forEach(id=>document.getElementById(id).value='');
 }
-
-function saveModal() {
-  const name = document.getElementById('m-name').value.trim();
-  const m    = parseFloat(document.getElementById('m-m').value) || 0;
-  if (!name) { toast('Fabric name required'); return; }
-  const ex = inv.find(f => f.name.toLowerCase() === name.toLowerCase());
-  if (ex) {
-    ex.meters += m;
-    toast(`✓ ${m}m added to ${name}`);
-  } else {
-    inv.push({
-      id: Date.now(), name,
-      type:      document.getElementById('m-type').value,
-      color:     document.getElementById('m-color').value.trim() || '—',
-      meters:    m,
-      threshold: parseFloat(document.getElementById('m-t').value) || 50,
-      rate:      parseFloat(document.getElementById('m-r').value) || 0,
-      supplier:  document.getElementById('m-s').value.trim()     || '—',
-      addedAt:   new Date().toISOString()
-    });
-    toast(`✓ ${name} added!`);
+function saveModal(){
+  const name=document.getElementById('m-name').value.trim();
+  const m=parseFloat(document.getElementById('m-m').value)||0;
+  if(!name){toast('Kapde ka naam daalo!');return}
+  const ex=inv.find(f=>f.name.toLowerCase()===name.toLowerCase());
+  if(ex){ex.meters+=m;toast('✅ '+m+'m '+name+' mein add ho gaya!')}
+  else{
+    inv.push({id:Date.now(),name,type:document.getElementById('m-type').value,color:document.getElementById('m-color').value.trim()||'—',meters:m,threshold:parseFloat(document.getElementById('m-t').value)||50,rate:parseFloat(document.getElementById('m-r').value)||0,supplier:document.getElementById('m-s').value.trim()||'—',addedAt:new Date().toISOString()});
+    toast('✅ '+name+' inventory mein aa gaya!');
   }
-  save(); updateStats(); renderDash(); renderInv(); closeModal();
+  save();updateStats();renderDash();renderInv();closeModal();
 }
 
-// ═══════════════ SALES ═══════════════
-function fillSaleDrop() {
-  const sel = document.getElementById('s-fab');
-  sel.innerHTML = inv.length
-    ? inv.map(f => `<option value="${f.id}" data-rate="${f.rate}">${esc(f.name)} (${f.meters}m)</option>`).join('')
-    : '<option>No fabrics — add stock first</option>';
-  if (inv.length) { document.getElementById('s-r').value = inv[0].rate || ''; calcAmt(); }
+// ══ SALES ══
+function fillSaleDrop(){
+  const sel=document.getElementById('s-fab');
+  sel.innerHTML=inv.length?inv.map(f=>`<option value="${f.id}" data-rate="${f.rate}">${esc(f.name)} (${f.meters}m)</option>`).join(''):'<option>Pehle stock daalo</option>';
+  if(inv.length){document.getElementById('s-r').value=inv[0].rate||'';calcAmt()}
 }
+function onFabChange(){const opt=document.getElementById('s-fab').options[document.getElementById('s-fab').selectedIndex];document.getElementById('s-r').value=opt?.dataset?.rate||'';calcAmt()}
+function calcAmt(){const m=parseFloat(document.getElementById('s-m').value)||0,r=parseFloat(document.getElementById('s-r').value)||0;document.getElementById('s-amt').textContent=fv(m*r)}
 
-function onFabChange() {
-  const opt = document.getElementById('s-fab').options[document.getElementById('s-fab').selectedIndex];
-  document.getElementById('s-r').value = opt?.dataset?.rate || '';
-  calcAmt();
-}
-
-function calcAmt() {
-  const m = parseFloat(document.getElementById('s-m').value)||0;
-  const r = parseFloat(document.getElementById('s-r').value)||0;
-  document.getElementById('s-amt').textContent = fv(m*r);
-}
-
-function recSale() {
-  const id   = parseInt(document.getElementById('s-fab').value);
-  const m    = parseFloat(document.getElementById('s-m').value);
-  const r    = parseFloat(document.getElementById('s-r').value);
-  const cust = document.getElementById('s-c').value.trim() || 'Walk-in';
-  const note = document.getElementById('s-n').value.trim();
-  const fab  = inv.find(f => f.id === id);
-  if (!fab)          { toast('Select a fabric'); return; }
-  if (!m || m <= 0)  { toast('Enter meters sold'); return; }
-  if (m > fab.meters){ toast(`Only ${fab.meters}m available!`); return; }
-  const rate = r || fab.rate;
-  fab.meters -= m;
-  sales.unshift({id:Date.now(),fabId:id,fabName:fab.name,meters:m,rate,total:m*rate,customer:cust,note,date:new Date().toISOString()});
-  save(); updateStats(); renderSales(); fillSaleDrop();
-  toast(`✓ ${m}m ${fab.name} sold — ${fv(m*rate)}`);
-  ['s-m','s-c','s-n'].forEach(i => document.getElementById(i).value='');
-  document.getElementById('s-amt').textContent = '₹0';
-  if (fab.meters < fab.threshold) {
-    setTimeout(() => addAIMsg(`⚠️ Alert: **${fab.name}** low stock — sirf **${fab.meters}m** bacha! Reorder karo.`), 800);
-    emailjs.send(EJS_SVC, EJS_TPL, {fabric_name:fab.name,meters:fab.meters,threshold:fab.threshold}).then(() => toast('📧 Low stock email sent!')).catch(()=>{});
+function recSale(){
+  const id=parseInt(document.getElementById('s-fab').value);
+  const m=parseFloat(document.getElementById('s-m').value);
+  const r=parseFloat(document.getElementById('s-r').value);
+  const cust=document.getElementById('s-c').value.trim()||'Walk-in';
+  const note=document.getElementById('s-n').value.trim();
+  const f=inv.find(f=>f.id===id);
+  if(!f){toast('Kapda chunno!');return}
+  if(!m||m<=0){toast('Meter daalo!');return}
+  if(m>f.meters){toast('Sirf '+f.meters+'m available hai!');return}
+  const rate=r||f.rate;
+  f.meters-=m;
+  sales.unshift({id:Date.now(),fabId:id,fabName:f.name,meters:m,rate,total:m*rate,customer:cust,note,date:new Date().toISOString()});
+  save();updateStats();renderSales();fillSaleDrop();
+  toast('✅ '+m+'m '+f.name+' becha — '+fv(m*rate));
+  ['s-m','s-c','s-n'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('s-amt').textContent='₹0';
+  if(f.meters<f.threshold){
+    setTimeout(()=>addAIMsg('⚠️ Alert: **'+f.name+'** stock kam ho gaya — sirf **'+f.meters+'m** bacha!'),800);
+    emailjs.send(EJS_SVC,EJS_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold}).then(()=>toast('📧 Email alert bheja!')).catch(()=>{});
   }
 }
 
-function renderSales() {
-  const el = document.getElementById('sales-body');
-  if (!sales.length) { el.innerHTML=`<div class="tbl-empty" style="padding:30px"><div class="tbl-empty-ic" style="font-size:26px">📋</div><div>No sales yet</div></div>`; return; }
-  el.innerHTML = sales.map(s => `
-    <div class="sale-row">
-      <div><div class="row-name">${esc(s.fabName)}</div><div class="row-meta">${esc(s.note||'')}</div></div>
-      <div style="color:var(--muted2)">${s.meters}m</div>
-      <div style="color:var(--muted2)">${esc(s.customer)}</div>
-      <div style="color:var(--muted2)">${new Date(s.date).toLocaleDateString('en-IN')}</div>
+function renderSales(){
+  const el=document.getElementById('sales-list');
+  if(!sales.length){el.innerHTML='<div class="empty"><div class="empty-ic">📋</div><div class="empty-t">Koi Bikri Nahi</div><div class="empty-s">Pehli bikri record karo</div></div>';return}
+  el.innerHTML=sales.map(s=>`
+    <div class="sale-card">
+      <div><div style="font-family:var(--ff-h);font-size:15px;font-weight:700">${esc(s.fabName)}</div><div style="font-size:12px;color:var(--muted)">${esc(s.customer)}</div></div>
+      <div style="font-size:14px;font-weight:600;color:var(--muted2)">${s.meters}m</div>
+      <div style="font-size:14px;font-weight:600;color:var(--muted2)">₹${s.rate}/m</div>
+      <div style="font-size:12px;color:var(--muted)">${new Date(s.date).toLocaleDateString('en-IN')}</div>
       <div class="sale-amt">${fv(s.total)}</div>
     </div>`).join('');
 }
 
-// ═══════════════ CALCULATORS ═══════════════
+// ══ CALCS ══
 function c1(){const v=(parseFloat(document.getElementById('c1m').value)||0)*(parseFloat(document.getElementById('c1r').value)||0);document.getElementById('c1-r').textContent=fv(v)}
 function c2(){
   const b=parseFloat(document.getElementById('c2b').value)||0,s=parseFloat(document.getElementById('c2s').value)||0,m=parseFloat(document.getElementById('c2m').value)||0;
   const pm=s-b,tot=pm*m;
   const pe=document.getElementById('c2-pm'),te=document.getElementById('c2-r');
-  pe.textContent=(pm>=0?'+':'')+fv(pm); te.textContent=(tot>=0?'+':'')+fv(tot);
+  pe.textContent=(pm>=0?'+':'')+fv(pm);te.textContent=(tot>=0?'+':'')+fv(tot);
   pe.style.color=te.style.color=pm>=0?'var(--green2)':'var(--red)';
 }
 function c3(){const p=parseFloat(document.getElementById('c3g').value)||5,a=parseFloat(document.getElementById('c3a').value)||0,g=a*p/100;document.getElementById('c3-g').textContent=fv(g);document.getElementById('c3-t').textContent=fv(a+g)}
 
-// ═══════════════ REPORT ═══════════════
-function renderReport() {
-  const now = new Date();
-  document.getElementById('rpt-month').textContent = now.toLocaleString('en-IN',{month:'long',year:'numeric'});
-  const ms = sales.filter(s=>{const d=new Date(s.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()});
-  const sa = ms.reduce((a,s)=>a+s.total,0), sm = ms.reduce((a,s)=>a+s.meters,0);
-  const iv = inv.reduce((a,f)=>a+f.meters*f.rate,0), lc = inv.filter(f=>f.meters<f.threshold).length;
-  document.getElementById('rpt-stats').innerHTML = [
-    ['Sales This Month',fv(sa),'gold'],['Meters Sold',sm+'m',''],
-    ['Inventory Value',fv(iv),''],['Low Stock',lc,lc>0?'red':'']
-  ].map(([l,v,c])=>`<div class="stat" style="border-radius:10px;border:1px solid var(--border)"><div class="stat-l">${l}</div><div class="stat-v ${c}">${v}</div></div>`).join('');
-  const mx = Math.max(...inv.map(f=>f.meters),1);
-  document.getElementById('rpt-stock').innerHTML = inv.length ? inv.map(f=>`<div class="bar-row"><div class="bar-lbl" title="${esc(f.name)}">${esc(f.name)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(f.meters/mx*100)}%"></div></div><div class="bar-val">${f.meters}m</div></div>`).join('') : '<div style="color:var(--muted);font-size:12px">No data</div>';
+// ══ REPORT ══
+function renderReport(){
+  const now=new Date();
+  document.getElementById('rpt-month').textContent=now.toLocaleString('en-IN',{month:'long',year:'numeric'});
+  const ms=sales.filter(s=>{const d=new Date(s.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()});
+  const sa=ms.reduce((a,s)=>a+s.total,0),sm=ms.reduce((a,s)=>a+s.meters,0);
+  const iv=inv.reduce((a,f)=>a+f.meters*f.rate,0),lc=inv.filter(f=>f.meters<f.threshold).length;
+  document.getElementById('rpt-stats').innerHTML=[
+    ['Bikri Ka Paisa',fv(sa),'gold'],['Becha Meter',sm+'m',''],
+    ['Stock Ki Kimat',fv(iv),''],['Kam Stock',lc,lc>0?'red':'']
+  ].map(([l,v,c])=>`<div class="stat" style="border-radius:12px;border:2px solid var(--border);background:var(--white)"><div class="stat-l">${l}</div><div class="stat-v ${c}">${v}</div></div>`).join('');
+  const mx=Math.max(...inv.map(f=>f.meters),1);
+  document.getElementById('rpt-stock').innerHTML=inv.length?inv.map(f=>`<div class="bar-row"><div class="bar-lbl" title="${esc(f.name)}">${esc(f.name)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(f.meters/mx*100)}%"></div></div><div class="bar-val">${f.meters}m</div></div>`).join(''):'<div style="color:var(--muted);font-size:13px">Koi data nahi</div>';
   const sf={};ms.forEach(s=>{sf[s.fabName]=(sf[s.fabName]||0)+s.meters});
   const mxs=Math.max(...Object.values(sf),1);
-  document.getElementById('rpt-sales').innerHTML = Object.keys(sf).length ? Object.entries(sf).map(([n,m])=>`<div class="bar-row"><div class="bar-lbl">${esc(n)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(m/mxs*100)}%;background:var(--green2)"></div></div><div class="bar-val">${m}m</div></div>`).join('') : '<div style="color:var(--muted);font-size:12px">No sales this month</div>';
-  document.getElementById('rpt-body').innerHTML = inv.length ? inv.map(f=>{
+  document.getElementById('rpt-sales').innerHTML=Object.keys(sf).length?Object.entries(sf).map(([n,m])=>`<div class="bar-row"><div class="bar-lbl">${esc(n)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(m/mxs*100)}%;background:var(--green2)"></div></div><div class="bar-val">${m}m</div></div>`).join(''):'<div style="color:var(--muted);font-size:13px">Is mahine koi bikri nahi</div>';
+  document.getElementById('rpt-body').innerHTML=inv.length?inv.map(f=>{
     const sold=ms.filter(s=>s.fabId===f.id).reduce((a,s)=>a+s.meters,0);
-    return `<div class="tbl-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px">
-      <div><div class="row-name">${esc(f.name)}</div><div class="row-meta">${f.type}</div></div>
-      <div style="color:var(--muted2)">${f.meters+sold}m</div>
-      <div style="color:var(--green2)">${sold}m</div>
-      <div class="row-m">${f.meters}m</div>
-      <div style="color:var(--gold)">${fv(f.meters*f.rate)}</div>
-      <div>${f.meters<f.threshold?'<span class="pill pill-r">LOW</span>':'<span class="pill pill-g">OK</span>'}</div>
+    return `<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 100px;padding:14px 20px;border-bottom:2px solid var(--border);align-items:center;transition:background 0.1s" onmouseover="this.style.background='#fdf9ef'" onmouseout="this.style.background=''">
+      <div><div style="font-family:var(--ff-h);font-weight:700;font-size:15px">${esc(f.name)}</div><div style="font-size:11px;color:var(--muted)">${f.type}</div></div>
+      <div style="font-size:14px;font-weight:600;color:var(--muted2)">${f.meters+sold}m</div>
+      <div style="font-size:14px;font-weight:600;color:var(--green2)">${sold}m</div>
+      <div style="font-family:var(--ff-h);font-size:18px;font-weight:700">${f.meters}m</div>
+      <div style="font-size:14px;font-weight:600;color:var(--gold)">${fv(f.meters*f.rate)}</div>
+      <div>${f.meters<f.threshold?'<span class="pill pill-r">⚠️ Kam</span>':'<span class="pill pill-g">✅ OK</span>'}</div>
     </div>`;
-  }).join('') : `<div class="tbl-empty">No data</div>`;
+  }).join(''):'<div class="empty">Koi data nahi</div>';
 }
 
-// ═══════════════ AI CHAT ═══════════════
-function openAI()  { document.getElementById('ai-ov').classList.add('on') }
-function closeAI() { document.getElementById('ai-ov').classList.remove('on') }
-function closeAIOut(e) { if(e.target===document.getElementById('ai-ov')) closeAI() }
-function qask(q)   { document.getElementById('ai-inp').value=q; sendAI() }
 
-async function sendAI() {
-  const inp = document.getElementById('ai-inp');
-  const q   = inp.value.trim();
-  if (!q) return;
-  inp.value = '';
-  addUMsg(q); showTyping();
 
-  const ctx    = inv.map(f=>`${f.name}(${f.type},${f.color}):${f.meters}m,thresh ${f.threshold}m,Rs.${f.rate}/m`).join('\n');
-  const now    = new Date();
-  const mSales = sales.filter(s=>{const d=new Date(s.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()});
-  const sCtx   = mSales.length?mSales.map(s=>`${s.fabName}:${s.meters}m=Rs.${s.total}`).join('\n'):'No sales';
-  const tv     = inv.reduce((a,f)=>a+f.meters*f.rate,0);
-  const low    = inv.filter(f=>f.meters<f.threshold).map(f=>f.name).join(', ')||'None';
-
-  const prompt=`You are Saathi AI for a Surat textile shop. Reply in short Hinglish. Bold key numbers with **. Max 3 sentences. Use only this data.
-Inventory:\n${ctx||'Empty'}
-Month sales:\n${sCtx}
-Total: ${inv.length} fabrics, ${inv.reduce((a,f)=>a+f.meters,0)}m, Rs.${Math.round(tv).toLocaleString()}
-Low: ${low}
-User: ${q}`;
-
-  try {
-    const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key='+GEMINI_KEY,
-      {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:300,temperature:0.7}})});
-    const data = await res.json();
-    rmTyping();
-    const r = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    addAIMsg(r || (data?.error ? data.error.message : 'Kuch problem aayi, dobara try karo.'));
-  } catch(e) { rmTyping(); addAIMsg('Network issue! 🙏'); }
-}
-
-function addUMsg(t) {
-  const d=document.createElement('div');d.className='msg u';
-  d.innerHTML=`<div class="msg-av">👤</div><div class="msg-bbl">${esc(t)}</div>`;
-  const c=document.getElementById('ai-msgs');c.appendChild(d);c.scrollTop=c.scrollHeight;
-}
-function addAIMsg(t) {
-  const d=document.createElement('div');d.className='msg ai';
-  d.innerHTML=`<div class="msg-av">🤖</div><div class="msg-bbl">${t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
-  const c=document.getElementById('ai-msgs');c.appendChild(d);c.scrollTop=c.scrollHeight;
-}
-function showTyping() {
-  const d=document.createElement('div');d.className='msg ai';d.id='typ';
-  d.innerHTML=`<div class="msg-av">🤖</div><div class="msg-bbl"><div class="typing"><span></span><span></span><span></span></div></div>`;
-  const c=document.getElementById('ai-msgs');c.appendChild(d);c.scrollTop=c.scrollHeight;
-}
-function rmTyping(){document.getElementById('typ')?.remove()}
-
-// ═══════════════ EMAIL ALERT ═══════════════
-function sendLowAlert(fab) {
-  emailjs.send(EJS_SVC,EJS_TPL,{fabric_name:fab.name,meters:fab.meters,threshold:fab.threshold})
-    .then(()=>toast('📧 Low stock email sent!'))
-    .catch(()=>{});
-}
-
-// ═══════════════ UTILS ═══════════════
+// ══ UTILS ══
 function esc(t=''){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-
-function toast(msg) {
-  const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';
-  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.display='none'},3000);
-}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>{t.style.display='none'},3500)}
 </script>
 </body>
 </html>
