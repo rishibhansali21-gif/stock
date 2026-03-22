@@ -4,19 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>StockSaathi — Textile Stock Manager</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link href="https://fonts.cdnfonts.com/css/gilroy-free" rel="stylesheet">
-<style>
-@font-face {
-  font-family: 'Gilroy';
-  src: url('https://fonts.cdnfonts.com/s/14454/Gilroy-ExtraBold.woff') format('woff');
-  font-weight: 800;
-}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
@@ -28,9 +17,9 @@
   --card:#1e1c14;
   --border:rgba(212,160,23,0.12);
   --border2:rgba(212,160,23,0.22);
-  --text:#f5ead8;
-  --muted:#7a6d50;
-  --muted2:#a89878;
+  --text:#e8dcc8;
+  --muted:#6a6048;
+  --muted2:#9a8868;
   --gold:#d4a017;
   --gold2:#f0c040;
   --gold-dim:rgba(212,160,23,0.1);
@@ -42,7 +31,7 @@
   --red-dim:rgba(214,64,48,0.12);
   --orange:#d46820;
   --orange-dim:rgba(212,104,32,0.12);
-  --ff-h:'Gilroy','Plus Jakarta Sans',sans-serif;
+  --ff-h:'Outfit',sans-serif;
   --ff-b:'Plus Jakarta Sans',sans-serif;
 }
 
@@ -70,7 +59,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13
   display:flex;align-items:center;justify-content:center;
   font-family:var(--ff-h);font-size:18px;font-weight:800;color:#0e0c08;
 }
-.sb-name{font-family:var(--ff-h);font-size:19px;font-weight:800;color:var(--text);letter-spacing:-0.5px}
+.sb-name{font-family:var(--ff-h);font-size:19px;font-weight:700;color:var(--muted2);letter-spacing:-0.3px}
 .sb-tag{font-size:10px;color:var(--muted);margin-top:3px;padding-left:49px;letter-spacing:1px;text-transform:uppercase}
 
 .sb-nav{padding:14px 10px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
@@ -99,7 +88,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13
   border-bottom:1px solid var(--border);
   display:flex;align-items:center;padding:0 28px;gap:16px;flex-shrink:0;
 }
-.tb-title{font-family:var(--ff-h);font-size:18px;font-weight:800;color:var(--text);letter-spacing:-0.3px}
+.tb-title{font-family:var(--ff-h);font-size:18px;font-weight:700;color:var(--text);letter-spacing:-0.2px}
 .tb-sub{font-size:11px;color:var(--muted)}
 .tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
 
@@ -131,7 +120,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13
   font-size:10px;color:var(--muted);
   text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-bottom:8px;
 }
-.stat-v{font-family:var(--ff-h);font-size:28px;font-weight:800;line-height:1;color:var(--text);letter-spacing:-0.5px}
+.stat-v{font-family:var(--ff-h);font-size:26px;font-weight:700;line-height:1;color:var(--text);letter-spacing:-0.3px}
 .stat-v.red{color:var(--red)}
 .stat-v.gold{color:var(--gold)}
 .stat-h{font-size:11px;color:var(--muted);margin-top:5px}
@@ -143,7 +132,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13
 
 /* ══ SECTION HEAD ══ */
 .sh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
-.sh-title{font-family:var(--ff-h);font-size:26px;font-weight:800;color:var(--text);letter-spacing:-0.5px}
+.sh-title{font-family:var(--ff-h);font-size:26px;font-weight:700;color:var(--muted2);letter-spacing:-0.3px}
 .sh-sub{font-size:12px;color:var(--muted);margin-top:3px}
 
 /* ══ LOW BANNER ══ */
@@ -191,7 +180,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13
 }
 
 .fab-center{}
-.fab-name{font-family:var(--ff-h);font-size:16px;font-weight:700;color:var(--text);margin-bottom:5px;letter-spacing:-0.2px}
+.fab-name{font-family:var(--ff-h);font-size:15px;font-weight:600;color:var(--text);margin-bottom:5px;letter-spacing:-0.1px}
 .fab-tags{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .fab-tag{
   font-size:10px;font-weight:600;padding:3px 9px;
@@ -209,7 +198,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13
 .fab-right{display:flex;align-items:center;gap:14px;flex-shrink:0}
 
 .fab-meter{text-align:right;min-width:80px}
-.fab-meter-n{font-family:var(--ff-h);font-size:30px;font-weight:800;color:var(--text);line-height:1;letter-spacing:-1px}
+.fab-meter-n{font-family:var(--ff-h);font-size:26px;font-weight:700;color:var(--text);line-height:1;letter-spacing:-0.5px}
 .fab-meter-l{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:1px}
 
 .fab-price{text-align:right;min-width:70px}
@@ -362,7 +351,7 @@ select option{background:var(--s2)}
 .login-bg-text{
   position:absolute;top:50%;left:50%;
   transform:translate(-50%,-50%);
-  font-family:var(--ff-h);font-size:min(22vw,260px);font-weight:800;
+  font-family:var(--ff-h);font-size:min(22vw,260px);font-weight:700;
   color:rgba(212,160,23,0.04);white-space:nowrap;letter-spacing:-4px;
   user-select:none;pointer-events:none;
 }
@@ -821,7 +810,11 @@ select option{background:var(--s2)}
 
 <div id="toast"></div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
+window.addEventListener('load', function() {
 // ══ CONFIG ══
 const EJS_SVC='service_j84y5ge',EJS_TPL='template_8pvu8qc',EJS_KEY='Ux_cTro8ToCSm2LUY';
 emailjs.init(EJS_KEY);
@@ -843,16 +836,71 @@ const ICONS={Georgette:'🟥',Chiffon:'🔵',Silk:'✨',Cotton:'🤍',Velvet:'�
 const COLORS={Georgette:'rgba(214,64,48,0.08)',Chiffon:'rgba(66,133,244,0.08)',Silk:'rgba(212,160,23,0.1)',Cotton:'rgba(255,255,255,0.04)',Velvet:'rgba(120,80,200,0.08)',Satin:'rgba(200,80,160,0.08)',Net:'rgba(26,122,60,0.08)',Rayon:'rgba(160,100,50,0.08)',Linen:'rgba(212,160,23,0.06)',Other:'rgba(212,160,23,0.05)'};
 
 // ══ AUTH ══
-function signInGoogle(){
-  const p=new firebase.auth.GoogleAuthProvider();
-  p.setCustomParameters({prompt:'select_account'});
-  auth.signInWithPopup(p).catch(async e=>{
-    if(e.code==='auth/popup-blocked'||e.code==='auth/popup-cancelled-by-user'){
-      try{await auth.signInWithRedirect(p)}catch(e2){toast('Login error: '+e2.message)}
-    } else toast('Login error: '+e.message);
-  });
+function setLoginLoading(on) {
+  const btn = document.getElementById('login-btn');
+  const txt = document.getElementById('login-btn-text');
+  if (!btn) return;
+  btn.disabled = on;
+  btn.style.opacity = on ? '0.7' : '1';
+  if (txt) txt.textContent = on ? 'Signing in...' : 'Continue with Google';
 }
-auth.getRedirectResult().then(r=>{}).catch(e=>{if(e.code&&e.code!=='auth/no-current-user'&&e.code!=='auth/null-user')console.log('Redirect:',e.code)});
+
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function hideLoginError() {
+  const el = document.getElementById('login-error');
+  if (el) el.style.display = 'none';
+}
+
+function signInGoogle(){
+  hideLoginError();
+  setLoginLoading(true);
+  const p = new firebase.auth.GoogleAuthProvider();
+  p.setCustomParameters({prompt:'select_account'});
+  auth.signInWithPopup(p)
+    .then(() => { setLoginLoading(false); })
+    .catch(async e => {
+      console.log('Popup error:', e.code, e.message);
+      if (e.code === 'auth/popup-blocked' || e.code === 'auth/popup-cancelled-by-user') {
+        // Fallback to redirect
+        try {
+          await auth.signInWithRedirect(p);
+        } catch(e2) {
+          setLoginLoading(false);
+          showLoginError('Login failed: ' + e2.message);
+        }
+      } else if (e.code === 'auth/unauthorized-domain') {
+        setLoginLoading(false);
+        showLoginError('Domain not authorized. Please add this domain in Firebase Console → Authentication → Settings → Authorized Domains: ' + window.location.hostname);
+      } else if (e.code === 'auth/cancelled-popup-request') {
+        setLoginLoading(false);
+      } else {
+        setLoginLoading(false);
+        showLoginError('Login error (' + e.code + '): ' + e.message);
+      }
+    });
+}
+
+// Handle redirect result on page load
+auth.getRedirectResult()
+  .then(result => {
+    if (result && result.user) {
+      // Handled by onAuthStateChanged
+      setLoginLoading(false);
+    }
+  })
+  .catch(e => {
+    if (e.code === 'auth/unauthorized-domain') {
+      showLoginError('Domain not authorized in Firebase. Add ' + window.location.hostname + ' to Firebase Console → Authentication → Authorized Domains.');
+    } else if (e.code && e.code !== 'auth/no-current-user' && e.code !== 'auth/null-user') {
+      console.log('Redirect result error:', e.code);
+    }
+  });
 
 auth.onAuthStateChanged(async u=>{
   if(u){
@@ -1057,7 +1105,7 @@ function renderReport(){
 const OB_STEPS=[
   {title:'Welcome to StockSaathi! 🎉',sub:'Your stock manager ready in 2 minutes',feats:[['📦','Track Your Stock','Meter-by-meter hisaab of every fabric'],['💰','Record Sale','Save customer name & amount'],['⚠️','Automatic Alert','Auto email alert jab stock kam ho'],['📊','Monthly Report','Full month ka hisaab — ek jagah']]},
   {title:'How to Add Your First Fabric?',sub:"Top right mein '+ Add Fabric' button dabao",feats:[['1️⃣','+ Add Fabric Button','Top right mein orange button — click karo'],['2️⃣','Name & Category','Fill fabric name, type & color'],['3️⃣','Meters & Rate','Enter how many meters & rate ₹/m'],['4️⃣','Set Low Alert','Email aayega jab stock itne se kam ho']]},
-  {title:'All Set! Let's Begin 🚀',sub:'Your StockSaathi is ready to use',feats:[['📥','Stock Add Button','Directly add stock on each fabric card'],['↗','Sell Button','Quick sell — fast aur easy'],['🧮','Calculator','Profit, GST — sab jaldi nikalo'],['💡','Let's Start!','Add pehla fabric aur hisaab shuru karo']]}
+  {title:'All Set! Lets Begin 🚀',sub:'Your StockSaathi is ready to use',feats:[['📥','Stock Add Button','Directly add stock on each fabric card'],['↗','Sell Button','Quick sell — fast aur easy'],['🧮','Calculator','Profit, GST — sab jaldi nikalo'],['💡','Lets Start!','Add pehla fabric aur hisaab shuru karo']]}
 ];
 let obStep=1;
 
@@ -1068,7 +1116,7 @@ function renderOB(){
   document.getElementById('ob-sub').textContent=s.sub;
   document.getElementById('ob-body').innerHTML='<div class="ob-feats">'+s.feats.map(([ic,t,d])=>`<div class="ob-feat"><div class="ob-feat-ic">${ic}</div><div><div class="ob-feat-t">${t}</div><div class="ob-feat-s">${d}</div></div></div>`).join('')+'</div>';
   document.getElementById('ob-ctr').textContent='Step '+obStep+' / 3';
-  document.getElementById('ob-btn').textContent=obStep===3?'✓ Let's Start!':'Aage →';
+  document.getElementById('ob-btn').textContent=obStep===3?'✓ Lets Start!':'Aage →';
   [1,2,3].forEach(i=>{const el=document.getElementById('ob-s'+i);el.className='ob-step'+(i<obStep?' done':i===obStep?' act':'')});
 }
 function obNext(){if(obStep<3){obStep++;renderOB()}else{closeOB();setTimeout(()=>openModal(),400)}}
@@ -1082,6 +1130,7 @@ function filterCatMobile(val) {
 // ══ UTILS ══
 function esc(t=''){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>{t.style.display='none'},3500)}
+}); // end window.load
 </script>
 </body>
 </html>
