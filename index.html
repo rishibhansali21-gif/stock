@@ -303,6 +303,29 @@ select option{background:var(--white)}
 
 
 
+
+/* ══ ONBOARDING ══ */
+#onboarding{position:fixed;inset:0;background:rgba(45,36,22,0.6);z-index:800;display:none;align-items:center;justify-content:center}
+#onboarding.on{display:flex;animation:fadeIn 0.3s ease}
+.ob-card{background:var(--white);border-radius:24px;width:520px;max-width:95vw;max-height:90vh;overflow:hidden;box-shadow:0 40px 80px rgba(45,36,22,0.25)}
+.ob-top{background:linear-gradient(135deg,#2d2416,#4a3820);padding:32px 36px 28px}
+.ob-step-row{display:flex;gap:8px;margin-bottom:20px}
+.ob-step{height:4px;flex:1;background:rgba(255,255,255,0.2);border-radius:2px;transition:background 0.3s}
+.ob-step.done{background:var(--gold2)}
+.ob-step.active{background:var(--gold-btn)}
+.ob-title{font-family:var(--ff-h);font-size:22px;font-weight:800;color:#faf7f0;margin-bottom:6px}
+.ob-sub{font-size:13px;color:#b8a888;line-height:1.6}
+.ob-body{padding:28px 36px}
+.ob-emoji{font-size:48px;margin-bottom:16px;text-align:center}
+.ob-features{display:flex;flex-direction:column;gap:12px;margin-bottom:8px}
+.ob-feat{display:flex;align-items:flex-start;gap:12px;padding:14px;background:var(--bg);border:2px solid var(--border);border-radius:12px}
+.ob-feat-ic{font-size:22px;flex-shrink:0}
+.ob-feat-t{font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px}
+.ob-feat-s{font-size:12px;color:var(--muted)}
+.ob-foot{padding:0 36px 28px;display:flex;justify-content:space-between;align-items:center}
+.ob-counter{font-size:12px;color:var(--muted)}
+.ob-btns{display:flex;gap:10px}
+
 /* ══ TOAST ══ */
 #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#2d2416;color:#faf7f0;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;display:none;z-index:999;box-shadow:0 8px 24px rgba(45,36,22,0.3);white-space:nowrap;animation:toastIn 0.2s ease}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
@@ -625,6 +648,37 @@ select option{background:var(--white)}
   </div>
 </div>
 
+<!-- ONBOARDING -->
+<div id="onboarding">
+  <div class="ob-card">
+    <div class="ob-top">
+      <div class="ob-step-row">
+        <div class="ob-step active" id="ob-s1"></div>
+        <div class="ob-step" id="ob-s2"></div>
+        <div class="ob-step" id="ob-s3"></div>
+      </div>
+      <div class="ob-title" id="ob-title">StockSaathi mein Aapka Swagat Hai! 🎉</div>
+      <div class="ob-sub" id="ob-sub">2 minute mein apna stock manager ready ho jayega</div>
+    </div>
+    <div class="ob-body" id="ob-body">
+      <div class="ob-features">
+        <div class="ob-feat"><div class="ob-feat-ic">📦</div><div><div class="ob-feat-t">Stock Track Karo</div><div class="ob-feat-s">Har kapde ka meter by meter hisaab</div></div></div>
+        <div class="ob-feat"><div class="ob-feat-ic">💰</div><div><div class="ob-feat-t">Bikri Record Karo</div><div class="ob-feat-s">Customer ka naam aur raqam save karo</div></div></div>
+        <div class="ob-feat"><div class="ob-feat-ic">⚠️</div><div><div class="ob-feat-t">Automatic Alert</div><div class="ob-feat-s">Jab stock kam ho, email alert aayega</div></div></div>
+        <div class="ob-feat"><div class="ob-feat-ic">📊</div><div><div class="ob-feat-t">Monthly Report</div><div class="ob-feat-s">Poore mahine ka hisaab ek jagah</div></div></div>
+      </div>
+    </div>
+    <div class="ob-foot">
+      <div class="ob-counter" id="ob-counter">Step 1 / 3</div>
+      <div class="ob-btns">
+        <button class="btn btn-ghost" id="ob-skip" onclick="skipOnboarding()">Baad Mein</button>
+        <button class="btn btn-gold" id="ob-next" onclick="obNext()">Aage Chalo →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-wrap">
@@ -693,11 +747,28 @@ const fabColors={'Georgette':'#fdecea','Chiffon':'#e8f0fe','Silk':'#fef9e0','Cot
 // ══ AUTH ══
 function signInGoogle(){
   const p=new firebase.auth.GoogleAuthProvider();
-  const mob=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  if(mob){auth.signInWithRedirect(p).catch(e=>toast('Login error: '+e.message))}
-  else{auth.signInWithPopup(p).catch(e=>toast('Login error: '+e.message))}
+  p.setCustomParameters({prompt:'select_account'});
+  auth.signInWithPopup(p).catch(async e=>{
+    // Popup blocked on mobile — fallback to redirect
+    if(e.code==='auth/popup-blocked'||e.code==='auth/popup-cancelled-by-user'){
+      try{ await auth.signInWithRedirect(p) }
+      catch(e2){ toast('Login error: '+e2.message) }
+    } else {
+      toast('Login error: '+e.message);
+    }
+  });
 }
-auth.getRedirectResult().catch(e=>{if(e.code!=='auth/no-current-user')toast('Error: '+e.message)});
+
+// Handle redirect result (runs on page load after redirect)
+auth.getRedirectResult().then(result=>{
+  if(result && result.user){
+    // Redirect login succeeded — auth state change will handle the rest
+  }
+}).catch(e=>{
+  if(e.code && e.code!=='auth/no-current-user' && e.code!=='auth/null-user'){
+    console.log('Redirect result error:',e.code);
+  }
+});
 auth.onAuthStateChanged(async u=>{
   if(u){
     user=u;
@@ -718,9 +789,19 @@ async function loadCloud(){
   if(!user)return;
   try{
     const doc=await db.collection('users').doc(user.uid).get();
-    if(doc.exists){const d=doc.data();inv=d.inv||[];sales=d.sales||[]}
-    else{inv=SAMPLE.map(f=>({...f,addedAt:new Date().toISOString()}));sales=[];await saveCloud()}
-  }catch(e){inv=SAMPLE.map(f=>({...f,addedAt:new Date().toISOString()}))}
+    if(doc.exists){
+      const d=doc.data();
+      inv=d.inv||[];
+      sales=d.sales||[];
+    } else {
+      // New user — start fresh, show onboarding
+      inv=[];sales=[];
+      await saveCloud();
+      setTimeout(()=>showOnboarding(),600);
+    }
+  }catch(e){
+    inv=[];sales=[];
+  }
 }
 function save(){saveCloud()}
 
@@ -808,7 +889,12 @@ function fabCardHTML(f){
 
 function renderDash(){
   const el=document.getElementById('dash-grid');
-  if(!inv.length){el.innerHTML='<div class="empty"><div class="empty-ic">🧵</div><div class="empty-t">Koi Kapda Nahi</div><div class="empty-s">+ Naya Kapda pe click karo</div></div>';return}
+  if(!inv.length){el.innerHTML=`<div class="empty" style="padding:50px 20px">
+    <div class="empty-ic">🧵</div>
+    <div class="empty-t">Abhi Koi Kapda Nahi Hai</div>
+    <div class="empty-s" style="margin-bottom:20px">Apna pehla kapda add karke shuru karo!</div>
+    <button class="btn btn-gold" onclick="openModal()" style="margin:0 auto">+ Pehla Kapda Add Karo</button>
+  </div>`;return}
   el.innerHTML=inv.slice(0,7).map(fabCardHTML).join('');
 }
 
@@ -1011,6 +1097,80 @@ function renderReport(){
 }
 
 
+
+
+// ══ ONBOARDING ══
+let obStep = 1;
+
+const obSteps = [
+  {
+    title: "StockSaathi mein Aapka Swagat Hai! 🎉",
+    sub: "2 minute mein apna stock manager ready ho jayega",
+    body: `<div class="ob-features">
+      <div class="ob-feat"><div class="ob-feat-ic">📦</div><div><div class="ob-feat-t">Stock Track Karo</div><div class="ob-feat-s">Har kapde ka meter by meter hisaab</div></div></div>
+      <div class="ob-feat"><div class="ob-feat-ic">💰</div><div><div class="ob-feat-t">Bikri Record Karo</div><div class="ob-feat-s">Customer ka naam aur raqam save karo</div></div></div>
+      <div class="ob-feat"><div class="ob-feat-ic">⚠️</div><div><div class="ob-feat-t">Automatic Alert</div><div class="ob-feat-s">Jab stock kam ho, email alert aayega</div></div></div>
+      <div class="ob-feat"><div class="ob-feat-ic">📊</div><div><div class="ob-feat-t">Monthly Report</div><div class="ob-feat-s">Poore mahine ka hisaab ek jagah</div></div></div>
+    </div>`
+  },
+  {
+    title: "Pehla Kapda Kaise Add Karein? 🧵",
+    sub: "Top right mein '+ Naya Kapda' button dabao",
+    body: `<div class="ob-features">
+      <div class="ob-feat"><div class="ob-feat-ic">1️⃣</div><div><div class="ob-feat-t">+ Naya Kapda Button</div><div class="ob-feat-s">Top right pe orange button hai — usse click karo</div></div></div>
+      <div class="ob-feat"><div class="ob-feat-ic">2️⃣</div><div><div class="ob-feat-t">Naam aur Type Bharo</div><div class="ob-feat-s">Kapde ka naam, type (Georgette/Silk etc.) aur rang</div></div></div>
+      <div class="ob-feat"><div class="ob-feat-ic">3️⃣</div><div><div class="ob-feat-t">Meter aur Daam</div><div class="ob-feat-s">Kitna meter hai aur rate kya hai ₹/meter</div></div></div>
+      <div class="ob-feat"><div class="ob-feat-ic">4️⃣</div><div><div class="ob-feat-t">Alert Set Karo</div><div class="ob-feat-s">Jab itne meter se kam ho, email aayega</div></div></div>
+    </div>`
+  },
+  {
+    title: "Sab Ready Hai! Shuru Karein 🚀",
+    sub: "Aapka StockSaathi bilkul tayyar hai",
+    body: `<div class="ob-features">
+      <div class="ob-feat"><div class="ob-feat-ic">📥</div><div><div class="ob-feat-t">Stock Add Button</div><div class="ob-feat-s">Har kapde pe 'Stock Add' se naya maal add karo</div></div></div>
+      <div class="ob-feat"><div class="ob-feat-ic">💰</div><div><div class="ob-feat-t">Becho Button</div><div class="ob-feat-s">Sidha card se quick sell karo — fast aur easy</div></div></div>
+      <div class="ob-feat"><div class="ob-feat-ic">🧮</div><div><div class="ob-feat-t">Calculator</div><div class="ob-feat-s">Munafa, GST, fabric cost — sab jaldi nikalo</div></div></div>
+      <div class="ob-feat"><div class="ob-feat-ic">💡</div><div><div class="ob-feat-t">Ab Shuru Karein!</div><div class="ob-feat-s">Pehla kapda add karo aur hisaab shuru karo</div></div></div>
+    </div>`
+  }
+];
+
+function showOnboarding() {
+  obStep = 1;
+  updateObStep();
+  document.getElementById('onboarding').classList.add('on');
+}
+
+function updateObStep() {
+  const s = obSteps[obStep-1];
+  document.getElementById('ob-title').textContent = s.title;
+  document.getElementById('ob-sub').textContent = s.sub;
+  document.getElementById('ob-body').innerHTML = s.body;
+  document.getElementById('ob-counter').textContent = 'Step ' + obStep + ' / 3';
+  document.getElementById('ob-next').textContent = obStep === 3 ? '✅ Shuru Karein!' : 'Aage Chalo →';
+  // Update step indicators
+  [1,2,3].forEach(i => {
+    const el = document.getElementById('ob-s'+i);
+    el.className = 'ob-step' + (i < obStep ? ' done' : i === obStep ? ' active' : '');
+  });
+}
+
+function obNext() {
+  if (obStep < 3) {
+    obStep++;
+    updateObStep();
+  } else {
+    closeOnboarding();
+    // Open add fabric modal to guide first action
+    setTimeout(() => openModal(), 400);
+  }
+}
+
+function skipOnboarding() { closeOnboarding(); }
+
+function closeOnboarding() {
+  document.getElementById('onboarding').classList.remove('on');
+}
 
 // ══ UTILS ══
 function esc(t=''){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
