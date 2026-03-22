@@ -35,7 +35,7 @@
   --ff-b:'Plus Jakarta Sans',sans-serif;
 }
 
-html,body{height:100%;overflow:hidden}
+html,body{height:100%;overflow:hidden;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13px;display:flex}
 
 /* ══ SIDEBAR ══ */
@@ -104,8 +104,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13
 100%{transform:translateX(-50%)}}
 
 /* ══ PAGES ══ */
-.page{display:none;flex:1;flex-direction:column;overflow:hidden}
-.page.on{display:flex}
+.page{display:none !important;flex:1;flex-direction:column;overflow:hidden}
+.page.on{display:flex !important}
 
 /* ══ STATS ══ */
 .stats{
@@ -462,8 +462,8 @@ select option{background:var(--s2)}
   .ticker{height:30px}
   .ticker-item{font-size:11px;padding:0 20px}
   .main{height:auto;overflow:visible}
-  .page{overflow:visible;height:auto}
-  .page.on{display:flex;flex-direction:column}
+  .page{overflow:visible !important;height:auto}
+  .page.on{display:flex !important;flex-direction:column}
   .topbar{padding:0 14px;height:50px}
   .tb-title{font-size:15px}
   .tb-sub{display:none}
@@ -529,7 +529,6 @@ select option{background:var(--s2)}
     <div class="tb-right">
       <button class="add-btn" onclick="openModal()">+ Add Fabric</button>
     </div>
-  </div>
   </div>
 
   <!-- ══ DASHBOARD ══ -->
@@ -694,6 +693,8 @@ select option{background:var(--s2)}
   </div>
 
 </div>
+
+</div><!-- /main -->
 
 <!-- ADD STOCK MODAL -->
 <div class="qm-bg" id="as-bg">
