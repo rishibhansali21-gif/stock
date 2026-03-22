@@ -726,521 +726,573 @@ select option{background:var(--white)}
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
-window.addEventListener('load', function() {
 // ══ CONFIG ══
 const EJS_SVC='service_j84y5ge',EJS_TPL='template_8pvu8qc',EJS_KEY='Ux_cTro8ToCSm2LUY';
-emailjs.init(EJS_KEY);
 
-// ══ FIREBASE ══
-firebase.initializeApp({
-  apiKey:'AIzaSyB5oBVuaur5Yl_gxfde9NFYtanLZdr6Qjs',
-  authDomain:'stock-98c39.firebaseapp.com',
-  projectId:'stock-98c39',
-  storageBucket:'stock-98c39.firebasestorage.app',
-  messagingSenderId:'728990720851',
-  appId:'1:728990720851:web:eada0eac44cef8424cb7a6'
-});
-const auth=firebase.auth(),db=firebase.firestore();
-let user=null;
-
-// ══ SAMPLE DATA ══
-const SAMPLE=[
+// ══ STATE ══
+var auth, db, user=null, inv=[], sales=[], asFabId=null, qsFabId=null, selCat='';
+var SAMPLE=[
   {id:1,name:'Lal Banarasi Georgette',type:'Georgette',color:'Lal (Red)',meters:320,threshold:60,rate:185,supplier:'Rajan Textiles'},
   {id:2,name:'Neela Chiffon',type:'Chiffon',color:'Neela (Blue)',meters:45,threshold:80,rate:110,supplier:'Mehta Fabrics'},
   {id:3,name:'Sona Katan Silk',type:'Silk',color:'Sona (Gold)',meters:280,threshold:40,rate:480,supplier:'Surat Silk House'},
   {id:4,name:'Safed Pure Cotton',type:'Cotton',color:'Safed (White)',meters:18,threshold:50,rate:65,supplier:'Gujarat Cotton Co.'},
   {id:5,name:'Kaala Velvet Premium',type:'Velvet',color:'Kaala (Black)',meters:195,threshold:30,rate:320,supplier:'Royal Fabrics'},
   {id:6,name:'Gulabi Satin',type:'Satin',color:'Gulabi (Pink)',meters:140,threshold:35,rate:145,supplier:'Shree Textiles'},
-  {id:7,name:'Dulhan Net Embroidered',type:'Net',color:'Off White',meters:95,threshold:25,rate:260,supplier:'Bridal House Surat'},
+  {id:7,name:'Dulhan Net',type:'Net',color:'Off White',meters:95,threshold:25,rate:260,supplier:'Bridal House Surat'},
 ];
 
-// ══ STATE ══
-let inv=[],sales=[],selCat='',qsFabId=null,asFabId=null;
+var ICONS={Georgette:'🟥',Chiffon:'🔵',Silk:'✨',Cotton:'🤍',Velvet:'🖤',Satin:'💗',Net:'🕸️',Rayon:'🟤',Linen:'🟡',Other:'🧵'};
+var COLORS={Georgette:'#fdecea',Chiffon:'#e8f0fe',Silk:'#fef9e0',Cotton:'#f8f8f8',Velvet:'#f0e8f8',Satin:'#fde8f0',Net:'#e8f5f0',Rayon:'#fdecd8',Linen:'#fdf8e8',Other:'#f5efe0'};
 
-// ══ FABRIC ICONS ══
-const fabIcons={'Georgette':'🟥','Chiffon':'🔵','Silk':'✨','Cotton':'🤍','Velvet':'🖤','Satin':'💗','Net':'🕸️','Rayon':'🟤','Linen':'🟨','Other':'🧵'};
-const fabColors={'Georgette':'#fdecea','Chiffon':'#e8f0fe','Silk':'#fef9e0','Cotton':'#f8f8f8','Velvet':'#f0e8f8','Satin':'#fde8f0','Net':'#e8f5f0','Rayon':'#fdecd8','Linen':'#fdf8e8','Other':'#f5efe0'};
+// ══ INIT ══
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    emailjs.init(EJS_KEY);
+    firebase.initializeApp({
+      apiKey:'AIzaSyB5oBVuaur5Yl_gxfde9NFYtanLZdr6Qjs',
+      authDomain:'stock-98c39.firebaseapp.com',
+      projectId:'stock-98c39',
+      storageBucket:'stock-98c39.firebasestorage.app',
+      messagingSenderId:'728990720851',
+      appId:'1:728990720851:web:eada0eac44cef8424cb7a6'
+    });
+    auth = firebase.auth();
+    db   = firebase.firestore();
+
+    auth.getRedirectResult()
+      .then(function(r){})
+      .catch(function(e){
+        if(e.code==='auth/unauthorized-domain'){
+          showLoginErr('Domain not authorized. Add "'+window.location.hostname+'" in Firebase Console → Authentication → Settings → Authorized Domains.');
+        }
+      });
+
+    auth.onAuthStateChanged(async function(u) {
+      if(u) {
+        user = u;
+        document.getElementById('login-screen').style.display='none';
+        document.getElementById('sb-foot').innerHTML =
+          '<strong>'+u.displayName+'</strong><br>'+
+          '<span style="cursor:pointer;color:var(--red)" onclick="signOut()">Sign Out</span>';
+        await loadCloud();
+        updateStats();
+        renderDash();
+      } else {
+        user = null;
+        document.getElementById('login-screen').style.display='flex';
+      }
+    });
+  } catch(e) {
+    console.error('Init error:', e);
+    alert('App init error: ' + e.message);
+  }
+});
 
 // ══ AUTH ══
-function signInGoogle(){
-  const btn=document.getElementById('login-btn');
-  if(btn){btn.disabled=true;btn.innerHTML='<span style="opacity:0.7">Signing in...</span>';}
+function signInGoogle() {
+  var btn = document.getElementById('login-btn');
+  if(btn) { btn.disabled=true; btn.textContent='Signing in...'; }
   hideLoginErr();
-  const p=new firebase.auth.GoogleAuthProvider();
+  var p = new firebase.auth.GoogleAuthProvider();
   p.setCustomParameters({prompt:'select_account'});
   auth.signInWithPopup(p)
-    .catch(async function(e){
-      console.log('Login error:',e.code,e.message);
-      if(btn){btn.disabled=false;btn.innerHTML=googleBtnHTML();}
-      if(e.code==='auth/popup-blocked'||e.code==='auth/popup-cancelled-by-user'){
-        try{await auth.signInWithRedirect(p);}
-        catch(e2){showLoginErr('Login failed: '+e2.message);}
-      } else if(e.code==='auth/unauthorized-domain'){
-        showLoginErr('Domain not authorized in Firebase. Please add "'+window.location.hostname+'" in Firebase Console → Authentication → Settings → Authorized Domains.');
-      } else if(e.code==='auth/cancelled-popup-request'){
-        // ignore
-      } else {
+    .then(function() {
+      if(btn) { btn.disabled=false; btn.textContent='Google se Login Karo'; }
+    })
+    .catch(function(e) {
+      if(btn) { btn.disabled=false; btn.textContent='Google se Login Karo'; }
+      console.log('Login error:', e.code, e.message);
+      if(e.code==='auth/popup-blocked'||e.code==='auth/popup-cancelled-by-user') {
+        auth.signInWithRedirect(p).catch(function(e2){ showLoginErr('Error: '+e2.message); });
+      } else if(e.code==='auth/unauthorized-domain') {
+        showLoginErr('Domain not authorized. Add "'+window.location.hostname+'" in Firebase Console → Authentication → Settings → Authorized Domains.');
+      } else if(e.code!=='auth/cancelled-popup-request') {
         showLoginErr('Login error: '+e.message);
       }
     });
 }
 
-function googleBtnHTML(){
-  return '<svg width="18" height="18" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Google se Login Karo';
-}
-
-function showLoginErr(msg){
-  let el=document.getElementById('login-err');
-  if(!el){el=document.createElement('div');el.id='login-err';el.style.cssText='margin-top:12px;padding:12px 16px;background:rgba(192,57,43,0.08);border:2px solid rgba(192,57,43,0.2);border-radius:10px;font-size:12px;color:#c0392b;line-height:1.6';document.getElementById('login-btn').after(el);}
-  el.textContent=msg;el.style.display='block';
-}
-
-function hideLoginErr(){
-  const el=document.getElementById('login-err');
-  if(el)el.style.display='none';
-}
-
-// Handle redirect result
-auth.getRedirectResult()
-  .then(function(r){ if(r&&r.user){ /* handled by onAuthStateChanged */ } })
-  .catch(function(e){
-    if(e.code==='auth/unauthorized-domain'){
-      showLoginErr('Domain not authorized. Add "'+window.location.hostname+'" in Firebase Console → Authentication → Authorized Domains.');
-    } else if(e.code&&e.code!=='auth/no-current-user'&&e.code!=='auth/null-user'){
-      console.log('Redirect result:',e.code);
-    }
-  });
-auth.onAuthStateChanged(async u=>{
-  if(u){
-    user=u;
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('sb-foot').innerHTML='<strong>'+u.displayName+'</strong><br><span style="cursor:pointer;color:var(--red)" onclick="signOut()">Sign Out</span>';
-    await loadCloud();
-    updateStats();renderDash();
-  } else {
-    user=null;
-    document.getElementById('login-screen').style.display='flex';
+function showLoginErr(msg) {
+  var el = document.getElementById('login-err');
+  if(!el) {
+    el = document.createElement('div');
+    el.id = 'login-err';
+    el.style.cssText = 'margin-top:10px;padding:10px 14px;background:rgba(192,57,43,0.08);border:1.5px solid rgba(192,57,43,0.25);border-radius:8px;font-size:12px;color:#c0392b;line-height:1.5';
+    var loginBtn = document.getElementById('login-btn');
+    if(loginBtn) loginBtn.after(el);
   }
-});
-function signOut(){if(confirm('Sign out karna hai?'))auth.signOut()}
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function hideLoginErr() {
+  var el = document.getElementById('login-err');
+  if(el) el.style.display = 'none';
+}
+
+function signOut() {
+  if(confirm('Sign out karna hai?')) auth.signOut();
+}
 
 // ══ CLOUD ══
-async function saveCloud(){if(!user)return;try{await db.collection('users').doc(user.uid).set({inv,sales})}catch(e){}}
-async function loadCloud(){
-  if(!user)return;
-  try{
-    const doc=await db.collection('users').doc(user.uid).get();
-    if(doc.exists){
-      const d=doc.data();
-      inv=d.inv||[];
-      sales=d.sales||[];
+function save() { saveCloud(); }
+
+async function saveCloud() {
+  if(!user) return;
+  try { await db.collection('users').doc(user.uid).set({inv:inv, sales:sales}); }
+  catch(e) { console.error('Save error:', e); }
+}
+
+async function loadCloud() {
+  if(!user) return;
+  try {
+    var doc = await db.collection('users').doc(user.uid).get();
+    if(doc.exists) {
+      var d = doc.data();
+      inv   = d.inv   || [];
+      sales = d.sales || [];
     } else {
-      // New user — start fresh, show onboarding
-      inv=[];sales=[];
+      inv = []; sales = [];
       await saveCloud();
-      setTimeout(()=>showOnboarding(),600);
+      setTimeout(function(){ showOnboarding(); }, 600);
     }
-  }catch(e){
-    inv=[];sales=[];
+  } catch(e) {
+    inv = []; sales = [];
   }
 }
-function save(){saveCloud()}
 
-// ══ NAV ══
-const pgMap={dash:['Dashboard',''],inv:['📦 Inventory','— Sabhi Kapde'],sales:['💰 Bikri','— Sale Record'],calc:['🧮 Calculator',''],report:['📊 Monthly Report','']};
-function goto(pg,el){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.sb-item').forEach(n=>n.classList.remove('active'));
+// ══ NAVIGATION ══
+var pgMap = {
+  dash:   ['Dashboard',''],
+  inv:    ['Inventory','— All Fabrics'],
+  sales:  ['Sales / Bikri','— Record & History'],
+  calc:   ['Calculator','— Quick Calculations'],
+  report: ['Monthly Report','']
+};
+
+function goto(pg, el) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
+  document.querySelectorAll('.sb-item').forEach(function(n){ n.classList.remove('active'); });
   document.getElementById('pg-'+pg).classList.add('on');
-  if(el)el.classList.add('active');
-  const[t,s]=pgMap[pg]||[pg,''];
-  document.getElementById('pg-title').textContent=t;
-  document.getElementById('pg-sub').textContent=s;
-  if(pg==='inv')renderInv();
-  if(pg==='sales'){fillSaleDrop();renderSales()}
-  if(pg==='report')renderReport();
-  if(pg==='dash')renderDash();
+  if(el) el.classList.add('active');
+  var ts = pgMap[pg] || [pg,''];
+  document.getElementById('pg-title').textContent = ts[0];
+  document.getElementById('pg-sub').textContent   = ts[1];
+  if(pg==='inv')    renderInv();
+  if(pg==='sales')  { fillSD(); renderSales(); }
+  if(pg==='report') renderReport();
+  if(pg==='dash')   renderDash();
 }
 
 // ══ STATS ══
-function updateStats(){
-  const tot=inv.reduce((a,f)=>a+f.meters,0);
-  const low=inv.filter(f=>f.meters<f.threshold).length;
-  const val=inv.reduce((a,f)=>a+f.meters*f.rate,0);
-  document.getElementById('st-c').textContent=inv.length;
-  document.getElementById('st-m').textContent=tot.toLocaleString('en-IN')+'m';
-  document.getElementById('st-l').textContent=low;
-  document.getElementById('st-v').textContent=fv(val);
-  const b=document.getElementById('low-badge');b.textContent=low;b.classList.toggle('on',low>0);
-  const ban=document.getElementById('low-banner');
-  if(low>0){
-    const n=inv.filter(f=>f.meters<f.threshold).map(f=>f.name).join(', ');
-    document.getElementById('low-banner-txt').textContent=n+' — abhi order karo!';
-    ban.style.display='block';
-  } else ban.style.display='none';
+function updateStats() {
+  var tot = inv.reduce(function(a,f){ return a+f.meters; }, 0);
+  var low = inv.filter(function(f){ return f.meters < f.threshold; }).length;
+  var val = inv.reduce(function(a,f){ return a+f.meters*f.rate; }, 0);
+  document.getElementById('st-c').textContent = inv.length;
+  document.getElementById('st-m').textContent = tot.toLocaleString('en-IN')+'m';
+  document.getElementById('st-l').textContent = low;
+  document.getElementById('st-v').textContent = fv(val);
+  var b = document.getElementById('low-badge');
+  b.textContent = low;
+  b.classList.toggle('on', low>0);
+  var ban = document.getElementById('low-banner');
+  if(low>0) {
+    document.getElementById('low-banner-txt').textContent =
+      inv.filter(function(f){ return f.meters<f.threshold; }).map(function(f){ return f.name; }).join(', ')+' — reorder karo!';
+    ban.style.display = 'block';
+  } else {
+    ban.style.display = 'none';
+  }
 }
 
-function fv(v){
-  if(v>=10000000)return '₹'+(v/10000000).toFixed(1)+'Cr';
-  if(v>=100000)return '₹'+(v/100000).toFixed(1)+'L';
+function fv(v) {
+  if(v>=10000000) return '₹'+(v/10000000).toFixed(1)+'Cr';
+  if(v>=100000)   return '₹'+(v/100000).toFixed(1)+'L';
   return '₹'+Math.round(v).toLocaleString('en-IN');
 }
 
-// ══ FABRIC CARD HTML ══
-function fabCardHTML(f){
-  const pct=Math.min(100,Math.round(f.meters/Math.max(f.threshold*3,1)*100));
-  const st=f.meters===0?'low':f.meters<f.threshold?'low':f.meters<f.threshold*1.5?'med':'ok';
-  const pill=st==='low'?'<span class="pill pill-r">⚠️ Kam Stock</span>':st==='med'?'<span class="pill pill-o">🔶 Thoda Kam</span>':'<span class="pill pill-g">✅ Theek Hai</span>';
-  const bc=st==='ok'?'var(--green2)':st==='med'?'var(--orange)':'var(--red)';
-  const ic=fabIcons[f.type]||'🧵';
-  const bg=fabColors[f.type]||'#f5efe0';
-  return `<div class="fab-card ${st}">
-    <div class="fab-left">
-      <div class="fab-icon" style="background:${bg}">${ic}</div>
-      <div class="fab-info">
-        <div class="fab-name">${esc(f.name)}</div>
-        <div class="fab-meta">
-          <span class="fab-tag">${f.type}</span>
-          <span class="fab-tag">${f.color}</span>
-          <span class="fab-tag">${esc(f.supplier)}</span>
-          ${pill}
-        </div>
-        <div class="fab-bar-wrap" style="margin-top:8px">
-          <div class="fab-bar"><div class="fab-bar-f" style="width:${pct}%;background:${bc}"></div></div>
-        </div>
-      </div>
-    </div>
-    <div class="fab-right">
-      <div class="fab-meter-box">
-        <div class="fab-meter-num">${f.meters.toLocaleString('en-IN')}</div>
-        <div class="fab-meter-lbl">Meter</div>
-      </div>
-      <div style="text-align:center">
-        <div style="font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--muted2)">₹${f.rate}/m</div>
-        <div style="font-size:12px;color:var(--muted)">${fv(f.meters*f.rate)}</div>
-      </div>
-      <div class="fab-actions">
-        <button class="fab-btn fab-btn-add" onclick="openAddStock(${f.id})">📥 Stock Add</button>
-        <button class="fab-btn fab-btn-sell" onclick="openQS(${f.id})">💰 Becho</button>
-        <button class="fab-btn fab-btn-del" onclick="delFab(${f.id})" title="Delete">🗑️</button>
-      </div>
-    </div>
-  </div>`;
+// ══ FABRIC CARD ══
+function fabCardHTML(f) {
+  var pct = Math.min(100, Math.round(f.meters/Math.max(f.threshold*3,1)*100));
+  var st  = (f.meters===0||f.meters<f.threshold)?'low':f.meters<f.threshold*1.5?'med':'ok';
+  var pill = st==='low'
+    ? '<span class="fab-tag low">⚠ Low Stock</span>'
+    : st==='med'
+      ? '<span class="fab-tag med">▼ Running Low</span>'
+      : '<span class="fab-tag ok">✓ OK</span>';
+  var bc = st==='ok'?'var(--green2)':st==='med'?'var(--orange)':'var(--red)';
+  var ic = ICONS[f.type]||'🧵';
+  var bg = COLORS[f.type]||'#f5efe0';
+  return '<div class="fab-card '+st+'">'
+    +'<div class="fab-left">'
+      +'<div class="fab-icon" style="background:'+bg+'">'+ic+'</div>'
+      +'<div class="fab-info">'
+        +'<div class="fab-name">'+esc(f.name)+'</div>'
+        +'<div class="fab-meta">'
+          +'<span class="fab-tag">'+f.type+'</span>'
+          +'<span class="fab-tag">'+f.color+'</span>'
+          +'<span class="fab-tag">'+esc(f.supplier)+'</span>'
+          +pill
+        +'</div>'
+        +'<div class="fab-bar-wrap" style="margin-top:8px">'
+          +'<div class="fab-bar"><div class="fab-bar-f" style="width:'+pct+'%;background:'+bc+'"></div></div>'
+        +'</div>'
+      +'</div>'
+    +'</div>'
+    +'<div class="fab-right">'
+      +'<div class="fab-meter-box">'
+        +'<div class="fab-meter-num">'+f.meters.toLocaleString('en-IN')+'</div>'
+        +'<div class="fab-meter-lbl">Meters</div>'
+      +'</div>'
+      +'<div style="text-align:center">'
+        +'<div style="font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--muted2)">₹'+f.rate+'/m</div>'
+        +'<div style="font-size:12px;color:var(--muted)">'+fv(f.meters*f.rate)+'</div>'
+      +'</div>'
+      +'<div class="fab-actions">'
+        +'<button class="fab-btn fab-btn-add" onclick="openAddStock('+f.id+')">📥 Add Stock</button>'
+        +'<button class="fab-btn fab-btn-sell" onclick="openQS('+f.id+')">💰 Sell</button>'
+        +'<button class="fab-btn fab-btn-del" onclick="delFab('+f.id+')" title="Delete">🗑️</button>'
+      +'</div>'
+    +'</div>'
+  +'</div>';
 }
 
-function renderDash(){
-  const el=document.getElementById('dash-grid');
-  if(!inv.length){el.innerHTML=`<div class="empty" style="padding:50px 20px">
-    <div class="empty-ic">🧵</div>
-    <div class="empty-t">Abhi Koi Kapda Nahi Hai</div>
-    <div class="empty-s" style="margin-bottom:20px">Apna pehla kapda add karke shuru karo!</div>
-    <button class="btn btn-gold" onclick="openModal()" style="margin:0 auto">+ Pehla Kapda Add Karo</button>
-  </div>`;return}
-  el.innerHTML=inv.slice(0,7).map(fabCardHTML).join('');
+function renderDash() {
+  var el = document.getElementById('dash-grid');
+  if(!inv.length) {
+    el.innerHTML = '<div class="empty">'
+      +'<div class="empty-ic">🧵</div>'
+      +'<div class="empty-t">Koi Fabric Nahi</div>'
+      +'<div class="empty-s">Apna pehla fabric add karo!</div>'
+      +'<button class="btn btn-gold" onclick="openModal()" style="margin:0 auto">+ Add First Fabric</button>'
+      +'</div>';
+    return;
+  }
+  el.innerHTML = inv.slice(0,7).map(fabCardHTML).join('');
 }
 
-let selCatV='';
-function filterCat(cat,el){
-  selCatV=cat;
-  document.querySelectorAll('.cat-p').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
+var selCatV = '';
+function filterCat(cat, el) {
+  selCatV = cat;
+  document.querySelectorAll('.cat-p').forEach(function(p){ p.classList.remove('active'); });
+  if(el) el.classList.add('active');
   renderInv();
 }
 
-function renderInv(){
-  const q=(document.getElementById('inv-q')?.value||'').toLowerCase();
-  const list=inv.filter(f=>(!selCatV||f.type===selCatV)&&(f.name.toLowerCase().includes(q)||f.type.toLowerCase().includes(q)||f.color.toLowerCase().includes(q)));
-  const el=document.getElementById('inv-grid');
-  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">Koi Kapda Nahi Mila</div></div>';return}
-  el.innerHTML=list.map(fabCardHTML).join('');
+function filterCatMobile(val) {
+  selCatV = val;
+  renderInv();
 }
 
-function delFab(id){
-  if(!confirm('Yeh kapda delete karna hai?'))return;
-  inv=inv.filter(f=>f.id!==id);
-  save();updateStats();renderDash();renderInv();
-  toast('Kapda delete ho gaya');
-}
-
-// ══ ADD STOCK QUICK MODAL ══
-function openAddStock(id){
-  asFabId=id;
-  const f=inv.find(f=>f.id===id);
-  if(!f)return;
-  document.getElementById('addstock-fab-name').textContent=f.name+' — Abhi: '+f.meters+'m available';
-  document.getElementById('as-m').value='';
-  document.getElementById('as-r').value='';
-  document.getElementById('as-s').value='';
-  document.getElementById('addstock-modal').classList.add('on');
-  document.getElementById('as-m').focus();
-}
-
-function closeAddStock(){document.getElementById('addstock-modal').classList.remove('on')}
-
-function saveAddStock(){
-  const m=parseFloat(document.getElementById('as-m').value);
-  if(!m||m<=0){toast('Meter daalo!');return}
-  const f=inv.find(f=>f.id===asFabId);
-  if(!f)return;
-  f.meters+=m;
-  const r=parseFloat(document.getElementById('as-r').value);
-  if(r>0)f.rate=r;
-  const s=document.getElementById('as-s').value.trim();
-  if(s)f.supplier=s;
-  save();updateStats();renderDash();renderInv();
-  closeAddStock();
-  toast('✅ '+m+'m '+f.name+' mein add ho gaya!');
-}
-
-// ══ QUICK SELL MODAL ══
-function openQS(id){
-  qsFabId=id;
-  const f=inv.find(f=>f.id===id);
-  if(!f)return;
-  document.getElementById('qs-fab-name').textContent=f.name+' — Abhi: '+f.meters+'m available';
-  document.getElementById('qs-m').value='';
-  document.getElementById('qs-r').value=f.rate||'';
-  document.getElementById('qs-c').value='';
-  document.getElementById('qs-amt').textContent='₹0';
-  document.getElementById('quicksell-modal').classList.add('on');
-  document.getElementById('qs-m').focus();
-}
-
-function closeQS(){document.getElementById('quicksell-modal').classList.remove('on')}
-
-function calcQSAmt(){
-  const m=parseFloat(document.getElementById('qs-m').value)||0;
-  const r=parseFloat(document.getElementById('qs-r').value)||0;
-  document.getElementById('qs-amt').textContent=fv(m*r);
-}
-
-function saveQS(){
-  const m=parseFloat(document.getElementById('qs-m').value);
-  const r=parseFloat(document.getElementById('qs-r').value);
-  const cust=document.getElementById('qs-c').value.trim()||'Walk-in';
-  const f=inv.find(f=>f.id===qsFabId);
-  if(!f){toast('Error!');return}
-  if(!m||m<=0){toast('Meter daalo!');return}
-  if(m>f.meters){toast('Sirf '+f.meters+'m available hai!');return}
-  const rate=r||f.rate;
-  f.meters-=m;
-  sales.unshift({id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate,total:m*rate,customer:cust,note:'',date:new Date().toISOString()});
-  save();updateStats();renderDash();renderInv();closeQS();
-  toast('✅ '+m+'m '+f.name+' becha — '+fv(m*rate));
-  if(f.meters<f.threshold){
-    setTimeout(()=>addAIMsg('⚠️ Alert: **'+f.name+'** ka stock kam ho gaya — sirf **'+f.meters+'m** bacha hai! Reorder karo.'),800);
-    emailjs.send(EJS_SVC,EJS_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold}).then(()=>toast('📧 Email alert bheja!')).catch(()=>{});
+function renderInv() {
+  var q = (document.getElementById('inv-q')||{value:''}).value.toLowerCase();
+  var list = inv.filter(function(f){
+    return (!selCatV||f.type===selCatV) &&
+      (f.name.toLowerCase().includes(q)||f.type.toLowerCase().includes(q)||f.color.toLowerCase().includes(q));
+  });
+  var el = document.getElementById('inv-grid');
+  if(!list.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">No results found</div></div>';
+    return;
   }
+  el.innerHTML = list.map(fabCardHTML).join('');
+}
+
+function delFab(id) {
+  if(!confirm('Delete this fabric?')) return;
+  inv = inv.filter(function(f){ return f.id!==id; });
+  save(); updateStats(); renderDash(); renderInv();
+  toast('Fabric deleted');
 }
 
 // ══ ADD FABRIC MODAL ══
-function openModal(){document.getElementById('add-modal').classList.add('on');document.getElementById('m-name').focus()}
-function closeModal(){
+function openModal() {
+  document.getElementById('add-modal').classList.add('on');
+  document.getElementById('m-name').focus();
+}
+function closeModal() {
   document.getElementById('add-modal').classList.remove('on');
-  ['m-name','m-color','m-m','m-t','m-r','m-s'].forEach(id=>document.getElementById(id).value='');
+  ['m-name','m-color','m-m','m-t','m-r','m-s'].forEach(function(id){ document.getElementById(id).value=''; });
 }
-function saveModal(){
-  const name=document.getElementById('m-name').value.trim();
-  const m=parseFloat(document.getElementById('m-m').value)||0;
-  if(!name){toast('Kapde ka naam daalo!');return}
-  const ex=inv.find(f=>f.name.toLowerCase()===name.toLowerCase());
-  if(ex){ex.meters+=m;toast('✅ '+m+'m '+name+' mein add ho gaya!')}
-  else{
-    inv.push({id:Date.now(),name,type:document.getElementById('m-type').value,color:document.getElementById('m-color').value.trim()||'—',meters:m,threshold:parseFloat(document.getElementById('m-t').value)||50,rate:parseFloat(document.getElementById('m-r').value)||0,supplier:document.getElementById('m-s').value.trim()||'—',addedAt:new Date().toISOString()});
-    toast('✅ '+name+' inventory mein aa gaya!');
+function saveModal() {
+  var name = document.getElementById('m-name').value.trim();
+  var m    = parseFloat(document.getElementById('m-m').value)||0;
+  if(!name) { toast('Fabric name required!'); return; }
+  var ex = inv.find(function(f){ return f.name.toLowerCase()===name.toLowerCase(); });
+  if(ex) {
+    ex.meters += m;
+    toast('✓ '+m+'m added to '+name);
+  } else {
+    inv.push({
+      id:        Date.now(),
+      name:      name,
+      type:      document.getElementById('m-type').value,
+      color:     document.getElementById('m-color').value.trim()||'—',
+      meters:    m,
+      threshold: parseFloat(document.getElementById('m-t').value)||50,
+      rate:      parseFloat(document.getElementById('m-r').value)||0,
+      supplier:  document.getElementById('m-s').value.trim()||'—',
+      addedAt:   new Date().toISOString()
+    });
+    toast('✓ '+name+' added!');
   }
-  save();updateStats();renderDash();renderInv();closeModal();
+  save(); updateStats(); renderDash(); renderInv(); closeModal();
 }
 
-// ══ SALES ══
-function fillSaleDrop(){
-  const sel=document.getElementById('s-fab');
-  sel.innerHTML=inv.length?inv.map(f=>`<option value="${f.id}" data-rate="${f.rate}">${esc(f.name)} (${f.meters}m)</option>`).join(''):'<option>Pehle stock daalo</option>';
-  if(inv.length){document.getElementById('s-r').value=inv[0].rate||'';calcAmt()}
+// ══ ADD STOCK QUICK MODAL ══
+function openAddStock(id) {
+  asFabId = id;
+  var f = inv.find(function(f){ return f.id===id; });
+  if(!f) return;
+  document.getElementById('addstock-fab-name').textContent = f.name+' — Current: '+f.meters+'m';
+  ['as-m','as-r','as-s'].forEach(function(i){ document.getElementById(i).value=''; });
+  document.getElementById('addstock-modal').classList.add('on');
+  document.getElementById('as-m').focus();
 }
-function onFabChange(){const opt=document.getElementById('s-fab').options[document.getElementById('s-fab').selectedIndex];document.getElementById('s-r').value=opt?.dataset?.rate||'';calcAmt()}
-function calcAmt(){const m=parseFloat(document.getElementById('s-m').value)||0,r=parseFloat(document.getElementById('s-r').value)||0;document.getElementById('s-amt').textContent=fv(m*r)}
+function closeAddStock() { document.getElementById('addstock-modal').classList.remove('on'); }
+function saveAddStock() {
+  var m = parseFloat(document.getElementById('as-m').value);
+  if(!m||m<=0) { toast('Enter meters!'); return; }
+  var f = inv.find(function(f){ return f.id===asFabId; });
+  if(!f) return;
+  f.meters += m;
+  var r = parseFloat(document.getElementById('as-r').value);
+  if(r>0) f.rate = r;
+  var s = document.getElementById('as-s').value.trim();
+  if(s) f.supplier = s;
+  save(); updateStats(); renderDash(); renderInv(); closeAddStock();
+  toast('✓ '+m+'m added to '+f.name+'!');
+}
 
-function recSale(){
-  const id=parseInt(document.getElementById('s-fab').value);
-  const m=parseFloat(document.getElementById('s-m').value);
-  const r=parseFloat(document.getElementById('s-r').value);
-  const cust=document.getElementById('s-c').value.trim()||'Walk-in';
-  const note=document.getElementById('s-n').value.trim();
-  const f=inv.find(f=>f.id===id);
-  if(!f){toast('Kapda chunno!');return}
-  if(!m||m<=0){toast('Meter daalo!');return}
-  if(m>f.meters){toast('Sirf '+f.meters+'m available hai!');return}
-  const rate=r||f.rate;
-  f.meters-=m;
-  sales.unshift({id:Date.now(),fabId:id,fabName:f.name,meters:m,rate,total:m*rate,customer:cust,note,date:new Date().toISOString()});
-  save();updateStats();renderSales();fillSaleDrop();
-  toast('✅ '+m+'m '+f.name+' becha — '+fv(m*rate));
-  ['s-m','s-c','s-n'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('s-amt').textContent='₹0';
-  if(f.meters<f.threshold){
-    setTimeout(()=>addAIMsg('⚠️ Alert: **'+f.name+'** stock kam ho gaya — sirf **'+f.meters+'m** bacha!'),800);
-    emailjs.send(EJS_SVC,EJS_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold}).then(()=>toast('📧 Email alert bheja!')).catch(()=>{});
+// ══ QUICK SELL MODAL ══
+function openQS(id) {
+  qsFabId = id;
+  var f = inv.find(function(f){ return f.id===id; });
+  if(!f) return;
+  document.getElementById('qs-fab-name').textContent = f.name+' — Available: '+f.meters+'m';
+  document.getElementById('qs-m').value = '';
+  document.getElementById('qs-r').value = f.rate||'';
+  document.getElementById('qs-c').value = '';
+  document.getElementById('qs-amt').textContent = '₹0';
+  document.getElementById('quicksell-modal').classList.add('on');
+  document.getElementById('qs-m').focus();
+}
+function closeQS() { document.getElementById('quicksell-modal').classList.remove('on'); }
+function calcQSAmt() {
+  var m = parseFloat(document.getElementById('qs-m').value)||0;
+  var r = parseFloat(document.getElementById('qs-r').value)||0;
+  document.getElementById('qs-amt').textContent = fv(m*r);
+}
+function saveQS() {
+  var m    = parseFloat(document.getElementById('qs-m').value);
+  var r    = parseFloat(document.getElementById('qs-r').value);
+  var cust = document.getElementById('qs-c').value.trim()||'Walk-in';
+  var f    = inv.find(function(f){ return f.id===qsFabId; });
+  if(!f)         { toast('Error!'); return; }
+  if(!m||m<=0)   { toast('Enter meters sold!'); return; }
+  if(m>f.meters) { toast('Only '+f.meters+'m available!'); return; }
+  var rate = r||f.rate;
+  f.meters -= m;
+  sales.unshift({id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,total:m*rate,customer:cust,note:'',date:new Date().toISOString()});
+  save(); updateStats(); renderDash(); renderInv(); closeQS();
+  toast('✓ '+m+'m '+f.name+' sold — '+fv(m*rate));
+  if(f.meters < f.threshold) {
+    emailjs.send(EJS_SVC, EJS_TPL, {fabric_name:f.name,meters:f.meters,threshold:f.threshold}).catch(function(){});
   }
 }
 
-function renderSales(){
-  const el=document.getElementById('sales-list');
-  if(!sales.length){el.innerHTML='<div class="empty"><div class="empty-ic">📋</div><div class="empty-t">Koi Bikri Nahi</div><div class="empty-s">Pehli bikri record karo</div></div>';return}
-  el.innerHTML=sales.map(s=>`
-    <div class="sale-card">
-      <div><div style="font-family:var(--ff-h);font-size:15px;font-weight:700">${esc(s.fabName)}</div><div style="font-size:12px;color:var(--muted)">${esc(s.customer)}</div></div>
-      <div style="font-size:14px;font-weight:600;color:var(--muted2)">${s.meters}m</div>
-      <div style="font-size:14px;font-weight:600;color:var(--muted2)">₹${s.rate}/m</div>
-      <div style="font-size:12px;color:var(--muted)">${new Date(s.date).toLocaleDateString('en-IN')}</div>
-      <div class="sale-amt">${fv(s.total)}</div>
-    </div>`).join('');
+// ══ SALES PAGE ══
+function fillSD() {
+  var sel = document.getElementById('s-fab');
+  sel.innerHTML = inv.length
+    ? inv.map(function(f){ return '<option value="'+f.id+'" data-rate="'+f.rate+'">'+esc(f.name)+' ('+f.meters+'m)</option>'; }).join('')
+    : '<option>Add stock first</option>';
+  if(inv.length) {
+    document.getElementById('s-r').value = inv[0].rate||'';
+    calcAmt();
+  }
+}
+function onFabChange() {
+  var opt = document.getElementById('s-fab').options[document.getElementById('s-fab').selectedIndex];
+  document.getElementById('s-r').value = (opt&&opt.dataset&&opt.dataset.rate)||'';
+  calcAmt();
+}
+function calcAmt() {
+  var m = parseFloat(document.getElementById('s-m').value)||0;
+  var r = parseFloat(document.getElementById('s-r').value)||0;
+  document.getElementById('s-amt').textContent = fv(m*r);
+}
+function recSale() {
+  var id   = parseInt(document.getElementById('s-fab').value);
+  var m    = parseFloat(document.getElementById('s-m').value);
+  var r    = parseFloat(document.getElementById('s-r').value);
+  var cust = document.getElementById('s-c').value.trim()||'Walk-in';
+  var note = document.getElementById('s-n').value.trim();
+  var f    = inv.find(function(f){ return f.id===id; });
+  if(!f)         { toast('Select a fabric!'); return; }
+  if(!m||m<=0)   { toast('Enter meters sold!'); return; }
+  if(m>f.meters) { toast('Only '+f.meters+'m available!'); return; }
+  var rate = r||f.rate;
+  f.meters -= m;
+  sales.unshift({id:Date.now(),fabId:id,fabName:f.name,meters:m,rate:rate,total:m*rate,customer:cust,note:note,date:new Date().toISOString()});
+  save(); updateStats(); renderSales(); fillSD();
+  toast('✓ '+m+'m '+f.name+' sold — '+fv(m*rate));
+  ['s-m','s-c','s-n'].forEach(function(i){ document.getElementById(i).value=''; });
+  document.getElementById('s-amt').textContent = '₹0';
+  if(f.meters < f.threshold) {
+    emailjs.send(EJS_SVC, EJS_TPL, {fabric_name:f.name,meters:f.meters,threshold:f.threshold}).catch(function(){});
+  }
+}
+function renderSales() {
+  var el = document.getElementById('sales-body');
+  if(!sales.length) {
+    el.innerHTML = '<div class="empty" style="padding:20px"><div class="empty-ic" style="font-size:28px">📋</div><div class="empty-t" style="font-size:15px">No Sales Yet</div></div>';
+    return;
+  }
+  el.innerHTML = sales.map(function(s){
+    return '<div class="sale-item">'
+      +'<div><div class="sale-name">'+esc(s.fabName)+'</div><div class="sale-meta">'+s.meters+'m · '+esc(s.customer)+' · '+new Date(s.date).toLocaleDateString('en-IN')+'</div></div>'
+      +'<div class="sale-amount">'+fv(s.total)+'</div>'
+      +'</div>';
+  }).join('');
 }
 
-// ══ CALCS ══
-function c1(){const v=(parseFloat(document.getElementById('c1m').value)||0)*(parseFloat(document.getElementById('c1r').value)||0);document.getElementById('c1-r').textContent=fv(v)}
-function c2(){
-  const b=parseFloat(document.getElementById('c2b').value)||0,s=parseFloat(document.getElementById('c2s').value)||0,m=parseFloat(document.getElementById('c2m').value)||0;
-  const pm=s-b,tot=pm*m;
-  const pe=document.getElementById('c2-pm'),te=document.getElementById('c2-r');
-  pe.textContent=(pm>=0?'+':'')+fv(pm);te.textContent=(tot>=0?'+':'')+fv(tot);
+// ══ CALCULATORS ══
+function c1() {
+  document.getElementById('c1-res').textContent = fv((parseFloat(document.getElementById('c1m').value)||0)*(parseFloat(document.getElementById('c1r').value)||0));
+}
+function c2() {
+  var b=parseFloat(document.getElementById('c2buy').value)||0;
+  var s=parseFloat(document.getElementById('c2sell').value)||0;
+  var m=parseFloat(document.getElementById('c2m').value)||0;
+  var pm=s-b, tot=pm*m;
+  var pe=document.getElementById('c2-pm'), te=document.getElementById('c2-res');
+  pe.textContent=(pm>=0?'+':'')+fv(pm);
+  te.textContent=(tot>=0?'+':'')+fv(tot);
   pe.style.color=te.style.color=pm>=0?'var(--green2)':'var(--red)';
 }
-function c3(){const p=parseFloat(document.getElementById('c3g').value)||5,a=parseFloat(document.getElementById('c3a').value)||0,g=a*p/100;document.getElementById('c3-g').textContent=fv(g);document.getElementById('c3-t').textContent=fv(a+g)}
+function c3() {
+  var p=parseFloat(document.getElementById('c3gst').value)||5;
+  var a=parseFloat(document.getElementById('c3amt').value)||0;
+  var g=a*p/100;
+  document.getElementById('c3-gst').textContent=fv(g);
+  document.getElementById('c3-total').textContent=fv(a+g);
+}
 
 // ══ REPORT ══
-function renderReport(){
-  const now=new Date();
-  document.getElementById('rpt-month').textContent=now.toLocaleString('en-IN',{month:'long',year:'numeric'});
-  const ms=sales.filter(s=>{const d=new Date(s.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()});
-  const sa=ms.reduce((a,s)=>a+s.total,0),sm=ms.reduce((a,s)=>a+s.meters,0);
-  const iv=inv.reduce((a,f)=>a+f.meters*f.rate,0),lc=inv.filter(f=>f.meters<f.threshold).length;
-  document.getElementById('rpt-stats').innerHTML=[
-    ['Bikri Ka Paisa',fv(sa),'gold'],['Becha Meter',sm+'m',''],
-    ['Stock Ki Kimat',fv(iv),''],['Kam Stock',lc,lc>0?'red':'']
-  ].map(([l,v,c])=>`<div class="stat" style="border-radius:12px;border:2px solid var(--border);background:var(--white)"><div class="stat-l">${l}</div><div class="stat-v ${c}">${v}</div></div>`).join('');
-  const mx=Math.max(...inv.map(f=>f.meters),1);
-  document.getElementById('rpt-stock').innerHTML=inv.length?inv.map(f=>`<div class="bar-row"><div class="bar-lbl" title="${esc(f.name)}">${esc(f.name)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(f.meters/mx*100)}%"></div></div><div class="bar-val">${f.meters}m</div></div>`).join(''):'<div style="color:var(--muted);font-size:13px">Koi data nahi</div>';
-  const sf={};ms.forEach(s=>{sf[s.fabName]=(sf[s.fabName]||0)+s.meters});
-  const mxs=Math.max(...Object.values(sf),1);
-  document.getElementById('rpt-sales').innerHTML=Object.keys(sf).length?Object.entries(sf).map(([n,m])=>`<div class="bar-row"><div class="bar-lbl">${esc(n)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(m/mxs*100)}%;background:var(--green2)"></div></div><div class="bar-val">${m}m</div></div>`).join(''):'<div style="color:var(--muted);font-size:13px">Is mahine koi bikri nahi</div>';
-  document.getElementById('rpt-body').innerHTML=inv.length?inv.map(f=>{
-    const sold=ms.filter(s=>s.fabId===f.id).reduce((a,s)=>a+s.meters,0);
-    return `<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 100px;padding:14px 20px;border-bottom:2px solid var(--border);align-items:center;transition:background 0.1s" onmouseover="this.style.background='#fdf9ef'" onmouseout="this.style.background=''">
-      <div><div style="font-family:var(--ff-h);font-weight:700;font-size:15px">${esc(f.name)}</div><div style="font-size:11px;color:var(--muted)">${f.type}</div></div>
-      <div style="font-size:14px;font-weight:600;color:var(--muted2)">${f.meters+sold}m</div>
-      <div style="font-size:14px;font-weight:600;color:var(--green2)">${sold}m</div>
-      <div style="font-family:var(--ff-h);font-size:18px;font-weight:700">${f.meters}m</div>
-      <div style="font-size:14px;font-weight:600;color:var(--gold)">${fv(f.meters*f.rate)}</div>
-      <div>${f.meters<f.threshold?'<span class="pill pill-r">⚠️ Kam</span>':'<span class="pill pill-g">✅ OK</span>'}</div>
-    </div>`;
-  }).join(''):'<div class="empty">Koi data nahi</div>';
+function renderReport() {
+  var now = new Date();
+  document.getElementById('report-month-label').textContent = now.toLocaleString('en-IN',{month:'long',year:'numeric'});
+  var ms = sales.filter(function(s){ var d=new Date(s.date); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear(); });
+  var sa=ms.reduce(function(a,s){ return a+s.total; },0);
+  var sm=ms.reduce(function(a,s){ return a+s.meters; },0);
+  var iv=inv.reduce(function(a,f){ return a+f.meters*f.rate; },0);
+  var lc=inv.filter(function(f){ return f.meters<f.threshold; }).length;
+  document.getElementById('report-stats').innerHTML=[
+    ['Sales Amount',fv(sa),'gold'],['Meters Sold',sm+'m',''],
+    ['Stock Value',fv(iv),''],['Low Stock',lc,lc>0?'danger':'']
+  ].map(function(x){ return '<div class="stat-box" style="border-radius:10px;border:1px solid var(--border);"><div class="stat-lbl">'+x[0]+'</div><div class="stat-num '+x[2]+'">'+x[1]+'</div></div>'; }).join('');
+  var mx=Math.max.apply(null,inv.map(function(f){ return f.meters; }).concat([1]));
+  document.getElementById('report-stock-chart').innerHTML = inv.length
+    ? inv.map(function(f){ return '<div class="chart-bar-row"><div class="chart-bar-label" title="'+esc(f.name)+'">'+esc(f.name)+'</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:'+Math.round(f.meters/mx*100)+'%"></div></div><div class="chart-bar-val">'+f.meters+'m</div></div>'; }).join('')
+    : '<div style="color:var(--muted);font-size:12px">No data</div>';
+  var sf={};
+  ms.forEach(function(s){ sf[s.fabName]=(sf[s.fabName]||0)+s.meters; });
+  var mxs=Math.max.apply(null,Object.values(sf).concat([1]));
+  document.getElementById('report-sales-chart').innerHTML = Object.keys(sf).length
+    ? Object.entries(sf).map(function(e){ return '<div class="chart-bar-row"><div class="chart-bar-label">'+esc(e[0])+'</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:'+Math.round(e[1]/mxs*100)+'%;background:var(--green2)"></div></div><div class="chart-bar-val">'+e[1]+'m</div></div>'; }).join('')
+    : '<div style="color:var(--muted);font-size:12px">No sales this month</div>';
+  document.getElementById('report-body').innerHTML = inv.length
+    ? inv.map(function(f){
+        var sold=ms.filter(function(s){ return s.fabId===f.id; }).reduce(function(a,s){ return a+s.meters; },0);
+        var status=f.meters<f.threshold?'<span class="pill pill-red">LOW</span>':'<span class="pill pill-green">OK</span>';
+        return '<div class="inv-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px">'
+          +'<div><div class="inv-name">'+esc(f.name)+'</div><div class="inv-meta">'+f.type+'</div></div>'
+          +'<div style="color:var(--muted2)">'+(f.meters+sold)+'m</div>'
+          +'<div style="color:var(--green2)">'+sold+'m</div>'
+          +'<div class="inv-meters">'+f.meters+'m</div>'
+          +'<div style="color:var(--gold)">'+fv(f.meters*f.rate)+'</div>'
+          +'<div>'+status+'</div>'
+          +'</div>';
+      }).join('')
+    : '<div class="inv-empty">No data</div>';
 }
 
-
-
-
-// ══ SIDEBAR TOGGLE ══
-function toggleSidebar(){
-  const sb=document.getElementById('sb');
-  const ov=document.getElementById('sb-overlay');
-  const isOpen=sb.classList.contains('open');
-  if(isOpen){closeSidebar()}else{
-    sb.classList.add('open');
-    ov.classList.add('on');
-    document.getElementById('ham-btn').textContent='✕';
-  }
-}
-function closeSidebar(){
-  document.getElementById('sb').classList.remove('open');
-  document.getElementById('sb-overlay').classList.remove('on');
-  document.getElementById('ham-btn').textContent='☰';
-}
-
-// Close sidebar when nav item clicked on mobile
-const origGoto=goto;
-function goto(pg,el){
-  origGoto(pg,el);
-  if(window.innerWidth<=768)closeSidebar();
-}
+function printReport() { window.print(); }
 
 // ══ ONBOARDING ══
-let obStep = 1;
-
-const obSteps = [
+var obStep = 1;
+var OB_STEPS = [
   {
-    title: "StockSaathi mein Aapka Swagat Hai! 🎉",
-    sub: "2 minute mein apna stock manager ready ho jayega",
-    body: `<div class="ob-features">
-      <div class="ob-feat"><div class="ob-feat-ic">📦</div><div><div class="ob-feat-t">Stock Track Karo</div><div class="ob-feat-s">Har kapde ka meter by meter hisaab</div></div></div>
-      <div class="ob-feat"><div class="ob-feat-ic">💰</div><div><div class="ob-feat-t">Bikri Record Karo</div><div class="ob-feat-s">Customer ka naam aur raqam save karo</div></div></div>
-      <div class="ob-feat"><div class="ob-feat-ic">⚠️</div><div><div class="ob-feat-t">Automatic Alert</div><div class="ob-feat-s">Jab stock kam ho, email alert aayega</div></div></div>
-      <div class="ob-feat"><div class="ob-feat-ic">📊</div><div><div class="ob-feat-t">Monthly Report</div><div class="ob-feat-s">Poore mahine ka hisaab ek jagah</div></div></div>
-    </div>`
+    title:'Welcome to StockSaathi! 🎉',
+    sub:'Your textile stock manager is ready in 2 minutes',
+    feats:[
+      ['📦','Track Your Stock','Meter-by-meter hisaab of every fabric'],
+      ['💰','Record Sales / Bikri','Save customer name and raqam'],
+      ['⚠️','Automatic Alert','Email aayega jab stock kam ho'],
+      ['📊','Monthly Report','Full month ka hisaab — ek jagah']
+    ]
   },
   {
-    title: "Pehla Kapda Kaise Add Karein? 🧵",
-    sub: "Top right mein '+ Naya Kapda' button dabao",
-    body: `<div class="ob-features">
-      <div class="ob-feat"><div class="ob-feat-ic">1️⃣</div><div><div class="ob-feat-t">+ Naya Kapda Button</div><div class="ob-feat-s">Top right pe orange button hai — usse click karo</div></div></div>
-      <div class="ob-feat"><div class="ob-feat-ic">2️⃣</div><div><div class="ob-feat-t">Naam aur Type Bharo</div><div class="ob-feat-s">Kapde ka naam, type (Georgette/Silk etc.) aur rang</div></div></div>
-      <div class="ob-feat"><div class="ob-feat-ic">3️⃣</div><div><div class="ob-feat-t">Meter aur Daam</div><div class="ob-feat-s">Kitna meter hai aur rate kya hai ₹/meter</div></div></div>
-      <div class="ob-feat"><div class="ob-feat-ic">4️⃣</div><div><div class="ob-feat-t">Alert Set Karo</div><div class="ob-feat-s">Jab itne meter se kam ho, email aayega</div></div></div>
-    </div>`
+    title:'How to Add Your First Fabric?',
+    sub:"Click the '+ Add Fabric' button (top right)",
+    feats:[
+      ['1️⃣','+ Add Fabric Button','Top right mein orange button — click karo'],
+      ['2️⃣','Name & Category','Fill fabric name, type aur color'],
+      ['3️⃣','Meters & Rate','Kitna meter hai aur rate ₹/m'],
+      ['4️⃣','Set Low Alert','Email aayega jab stock itne se kam ho']
+    ]
   },
   {
-    title: "Sab Ready Hai! Shuru Karein 🚀",
-    sub: "Aapka StockSaathi bilkul tayyar hai",
-    body: `<div class="ob-features">
-      <div class="ob-feat"><div class="ob-feat-ic">📥</div><div><div class="ob-feat-t">Stock Add Button</div><div class="ob-feat-s">Har kapde pe 'Stock Add' se naya maal add karo</div></div></div>
-      <div class="ob-feat"><div class="ob-feat-ic">💰</div><div><div class="ob-feat-t">Becho Button</div><div class="ob-feat-s">Sidha card se quick sell karo — fast aur easy</div></div></div>
-      <div class="ob-feat"><div class="ob-feat-ic">🧮</div><div><div class="ob-feat-t">Calculator</div><div class="ob-feat-s">Munafa, GST, fabric cost — sab jaldi nikalo</div></div></div>
-      <div class="ob-feat"><div class="ob-feat-ic">💡</div><div><div class="ob-feat-t">Ab Shuru Karein!</div><div class="ob-feat-s">Pehla kapda add karo aur hisaab shuru karo</div></div></div>
-    </div>`
+    title:'All Set! Lets Begin 🚀',
+    sub:'Your StockSaathi is ready to use',
+    feats:[
+      ['📥','Add Stock Button','Directly add stock on each fabric card'],
+      ['💰','Sell Button','Quick sell — fast aur easy'],
+      ['🧮','Calculator','Profit, GST — sab jaldi nikalo'],
+      ['💡','Lets Start!','Add pehla fabric aur hisaab shuru karo']
+    ]
   }
 ];
 
 function showOnboarding() {
   obStep = 1;
-  updateObStep();
+  renderOB();
   document.getElementById('onboarding').classList.add('on');
 }
-
-function updateObStep() {
-  const s = obSteps[obStep-1];
+function renderOB() {
+  var s = OB_STEPS[obStep-1];
   document.getElementById('ob-title').textContent = s.title;
-  document.getElementById('ob-sub').textContent = s.sub;
-  document.getElementById('ob-body').innerHTML = s.body;
-  document.getElementById('ob-counter').textContent = 'Step ' + obStep + ' / 3';
-  document.getElementById('ob-next').textContent = obStep === 3 ? '✅ Shuru Karein!' : 'Aage Chalo →';
-  // Update step indicators
-  [1,2,3].forEach(i => {
-    const el = document.getElementById('ob-s'+i);
-    el.className = 'ob-step' + (i < obStep ? ' done' : i === obStep ? ' active' : '');
+  document.getElementById('ob-sub').textContent   = s.sub;
+  document.getElementById('ob-body').innerHTML    = '<div class="ob-features">'+
+    s.feats.map(function(f){ return '<div class="ob-feat"><div class="ob-feat-ic">'+f[0]+'</div><div><div class="ob-feat-t">'+f[1]+'</div><div class="ob-feat-s">'+f[2]+'</div></div></div>'; }).join('')+
+    '</div>';
+  document.getElementById('ob-counter').textContent = 'Step '+obStep+' / 3';
+  document.getElementById('ob-next').textContent    = obStep===3 ? 'Lets Go! ✓' : 'Next →';
+  [1,2,3].forEach(function(i){
+    var el = document.getElementById('ob-s'+i);
+    el.className = 'ob-step'+(i<obStep?' done':i===obStep?' active':'');
   });
 }
-
 function obNext() {
-  if (obStep < 3) {
-    obStep++;
-    updateObStep();
-  } else {
-    closeOnboarding();
-    // Open add fabric modal to guide first action
-    setTimeout(() => openModal(), 400);
-  }
+  if(obStep < 3) { obStep++; renderOB(); }
+  else { closeOB(); setTimeout(function(){ openModal(); }, 400); }
 }
-
-function skipOnboarding() { closeOnboarding(); }
-
-function closeOnboarding() {
-  document.getElementById('onboarding').classList.remove('on');
-}
+function skipOnboarding() { closeOB(); }
+function closeOB() { document.getElementById('onboarding').classList.remove('on'); }
 
 // ══ UTILS ══
-function esc(t=''){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>{t.style.display='none'},3500)}
-}); // end window.load
+function esc(t) {
+  return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._tid);
+  t._tid = setTimeout(function(){ t.style.display='none'; }, 3500);
+}
 </script>
 </body>
 </html>
