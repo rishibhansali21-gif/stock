@@ -1845,12 +1845,26 @@ let currentUser = null;
 // ── GOOGLE SIGN IN ──
 function signInWithGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).catch(err => {
-    toast('Login failed: ' + err.message);
-  });
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (isMobile) {
+    auth.signInWithRedirect(provider).catch(err => {
+      toast('Login failed: ' + err.message);
+    });
+  } else {
+    auth.signInWithPopup(provider).catch(err => {
+      toast('Login failed: ' + err.message);
+    });
+  }
 }
 
 // ── AUTH STATE ──
+// Handle redirect result first
+auth.getRedirectResult().catch(err => {
+  if (err.code !== 'auth/no-current-user') {
+    toast('Login error: ' + err.message);
+  }
+});
+
 auth.onAuthStateChanged(async user => {
   if (user) {
     currentUser = user;
