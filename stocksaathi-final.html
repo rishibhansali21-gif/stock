@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StockSaathi — Textile Stock Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:       #0f0e0c;
+  --surface:  #161512;
+  --card:     #1d1b18;
+  --hover:    #222018;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.12);
+  --text:     #ede8df;
+  --muted:    #6b6455;
+  --muted2:   #9c9080;
+  --gold:     #c8973a;
+  --gold-dim: rgba(200,151,58,0.12);
+  --green:    #2e7d4f;
+  --green-dim:rgba(46,125,79,0.15);
+  --green-bright: #4caf74;
+  --red:      #d64e3c;
+  --red-dim:  rgba(214,78,60,0.12);
+  --amber:    #d4893a;
+  --amber-dim:rgba(212,137,58,0.12);
+  --ff-display: 'Fraunces', serif;
+  --ff-body:    'Geist', sans-serif;
+}
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--ff-body);
+  font-size: 14px;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.sidebar-logo {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.logo-icon {
+  width: 32px; height: 32px;
+  background: var(--gold);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-display);
+  font-size: 15px;
+  color: #0f0e0c;
+  font-style: italic;
+  flex-shrink: 0;
+}
+
+.logo-name {
+  font-family: var(--ff-display);
+  font-size: 18px;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+
+.logo-powered {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  padding-left: 42px;
+}
+
+.nav {
+  padding: 12px 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-section {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 10px 10px 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--muted2);
+  font-size: 13px;
+  font-weight: 400;
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.nav-item:hover { background: var(--hover); color: var(--text); }
+
+.nav-item.active {
+  background: var(--gold-dim);
+  color: var(--gold);
+  font-weight: 500;
+}
+
+.nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--red-dim);
+  color: var(--red);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 10px;
+  display: none;
+}
+
+.nav-badge.show { display: block; }
+
+.sidebar-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 56px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+  flex-shrink: 0;
+  background: var(--surface);
+}
+
+.topbar-title {
+  font-family: var(--ff-display);
+  font-size: 17px;
+  color: var(--text);
+}
+
+.topbar-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-left: 2px;
+}
+
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+.ai-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--green-dim);
+  border: 1px solid rgba(46,125,79,0.25);
+  color: var(--green-bright);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ai-pill:hover { background: rgba(46,125,79,0.25); }
+.ai-pill-dot { width: 6px; height: 6px; background: var(--green-bright); border-radius: 50%; animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ── PAGES ── */
+.page { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+.page.active { display: flex; }
+
+/* ── STATS ROW ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.stat-box {
+  padding: 20px 24px;
+  border-right: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.stat-box:last-child { border-right: none; }
+.stat-box:hover { background: var(--hover); }
+
+.stat-lbl {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.stat-num {
+  font-family: var(--ff-display);
+  font-size: 28px;
+  line-height: 1;
+  color: var(--text);
+}
+.stat-num.danger { color: var(--red); }
+.stat-num.gold { color: var(--gold); }
+
+.stat-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ── CONTENT AREA ── */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px;
+}
+
+.content::-webkit-scrollbar { width: 4px; }
+.content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ── SECTION HEADER ── */
+.sec-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.sec-title {
+  font-family: var(--ff-display);
+  font-size: 20px;
+  color: var(--text);
+}
+
+.sec-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ── FORM CARD ── */
+.form-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 20px;
+}
+
+.form-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.fg { margin-bottom: 14px; }
+
+.fl {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  margin-bottom: 6px;
+}
+
+input, select, textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--ff-body);
+  font-size: 13px;
+  padding: 9px 13px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-appearance: none;
+}
+
+input:focus, select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-dim);
+}
+
+input::placeholder { color: var(--muted); }
+select option { background: #1d1b18; }
+
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--ff-body);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-gold { background: var(--gold); color: #0f0e0c; font-weight: 600; }
+.btn-gold:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.btn-green { background: var(--green); color: #fff; }
+.btn-green:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted2);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--border2); color: var(--text); }
+
+.btn-red {
+  background: var(--red-dim);
+  color: var(--red);
+  border: 1px solid rgba(214,78,60,0.2);
+}
+.btn-red:hover { background: rgba(214,78,60,0.2); }
+
+.btn-full { width: 100%; justify-content: center; }
+
+/* ── INVENTORY TABLE ── */
+.inv-table {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.inv-table-head {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 80px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.th {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.inv-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 80px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  transition: background 0.12s;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+.inv-row:last-child { border-bottom: none; }
+.inv-row:hover { background: var(--hover); }
+
+.inv-name { font-weight: 500; font-size: 13px; }
+.inv-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.inv-meters {
+  font-family: var(--ff-display);
+  font-size: 18px;
+  color: var(--text);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+}
+.pill-red    { background: var(--red-dim); color: var(--red); }
+.pill-amber  { background: var(--amber-dim); color: var(--amber); }
+.pill-green  { background: var(--green-dim); color: var(--green-bright); }
+
+.stock-bar { height: 3px; background: var(--border); border-radius: 2px; margin-top: 6px; width: 80px; }
+.stock-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
+
+.inv-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--muted);
+}
+.inv-empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
+.inv-empty-text { font-size: 14px; }
+.inv-empty-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+.row-actions { display: flex; gap: 6px; }
+.row-btn {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s;
+}
+.row-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+
+/* ── SEARCH BAR ── */
+.search-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.search-box {
+  position: relative;
+  flex: 1;
+}
+.search-box input { padding-left: 34px; }
+.search-icon {
+  position: absolute;
+  left: 12px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+/* ── SALES LOG ── */
+.sale-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  transition: background 0.12s;
+  animation: fadeIn 0.2s ease;
+}
+.sale-row:last-child { border-bottom: none; }
+.sale-row:hover { background: var(--hover); }
+.sale-total { font-family: var(--ff-display); font-size: 16px; color: var(--green-bright); }
+
+/* ── CALCULATOR ── */
+.calc-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+.calc-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.calc-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 14px;
+}
+
+.calc-result-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.calc-result-lbl { font-size: 11px; color: var(--muted); }
+.calc-result-val { font-family: var(--ff-display); font-size: 22px; color: var(--gold); }
+
+/* ── REPORT PAGE ── */
+.report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+
+.report-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.report-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 14px;
+}
+
+.chart-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.chart-bar-label { font-size: 12px; color: var(--muted2); width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chart-bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.chart-bar-fill { height: 100%; border-radius: 3px; background: var(--gold); transition: width 0.4s; }
+.chart-bar-val { font-size: 12px; color: var(--muted2); width: 60px; text-align: right; }
+
+/* ── AI CHAT OVERLAY ── */
+.ai-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 500;
+  display: none;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 20px;
+}
+.ai-overlay.open { display: flex; animation: overlayIn 0.2s ease; }
+@keyframes overlayIn { from{opacity:0} to{opacity:1} }
+
+.ai-chat-box {
+  width: 360px;
+  height: 520px;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: chatIn 0.25s ease;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+@keyframes chatIn {
+  from{opacity:0;transform:translateY(20px) scale(0.95)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+.ai-chat-head {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.ai-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--green-dim);
+  border: 1px solid rgba(46,125,79,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.ai-chat-name { font-weight: 500; font-size: 14px; }
+.ai-chat-status { font-size: 11px; color: var(--green-bright); }
+
+.ai-close-btn {
+  margin-left: auto;
+  width: 28px; height: 28px;
+  background: var(--hover);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  transition: all 0.12s;
+}
+.ai-close-btn:hover { color: var(--text); border-color: var(--border2); }
+
+.ai-msgs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ai-msgs::-webkit-scrollbar { width: 3px; }
+.ai-msgs::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.msg { display: flex; gap: 8px; max-width: 90%; animation: msgIn 0.2s ease; }
+@keyframes msgIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.msg.user { align-self: flex-end; flex-direction: row-reverse; }
+
+.msg-av {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.msg.ai .msg-av { background: var(--green-dim); border-color: rgba(46,125,79,0.3); }
+
+.msg-bbl {
+  padding: 9px 13px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-top-left-radius: 3px;
+}
+.msg.user .msg-bbl {
+  background: var(--green);
+  color: #fff;
+  border-color: var(--green);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 3px;
+}
+
+.typing { display:flex; gap:4px; padding:2px 0; }
+.typing span {
+  width:5px; height:5px;
+  background:var(--muted);
+  border-radius:50%;
+  animation:tdot 1.2s infinite;
+}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-4px);opacity:1}}
+
+.ai-quick {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.ai-qbtn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted2);
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: var(--ff-body);
+  transition: all 0.12s;
+}
+.ai-qbtn:hover { border-color: var(--gold); color: var(--gold); }
+
+.ai-input-row {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: var(--surface);
+}
+#ai-inp {
+  flex: 1;
+  border-radius: 20px;
+  font-size: 13px;
+  padding: 8px 14px;
+}
+.ai-send {
+  width: 34px; height: 34px;
+  background: var(--gold);
+  border: none;
+  border-radius: 50%;
+  color: #0f0e0c;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.12s;
+}
+.ai-send:hover { filter: brightness(1.1); transform: scale(1.05); }
+
+/* ── MODAL (Add/Edit) ── */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 400;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal-backdrop.open { display: flex; }
+
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  width: 460px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px;
+  animation: chatIn 0.2s ease;
+}
+
+.modal-title {
+  font-family: var(--ff-display);
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.modal-sub { font-size: 12px; color: var(--muted); margin-bottom: 22px; }
+.modal-footer { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--card);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 11px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  display: none;
+  z-index: 999;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  animation: toastIn 0.2s ease;
+  white-space: nowrap;
+}
+@keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+/* ── PRINT STYLES ── */
+@media print {
+  .sidebar, .topbar, .ai-overlay, #toast, .btn, .row-actions, .search-row { display: none !important; }
+  body { background: white; color: black; }
+  .main { overflow: visible; }
+  .content { padding: 0; overflow: visible; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">S</div>
+      <span class="logo-name">StockSaathi</span>
+    </div>
+    <div class="logo-powered">Textile Stock Manager</div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-section">Main</div>
+    <div class="nav-item active" onclick="goto('dashboard',this)">
+      <span class="nav-icon">◈</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="goto('inventory',this)">
+      <span class="nav-icon">☰</span> Inventory
+      <span class="nav-badge" id="low-badge">0</span>
+    </div>
+
+    <div class="nav-section">Manage</div>
+    <div class="nav-item" onclick="goto('sales',this)">
+      <span class="nav-icon">↗</span> Sales
+    </div>
+    <div class="nav-item" onclick="goto('calculator',this)">
+      <span class="nav-icon">⊞</span> Calculator
+    </div>
+
+    <div class="nav-section">Insights</div>
+    <div class="nav-item" onclick="goto('report',this)">
+      <span class="nav-icon">◎</span> Monthly Report
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    Powered by Niori &nbsp;·&nbsp; v2.0
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div>
+      <span class="topbar-title" id="page-title">Dashboard</span>
+      <span class="topbar-sub" id="page-sub"></span>
+    </div>
+    <div class="topbar-right">
+      <div class="ai-pill" onclick="openAI()">
+        <div class="ai-pill-dot"></div>
+        Saathi AI
+      </div>
+      <button class="btn btn-gold" style="padding:7px 16px;font-size:12px;" onclick="openAddModal()">+ Add Fabric</button>
+    </div>
+  </div>
+
+  <!-- ══ DASHBOARD PAGE ══ -->
+  <div class="page active" id="page-dashboard">
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-lbl">Total Fabrics</div>
+        <div class="stat-num" id="st-count">0</div>
+        <div class="stat-hint">fabric types</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-lbl">Total Stock</div>
+        <div class="stat-num" id="st-meters">0m</div>
+        <div class="stat-hint">across all fabrics</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-lbl">Low Stock Alerts</div>
+        <div class="stat-num danger" id="st-low">0</div>
+        <div class="stat-hint">need reorder</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-lbl">Inventory Value</div>
+        <div class="stat-num gold" id="st-val">₹0</div>
+        <div class="stat-hint">total stock value</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="sec-head">
+        <div>
+          <div class="sec-title">Overview</div>
+          <div class="sec-sub">Your inventory at a glance</div>
+        </div>
+        <button class="btn btn-ghost" style="font-size:12px;" onclick="goto('inventory', document.querySelector('[onclick*=inventory]'))">View All →</button>
+      </div>
+
+      <!-- LOW STOCK ALERT BANNER -->
+      <div id="low-banner" style="display:none; background:var(--red-dim); border:1px solid rgba(214,78,60,0.25); border-radius:10px; padding:14px 18px; margin-bottom:20px; display:none;">
+        <div style="font-weight:600; color:var(--red); font-size:13px; margin-bottom:4px;">⚠ Low Stock Alert</div>
+        <div id="low-banner-text" style="font-size:12px; color:var(--muted2);"></div>
+      </div>
+
+      <!-- RECENT INVENTORY TABLE (top 5) -->
+      <div class="inv-table" id="dash-inv">
+        <div class="inv-empty">
+          <div class="inv-empty-icon">📦</div>
+          <div class="inv-empty-text">No fabrics yet</div>
+          <div class="inv-empty-sub">Click "+ Add Fabric" to get started</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ INVENTORY PAGE ══ -->
+  <div class="page" id="page-inventory">
+    <div class="content">
+      <div class="sec-head">
+        <div>
+          <div class="sec-title">Inventory</div>
+          <div class="sec-sub">All fabrics and stock levels</div>
+        </div>
+        <button class="btn btn-gold" onclick="openAddModal()">+ Add Fabric</button>
+      </div>
+
+      <div class="search-row">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input id="inv-search" placeholder="Search by name, type, color..." oninput="renderInvTable('full')" />
+        </div>
+        <select id="inv-filter" style="width:160px;" onchange="renderInvTable('full')">
+          <option value="">All Categories</option>
+          <option>Georgette</option><option>Chiffon</option><option>Silk</option>
+          <option>Cotton</option><option>Velvet</option><option>Satin</option>
+          <option>Net</option><option>Rayon</option><option>Linen</option><option>Other</option>
+        </select>
+      </div>
+
+      <div class="inv-table">
+        <div class="inv-table-head">
+          <div class="th">Fabric</div>
+          <div class="th">Stock</div>
+          <div class="th">Status</div>
+          <div class="th">Rate ₹/m</div>
+          <div class="th">Value</div>
+          <div class="th"></div>
+        </div>
+        <div id="inv-full-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SALES PAGE ══ -->
+  <div class="page" id="page-sales">
+    <div class="content">
+      <div class="sec-head">
+        <div>
+          <div class="sec-title">Sales</div>
+          <div class="sec-sub">Record sales and track history</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:340px 1fr; gap:20px; align-items:start;">
+
+        <div class="form-card">
+          <div class="form-card-title">New Sale</div>
+          <div class="fg">
+            <label class="fl">Select Fabric</label>
+            <select id="s-fab" onchange="onSaleFabChange()"></select>
+          </div>
+          <div class="g2">
+            <div class="fg">
+              <label class="fl">Meters Sold</label>
+              <input id="s-m" type="number" placeholder="0" min="0" oninput="calcSaleAmt()" />
+            </div>
+            <div class="fg">
+              <label class="fl">Rate ₹/m</label>
+              <input id="s-r" type="number" placeholder="auto" min="0" oninput="calcSaleAmt()" />
+            </div>
+          </div>
+          <div class="calc-result-box" style="margin-bottom:14px;">
+            <span class="calc-result-lbl">Sale Amount</span>
+            <span class="calc-result-val" id="s-amt">₹0</span>
+          </div>
+          <div class="fg">
+            <label class="fl">Customer Name</label>
+            <input id="s-cust" type="text" placeholder="e.g. Rajesh Bhai" />
+          </div>
+          <div class="fg">
+            <label class="fl">Note (optional)</label>
+            <input id="s-note" type="text" placeholder="Any note..." />
+          </div>
+          <button class="btn btn-gold btn-full" onclick="recordSale()">Record Sale</button>
+        </div>
+
+        <div>
+          <div class="inv-table">
+            <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; padding:12px 18px; border-bottom:1px solid var(--border); background:var(--surface);">
+              <div class="th">Fabric</div>
+              <div class="th">Meters</div>
+              <div class="th">Customer</div>
+              <div class="th">Date</div>
+              <div class="th">Amount</div>
+            </div>
+            <div id="sales-body">
+              <div class="inv-empty">
+                <div class="inv-empty-icon" style="font-size:28px;">📋</div>
+                <div class="inv-empty-text">No sales recorded yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CALCULATOR PAGE ══ -->
+  <div class="page" id="page-calculator">
+    <div class="content">
+      <div class="sec-head">
+        <div>
+          <div class="sec-title">Calculator</div>
+          <div class="sec-sub">Quick textile calculations</div>
+        </div>
+      </div>
+
+      <div class="calc-grid">
+        <!-- Fabric Cost -->
+        <div class="calc-card">
+          <div class="calc-name">Fabric Cost</div>
+          <div class="fg">
+            <label class="fl">Meters</label>
+            <input id="c1m" type="number" placeholder="100" oninput="c1()" />
+          </div>
+          <div class="fg">
+            <label class="fl">Rate ₹/m</label>
+            <input id="c1r" type="number" placeholder="120" oninput="c1()" />
+          </div>
+          <div class="calc-result-box">
+            <span class="calc-result-lbl">Total Cost</span>
+            <span class="calc-result-val" id="c1-res">₹0</span>
+          </div>
+        </div>
+
+        <!-- Profit -->
+        <div class="calc-card">
+          <div class="calc-name">Profit Calculator</div>
+          <div class="g2">
+            <div class="fg">
+              <label class="fl">Buy ₹/m</label>
+              <input id="c2buy" type="number" placeholder="100" oninput="c2()" />
+            </div>
+            <div class="fg">
+              <label class="fl">Sell ₹/m</label>
+              <input id="c2sell" type="number" placeholder="140" oninput="c2()" />
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Total Meters</label>
+            <input id="c2m" type="number" placeholder="50" oninput="c2()" />
+          </div>
+          <div class="calc-result-box" style="margin-bottom:6px;">
+            <span class="calc-result-lbl">Profit per meter</span>
+            <span class="calc-result-val" id="c2-pm">₹0</span>
+          </div>
+          <div class="calc-result-box">
+            <span class="calc-result-lbl">Total Profit</span>
+            <span class="calc-result-val" id="c2-res">₹0</span>
+          </div>
+        </div>
+
+        <!-- GST -->
+        <div class="calc-card">
+          <div class="calc-name">GST Calculator</div>
+          <div class="fg">
+            <label class="fl">GST Rate</label>
+            <select id="c3gst" onchange="c3()">
+              <option value="5">5% (Textile)</option>
+              <option value="12">12%</option>
+              <option value="18">18%</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="fl">Base Amount ₹</label>
+            <input id="c3amt" type="number" placeholder="5000" oninput="c3()" />
+          </div>
+          <div class="calc-result-box" style="margin-bottom:6px;">
+            <span class="calc-result-lbl">GST Amount</span>
+            <span class="calc-result-val" id="c3-gst">₹0</span>
+          </div>
+          <div class="calc-result-box">
+            <span class="calc-result-lbl">Total with GST</span>
+            <span class="calc-result-val" id="c3-total">₹0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ REPORT PAGE ══ -->
+  <div class="page" id="page-report">
+    <div class="content">
+      <div class="sec-head">
+        <div>
+          <div class="sec-title">Monthly Report</div>
+          <div class="sec-sub" id="report-month-label">—</div>
+        </div>
+        <button class="btn btn-ghost" onclick="printReport()">🖨 Print / Export</button>
+      </div>
+
+      <!-- Summary cards -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;" id="report-stats">
+      </div>
+
+      <div class="report-grid">
+        <div class="report-card">
+          <div class="report-card-title">Stock Levels</div>
+          <div id="report-stock-chart"></div>
+        </div>
+        <div class="report-card">
+          <div class="report-card-title">Sales This Month</div>
+          <div id="report-sales-chart"></div>
+        </div>
+      </div>
+
+      <div class="inv-table" id="report-table">
+        <div class="inv-table-head">
+          <div class="th">Fabric</div>
+          <div class="th">Opening</div>
+          <div class="th">Sold</div>
+          <div class="th">Remaining</div>
+          <div class="th">Value</div>
+          <div class="th">Status</div>
+        </div>
+        <div id="report-body"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ADD FABRIC MODAL -->
+<div class="modal-backdrop" id="add-modal">
+  <div class="modal">
+    <div class="modal-title">Add Fabric</div>
+    <div class="modal-sub">Add a new fabric type to your inventory</div>
+    <div class="fg">
+      <label class="fl">Fabric Name *</label>
+      <input id="m-name" type="text" placeholder="e.g. Red Georgette" />
+    </div>
+    <div class="g2">
+      <div class="fg">
+        <label class="fl">Category *</label>
+        <select id="m-type">
+          <option>Georgette</option><option>Chiffon</option><option>Silk</option>
+          <option>Cotton</option><option>Velvet</option><option>Satin</option>
+          <option>Net</option><option>Rayon</option><option>Linen</option><option>Other</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl">Color</label>
+        <input id="m-color" type="text" placeholder="e.g. Red" />
+      </div>
+    </div>
+    <div class="g2">
+      <div class="fg">
+        <label class="fl">Meters *</label>
+        <input id="m-meters" type="number" placeholder="0" min="0" />
+      </div>
+      <div class="fg">
+        <label class="fl">Low Alert at (m)</label>
+        <input id="m-thresh" type="number" placeholder="50" min="0" />
+      </div>
+    </div>
+    <div class="g2">
+      <div class="fg">
+        <label class="fl">Rate ₹/m</label>
+        <input id="m-rate" type="number" placeholder="0" min="0" />
+      </div>
+      <div class="fg">
+        <label class="fl">Supplier</label>
+        <input id="m-sup" type="text" placeholder="Optional" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveModal()">Add to Inventory</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI CHAT OVERLAY -->
+<div class="ai-overlay" id="ai-overlay" onclick="closeAI(event)">
+  <div class="ai-chat-box">
+    <div class="ai-chat-head">
+      <div class="ai-avatar">🤖</div>
+      <div>
+        <div class="ai-chat-name">Saathi AI</div>
+        <div class="ai-chat-status">● Online</div>
+      </div>
+      <button class="ai-close-btn" onclick="closeAIBtn()">✕</button>
+    </div>
+
+    <div class="ai-msgs" id="ai-msgs">
+      <div class="msg ai">
+        <div class="msg-av">🤖</div>
+        <div class="msg-bbl">
+          Namaste! 🙏 Main <strong>Saathi AI</strong> hoon. Stock, sales, value — kuch bhi poochho Hindi ya English mein!
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-quick">
+      <button class="ai-qbtn" onclick="qask('Total stock kitna hai?')">Total stock?</button>
+      <button class="ai-qbtn" onclick="qask('Low stock mein kaun hai?')">Low alerts?</button>
+      <button class="ai-qbtn" onclick="qask('Sabse mehenga fabric?')">Costly fabric?</button>
+      <button class="ai-qbtn" onclick="qask('Is mahine ki sales?')">This month sales?</button>
+    </div>
+
+    <div class="ai-input-row">
+      <input id="ai-inp" placeholder="Kuch bhi poochho..." onkeydown="if(event.key==='Enter')sendAI()" />
+      <button class="ai-send" onclick="sendAI()">➤</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// STATE — all zero, fresh start
+// ═══════════════════════════════════════════
+const API_KEY = 'AIzaSyB_Es1kckZDBXV0WB7_zbJGX8CXNrLOcC0'; // Gemini API Key
+
+let inv   = JSON.parse(localStorage.getItem('ss2_inv')   || '[]');
+let sales = JSON.parse(localStorage.getItem('ss2_sales') || '[]');
+
+function save() {
+  localStorage.setItem('ss2_inv',   JSON.stringify(inv));
+  localStorage.setItem('ss2_sales', JSON.stringify(sales));
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+const pageTitles = {
+  dashboard:  ['Dashboard',  ''],
+  inventory:  ['Inventory',  '— All Fabrics'],
+  sales:      ['Sales',      '— Record & History'],
+  calculator: ['Calculator', '— Quick Calculations'],
+  report:     ['Monthly Report', '']
+};
+
+function goto(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  if (el) el.classList.add('active');
+  const [title, sub] = pageTitles[page] || [page, ''];
+  document.getElementById('page-title').textContent = title;
+  document.getElementById('page-sub').textContent   = sub;
+
+  if (page === 'inventory') renderInvTable('full');
+  if (page === 'sales')     { populateSellDrop(); renderSalesLog(); }
+  if (page === 'report')    renderReport();
+  if (page === 'dashboard') renderDash();
+}
+
+// ═══════════════════════════════════════════
+// STATS
+// ═══════════════════════════════════════════
+function updateStats() {
+  const total = inv.reduce((a,f) => a + f.meters, 0);
+  const low   = inv.filter(f => f.meters < f.threshold).length;
+  const val   = inv.reduce((a,f) => a + f.meters * f.rate, 0);
+
+  document.getElementById('st-count').textContent = inv.length;
+  document.getElementById('st-meters').textContent = total.toLocaleString('en-IN') + 'm';
+  document.getElementById('st-low').textContent    = low;
+  document.getElementById('st-val').textContent    = fmtVal(val);
+
+  // low badge on nav
+  const badge = document.getElementById('low-badge');
+  badge.textContent = low;
+  badge.classList.toggle('show', low > 0);
+
+  // low banner
+  const banner = document.getElementById('low-banner');
+  if (low > 0) {
+    const names = inv.filter(f => f.meters < f.threshold).map(f => f.name).join(', ');
+    document.getElementById('low-banner-text').textContent = names + ' — needs reorder';
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function fmtVal(v) {
+  if (v >= 10000000) return '₹' + (v/10000000).toFixed(1) + 'Cr';
+  if (v >= 100000)   return '₹' + (v/100000).toFixed(1) + 'L';
+  return '₹' + Math.round(v).toLocaleString('en-IN');
+}
+
+// ═══════════════════════════════════════════
+// ADD MODAL
+// ═══════════════════════════════════════════
+function openAddModal() {
+  document.getElementById('add-modal').classList.add('open');
+  document.getElementById('m-name').focus();
+}
+function closeModal() {
+  document.getElementById('add-modal').classList.remove('open');
+  ['m-name','m-color','m-meters','m-thresh','m-rate','m-sup'].forEach(id =>
+    document.getElementById(id).value = ''
+  );
+}
+function saveModal() {
+  const name   = document.getElementById('m-name').value.trim();
+  const meters = parseFloat(document.getElementById('m-meters').value) || 0;
+  if (!name) { toast('Fabric name required'); return; }
+
+  const existing = inv.find(f => f.name.toLowerCase() === name.toLowerCase());
+  if (existing) {
+    existing.meters += meters;
+    toast(`✓ ${meters}m added to ${name}`);
+  } else {
+    inv.push({
+      id:        Date.now(),
+      name,
+      type:      document.getElementById('m-type').value,
+      color:     document.getElementById('m-color').value.trim() || '—',
+      meters,
+      threshold: parseFloat(document.getElementById('m-thresh').value) || 50,
+      rate:      parseFloat(document.getElementById('m-rate').value)    || 0,
+      supplier:  document.getElementById('m-sup').value.trim()          || '—',
+      addedAt:   new Date().toISOString()
+    });
+    toast(`✓ ${name} added to inventory!`);
+  }
+  save(); updateStats(); renderDash(); closeModal();
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD RENDER
+// ═══════════════════════════════════════════
+function renderDash() {
+  const el = document.getElementById('dash-inv');
+  if (!inv.length) {
+    el.innerHTML = `<div class="inv-empty"><div class="inv-empty-icon">📦</div><div class="inv-empty-text">No fabrics yet</div><div class="inv-empty-sub">Click "+ Add Fabric" to get started</div></div>`;
+    return;
+  }
+  el.innerHTML = invTableHTML(inv.slice(0,6));
+}
+
+// ═══════════════════════════════════════════
+// INVENTORY TABLE
+// ═══════════════════════════════════════════
+function invTableHTML(list) {
+  if (!list.length) return `<div class="inv-empty"><div class="inv-empty-icon">🔍</div><div class="inv-empty-text">No fabrics match</div></div>`;
+  return list.map(f => {
+    const pct    = Math.min(100, Math.round((f.meters / Math.max(f.threshold*3,1)) * 100));
+    const status = f.meters === 0 ? 'out' : f.meters < f.threshold ? 'low' : f.meters < f.threshold*1.5 ? 'mid' : 'ok';
+    const pill   = status === 'out'  ? '<span class="pill pill-red">OUT</span>'
+                 : status === 'low'  ? '<span class="pill pill-red">LOW</span>'
+                 : status === 'mid'  ? '<span class="pill pill-amber">MEDIUM</span>'
+                 : '<span class="pill pill-green">OK</span>';
+    const barClr = status==='ok' ? 'var(--green-bright)' : status==='mid' ? 'var(--amber)' : 'var(--red)';
+    const val    = Math.round(f.meters * f.rate);
+    return `<div class="inv-row">
+      <div>
+        <div class="inv-name">${esc(f.name)}</div>
+        <div class="inv-meta">${f.type} · ${f.color} · ${esc(f.supplier)}</div>
+      </div>
+      <div>
+        <div class="inv-meters">${f.meters.toLocaleString('en-IN')}m</div>
+        <div class="stock-bar"><div class="stock-bar-fill" style="width:${pct}%;background:${barClr}"></div></div>
+      </div>
+      <div>${pill}</div>
+      <div style="color:var(--muted2)">₹${f.rate}/m</div>
+      <div style="color:var(--muted2)">₹${val.toLocaleString('en-IN')}</div>
+      <div class="row-actions">
+        <button class="row-btn" title="Delete" onclick="deleteFab(${f.id})">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderInvTable(mode) {
+  const q   = (document.getElementById('inv-search')?.value || '').toLowerCase();
+  const cat = document.getElementById('inv-filter')?.value || '';
+  const list = inv.filter(f =>
+    (f.name.toLowerCase().includes(q) || f.type.toLowerCase().includes(q) || f.color.toLowerCase().includes(q)) &&
+    (!cat || f.type === cat)
+  );
+  document.getElementById('inv-full-body').innerHTML = invTableHTML(list);
+}
+
+function deleteFab(id) {
+  if (!confirm('Delete this fabric?')) return;
+  inv = inv.filter(f => f.id !== id);
+  save(); updateStats(); renderDash(); renderInvTable('full');
+  toast('Fabric deleted');
+}
+
+// ═══════════════════════════════════════════
+// SALES
+// ═══════════════════════════════════════════
+function populateSellDrop() {
+  const sel = document.getElementById('s-fab');
+  sel.innerHTML = inv.length
+    ? inv.map(f => `<option value="${f.id}" data-rate="${f.rate}">${esc(f.name)} (${f.meters}m)</option>`).join('')
+    : '<option>No fabrics — add stock first</option>';
+  if (inv.length) {
+    document.getElementById('s-r').value = inv[0].rate || '';
+    calcSaleAmt();
+  }
+}
+
+function onSaleFabChange() {
+  const sel = document.getElementById('s-fab');
+  const opt = sel.options[sel.selectedIndex];
+  document.getElementById('s-r').value = opt?.dataset?.rate || '';
+  calcSaleAmt();
+}
+
+function calcSaleAmt() {
+  const m = parseFloat(document.getElementById('s-m').value) || 0;
+  const r = parseFloat(document.getElementById('s-r').value) || 0;
+  document.getElementById('s-amt').textContent = fmtVal(m * r);
+}
+
+function recordSale() {
+  const id   = parseInt(document.getElementById('s-fab').value);
+  const m    = parseFloat(document.getElementById('s-m').value);
+  const r    = parseFloat(document.getElementById('s-r').value);
+  const cust = document.getElementById('s-cust').value.trim() || 'Walk-in';
+  const note = document.getElementById('s-note').value.trim();
+  const fab  = inv.find(f => f.id === id);
+
+  if (!fab) { toast('Select a fabric first'); return; }
+  if (!m || m <= 0) { toast('Enter meters sold'); return; }
+  if (m > fab.meters) { toast(`Only ${fab.meters}m available!`); return; }
+
+  const rate  = r || fab.rate;
+  fab.meters -= m;
+  sales.unshift({ id:Date.now(), fabId:id, fabName:fab.name, meters:m, rate, total:m*rate, customer:cust, note, date:new Date().toISOString() });
+  save(); updateStats(); renderSalesLog(); populateSellDrop();
+  toast(`✓ ${m}m ${fab.name} sold — ${fmtVal(m*rate)}`);
+
+  ['s-m','s-cust','s-note'].forEach(i => document.getElementById(i).value = '');
+  document.getElementById('s-amt').textContent = '₹0';
+
+  if (fab.meters < fab.threshold) {
+    setTimeout(() => addAIMsg(`⚠️ Alert: **${fab.name}** low stock — sirf **${fab.meters}m** bacha. Reorder karo!`), 800);
+  }
+}
+
+function renderSalesLog() {
+  const el = document.getElementById('sales-body');
+  if (!sales.length) {
+    el.innerHTML = `<div class="inv-empty"><div class="inv-empty-icon" style="font-size:28px">📋</div><div class="inv-empty-text">No sales yet</div></div>`;
+    return;
+  }
+  el.innerHTML = sales.map(s => `
+    <div class="sale-row">
+      <div><div class="inv-name">${esc(s.fabName)}</div><div class="inv-meta">${esc(s.note||'')}</div></div>
+      <div style="color:var(--muted2)">${s.meters}m</div>
+      <div style="color:var(--muted2)">${esc(s.customer)}</div>
+      <div style="color:var(--muted2)">${new Date(s.date).toLocaleDateString('en-IN')}</div>
+      <div class="sale-total">${fmtVal(s.total)}</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// CALCULATORS
+// ═══════════════════════════════════════════
+function c1() {
+  const v = (parseFloat(document.getElementById('c1m').value)||0) * (parseFloat(document.getElementById('c1r').value)||0);
+  document.getElementById('c1-res').textContent = fmtVal(v);
+}
+function c2() {
+  const buy  = parseFloat(document.getElementById('c2buy').value)  || 0;
+  const sell = parseFloat(document.getElementById('c2sell').value) || 0;
+  const m    = parseFloat(document.getElementById('c2m').value)    || 0;
+  const pm   = sell - buy;
+  const tot  = pm * m;
+  const pmEl  = document.getElementById('c2-pm');
+  const totEl = document.getElementById('c2-res');
+  pmEl.textContent  = (pm  >= 0 ? '+' : '') + fmtVal(pm);
+  totEl.textContent = (tot >= 0 ? '+' : '') + fmtVal(tot);
+  pmEl.style.color  = pm  >= 0 ? 'var(--green-bright)' : 'var(--red)';
+  totEl.style.color = tot >= 0 ? 'var(--green-bright)' : 'var(--red)';
+}
+function c3() {
+  const pct = parseFloat(document.getElementById('c3gst').value) || 5;
+  const amt = parseFloat(document.getElementById('c3amt').value) || 0;
+  const gst = amt * pct / 100;
+  document.getElementById('c3-gst').textContent   = fmtVal(gst);
+  document.getElementById('c3-total').textContent = fmtVal(amt + gst);
+}
+
+// ═══════════════════════════════════════════
+// MONTHLY REPORT
+// ═══════════════════════════════════════════
+function renderReport() {
+  const now   = new Date();
+  const month = now.toLocaleString('en-IN', { month:'long', year:'numeric' });
+  document.getElementById('report-month-label').textContent = month;
+
+  const monthSales = sales.filter(s => {
+    const d = new Date(s.date);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+
+  const totalSalesAmt = monthSales.reduce((a,s) => a+s.total, 0);
+  const totalSalesM   = monthSales.reduce((a,s) => a+s.meters, 0);
+  const invVal        = inv.reduce((a,f) => a+f.meters*f.rate, 0);
+  const lowCount      = inv.filter(f => f.meters < f.threshold).length;
+
+  // stat cards
+  document.getElementById('report-stats').innerHTML = [
+    ['Sales This Month', fmtVal(totalSalesAmt), 'gold'],
+    ['Meters Sold',      totalSalesM + 'm', ''],
+    ['Inventory Value',  fmtVal(invVal), ''],
+    ['Low Stock Items',  lowCount, lowCount > 0 ? 'danger' : ''],
+  ].map(([lbl,val,cls]) => `
+    <div class="stat-box" style="border-radius:10px;border:1px solid var(--border);">
+      <div class="stat-lbl">${lbl}</div>
+      <div class="stat-num ${cls}">${val}</div>
+    </div>`).join('');
+
+  // stock chart
+  const maxM = Math.max(...inv.map(f=>f.meters), 1);
+  document.getElementById('report-stock-chart').innerHTML = inv.length
+    ? inv.map(f => `
+        <div class="chart-bar-row">
+          <div class="chart-bar-label" title="${esc(f.name)}">${esc(f.name)}</div>
+          <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${Math.round(f.meters/maxM*100)}%"></div></div>
+          <div class="chart-bar-val">${f.meters}m</div>
+        </div>`).join('')
+    : '<div style="color:var(--muted);font-size:12px;">No data</div>';
+
+  // sales chart
+  const salesByFab = {};
+  monthSales.forEach(s => { salesByFab[s.fabName] = (salesByFab[s.fabName]||0) + s.meters; });
+  const maxS = Math.max(...Object.values(salesByFab), 1);
+  document.getElementById('report-sales-chart').innerHTML = Object.keys(salesByFab).length
+    ? Object.entries(salesByFab).map(([name,m]) => `
+        <div class="chart-bar-row">
+          <div class="chart-bar-label" title="${esc(name)}">${esc(name)}</div>
+          <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${Math.round(m/maxS*100)}%;background:var(--green-bright)"></div></div>
+          <div class="chart-bar-val">${m}m</div>
+        </div>`).join('')
+    : '<div style="color:var(--muted);font-size:12px;">No sales this month</div>';
+
+  // report table
+  document.getElementById('report-body').innerHTML = inv.length
+    ? inv.map(f => {
+        const sold = monthSales.filter(s=>s.fabId===f.id).reduce((a,s)=>a+s.meters,0);
+        const status = f.meters < f.threshold ? '<span class="pill pill-red">LOW</span>' : '<span class="pill pill-green">OK</span>';
+        return `<div class="inv-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px">
+          <div><div class="inv-name">${esc(f.name)}</div><div class="inv-meta">${f.type}</div></div>
+          <div style="color:var(--muted2)">${(f.meters+sold)}m</div>
+          <div style="color:var(--green-bright)">${sold}m</div>
+          <div class="inv-meters">${f.meters}m</div>
+          <div style="color:var(--gold)">${fmtVal(f.meters*f.rate)}</div>
+          <div>${status}</div>
+        </div>`;
+      }).join('')
+    : `<div class="inv-empty"><div class="inv-empty-text">No data</div></div>`;
+}
+
+function printReport() {
+  window.print();
+}
+
+// ═══════════════════════════════════════════
+// AI CHAT
+// ═══════════════════════════════════════════
+function openAI() { document.getElementById('ai-overlay').classList.add('open'); }
+function closeAI(e) { if (e.target === document.getElementById('ai-overlay')) closeAIBtn(); }
+function closeAIBtn() { document.getElementById('ai-overlay').classList.remove('open'); }
+
+function qask(q) { document.getElementById('ai-inp').value = q; sendAI(); }
+
+async function sendAI() {
+  const inp = document.getElementById('ai-inp');
+  const q   = inp.value.trim();
+  if (!q) return;
+  inp.value = '';
+  addUserMsg(q); showTyping();
+
+  if (!API_KEY || API_KEY.length < 10) {
+    removeTyping();
+    addAIMsg('API key nahi hai! File mein <strong>const API_KEY</strong> mein apni Gemini key daalo. 🔑');
+    return;
+  }
+
+  const ctx     = inv.map(f=>`${f.name}(${f.type},${f.color}):${f.meters}m,thresh ${f.threshold}m,Rs.${f.rate}/m`).join('\n');
+  const now     = new Date();
+  const mSales  = sales.filter(s=>{const d=new Date(s.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+  const saleCtx = mSales.length ? mSales.map(s=>`${s.fabName}:${s.meters}m=Rs.${s.total}`).join('\n') : 'No sales this month';
+  const totalVal= inv.reduce((a,f)=>a+f.meters*f.rate,0);
+  const lowList = inv.filter(f=>f.meters<f.threshold).map(f=>f.name).join(', ') || 'None';
+
+  const prompt = `You are Saathi AI, a friendly textile stock assistant for a Surat textile shop. Reply in short Hinglish (Hindi+English mix). Use **bold** for key numbers. Max 3 sentences. Only use data provided below.
+Inventory:
+${ctx||'Empty - no fabrics added yet'}
+This month sales:
+${saleCtx}
+Summary: ${inv.length} fabrics, ${inv.reduce((a,f)=>a+f.meters,0)}m total stock, value Rs.${Math.round(totalVal).toLocaleString()}
+Low stock items: ${lowList}
+User question: ${q}`;
+
+  try {
+    const res = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=' + API_KEY,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 400, temperature: 0.7 }
+        })
+      }
+    );
+    const data = await res.json();
+    removeTyping();
+    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (reply) {
+      addAIMsg(reply);
+    } else if (data?.error) {
+      addAIMsg('Error: ' + data.error.message + ' — Gemini API key check karo.');
+    } else {
+      addAIMsg('Kuch problem aayi, dobara try karo.');
+    }
+  } catch(e) {
+    removeTyping();
+    addAIMsg('Network issue! Internet connection check karo. 🙏');
+  }
+}
+
+function addUserMsg(t) {
+  const d = document.createElement('div');
+  d.className = 'msg user';
+  d.innerHTML = `<div class="msg-av">👤</div><div class="msg-bbl">${esc(t)}</div>`;
+  const c = document.getElementById('ai-msgs');
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+
+function addAIMsg(t) {
+  const d = document.createElement('div');
+  d.className = 'msg ai';
+  d.innerHTML = `<div class="msg-av">🤖</div><div class="msg-bbl">${t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
+  const c = document.getElementById('ai-msgs');
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+
+function showTyping() {
+  const d = document.createElement('div');
+  d.className='msg ai'; d.id='typing';
+  d.innerHTML=`<div class="msg-av">🤖</div><div class="msg-bbl"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  const c=document.getElementById('ai-msgs');
+  c.appendChild(d); c.scrollTop=c.scrollHeight;
+}
+function removeTyping() { document.getElementById('typing')?.remove(); }
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function esc(t='') { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.style.display='none'; }, 3000);
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+updateStats();
+renderDash();
+</script>
+</body>
+</html>
