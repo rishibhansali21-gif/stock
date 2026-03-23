@@ -436,36 +436,52 @@ select option{background:var(--white)}
 
 /* ══ MOBILE ══ */
 @media(max-width:768px){
+  /* ── LAYOUT ── */
   body{flex-direction:column;overflow:auto}
   html,body{height:auto}
-  .sb{width:100%;height:auto;flex-direction:row;border-right:none;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:200}
-  .sb-top{padding:10px 14px;flex-shrink:0}
-  .sb-tag{display:none}
-  .sb-name{font-size:16px}
-  .sb-ico{width:34px;height:34px;font-size:16px}
-  .sb-nav{flex-direction:row;padding:0 8px;align-items:center;overflow-x:auto;gap:0}
-  .sb-sec{display:none}
-  .sb-item{flex-shrink:0;padding:12px 10px;border-radius:0;border:none!important;border-bottom:3px solid transparent!important;font-size:12px}
-  .sb-item.active{background:transparent;border-bottom-color:var(--gold)!important;color:var(--gold)}
-  .sb-foot{display:none}
   .main{height:auto;overflow:visible}
   .page{overflow:visible;height:auto}
   .page.on{display:flex;flex-direction:column}
-  .topbar{padding:0 14px;height:52px}
-  .tb-title{font-size:16px}
+
+  /* ── HIDE DESKTOP SIDEBAR ── */
+  .sb{display:none !important}
+
+  /* ── SHOW HAMBURGER ── */
+  .hamburger{display:flex !important}
+
+  /* ── TOPBAR ── */
+  .topbar{padding:0 14px;height:52px;gap:10px}
+  .tb-title{font-size:15px}
   .tb-sub{display:none}
+  .add-btn{font-size:12px;padding:8px 12px}
+
+  /* ── STATS ── */
   .stats{grid-template-columns:1fr 1fr}
-  .stat{padding:14px 16px}
-  .stat-v{font-size:24px}
+  .stat{padding:12px 14px}
+  .stat-v{font-size:22px}
+  .stat-l{font-size:10px}
+  .stat-h{font-size:10px}
+
+  /* ── CONTENT ── */
   .content{padding:14px}
-  .fab-card{grid-template-columns:1fr;gap:12px}
-  .fab-right{flex-wrap:wrap;justify-content:space-between}
+  .sh-title{font-size:20px}
+
+  /* ── FABRIC CARDS ── */
+  .fab-card{grid-template-columns:1fr;gap:10px}
+  .fab-right{flex-wrap:wrap;justify-content:space-between;gap:8px}
+  .fab-meter-num{font-size:26px}
+  .fab-actions{width:100%;justify-content:flex-end}
+  .fab-btn{font-size:12px;padding:8px 13px}
+
+  /* ── FORMS ── */
   .calc-grid{grid-template-columns:1fr}
   .rpt-grid{grid-template-columns:1fr}
   .rpt-stats{grid-template-columns:1fr 1fr}
   [style*="grid-template-columns:340px"]{display:flex!important;flex-direction:column!important}
   .modal,.qmodal{width:95vw;padding:20px}
   .g2{grid-template-columns:1fr;gap:0}
+
+  /* ── LOGIN ── */
   .login-wrap{grid-template-columns:1fr}
   .login-left{display:none}
   .login-right{padding:36px 28px}
@@ -780,16 +796,13 @@ select option{background:var(--white)}
 
 <div id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
 // ══ CONFIG ══
-const EJS_SVC='service_j84y5ge',EJS_TPL='template_8pvu8qc',EJS_KEY='Ux_cTro8ToCSm2LUY';
+var EJS_SVC='service_j84y5ge', EJS_TPL='template_8pvu8qc', EJS_KEY='Ux_cTro8ToCSm2LUY';
 
 // ══ STATE ══
-var auth, db, user=null, inv=[], sales=[], asFabId=null, qsFabId=null, selCat='';
+var auth, db, user=null, inv=[], sales=[], asFabId=null, qsFabId=null, selCatV='';
+
 var SAMPLE=[
   {id:1,name:'Lal Banarasi Georgette',type:'Georgette',color:'Lal (Red)',meters:320,threshold:60,rate:185,supplier:'Rajan Textiles'},
   {id:2,name:'Neela Chiffon',type:'Chiffon',color:'Neela (Blue)',meters:45,threshold:80,rate:110,supplier:'Mehta Fabrics'},
@@ -797,220 +810,189 @@ var SAMPLE=[
   {id:4,name:'Safed Pure Cotton',type:'Cotton',color:'Safed (White)',meters:18,threshold:50,rate:65,supplier:'Gujarat Cotton Co.'},
   {id:5,name:'Kaala Velvet Premium',type:'Velvet',color:'Kaala (Black)',meters:195,threshold:30,rate:320,supplier:'Royal Fabrics'},
   {id:6,name:'Gulabi Satin',type:'Satin',color:'Gulabi (Pink)',meters:140,threshold:35,rate:145,supplier:'Shree Textiles'},
-  {id:7,name:'Dulhan Net',type:'Net',color:'Off White',meters:95,threshold:25,rate:260,supplier:'Bridal House Surat'},
+  {id:7,name:'Dulhan Net',type:'Net',color:'Off White',meters:95,threshold:25,rate:260,supplier:'Bridal House Surat'}
 ];
 
 var ICONS={Georgette:'🟥',Chiffon:'🔵',Silk:'✨',Cotton:'🤍',Velvet:'🖤',Satin:'💗',Net:'🕸️',Rayon:'🟤',Linen:'🟡',Other:'🧵'};
 var COLORS={Georgette:'#fdecea',Chiffon:'#e8f0fe',Silk:'#fef9e0',Cotton:'#f8f8f8',Velvet:'#f0e8f8',Satin:'#fde8f0',Net:'#e8f5f0',Rayon:'#fdecd8',Linen:'#fdf8e8',Other:'#f5efe0'};
 
-// ══ INIT ══
-document.addEventListener('DOMContentLoaded', function() {
-  try {
-    emailjs.init(EJS_KEY);
-    firebase.initializeApp({
-      apiKey:'AIzaSyB5oBVuaur5Yl_gxfde9NFYtanLZdr6Qjs',
-      authDomain:'stock-98c39.firebaseapp.com',
-      projectId:'stock-98c39',
-      storageBucket:'stock-98c39.firebasestorage.app',
-      messagingSenderId:'728990720851',
-      appId:'1:728990720851:web:eada0eac44cef8424cb7a6'
-    });
-    auth = firebase.auth();
-    db   = firebase.firestore();
+// ══ LOAD SCRIPTS THEN START ══
+function loadScript(src, cb) {
+  var s = document.createElement('script');
+  s.src = src;
+  s.onload = cb;
+  s.onerror = function(){ alert('Failed to load '+src+'. Check your internet.'); };
+  document.head.appendChild(s);
+}
 
-    auth.getRedirectResult()
-      .then(function(r){})
-      .catch(function(e){
-        if(e.code==='auth/unauthorized-domain'){
-          showLoginErr('Domain not authorized. Add "'+window.location.hostname+'" in Firebase Console → Authentication → Settings → Authorized Domains.');
-        }
+loadScript('https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js', function(){
+  loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js', function(){
+    loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js', function(){
+      loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js', function(){
+        startApp();
       });
-
-    auth.onAuthStateChanged(async function(u) {
-      if(u) {
-        user = u;
-        document.getElementById('login-screen').style.display='none';
-        document.getElementById('sb-foot').innerHTML =
-          '<strong>'+u.displayName+'</strong><br>'+
-          '<span style="cursor:pointer;color:var(--red)" onclick="signOut()">Sign Out</span>';
-        // Update mobile menu user name
-        var mobUser = document.getElementById('mob-user');
-        if(mobUser) mobUser.textContent = '👤 ' + u.displayName;
-        await loadCloud();
-        updateStats();
-        renderDash();
-      } else {
-        user = null;
-        document.getElementById('login-screen').style.display='flex';
-      }
     });
-  } catch(e) {
-    console.error('Init error:', e);
-    alert('App init error: ' + e.message);
-  }
+  });
 });
 
+function startApp() {
+  emailjs.init(EJS_KEY);
+  firebase.initializeApp({
+    apiKey:'AIzaSyB5oBVuaur5Yl_gxfde9NFYtanLZdr6Qjs',
+    authDomain:'stock-98c39.firebaseapp.com',
+    projectId:'stock-98c39',
+    storageBucket:'stock-98c39.firebasestorage.app',
+    messagingSenderId:'728990720851',
+    appId:'1:728990720851:web:eada0eac44cef8424cb7a6'
+  });
+  auth = firebase.auth();
+  db   = firebase.firestore();
+
+  auth.getRedirectResult().catch(function(e){
+    if(e.code==='auth/unauthorized-domain'){
+      showLoginErr('Domain not authorized. Add "'+window.location.hostname+'" in Firebase Console → Authentication → Authorized Domains.');
+    }
+  });
+
+  auth.onAuthStateChanged(async function(u){
+    if(u){
+      user=u;
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('sb-foot').innerHTML='<strong>'+u.displayName+'</strong><br><span style="cursor:pointer;color:var(--red)" onclick="signOut()">Sign Out</span>';
+      var mobUser=document.getElementById('mob-user');
+      if(mobUser) mobUser.textContent='👤 '+u.displayName;
+      await loadCloud();
+      updateStats();
+      renderDash();
+    } else {
+      user=null;
+      document.getElementById('login-screen').style.display='flex';
+    }
+  });
+}
+
 // ══ AUTH ══
-function signInGoogle() {
-  var btn = document.getElementById('login-btn');
-  if(btn) { btn.disabled=true; btn.textContent='Signing in...'; }
+function signInGoogle(){
+  var btn=document.getElementById('login-btn');
+  if(btn){btn.disabled=true;btn.textContent='Signing in...';}
   hideLoginErr();
-  var p = new firebase.auth.GoogleAuthProvider();
+  var p=new firebase.auth.GoogleAuthProvider();
   p.setCustomParameters({prompt:'select_account'});
   auth.signInWithPopup(p)
-    .then(function() {
-      if(btn) { btn.disabled=false; btn.textContent='Google se Login Karo'; }
-    })
-    .catch(function(e) {
-      if(btn) { btn.disabled=false; btn.textContent='Google se Login Karo'; }
-      console.log('Login error:', e.code, e.message);
-      if(e.code==='auth/popup-blocked'||e.code==='auth/popup-cancelled-by-user') {
-        auth.signInWithRedirect(p).catch(function(e2){ showLoginErr('Error: '+e2.message); });
-      } else if(e.code==='auth/unauthorized-domain') {
-        showLoginErr('Domain not authorized. Add "'+window.location.hostname+'" in Firebase Console → Authentication → Settings → Authorized Domains.');
-      } else if(e.code!=='auth/cancelled-popup-request') {
+    .then(function(){if(btn){btn.disabled=false;btn.textContent='Google se Login Karo';}})
+    .catch(function(e){
+      if(btn){btn.disabled=false;btn.textContent='Google se Login Karo';}
+      if(e.code==='auth/popup-blocked'||e.code==='auth/popup-cancelled-by-user'){
+        auth.signInWithRedirect(p).catch(function(e2){showLoginErr('Error: '+e2.message);});
+      } else if(e.code==='auth/unauthorized-domain'){
+        showLoginErr('Domain not authorized. Add "'+window.location.hostname+'" in Firebase Console → Authentication → Authorized Domains.');
+      } else if(e.code!=='auth/cancelled-popup-request'){
         showLoginErr('Login error: '+e.message);
       }
     });
 }
 
-function showLoginErr(msg) {
-  var el = document.getElementById('login-err');
-  if(!el) {
-    el = document.createElement('div');
-    el.id = 'login-err';
-    el.style.cssText = 'margin-top:10px;padding:10px 14px;background:rgba(192,57,43,0.08);border:1.5px solid rgba(192,57,43,0.25);border-radius:8px;font-size:12px;color:#c0392b;line-height:1.5';
-    var loginBtn = document.getElementById('login-btn');
-    if(loginBtn) loginBtn.after(el);
+function showLoginErr(msg){
+  var el=document.getElementById('login-err');
+  if(!el){
+    el=document.createElement('div');
+    el.id='login-err';
+    el.style.cssText='margin-top:10px;padding:10px 14px;background:rgba(192,57,43,0.08);border:1.5px solid rgba(192,57,43,0.25);border-radius:8px;font-size:12px;color:#c0392b;line-height:1.5';
+    var lb=document.getElementById('login-btn');
+    if(lb) lb.after(el);
   }
-  el.textContent = msg;
-  el.style.display = 'block';
+  el.textContent=msg; el.style.display='block';
 }
-
-function hideLoginErr() {
-  var el = document.getElementById('login-err');
-  if(el) el.style.display = 'none';
-}
-
-function signOut() {
-  if(confirm('Sign out karna hai?')) auth.signOut();
-}
+function hideLoginErr(){var el=document.getElementById('login-err');if(el)el.style.display='none';}
+function signOut(){if(confirm('Sign out karna hai?'))auth.signOut();}
 
 // ══ CLOUD ══
-function save() { saveCloud(); }
-
-async function saveCloud() {
-  if(!user) return;
-  try { await db.collection('users').doc(user.uid).set({inv:inv, sales:sales}); }
-  catch(e) { console.error('Save error:', e); }
+function save(){saveCloud();}
+async function saveCloud(){
+  if(!user)return;
+  try{await db.collection('users').doc(user.uid).set({inv:inv,sales:sales});}
+  catch(e){console.error('Save error:',e);}
+}
+async function loadCloud(){
+  if(!user)return;
+  try{
+    var doc=await db.collection('users').doc(user.uid).get();
+    if(doc.exists){var d=doc.data();inv=d.inv||[];sales=d.sales||[];}
+    else{inv=[];sales=[];await saveCloud();setTimeout(function(){showOnboarding();},600);}
+  }catch(e){inv=[];sales=[];}
 }
 
-async function loadCloud() {
-  if(!user) return;
-  try {
-    var doc = await db.collection('users').doc(user.uid).get();
-    if(doc.exists) {
-      var d = doc.data();
-      inv   = d.inv   || [];
-      sales = d.sales || [];
-    } else {
-      inv = []; sales = [];
-      await saveCloud();
-      setTimeout(function(){ showOnboarding(); }, 600);
-    }
-  } catch(e) {
-    inv = []; sales = [];
-  }
-}
+// ══ NAV ══
+var pgMap={dash:['Dashboard',''],inv:['Inventory','— All Fabrics'],sales:['Sales / Bikri','— Record & History'],calc:['Calculator','— Quick Calculations'],report:['Monthly Report','']};
 
-// ══ NAVIGATION ══
-var pgMap = {
-  dash:   ['Dashboard',''],
-  inv:    ['Inventory','— All Fabrics'],
-  sales:  ['Sales / Bikri','— Record & History'],
-  calc:   ['Calculator','— Quick Calculations'],
-  report: ['Monthly Report','']
-};
-
-function goto(pg, el) {
-  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
-  document.querySelectorAll('.sb-item').forEach(function(n){ n.classList.remove('active'); });
+function goto(pg,el){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.sb-item').forEach(function(n){n.classList.remove('active');});
   document.getElementById('pg-'+pg).classList.add('on');
-  if(el) el.classList.add('active');
-  var ts = pgMap[pg] || [pg,''];
-  document.getElementById('pg-title').textContent = ts[0];
-  document.getElementById('pg-sub').textContent   = ts[1];
-  if(pg==='inv')    renderInv();
-  if(pg==='sales')  { fillSD(); renderSales(); }
-  if(pg==='report') renderReport();
-  if(pg==='dash')   renderDash();
+  if(el)el.classList.add('active');
+  var ts=pgMap[pg]||[pg,''];
+  document.getElementById('pg-title').textContent=ts[0];
+  document.getElementById('pg-sub').textContent=ts[1];
+  if(pg==='inv')renderInv();
+  if(pg==='sales'){fillSD();renderSales();}
+  if(pg==='report')renderReport();
+  if(pg==='dash')renderDash();
+}
+
+// ══ MOBILE MENU ══
+function toggleMobileMenu(){
+  document.getElementById('mob-menu').classList.toggle('on');
+  document.getElementById('mob-overlay').classList.toggle('on');
+  if(user){var m=document.getElementById('mob-user');if(m)m.textContent='👤 '+user.displayName;}
+}
+function closeMobileMenu(){
+  document.getElementById('mob-menu').classList.remove('on');
+  document.getElementById('mob-overlay').classList.remove('on');
+}
+function mobileGoto(pg){
+  ['dash','inv','sales','calc','report'].forEach(function(p){
+    var el=document.getElementById('mob-'+p);
+    if(el)el.classList.toggle('active',p===pg);
+  });
+  closeMobileMenu();
+  goto(pg,null);
 }
 
 // ══ STATS ══
-function updateStats() {
-  var tot = inv.reduce(function(a,f){ return a+f.meters; }, 0);
-  var low = inv.filter(function(f){ return f.meters < f.threshold; }).length;
-  var val = inv.reduce(function(a,f){ return a+f.meters*f.rate; }, 0);
-  document.getElementById('st-c').textContent = inv.length;
-  document.getElementById('st-m').textContent = tot.toLocaleString('en-IN')+'m';
-  document.getElementById('st-l').textContent = low;
-  document.getElementById('st-v').textContent = fv(val);
-  var b = document.getElementById('low-badge');
-  b.textContent = low;
-  b.classList.toggle('on', low>0);
-  var ban = document.getElementById('low-banner');
-  if(low>0) {
-    document.getElementById('low-banner-txt').textContent =
-      inv.filter(function(f){ return f.meters<f.threshold; }).map(function(f){ return f.name; }).join(', ')+' — reorder karo!';
-    ban.style.display = 'block';
-  } else {
-    ban.style.display = 'none';
-  }
+function updateStats(){
+  var tot=inv.reduce(function(a,f){return a+f.meters;},0);
+  var low=inv.filter(function(f){return f.meters<f.threshold;}).length;
+  var val=inv.reduce(function(a,f){return a+f.meters*f.rate;},0);
+  document.getElementById('st-c').textContent=inv.length;
+  document.getElementById('st-m').textContent=tot.toLocaleString('en-IN')+'m';
+  document.getElementById('st-l').textContent=low;
+  document.getElementById('st-v').textContent=fv(val);
+  var b=document.getElementById('low-badge');b.textContent=low;b.classList.toggle('on',low>0);
+  var ban=document.getElementById('low-banner');
+  if(low>0){document.getElementById('low-banner-txt').textContent=inv.filter(function(f){return f.meters<f.threshold;}).map(function(f){return f.name;}).join(', ')+' — reorder karo!';ban.style.display='block';}
+  else ban.style.display='none';
 }
-
-function fv(v) {
-  if(v>=10000000) return '₹'+(v/10000000).toFixed(1)+'Cr';
-  if(v>=100000)   return '₹'+(v/100000).toFixed(1)+'L';
-  return '₹'+Math.round(v).toLocaleString('en-IN');
-}
+function fv(v){if(v>=10000000)return '₹'+(v/10000000).toFixed(1)+'Cr';if(v>=100000)return '₹'+(v/100000).toFixed(1)+'L';return '₹'+Math.round(v).toLocaleString('en-IN');}
 
 // ══ FABRIC CARD ══
-function fabCardHTML(f) {
-  var pct = Math.min(100, Math.round(f.meters/Math.max(f.threshold*3,1)*100));
-  var st  = (f.meters===0||f.meters<f.threshold)?'low':f.meters<f.threshold*1.5?'med':'ok';
-  var pill = st==='low'
-    ? '<span class="fab-tag low">⚠ Low Stock</span>'
-    : st==='med'
-      ? '<span class="fab-tag med">▼ Running Low</span>'
-      : '<span class="fab-tag ok">✓ OK</span>';
-  var bc = st==='ok'?'var(--green2)':st==='med'?'var(--orange)':'var(--red)';
-  var ic = ICONS[f.type]||'🧵';
-  var bg = COLORS[f.type]||'#f5efe0';
+function fabCardHTML(f){
+  var pct=Math.min(100,Math.round(f.meters/Math.max(f.threshold*3,1)*100));
+  var st=(f.meters<f.threshold)?'low':f.meters<f.threshold*1.5?'med':'ok';
+  var pill=st==='low'?'<span class="fab-tag low">⚠ Low Stock</span>':st==='med'?'<span class="fab-tag med">▼ Running Low</span>':'<span class="fab-tag ok">✓ OK</span>';
+  var bc=st==='ok'?'var(--green2)':st==='med'?'var(--orange)':'var(--red)';
+  var ic=ICONS[f.type]||'🧵', bg=COLORS[f.type]||'#f5efe0';
   return '<div class="fab-card '+st+'">'
     +'<div class="fab-left">'
       +'<div class="fab-icon" style="background:'+bg+'">'+ic+'</div>'
       +'<div class="fab-info">'
         +'<div class="fab-name">'+esc(f.name)+'</div>'
-        +'<div class="fab-meta">'
-          +'<span class="fab-tag">'+f.type+'</span>'
-          +'<span class="fab-tag">'+f.color+'</span>'
-          +'<span class="fab-tag">'+esc(f.supplier)+'</span>'
-          +pill
-        +'</div>'
-        +'<div class="fab-bar-wrap" style="margin-top:8px">'
-          +'<div class="fab-bar"><div class="fab-bar-f" style="width:'+pct+'%;background:'+bc+'"></div></div>'
-        +'</div>'
+        +'<div class="fab-meta"><span class="fab-tag">'+f.type+'</span><span class="fab-tag">'+f.color+'</span><span class="fab-tag">'+esc(f.supplier)+'</span>'+pill+'</div>'
+        +'<div class="fab-bar-wrap" style="margin-top:8px"><div class="fab-bar"><div class="fab-bar-f" style="width:'+pct+'%;background:'+bc+'"></div></div></div>'
       +'</div>'
     +'</div>'
     +'<div class="fab-right">'
-      +'<div class="fab-meter-box">'
-        +'<div class="fab-meter-num">'+f.meters.toLocaleString('en-IN')+'</div>'
-        +'<div class="fab-meter-lbl">Meters</div>'
-      +'</div>'
-      +'<div style="text-align:center">'
-        +'<div style="font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--muted2)">₹'+f.rate+'/m</div>'
-        +'<div style="font-size:12px;color:var(--muted)">'+fv(f.meters*f.rate)+'</div>'
-      +'</div>'
+      +'<div class="fab-meter-box"><div class="fab-meter-num">'+f.meters.toLocaleString('en-IN')+'</div><div class="fab-meter-lbl">Meters</div></div>'
+      +'<div style="text-align:center"><div style="font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--muted2)">₹'+f.rate+'/m</div><div style="font-size:12px;color:var(--muted)">'+fv(f.meters*f.rate)+'</div></div>'
       +'<div class="fab-actions">'
         +'<button class="fab-btn fab-btn-add" onclick="openAddStock('+f.id+')">📥 Add Stock</button>'
         +'<button class="fab-btn fab-btn-sell" onclick="openQS('+f.id+')">💰 Sell</button>'
@@ -1020,372 +1002,163 @@ function fabCardHTML(f) {
   +'</div>';
 }
 
-function renderDash() {
-  var el = document.getElementById('dash-grid');
-  if(!inv.length) {
-    el.innerHTML = '<div class="empty">'
-      +'<div class="empty-ic">🧵</div>'
-      +'<div class="empty-t">Koi Fabric Nahi</div>'
-      +'<div class="empty-s">Apna pehla fabric add karo!</div>'
-      +'<button class="btn btn-gold" onclick="openModal()" style="margin:0 auto">+ Add First Fabric</button>'
-      +'</div>';
-    return;
-  }
-  el.innerHTML = inv.slice(0,7).map(fabCardHTML).join('');
+function renderDash(){
+  var el=document.getElementById('dash-grid');
+  if(!inv.length){el.innerHTML='<div class="empty"><div class="empty-ic">🧵</div><div class="empty-t">No Fabric Added</div><div class="empty-s">Add your first fabric to get started!</div><button class="btn btn-gold" onclick="openModal()" style="margin:0 auto">+ Add First Fabric</button></div>';return;}
+  el.innerHTML=inv.slice(0,7).map(fabCardHTML).join('');
 }
 
-var selCatV = '';
-function filterCat(cat, el) {
-  selCatV = cat;
-  document.querySelectorAll('.cat-p').forEach(function(p){ p.classList.remove('active'); });
-  if(el) el.classList.add('active');
+function filterCat(cat,el){
+  selCatV=cat;
+  document.querySelectorAll('.cat-p').forEach(function(p){p.classList.remove('active');});
+  if(el)el.classList.add('active');
   renderInv();
 }
-
-function filterCatMobile(val) {
-  selCatV = val;
-  renderInv();
+function filterCatMobile(val){selCatV=val;renderInv();}
+function renderInv(){
+  var q=(document.getElementById('inv-q')||{value:''}).value.toLowerCase();
+  var list=inv.filter(function(f){return(!selCatV||f.type===selCatV)&&(f.name.toLowerCase().includes(q)||f.type.toLowerCase().includes(q)||f.color.toLowerCase().includes(q));});
+  var el=document.getElementById('inv-grid');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">No results found</div></div>';return;}
+  el.innerHTML=list.map(fabCardHTML).join('');
+}
+function delFab(id){
+  if(!confirm('Delete this fabric?'))return;
+  inv=inv.filter(function(f){return f.id!==id;});
+  save();updateStats();renderDash();renderInv();toast('Fabric deleted');
 }
 
-function renderInv() {
-  var q = (document.getElementById('inv-q')||{value:''}).value.toLowerCase();
-  var list = inv.filter(function(f){
-    return (!selCatV||f.type===selCatV) &&
-      (f.name.toLowerCase().includes(q)||f.type.toLowerCase().includes(q)||f.color.toLowerCase().includes(q));
-  });
-  var el = document.getElementById('inv-grid');
-  if(!list.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">No results found</div></div>';
-    return;
-  }
-  el.innerHTML = list.map(fabCardHTML).join('');
+// ══ MAIN MODAL ══
+function openModal(){document.getElementById('add-modal').classList.add('on');document.getElementById('m-name').focus();}
+function closeModal(){document.getElementById('add-modal').classList.remove('on');['m-name','m-color','m-m','m-t','m-r','m-s'].forEach(function(id){document.getElementById(id).value='';});}
+function saveModal(){
+  var name=document.getElementById('m-name').value.trim();
+  var m=parseFloat(document.getElementById('m-m').value)||0;
+  if(!name){toast('Fabric name required!');return;}
+  var ex=inv.find(function(f){return f.name.toLowerCase()===name.toLowerCase();});
+  if(ex){ex.meters+=m;toast('✓ '+m+'m added to '+name);}
+  else{inv.push({id:Date.now(),name:name,type:document.getElementById('m-type').value,color:document.getElementById('m-color').value.trim()||'—',meters:m,threshold:parseFloat(document.getElementById('m-t').value)||50,rate:parseFloat(document.getElementById('m-r').value)||0,supplier:document.getElementById('m-s').value.trim()||'—',addedAt:new Date().toISOString()});toast('✓ '+name+' added!');}
+  save();updateStats();renderDash();renderInv();closeModal();
 }
 
-function delFab(id) {
-  if(!confirm('Delete this fabric?')) return;
-  inv = inv.filter(function(f){ return f.id!==id; });
-  save(); updateStats(); renderDash(); renderInv();
-  toast('Fabric deleted');
-}
-
-// ══ ADD FABRIC MODAL ══
-function openModal() {
-  document.getElementById('add-modal').classList.add('on');
-  document.getElementById('m-name').focus();
-}
-function closeModal() {
-  document.getElementById('add-modal').classList.remove('on');
-  ['m-name','m-color','m-m','m-t','m-r','m-s'].forEach(function(id){ document.getElementById(id).value=''; });
-}
-function saveModal() {
-  var name = document.getElementById('m-name').value.trim();
-  var m    = parseFloat(document.getElementById('m-m').value)||0;
-  if(!name) { toast('Fabric name required!'); return; }
-  var ex = inv.find(function(f){ return f.name.toLowerCase()===name.toLowerCase(); });
-  if(ex) {
-    ex.meters += m;
-    toast('✓ '+m+'m added to '+name);
-  } else {
-    inv.push({
-      id:        Date.now(),
-      name:      name,
-      type:      document.getElementById('m-type').value,
-      color:     document.getElementById('m-color').value.trim()||'—',
-      meters:    m,
-      threshold: parseFloat(document.getElementById('m-t').value)||50,
-      rate:      parseFloat(document.getElementById('m-r').value)||0,
-      supplier:  document.getElementById('m-s').value.trim()||'—',
-      addedAt:   new Date().toISOString()
-    });
-    toast('✓ '+name+' added!');
-  }
-  save(); updateStats(); renderDash(); renderInv(); closeModal();
-}
-
-// ══ ADD STOCK QUICK MODAL ══
-function openAddStock(id) {
-  asFabId = id;
-  var f = inv.find(function(f){ return f.id===id; });
-  if(!f) return;
-  document.getElementById('addstock-fab-name').textContent = f.name+' — Current: '+f.meters+'m';
-  ['as-m','as-r','as-s'].forEach(function(i){ document.getElementById(i).value=''; });
+// ══ ADD STOCK ══
+function openAddStock(id){
+  asFabId=id;var f=inv.find(function(f){return f.id===id;});if(!f)return;
+  document.getElementById('addstock-fab-name').textContent=f.name+' — Current: '+f.meters+'m';
+  ['as-m','as-r','as-s'].forEach(function(i){document.getElementById(i).value='';});
   document.getElementById('addstock-modal').classList.add('on');
   document.getElementById('as-m').focus();
 }
-function closeAddStock() { document.getElementById('addstock-modal').classList.remove('on'); }
-function saveAddStock() {
-  var m = parseFloat(document.getElementById('as-m').value);
-  if(!m||m<=0) { toast('Enter meters!'); return; }
-  var f = inv.find(function(f){ return f.id===asFabId; });
-  if(!f) return;
-  f.meters += m;
-  var r = parseFloat(document.getElementById('as-r').value);
-  if(r>0) f.rate = r;
-  var s = document.getElementById('as-s').value.trim();
-  if(s) f.supplier = s;
-  save(); updateStats(); renderDash(); renderInv(); closeAddStock();
+function closeAddStock(){document.getElementById('addstock-modal').classList.remove('on');}
+function saveAddStock(){
+  var m=parseFloat(document.getElementById('as-m').value);
+  if(!m||m<=0){toast('Enter meters!');return;}
+  var f=inv.find(function(f){return f.id===asFabId;});if(!f)return;
+  f.meters+=m;
+  var r=parseFloat(document.getElementById('as-r').value);if(r>0)f.rate=r;
+  var s=document.getElementById('as-s').value.trim();if(s)f.supplier=s;
+  save();updateStats();renderDash();renderInv();closeAddStock();
   toast('✓ '+m+'m added to '+f.name+'!');
 }
 
-// ══ QUICK SELL MODAL ══
-function openQS(id) {
-  qsFabId = id;
-  var f = inv.find(function(f){ return f.id===id; });
-  if(!f) return;
-  document.getElementById('qs-fab-name').textContent = f.name+' — Available: '+f.meters+'m';
-  document.getElementById('qs-m').value = '';
-  document.getElementById('qs-r').value = f.rate||'';
-  document.getElementById('qs-c').value = '';
-  document.getElementById('qs-amt').textContent = '₹0';
-  document.getElementById('quicksell-modal').classList.add('on');
-  document.getElementById('qs-m').focus();
+// ══ QUICK SELL ══
+function openQS(id){
+  qsFabId=id;var f=inv.find(function(f){return f.id===id;});if(!f)return;
+  document.getElementById('qs-fab-name').textContent=f.name+' — Available: '+f.meters+'m';
+  document.getElementById('qs-m').value='';document.getElementById('qs-r').value=f.rate||'';
+  document.getElementById('qs-c').value='';document.getElementById('qs-amt').textContent='₹0';
+  document.getElementById('quicksell-modal').classList.add('on');document.getElementById('qs-m').focus();
 }
-function closeQS() { document.getElementById('quicksell-modal').classList.remove('on'); }
-function calcQSAmt() {
-  var m = parseFloat(document.getElementById('qs-m').value)||0;
-  var r = parseFloat(document.getElementById('qs-r').value)||0;
-  document.getElementById('qs-amt').textContent = fv(m*r);
-}
-function saveQS() {
-  var m    = parseFloat(document.getElementById('qs-m').value);
-  var r    = parseFloat(document.getElementById('qs-r').value);
-  var cust = document.getElementById('qs-c').value.trim()||'Walk-in';
-  var f    = inv.find(function(f){ return f.id===qsFabId; });
-  if(!f)         { toast('Error!'); return; }
-  if(!m||m<=0)   { toast('Enter meters sold!'); return; }
-  if(m>f.meters) { toast('Only '+f.meters+'m available!'); return; }
-  var rate = r||f.rate;
-  f.meters -= m;
+function closeQS(){document.getElementById('quicksell-modal').classList.remove('on');}
+function calcQSAmt(){var m=parseFloat(document.getElementById('qs-m').value)||0,r=parseFloat(document.getElementById('qs-r').value)||0;document.getElementById('qs-amt').textContent=fv(m*r);}
+function saveQS(){
+  var m=parseFloat(document.getElementById('qs-m').value),r=parseFloat(document.getElementById('qs-r').value),cust=document.getElementById('qs-c').value.trim()||'Walk-in';
+  var f=inv.find(function(f){return f.id===qsFabId;});
+  if(!f){toast('Error!');return;}if(!m||m<=0){toast('Enter meters!');return;}if(m>f.meters){toast('Only '+f.meters+'m available!');return;}
+  var rate=r||f.rate;f.meters-=m;
   sales.unshift({id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,total:m*rate,customer:cust,note:'',date:new Date().toISOString()});
-  save(); updateStats(); renderDash(); renderInv(); closeQS();
+  save();updateStats();renderDash();renderInv();closeQS();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(m*rate));
-  if(f.meters < f.threshold) {
-    emailjs.send(EJS_SVC, EJS_TPL, {fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(){});
-  }
+  if(f.meters<f.threshold)emailjs.send(EJS_SVC,EJS_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(){});
 }
 
 // ══ SALES PAGE ══
-function fillSD() {
-  var sel = document.getElementById('s-fab');
-  sel.innerHTML = inv.length
-    ? inv.map(function(f){ return '<option value="'+f.id+'" data-rate="'+f.rate+'">'+esc(f.name)+' ('+f.meters+'m)</option>'; }).join('')
-    : '<option>Add stock first</option>';
-  if(inv.length) {
-    document.getElementById('s-r').value = inv[0].rate||'';
-    calcAmt();
-  }
+function fillSD(){
+  var sel=document.getElementById('s-fab');
+  sel.innerHTML=inv.length?inv.map(function(f){return '<option value="'+f.id+'" data-rate="'+f.rate+'">'+esc(f.name)+' ('+f.meters+'m)</option>';}).join(''):'<option>Add stock first</option>';
+  if(inv.length){document.getElementById('s-r').value=inv[0].rate||'';calcAmt();}
 }
-function onFabChange() {
-  var opt = document.getElementById('s-fab').options[document.getElementById('s-fab').selectedIndex];
-  document.getElementById('s-r').value = (opt&&opt.dataset&&opt.dataset.rate)||'';
-  calcAmt();
-}
-function calcAmt() {
-  var m = parseFloat(document.getElementById('s-m').value)||0;
-  var r = parseFloat(document.getElementById('s-r').value)||0;
-  document.getElementById('s-amt').textContent = fv(m*r);
-}
-function recSale() {
-  var id   = parseInt(document.getElementById('s-fab').value);
-  var m    = parseFloat(document.getElementById('s-m').value);
-  var r    = parseFloat(document.getElementById('s-r').value);
-  var cust = document.getElementById('s-c').value.trim()||'Walk-in';
-  var note = document.getElementById('s-n').value.trim();
-  var f    = inv.find(function(f){ return f.id===id; });
-  if(!f)         { toast('Select a fabric!'); return; }
-  if(!m||m<=0)   { toast('Enter meters sold!'); return; }
-  if(m>f.meters) { toast('Only '+f.meters+'m available!'); return; }
-  var rate = r||f.rate;
-  f.meters -= m;
+function onFabChange(){var opt=document.getElementById('s-fab').options[document.getElementById('s-fab').selectedIndex];document.getElementById('s-r').value=(opt&&opt.dataset&&opt.dataset.rate)||'';calcAmt();}
+function calcAmt(){var m=parseFloat(document.getElementById('s-m').value)||0,r=parseFloat(document.getElementById('s-r').value)||0;document.getElementById('s-amt').textContent=fv(m*r);}
+function recSale(){
+  var id=parseInt(document.getElementById('s-fab').value),m=parseFloat(document.getElementById('s-m').value),r=parseFloat(document.getElementById('s-r').value);
+  var cust=document.getElementById('s-c').value.trim()||'Walk-in',note=document.getElementById('s-n').value.trim();
+  var f=inv.find(function(f){return f.id===id;});
+  if(!f){toast('Select a fabric!');return;}if(!m||m<=0){toast('Enter meters!');return;}if(m>f.meters){toast('Only '+f.meters+'m available!');return;}
+  var rate=r||f.rate;f.meters-=m;
   sales.unshift({id:Date.now(),fabId:id,fabName:f.name,meters:m,rate:rate,total:m*rate,customer:cust,note:note,date:new Date().toISOString()});
-  save(); updateStats(); renderSales(); fillSD();
+  save();updateStats();renderSales();fillSD();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(m*rate));
-  ['s-m','s-c','s-n'].forEach(function(i){ document.getElementById(i).value=''; });
-  document.getElementById('s-amt').textContent = '₹0';
-  if(f.meters < f.threshold) {
-    emailjs.send(EJS_SVC, EJS_TPL, {fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(){});
-  }
+  ['s-m','s-c','s-n'].forEach(function(i){document.getElementById(i).value='';});document.getElementById('s-amt').textContent='₹0';
+  if(f.meters<f.threshold)emailjs.send(EJS_SVC,EJS_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(){});
 }
-function renderSales() {
-  var el = document.getElementById('sales-body');
-  if(!sales.length) {
-    el.innerHTML = '<div class="empty" style="padding:20px"><div class="empty-ic" style="font-size:28px">📋</div><div class="empty-t" style="font-size:15px">No Sales Yet</div></div>';
-    return;
-  }
-  el.innerHTML = sales.map(function(s){
-    return '<div class="sale-item">'
-      +'<div><div class="sale-name">'+esc(s.fabName)+'</div><div class="sale-meta">'+s.meters+'m · '+esc(s.customer)+' · '+new Date(s.date).toLocaleDateString('en-IN')+'</div></div>'
-      +'<div class="sale-amount">'+fv(s.total)+'</div>'
-      +'</div>';
-  }).join('');
+function renderSales(){
+  var el=document.getElementById('sales-body');
+  if(!sales.length){el.innerHTML='<div class="empty" style="padding:20px"><div class="empty-ic" style="font-size:28px">📋</div><div class="empty-t" style="font-size:15px">No Sales Yet</div></div>';return;}
+  el.innerHTML=sales.map(function(s){return '<div class="sale-item"><div><div class="sale-name">'+esc(s.fabName)+'</div><div class="sale-meta">'+s.meters+'m · '+esc(s.customer)+' · '+new Date(s.date).toLocaleDateString('en-IN')+'</div></div><div class="sale-amount">'+fv(s.total)+'</div></div>';}).join('');
 }
 
 // ══ CALCULATORS ══
-function c1() {
-  document.getElementById('c1-res').textContent = fv((parseFloat(document.getElementById('c1m').value)||0)*(parseFloat(document.getElementById('c1r').value)||0));
-}
-function c2() {
-  var b=parseFloat(document.getElementById('c2buy').value)||0;
-  var s=parseFloat(document.getElementById('c2sell').value)||0;
-  var m=parseFloat(document.getElementById('c2m').value)||0;
-  var pm=s-b, tot=pm*m;
-  var pe=document.getElementById('c2-pm'), te=document.getElementById('c2-res');
-  pe.textContent=(pm>=0?'+':'')+fv(pm);
-  te.textContent=(tot>=0?'+':'')+fv(tot);
+function c1(){document.getElementById('c1-res').textContent=fv((parseFloat(document.getElementById('c1m').value)||0)*(parseFloat(document.getElementById('c1r').value)||0));}
+function c2(){
+  var b=parseFloat(document.getElementById('c2buy').value)||0,s=parseFloat(document.getElementById('c2sell').value)||0,m=parseFloat(document.getElementById('c2m').value)||0,pm=s-b,tot=pm*m;
+  var pe=document.getElementById('c2-pm'),te=document.getElementById('c2-res');
+  pe.textContent=(pm>=0?'+':'')+fv(pm);te.textContent=(tot>=0?'+':'')+fv(tot);
   pe.style.color=te.style.color=pm>=0?'var(--green2)':'var(--red)';
 }
-function c3() {
-  var p=parseFloat(document.getElementById('c3gst').value)||5;
-  var a=parseFloat(document.getElementById('c3amt').value)||0;
-  var g=a*p/100;
-  document.getElementById('c3-gst').textContent=fv(g);
-  document.getElementById('c3-total').textContent=fv(a+g);
-}
+function c3(){var p=parseFloat(document.getElementById('c3gst').value)||5,a=parseFloat(document.getElementById('c3amt').value)||0,g=a*p/100;document.getElementById('c3-gst').textContent=fv(g);document.getElementById('c3-total').textContent=fv(a+g);}
 
 // ══ REPORT ══
-function renderReport() {
-  var now = new Date();
-  document.getElementById('report-month-label').textContent = now.toLocaleString('en-IN',{month:'long',year:'numeric'});
-  var ms = sales.filter(function(s){ var d=new Date(s.date); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear(); });
-  var sa=ms.reduce(function(a,s){ return a+s.total; },0);
-  var sm=ms.reduce(function(a,s){ return a+s.meters; },0);
-  var iv=inv.reduce(function(a,f){ return a+f.meters*f.rate; },0);
-  var lc=inv.filter(function(f){ return f.meters<f.threshold; }).length;
-  document.getElementById('report-stats').innerHTML=[
-    ['Sales Amount',fv(sa),'gold'],['Meters Sold',sm+'m',''],
-    ['Stock Value',fv(iv),''],['Low Stock',lc,lc>0?'danger':'']
-  ].map(function(x){ return '<div class="stat-box" style="border-radius:10px;border:1px solid var(--border);"><div class="stat-lbl">'+x[0]+'</div><div class="stat-num '+x[2]+'">'+x[1]+'</div></div>'; }).join('');
-  var mx=Math.max.apply(null,inv.map(function(f){ return f.meters; }).concat([1]));
-  document.getElementById('report-stock-chart').innerHTML = inv.length
-    ? inv.map(function(f){ return '<div class="chart-bar-row"><div class="chart-bar-label" title="'+esc(f.name)+'">'+esc(f.name)+'</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:'+Math.round(f.meters/mx*100)+'%"></div></div><div class="chart-bar-val">'+f.meters+'m</div></div>'; }).join('')
-    : '<div style="color:var(--muted);font-size:12px">No data</div>';
-  var sf={};
-  ms.forEach(function(s){ sf[s.fabName]=(sf[s.fabName]||0)+s.meters; });
+function renderReport(){
+  var now=new Date();
+  document.getElementById('report-month-label').textContent=now.toLocaleString('en-IN',{month:'long',year:'numeric'});
+  var ms=sales.filter(function(s){var d=new Date(s.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+  var sa=ms.reduce(function(a,s){return a+s.total;},0),sm=ms.reduce(function(a,s){return a+s.meters;},0);
+  var iv=inv.reduce(function(a,f){return a+f.meters*f.rate;},0),lc=inv.filter(function(f){return f.meters<f.threshold;}).length;
+  document.getElementById('report-stats').innerHTML=[['Sales Amount',fv(sa),'gold'],['Meters Sold',sm+'m',''],['Stock Value',fv(iv),''],['Low Stock',lc,lc>0?'danger':'']].map(function(x){return '<div class="stat-box" style="border-radius:10px;border:1px solid var(--border);"><div class="stat-lbl">'+x[0]+'</div><div class="stat-num '+x[2]+'">'+x[1]+'</div></div>';}).join('');
+  var mx=Math.max.apply(null,inv.map(function(f){return f.meters;}).concat([1]));
+  document.getElementById('report-stock-chart').innerHTML=inv.length?inv.map(function(f){return '<div class="chart-bar-row"><div class="chart-bar-label" title="'+esc(f.name)+'">'+esc(f.name)+'</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:'+Math.round(f.meters/mx*100)+'%"></div></div><div class="chart-bar-val">'+f.meters+'m</div></div>';}).join(''):'<div style="color:var(--muted);font-size:12px">No data</div>';
+  var sf={};ms.forEach(function(s){sf[s.fabName]=(sf[s.fabName]||0)+s.meters;});
   var mxs=Math.max.apply(null,Object.values(sf).concat([1]));
-  document.getElementById('report-sales-chart').innerHTML = Object.keys(sf).length
-    ? Object.entries(sf).map(function(e){ return '<div class="chart-bar-row"><div class="chart-bar-label">'+esc(e[0])+'</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:'+Math.round(e[1]/mxs*100)+'%;background:var(--green2)"></div></div><div class="chart-bar-val">'+e[1]+'m</div></div>'; }).join('')
-    : '<div style="color:var(--muted);font-size:12px">No sales this month</div>';
-  document.getElementById('report-body').innerHTML = inv.length
-    ? inv.map(function(f){
-        var sold=ms.filter(function(s){ return s.fabId===f.id; }).reduce(function(a,s){ return a+s.meters; },0);
-        var status=f.meters<f.threshold?'<span class="pill pill-red">LOW</span>':'<span class="pill pill-green">OK</span>';
-        return '<div class="inv-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px">'
-          +'<div><div class="inv-name">'+esc(f.name)+'</div><div class="inv-meta">'+f.type+'</div></div>'
-          +'<div style="color:var(--muted2)">'+(f.meters+sold)+'m</div>'
-          +'<div style="color:var(--green2)">'+sold+'m</div>'
-          +'<div class="inv-meters">'+f.meters+'m</div>'
-          +'<div style="color:var(--gold)">'+fv(f.meters*f.rate)+'</div>'
-          +'<div>'+status+'</div>'
-          +'</div>';
-      }).join('')
-    : '<div class="inv-empty">No data</div>';
+  document.getElementById('report-sales-chart').innerHTML=Object.keys(sf).length?Object.entries(sf).map(function(e){return '<div class="chart-bar-row"><div class="chart-bar-label">'+esc(e[0])+'</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:'+Math.round(e[1]/mxs*100)+'%;background:var(--green2)"></div></div><div class="chart-bar-val">'+e[1]+'m</div></div>';}).join(''):'<div style="color:var(--muted);font-size:12px">No sales this month</div>';
+  document.getElementById('report-body').innerHTML=inv.length?inv.map(function(f){var sold=ms.filter(function(s){return s.fabId===f.id;}).reduce(function(a,s){return a+s.meters;},0);var status=f.meters<f.threshold?'<span class="pill pill-red">LOW</span>':'<span class="pill pill-green">OK</span>';return '<div class="inv-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px"><div><div class="inv-name">'+esc(f.name)+'</div><div class="inv-meta">'+f.type+'</div></div><div style="color:var(--muted2)">'+(f.meters+sold)+'m</div><div style="color:var(--green2)">'+sold+'m</div><div class="inv-meters">'+f.meters+'m</div><div style="color:var(--gold)">'+fv(f.meters*f.rate)+'</div><div>'+status+'</div></div>';}).join(''):'<div class="inv-empty">No data</div>';
 }
-
-function printReport() { window.print(); }
+function printReport(){window.print();}
 
 // ══ ONBOARDING ══
-var obStep = 1;
-var OB_STEPS = [
-  {
-    title:'Welcome to StockSaathi! 🎉',
-    sub:'Your textile stock manager is ready in 2 minutes',
-    feats:[
-      ['📦','Track Your Stock','Meter-by-meter hisaab of every fabric'],
-      ['💰','Record Sales / Bikri','Save customer name and raqam'],
-      ['⚠️','Automatic Alert','Email aayega jab stock kam ho'],
-      ['📊','Monthly Report','Full month ka hisaab — ek jagah']
-    ]
-  },
-  {
-    title:'How to Add Your First Fabric?',
-    sub:"Click the '+ Add Fabric' button (top right)",
-    feats:[
-      ['1️⃣','+ Add Fabric Button','Top right mein orange button — click karo'],
-      ['2️⃣','Name & Category','Fill fabric name, type aur color'],
-      ['3️⃣','Meters & Rate','Kitna meter hai aur rate ₹/m'],
-      ['4️⃣','Set Low Alert','Email aayega jab stock itne se kam ho']
-    ]
-  },
-  {
-    title:'All Set! Lets Begin 🚀',
-    sub:'Your StockSaathi is ready to use',
-    feats:[
-      ['📥','Add Stock Button','Directly add stock on each fabric card'],
-      ['💰','Sell Button','Quick sell — fast aur easy'],
-      ['🧮','Calculator','Profit, GST — sab jaldi nikalo'],
-      ['💡','Lets Start!','Add pehla fabric aur hisaab shuru karo']
-    ]
-  }
+var obStep=1;
+var OB_STEPS=[
+  {title:'Welcome to StockSaathi! 🎉',sub:'Your textile stock manager ready in 2 minutes',feats:[['📦','Track Your Stock','Meter-by-meter hisaab of every fabric'],['💰','Record Sales','Save customer name and amount'],['⚠️','Automatic Alert','Email aayega jab stock kam ho'],['📊','Monthly Report','Full month ka hisaab — ek jagah']]},
+  {title:'How to Add Your First Fabric?',sub:"Click the '+ Add Fabric' button (top right)",feats:[['1️⃣','+ Add Fabric Button','Top right mein orange button — click karo'],['2️⃣','Name & Category','Fill fabric name, type aur color'],['3️⃣','Meters & Rate','Kitna meter hai aur rate per meter'],['4️⃣','Set Low Alert','Email aayega jab stock itne se kam ho']]},
+  {title:'All Set! Lets Begin 🚀',sub:'StockSaathi is ready to use',feats:[['📥','Add Stock Button','Directly add stock on each fabric card'],['💰','Sell Button','Quick sell — fast aur easy'],['🧮','Calculator','Profit, GST — sab jaldi nikalo'],['💡','Lets Go!','Add pehla fabric aur hisaab shuru karo']]}
 ];
-
-function showOnboarding() {
-  obStep = 1;
-  renderOB();
-  document.getElementById('onboarding').classList.add('on');
+function showOnboarding(){obStep=1;renderOB();document.getElementById('onboarding').classList.add('on');}
+function renderOB(){
+  var s=OB_STEPS[obStep-1];
+  document.getElementById('ob-title').textContent=s.title;
+  document.getElementById('ob-sub').textContent=s.sub;
+  document.getElementById('ob-body').innerHTML='<div class="ob-features">'+s.feats.map(function(f){return '<div class="ob-feat"><div class="ob-feat-ic">'+f[0]+'</div><div><div class="ob-feat-t">'+f[1]+'</div><div class="ob-feat-s">'+f[2]+'</div></div></div>';}).join('')+'</div>';
+  document.getElementById('ob-counter').textContent='Step '+obStep+' / 3';
+  document.getElementById('ob-next').textContent=obStep===3?'Lets Go! ✓':'Next →';
+  [1,2,3].forEach(function(i){var el=document.getElementById('ob-s'+i);el.className='ob-step'+(i<obStep?' done':i===obStep?' active':'');});
 }
-function renderOB() {
-  var s = OB_STEPS[obStep-1];
-  document.getElementById('ob-title').textContent = s.title;
-  document.getElementById('ob-sub').textContent   = s.sub;
-  document.getElementById('ob-body').innerHTML    = '<div class="ob-features">'+
-    s.feats.map(function(f){ return '<div class="ob-feat"><div class="ob-feat-ic">'+f[0]+'</div><div><div class="ob-feat-t">'+f[1]+'</div><div class="ob-feat-s">'+f[2]+'</div></div></div>'; }).join('')+
-    '</div>';
-  document.getElementById('ob-counter').textContent = 'Step '+obStep+' / 3';
-  document.getElementById('ob-next').textContent    = obStep===3 ? 'Lets Go! ✓' : 'Next →';
-  [1,2,3].forEach(function(i){
-    var el = document.getElementById('ob-s'+i);
-    el.className = 'ob-step'+(i<obStep?' done':i===obStep?' active':'');
-  });
-}
-function obNext() {
-  if(obStep < 3) { obStep++; renderOB(); }
-  else { closeOB(); setTimeout(function(){ openModal(); }, 400); }
-}
-function skipOnboarding() { closeOB(); }
-function closeOB() { document.getElementById('onboarding').classList.remove('on'); }
-
-// ══ MOBILE MENU ══
-function toggleMobileMenu() {
-  document.getElementById('mob-menu').classList.toggle('on');
-  document.getElementById('mob-overlay').classList.toggle('on');
-  // Update user name in mobile menu
-  if(user) document.getElementById('mob-user').textContent = '👤 ' + user.displayName;
-}
-
-function closeMobileMenu() {
-  document.getElementById('mob-menu').classList.remove('on');
-  document.getElementById('mob-overlay').classList.remove('on');
-}
-
-function mobileGoto(pg) {
-  // Update active state in mobile menu
-  ['dash','inv','sales','calc','report'].forEach(function(p){
-    var el = document.getElementById('mob-'+p);
-    if(el) el.classList.toggle('active', p===pg);
-  });
-  // Also update desktop sidebar
-  var sidebarItems = document.querySelectorAll('.sb-item');
-  var pgIndex = ['dash','inv','sales','calc','report'].indexOf(pg);
-  // Map to sidebar items (skip section headers)
-  var navItems = document.querySelectorAll('.sb-item');
-  navItems.forEach(function(item){ item.classList.remove('active'); });
-  if(navItems[pgIndex]) navItems[pgIndex].classList.add('active');
-  
-  closeMobileMenu();
-  goto(pg, null);
-}
+function obNext(){if(obStep<3){obStep++;renderOB();}else{closeOB();setTimeout(function(){openModal();},400);}}
+function skipOnboarding(){closeOB();}
+function closeOB(){document.getElementById('onboarding').classList.remove('on');}
 
 // ══ UTILS ══
-function esc(t) {
-  return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-function toast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  clearTimeout(t._tid);
-  t._tid = setTimeout(function(){ t.style.display='none'; }, 3500);
-}
+function esc(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._tid);t._tid=setTimeout(function(){t.style.display='none';},3500);}
 </script>
 </body>
 </html>
