@@ -1098,7 +1098,7 @@ function saveQS() {
   save(); updateStats(); renderDash(); renderInv(); closeQS();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(m*rate));
   if(f.meters < f.threshold) {
-    emailjs.send(EJS_SVC, EJS_TPL, {fabric_name:f.name,meters:f.meters,threshold:f.threshold}).catch(function(){});
+    emailjs.send(EJS_SVC, EJS_TPL, {fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(){});
   }
 }
 
@@ -1141,7 +1141,7 @@ function recSale() {
   ['s-m','s-c','s-n'].forEach(function(i){ document.getElementById(i).value=''; });
   document.getElementById('s-amt').textContent = '₹0';
   if(f.meters < f.threshold) {
-    emailjs.send(EJS_SVC, EJS_TPL, {fabric_name:f.name,meters:f.meters,threshold:f.threshold}).catch(function(){});
+    emailjs.send(EJS_SVC, EJS_TPL, {fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(){});
   }
 }
 function renderSales() {
