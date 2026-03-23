@@ -520,13 +520,41 @@ select option{background:var(--white)}
 <!-- MAIN -->
 <div class="main">
   <div class="topbar">
+    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">☰</button>
     <div>
       <span class="tb-title" id="pg-title">Dashboard</span>
       <span class="tb-sub" id="pg-sub"></span>
     </div>
     <div class="tb-right">
-      
-      <button class="add-btn" onclick="openModal()">+ Naya Kapda</button>
+      <button class="add-btn" onclick="openModal()">+ Add Fabric</button>
+    </div>
+  </div>
+
+  <!-- Mobile overlay -->
+  <div class="mob-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
+
+  <!-- Mobile slide menu -->
+  <div class="mob-menu" id="mob-menu">
+    <div class="mob-menu-head">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;background:var(--gold-btn);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--ff-h);font-size:16px;font-weight:800;color:var(--white)">S</div>
+        <span style="font-family:var(--ff-h);font-size:17px;font-weight:700;color:#faf7f0">StockSaathi</span>
+      </div>
+      <button onclick="closeMobileMenu()" style="background:none;border:none;font-size:22px;color:rgba(250,247,240,0.7);cursor:pointer;line-height:1">✕</button>
+    </div>
+    <div class="mob-menu-body">
+      <div class="mob-sec">Main</div>
+      <div class="mob-item active" id="mob-dash" onclick="mobileGoto('dash')">🏠 Dashboard</div>
+      <div class="mob-item" id="mob-inv" onclick="mobileGoto('inv')">📦 Inventory</div>
+      <div class="mob-sec">Manage</div>
+      <div class="mob-item" id="mob-sales" onclick="mobileGoto('sales')">💰 Sales / Bikri</div>
+      <div class="mob-item" id="mob-calc" onclick="mobileGoto('calc')">🧮 Calculator</div>
+      <div class="mob-sec">Reports</div>
+      <div class="mob-item" id="mob-report" onclick="mobileGoto('report')">📊 Monthly Report</div>
+    </div>
+    <div class="mob-menu-foot">
+      <div id="mob-user" style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;padding:10px 14px;background:var(--bg);border-radius:8px;border:1.5px solid var(--border)"></div>
+      <button onclick="signOut()" style="width:100%;padding:12px;background:rgba(192,57,43,0.08);border:1.5px solid rgba(192,57,43,0.25);border-radius:10px;color:var(--red);font-family:var(--ff-h);font-size:14px;font-weight:700;cursor:pointer;">🚪 Sign Out</button>
     </div>
   </div>
 
