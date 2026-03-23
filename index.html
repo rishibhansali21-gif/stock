@@ -375,6 +375,65 @@ select option{background:var(--white)}
 }
 .sb-overlay.on{display:block;animation:fadeIn 0.2s ease}
 
+
+/* ══ MOBILE MENU ══ */
+.hamburger{
+  display:none;
+  background:none;border:1.5px solid var(--border);
+  border-radius:8px;color:var(--text);
+  font-size:18px;cursor:pointer;
+  width:36px;height:36px;
+  align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+
+.mob-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.5);z-index:300;
+  backdrop-filter:blur(2px);
+}
+.mob-overlay.on{display:block}
+
+.mob-menu{
+  position:fixed;left:0;top:0;bottom:0;
+  width:280px;background:var(--white);
+  z-index:400;
+  display:flex;flex-direction:column;
+  transform:translateX(-100%);
+  transition:transform 0.25s ease;
+  box-shadow:4px 0 20px rgba(45,36,22,0.15);
+}
+.mob-menu.on{transform:translateX(0)}
+
+.mob-menu-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 18px;border-bottom:2px solid var(--border);
+  background:linear-gradient(135deg,#2d2416,#4a3820);
+}
+
+.mob-menu-body{flex:1;overflow-y:auto;padding:12px}
+
+.mob-sec{
+  font-size:9px;font-weight:700;color:var(--muted);
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:14px 10px 6px;
+}
+
+.mob-item{
+  display:flex;align-items:center;
+  padding:13px 14px;border-radius:10px;
+  cursor:pointer;color:var(--muted2);font-size:14px;font-weight:500;
+  transition:all 0.15s;margin-bottom:2px;
+  gap:10px;
+}
+.mob-item:hover{background:#f5efe0;color:var(--text)}
+.mob-item.active{background:var(--gold-light);color:var(--gold);border:1px solid #e8d090;font-weight:600}
+
+.mob-menu-foot{
+  padding:16px 18px;border-top:2px solid var(--border);
+  background:var(--bg);
+}
+
 /* ══ MOBILE ══ */
 @media(max-width:768px){
   body{flex-direction:column;overflow:auto}
@@ -774,6 +833,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('sb-foot').innerHTML =
           '<strong>'+u.displayName+'</strong><br>'+
           '<span style="cursor:pointer;color:var(--red)" onclick="signOut()">Sign Out</span>';
+        // Update mobile menu user name
+        var mobUser = document.getElementById('mob-user');
+        if(mobUser) mobUser.textContent = '👤 ' + u.displayName;
         await loadCloud();
         updateStats();
         renderDash();
@@ -1281,6 +1343,37 @@ function obNext() {
 }
 function skipOnboarding() { closeOB(); }
 function closeOB() { document.getElementById('onboarding').classList.remove('on'); }
+
+// ══ MOBILE MENU ══
+function toggleMobileMenu() {
+  document.getElementById('mob-menu').classList.toggle('on');
+  document.getElementById('mob-overlay').classList.toggle('on');
+  // Update user name in mobile menu
+  if(user) document.getElementById('mob-user').textContent = '👤 ' + user.displayName;
+}
+
+function closeMobileMenu() {
+  document.getElementById('mob-menu').classList.remove('on');
+  document.getElementById('mob-overlay').classList.remove('on');
+}
+
+function mobileGoto(pg) {
+  // Update active state in mobile menu
+  ['dash','inv','sales','calc','report'].forEach(function(p){
+    var el = document.getElementById('mob-'+p);
+    if(el) el.classList.toggle('active', p===pg);
+  });
+  // Also update desktop sidebar
+  var sidebarItems = document.querySelectorAll('.sb-item');
+  var pgIndex = ['dash','inv','sales','calc','report'].indexOf(pg);
+  // Map to sidebar items (skip section headers)
+  var navItems = document.querySelectorAll('.sb-item');
+  navItems.forEach(function(item){ item.classList.remove('active'); });
+  if(navItems[pgIndex]) navItems[pgIndex].classList.add('active');
+  
+  closeMobileMenu();
+  goto(pg, null);
+}
 
 // ══ UTILS ══
 function esc(t) {
