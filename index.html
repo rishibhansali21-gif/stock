@@ -732,6 +732,7 @@ select option{background:var(--white)}
     <div class="fg"><label class="fl">Daam <span class="fl-hindi">₹/meter</span></label><input id="qs-r" type="number" placeholder="auto" oninput="calcQSAmt()"/></div>
     <div class="res-box" style="margin-bottom:14px"><span class="res-l">Kul Raqam</span><span class="res-v" id="qs-amt">₹0</span></div>
     <div class="fg"><label class="fl">Grahak <span class="fl-hindi">का नाम</span></label><input id="qs-c" placeholder="e.g. Rajesh Bhai"/></div>
+    <div class="fg"><label class="fl">Email <span class="fl-hindi">(optional — bill bhejne ke liye)</span></label><input id="qs-email" type="email" placeholder="e.g. rajesh@gmail.com"/></div>
     <div class="qmodal-foot" style="flex-direction:column;gap:8px">
       <div style="display:flex;gap:8px;width:100%">
         <button class="btn btn-ghost" onclick="closeQS()" style="flex:1;justify-content:center">Cancel</button>
@@ -812,64 +813,78 @@ select option{background:var(--white)}
       <button onclick="closeBill()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer">✕</button>
     </div>
 
-    <!-- BILL PREVIEW -->
-    <div id="bill-preview" style="background:white;color:#1a1815;border-radius:12px;padding:28px;font-family:'Plus Jakarta Sans',sans-serif;border:2px solid var(--border)">
-      <!-- Header -->
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #e8dfc8">
-        <div>
-          <div style="font-size:22px;font-weight:800;color:#2d2416;font-family:'Baloo 2',cursive" id="bill-shop-name">My Textile Shop</div>
-          <div style="font-size:12px;color:#8a7a5a;margin-top:2px" id="bill-shop-sub">StockSaathi · Powered by Niori</div>
+    <!-- BILL PREVIEW - Receipt Style -->
+    <div id="bill-preview" style="background:white;color:#1a1815;font-family:'Plus Jakarta Sans',sans-serif;max-width:420px;margin:0 auto;position:relative;">
+      <!-- Torn top edge -->
+      <div style="height:18px;background:white;position:relative;overflow:hidden">
+        <svg viewBox="0 0 420 18" style="width:100%;height:18px;display:block"><path d="M0,0 Q10,18 20,0 Q30,18 40,0 Q50,18 60,0 Q70,18 80,0 Q90,18 100,0 Q110,18 120,0 Q130,18 140,0 Q150,18 160,0 Q170,18 180,0 Q190,18 200,0 Q210,18 220,0 Q230,18 240,0 Q250,18 260,0 Q270,18 280,0 Q290,18 300,0 Q310,18 320,0 Q330,18 340,0 Q350,18 360,0 Q370,18 380,0 Q390,18 400,0 Q410,18 420,0 L420,18 L0,18 Z" fill="#f5f0e8"/></svg>
+      </div>
+
+      <!-- Receipt body -->
+      <div style="background:#f5f0e8;padding:24px 28px;">
+        <!-- Shop name -->
+        <div style="text-align:center;border-bottom:1.5px dashed #c8b99a;padding-bottom:18px;margin-bottom:18px">
+          <div style="font-size:22px;font-weight:800;color:#2d2416;letter-spacing:-0.5px;font-family:'Baloo 2',cursive" id="bill-shop-name">Shop Name</div>
+          <div style="font-size:11px;color:#8a7a5a;margin-top:4px;letter-spacing:1px;text-transform:uppercase">CASH RECEIPT / BILL</div>
+          <div style="margin-top:10px;display:flex;justify-content:space-between;font-size:12px;color:#6b5c3e">
+            <span><b>Bill No:</b> <span id="bill-no">—</span></span>
+            <span><b>Date:</b> <span id="bill-date">—</span></span>
+          </div>
         </div>
-        <div style="text-align:right">
-          <div style="font-size:11px;color:#8a7a5a;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">BILL / RECEIPT</div>
-          <div style="font-size:13px;font-weight:700;color:#2d2416;margin-top:2px" id="bill-no">—</div>
-          <div style="font-size:12px;color:#8a7a5a;margin-top:1px" id="bill-date">—</div>
+
+        <!-- Customer -->
+        <div style="margin-bottom:16px">
+          <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">To / Grahak</div>
+          <div style="font-size:16px;font-weight:700;color:#2d2416" id="bill-customer">—</div>
+          <div style="font-size:12px;color:#8a7a5a;margin-top:2px" id="bill-customer-email"></div>
+        </div>
+
+        <!-- Dotted divider -->
+        <div style="border-top:1.5px dashed #c8b99a;margin-bottom:14px"></div>
+
+        <!-- Table header -->
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px">
+          <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px">Item</div>
+          <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;text-align:center">Qty</div>
+          <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;text-align:center">Rate</div>
+          <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;text-align:right">Amt</div>
+        </div>
+
+        <!-- Items -->
+        <div id="bill-items" style="margin-bottom:14px"></div>
+
+        <!-- Dotted divider -->
+        <div style="border-top:1.5px dashed #c8b99a;margin-bottom:14px"></div>
+
+        <!-- Total -->
+        <div style="display:flex;justify-content:space-between;align-items:center;background:white;border-radius:10px;padding:14px 16px;border:2px solid #e8dfc8">
+          <span style="font-size:16px;font-weight:800;color:#2d2416;text-transform:uppercase;letter-spacing:0.5px">Total</span>
+          <span style="font-size:26px;font-weight:800;color:#b8860b;font-family:'Baloo 2',cursive" id="bill-total">₹0</span>
+        </div>
+
+        <!-- Dotted divider -->
+        <div style="border-top:1.5px dashed #c8b99a;margin:18px 0 14px"></div>
+
+        <!-- Thank you -->
+        <div style="text-align:center">
+          <div style="font-size:16px;font-weight:800;color:#2d2416;letter-spacing:0.5px;margin-bottom:4px">THANK YOU! 🙏</div>
+          <div style="font-size:11px;color:#8a7a5a">Dhanyavaad for your business</div>
+          <div style="margin-top:12px;font-size:10px;color:#b8a888;letter-spacing:1px;text-transform:uppercase">Generated by StockSaathi · Niori</div>
         </div>
       </div>
 
-      <!-- Customer -->
-      <div style="margin-bottom:16px;padding:12px 14px;background:#faf7f0;border-radius:8px;border:1px solid #e8dfc8">
-        <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Customer / Grahak</div>
-        <div style="font-size:15px;font-weight:700;color:#2d2416" id="bill-customer">—</div>
-      </div>
-
-      <!-- Items Table -->
-      <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
-        <thead>
-          <tr style="background:#faf7f0;border-bottom:2px solid #e8dfc8">
-            <th style="padding:10px 12px;text-align:left;font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px">Fabric / Kapda</th>
-            <th style="padding:10px 12px;text-align:center;font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px">Meter</th>
-            <th style="padding:10px 12px;text-align:center;font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px">Rate</th>
-            <th style="padding:10px 12px;text-align:right;font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px">Amount</th>
-          </tr>
-        </thead>
-        <tbody id="bill-items"></tbody>
-      </table>
-
-      <!-- Total -->
-      <div style="border-top:2px solid #e8dfc8;padding-top:14px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px" id="bill-gst-row" style="display:none">
-          <span style="font-size:13px;color:#8a7a5a">Subtotal</span>
-          <span style="font-size:13px;color:#2d2416;font-weight:600" id="bill-subtotal">₹0</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;background:#faf7f0;padding:12px 14px;border-radius:8px;border:1px solid #e8dfc8">
-          <span style="font-size:15px;font-weight:800;color:#2d2416">TOTAL</span>
-          <span style="font-size:22px;font-weight:800;color:#b8860b;font-family:'Baloo 2',cursive" id="bill-total">₹0</span>
-        </div>
-      </div>
-
-      <!-- Footer -->
-      <div style="margin-top:16px;text-align:center;font-size:11px;color:#8a7a5a;border-top:1px solid #e8dfc8;padding-top:12px">
-        Thank you for your business! · Dhanyavaad 🙏<br>
-        <span style="font-size:10px;opacity:0.6">Generated by StockSaathi · Powered by Niori</span>
+      <!-- Torn bottom edge -->
+      <div style="height:18px;background:white;position:relative;overflow:hidden">
+        <svg viewBox="0 0 420 18" style="width:100%;height:18px;display:block;transform:scaleY(-1)"><path d="M0,0 Q10,18 20,0 Q30,18 40,0 Q50,18 60,0 Q70,18 80,0 Q90,18 100,0 Q110,18 120,0 Q130,18 140,0 Q150,18 160,0 Q170,18 180,0 Q190,18 200,0 Q210,18 220,0 Q230,18 240,0 Q250,18 260,0 Q270,18 280,0 Q290,18 300,0 Q310,18 320,0 Q330,18 340,0 Q350,18 360,0 Q370,18 380,0 Q390,18 400,0 Q410,18 420,0 L420,18 L0,18 Z" fill="#f5f0e8"/></svg>
       </div>
     </div>
 
     <!-- Action Buttons -->
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button onclick="closeBill()" class="btn btn-ghost" style="flex:1;justify-content:center">Close</button>
-      <button onclick="printBill()" class="btn btn-ghost" style="flex:1;justify-content:center;border-color:var(--border2)">🖨️ Print</button>
-      <button onclick="whatsappBill()" class="btn btn-gold" style="flex:1;justify-content:center">💬 WhatsApp</button>
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+      <button onclick="closeBill()" class="btn btn-ghost" style="flex:1;justify-content:center;min-width:80px">✕ Close</button>
+      <button onclick="printBill()" class="btn btn-ghost" style="flex:1;justify-content:center;min-width:80px;border-color:var(--border2)">🖨️ Print</button>
+      <button onclick="whatsappBill()" style="flex:1;justify-content:center;min-width:80px;padding:10px 14px;background:#25D366;color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">💬 WhatsApp</button>
+      <button id="email-bill-btn" onclick="emailBill()" style="flex:1;justify-content:center;min-width:80px;padding:10px 14px;background:var(--green);color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:13px;font-weight:700;cursor:pointer;display:none;align-items:center;gap:6px">📧 Email</button>
     </div>
   </div>
 </div>
@@ -944,11 +959,7 @@ function startApp() {
   auth = firebase.auth();
   db   = firebase.firestore();
 
-  auth.getRedirectResult().catch(function(e){
-    if(e.code==='auth/unauthorized-domain'){
-      showLoginErr('Domain not authorized. Add "'+window.location.hostname+'" in Firebase Console → Authentication → Authorized Domains.');
-    }
-  });
+  // No redirect auth - using popup only to avoid sessionStorage issues on mobile
 
   auth.onAuthStateChanged(async function(u){
     if(u){
@@ -970,20 +981,25 @@ function startApp() {
 // ══ AUTH ══
 function signInGoogle(){
   var btn=document.getElementById('login-btn');
-  if(btn){btn.disabled=true;btn.textContent='Signing in...';}
+  if(btn){btn.disabled=true;btn.textContent='Opening Google...';}
   hideLoginErr();
   var p=new firebase.auth.GoogleAuthProvider();
   p.setCustomParameters({prompt:'select_account'});
   auth.signInWithPopup(p)
-    .then(function(){if(btn){btn.disabled=false;btn.textContent='Google se Login Karo';}})
+    .then(function(){
+      if(btn){btn.disabled=false;btn.textContent='Google se Login Karo';}
+    })
     .catch(function(e){
       if(btn){btn.disabled=false;btn.textContent='Google se Login Karo';}
-      if(e.code==='auth/popup-blocked'||e.code==='auth/popup-cancelled-by-user'){
-        auth.signInWithRedirect(p).catch(function(e2){showLoginErr('Error: '+e2.message);});
+      console.log('Login error:',e.code,e.message);
+      if(e.code==='auth/popup-blocked'){
+        showLoginErr('Popup blocked! Please allow popups for this site in your browser settings, then try again.');
       } else if(e.code==='auth/unauthorized-domain'){
-        showLoginErr('Domain not authorized. Add "'+window.location.hostname+'" in Firebase Console → Authentication → Authorized Domains.');
-      } else if(e.code!=='auth/cancelled-popup-request'){
-        showLoginErr('Login error: '+e.message);
+        showLoginErr('Domain not authorized. Add "'+window.location.hostname+'" in Firebase Console → Authentication → Settings → Authorized Domains.');
+      } else if(e.code==='auth/cancelled-popup-request'||e.code==='auth/popup-cancelled-by-user'){
+        // user closed popup, do nothing
+      } else {
+        showLoginErr('Login error ('+e.code+'): '+e.message);
       }
     });
 }
@@ -1258,28 +1274,36 @@ var lastSale = null;
 
 function generateBill(saleData) {
   lastSale = saleData;
-  // Bill number
   var billNo = 'BILL-' + Date.now().toString().slice(-6);
   var dateStr = new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+  var shopName = user && user.displayName ? user.displayName + "'s Shop" : 'Textile Shop';
 
   document.getElementById('bill-no').textContent = billNo;
   document.getElementById('bill-date').textContent = dateStr;
   document.getElementById('bill-customer').textContent = saleData.customer || 'Walk-in';
-
-  // Shop name from user
-  var shopName = user && user.displayName ? user.displayName + "'s Shop" : 'Textile Shop';
   document.getElementById('bill-shop-name').textContent = shopName;
 
-  // Items
-  document.getElementById('bill-items').innerHTML =
-    '<tr style="border-bottom:1px solid #e8dfc8">'
-    + '<td style="padding:12px;font-size:14px;font-weight:600;color:#2d2416">' + esc(saleData.fabName) + '</td>'
-    + '<td style="padding:12px;text-align:center;font-size:14px;color:#2d2416">' + saleData.meters + 'm</td>'
-    + '<td style="padding:12px;text-align:center;font-size:14px;color:#2d2416">₹' + saleData.rate + '/m</td>'
-    + '<td style="padding:12px;text-align:right;font-size:14px;font-weight:700;color:#2d2416">₹' + saleData.total.toLocaleString('en-IN') + '</td>'
-    + '</tr>';
+  // Show customer email if available
+  var emailEl = document.getElementById('bill-customer-email');
+  if(emailEl) emailEl.textContent = saleData.customerEmail || '';
 
-  document.getElementById('bill-total').textContent = fv(saleData.total);
+  // Items - new grid style
+  document.getElementById('bill-items').innerHTML =
+    '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:10px 0;border-bottom:1px solid #e8dfc8">'
+    + '<div style="font-size:14px;font-weight:600;color:#2d2416">' + esc(saleData.fabName) + '</div>'
+    + '<div style="font-size:14px;color:#2d2416;text-align:center">' + saleData.meters + 'm</div>'
+    + '<div style="font-size:14px;color:#2d2416;text-align:center">₹' + saleData.rate + '</div>'
+    + '<div style="font-size:14px;font-weight:700;color:#2d2416;text-align:right">₹' + saleData.total.toLocaleString('en-IN') + '</div>'
+    + '</div>';
+
+  document.getElementById('bill-total').textContent = '₹' + saleData.total.toLocaleString('en-IN');
+
+  // Show email bill button only if email present
+  var emailBillBtn = document.getElementById('email-bill-btn');
+  if(emailBillBtn) {
+    emailBillBtn.style.display = saleData.customerEmail ? 'flex' : 'none';
+  }
+
   document.getElementById('bill-modal').classList.add('on');
 }
 
@@ -1330,11 +1354,12 @@ function saveQSAndBill() {
   if(m>f.meters) { toast('Only '+f.meters+'m available!'); return; }
   var rate = r||f.rate;
   f.meters -= m;
-  var saleData = {id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,total:m*rate,customer:cust,note:'',date:new Date().toISOString()};
+  var custEmail = (document.getElementById('qs-email')||{value:''}).value.trim();
+  var saleData = {id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,total:m*rate,customer:cust,customerEmail:custEmail,note:'',date:new Date().toISOString()};
   sales.unshift(saleData);
   save(); updateStats(); renderDash(); renderInv(); closeQS();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(m*rate));
-  ['qs-m','qs-c'].forEach(function(i){ document.getElementById(i).value=''; });
+  ['qs-m','qs-c','qs-email'].forEach(function(i){ var el=document.getElementById(i); if(el) el.value=''; });
   if(f.meters<f.threshold) emailjs.send(EJS_SVC,EJS_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(){});
   setTimeout(function(){ generateBill(saleData); }, 300);
 }
@@ -1360,6 +1385,24 @@ function recSaleAndBill() {
   document.getElementById('s-amt').textContent='₹0';
   if(f.meters<f.threshold) emailjs.send(EJS_SVC,EJS_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(){});
   setTimeout(function(){ generateBill(saleData); }, 300);
+}
+
+
+function emailBill() {
+  if(!lastSale || !lastSale.customerEmail) return;
+  var shopName = user && user.displayName ? user.displayName + "'s Shop" : 'Textile Shop';
+  var date = new Date().toLocaleDateString('en-IN');
+  emailjs.send(EJS_SVC, EJS_TPL, {
+    to_email: lastSale.customerEmail,
+    to_name: lastSale.customer || 'Customer',
+    fabric_name: shopName + ' - Bill',
+    meters: lastSale.fabName + ' | ' + lastSale.meters + 'm x Rs.' + lastSale.rate + '/m',
+    threshold: 'TOTAL: Rs.' + lastSale.total.toLocaleString('en-IN') + ' | Date: ' + date
+  }).then(function(){
+    toast('📧 Bill emailed to ' + lastSale.customerEmail + '!');
+  }).catch(function(e){
+    toast('Email failed. Check EmailJS settings.');
+  });
 }
 
 // ══ UTILS ══
