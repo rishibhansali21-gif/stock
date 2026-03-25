@@ -732,7 +732,13 @@ select option{background:var(--white)}
     <div class="fg"><label class="fl">Daam <span class="fl-hindi">₹/meter</span></label><input id="qs-r" type="number" placeholder="auto" oninput="calcQSAmt()"/></div>
     <div class="res-box" style="margin-bottom:14px"><span class="res-l">Kul Raqam</span><span class="res-v" id="qs-amt">₹0</span></div>
     <div class="fg"><label class="fl">Grahak <span class="fl-hindi">का नाम</span></label><input id="qs-c" placeholder="e.g. Rajesh Bhai"/></div>
-    <div class="fg"><label class="fl">Email <span class="fl-hindi">(optional — bill bhejne ke liye)</span></label><input id="qs-email" type="email" placeholder="e.g. rajesh@gmail.com"/></div>
+    <div class="fg"><label class="fl">WhatsApp Number <span class="fl-hindi">(bill bhejne ke liye)</span></label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="padding:10px 12px;background:var(--bg);border:2px solid var(--border);border-radius:9px;font-size:13px;color:var(--muted2);flex-shrink:0">+91</span>
+        <input id="qs-phone" type="tel" placeholder="9876543210" style="flex:1"/>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Email <span class="fl-hindi">(optional)</span></label><input id="qs-email" type="email" placeholder="e.g. rajesh@gmail.com"/></div>
     <div class="qmodal-foot" style="flex-direction:column;gap:8px">
       <div style="display:flex;gap:8px;width:100%">
         <button class="btn btn-ghost" onclick="closeQS()" style="flex:1;justify-content:center">Cancel</button>
@@ -883,7 +889,8 @@ select option{background:var(--white)}
     <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
       <button onclick="closeBill()" class="btn btn-ghost" style="flex:1;justify-content:center;min-width:80px">✕ Close</button>
       <button onclick="printBill()" class="btn btn-ghost" style="flex:1;justify-content:center;min-width:80px;border-color:var(--border2)">🖨️ Print</button>
-      <button onclick="whatsappBill()" style="flex:1;justify-content:center;min-width:80px;padding:10px 14px;background:#25D366;color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">💬 WhatsApp</button>
+      <button id="wa-bill-btn" onclick="whatsappBill()" style="flex:1;justify-content:center;min-width:80px;padding:10px 14px;background:#25D366;color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">💬 WhatsApp</button>
+      <button onclick="downloadAndWhatsapp()" style="flex:1;justify-content:center;min-width:90px;padding:10px 14px;background:#128C7E;color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px">📄+💬 PDF then WA</button>
       <button id="email-bill-btn" onclick="emailBill()" style="flex:1;justify-content:center;min-width:80px;padding:10px 14px;background:var(--green);color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:13px;font-weight:700;cursor:pointer;display:none;align-items:center;gap:6px">📧 Email</button>
     </div>
   </div>
@@ -926,7 +933,8 @@ select option{background:var(--white)}
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
 // ══ CONFIG ══
-var EJS_SVC='service_j84y5ge', EJS_TPL='template_8pvu8qc', EJS_KEY='Ux_cTro8ToCSm2LUY';
+var EJS_SVC='service_j84y5ge', EJS_TPL='template_8pvu8qc', EJS_BILL_TPL='template_8pvu8qc', EJS_KEY='Ux_cTro8ToCSm2LUY';
+// NOTE: Create a separate EmailJS template for bills and update EJS_BILL_TPL above
 
 // ══ STATE ══
 var auth, db, user=null, inv=[], sales=[], asFabId=null, qsFabId=null, selCatV='';
@@ -1298,10 +1306,19 @@ function generateBill(saleData) {
 
   document.getElementById('bill-total').textContent = '₹' + saleData.total.toLocaleString('en-IN');
 
-  // Show email bill button only if email present
+  // Show/hide email and whatsapp buttons
   var emailBillBtn = document.getElementById('email-bill-btn');
-  if(emailBillBtn) {
-    emailBillBtn.style.display = saleData.customerEmail ? 'flex' : 'none';
+  if(emailBillBtn) emailBillBtn.style.display = saleData.customerEmail ? 'flex' : 'none';
+
+  var waBillBtn = document.getElementById('wa-bill-btn');
+  if(waBillBtn) {
+    if(saleData.customerPhone) {
+      waBillBtn.style.display = 'flex';
+      waBillBtn.textContent = '💬 Send to ' + saleData.customerPhone.slice(-4).padStart(10,'*');
+    } else {
+      waBillBtn.style.display = 'flex'; // always show, will use general share if no number
+      waBillBtn.textContent = '💬 WhatsApp';
+    }
   }
 
   document.getElementById('bill-modal').classList.add('on');
@@ -1328,19 +1345,24 @@ function whatsappBill() {
   if(!lastSale) return;
   var shopName = user && user.displayName ? user.displayName + " ka Shop" : 'Textile Shop';
   var date = new Date().toLocaleDateString('en-IN');
-  var line = '---------------------------';
-  var msg = 'BILL - ' + shopName + '\n';
-  msg += 'Powered by StockSaathi\n\n';
-  msg += 'Date: ' + date + '\n';
-  msg += 'Customer: ' + (lastSale.customer||'Walk-in') + '\n\n';
+  var line = '----------------------------';
+  var msg = '*' + shopName + '*\n';
+  msg += '_StockSaathi Receipt_\n\n';
+  msg += '*Date:* ' + date + '\n';
+  msg += '*Customer:* ' + (lastSale.customer||'Walk-in') + '\n\n';
   msg += line + '\n';
-  msg += lastSale.fabName + '\n';
+  msg += '*' + lastSale.fabName + '*\n';
   msg += lastSale.meters + 'm x Rs.' + lastSale.rate + '/m\n';
   msg += line + '\n';
-  msg += 'TOTAL: Rs.' + lastSale.total.toLocaleString('en-IN') + '\n\n';
-  msg += 'Thank you! Dhanyavaad\n';
-  msg += 'StockSaathi by Niori';
-  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+  msg += '*TOTAL: Rs.' + lastSale.total.toLocaleString('en-IN') + '*\n\n';
+  msg += 'Thank you! _Dhanyavaad_ \uD83D\uDE4F\n';
+  msg += '_StockSaathi by Niori_';
+  // If customer phone available, open direct chat
+  var phone = lastSale.customerPhone;
+  var url = phone
+    ? 'https://wa.me/91' + phone + '?text=' + encodeURIComponent(msg)
+    : 'https://wa.me/?text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
 }
 
 // Quick sell with bill
@@ -1355,11 +1377,12 @@ function saveQSAndBill() {
   var rate = r||f.rate;
   f.meters -= m;
   var custEmail = (document.getElementById('qs-email')||{value:''}).value.trim();
-  var saleData = {id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,total:m*rate,customer:cust,customerEmail:custEmail,note:'',date:new Date().toISOString()};
+  var custPhone = (document.getElementById('qs-phone')||{value:''}).value.trim().replace(/\D/g,'');
+  var saleData = {id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,total:m*rate,customer:cust,customerEmail:custEmail,customerPhone:custPhone,note:'',date:new Date().toISOString()};
   sales.unshift(saleData);
   save(); updateStats(); renderDash(); renderInv(); closeQS();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(m*rate));
-  ['qs-m','qs-c','qs-email'].forEach(function(i){ var el=document.getElementById(i); if(el) el.value=''; });
+  ['qs-m','qs-c','qs-email','qs-phone'].forEach(function(i){ var el=document.getElementById(i); if(el) el.value=''; });
   if(f.meters<f.threshold) emailjs.send(EJS_SVC,EJS_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(){});
   setTimeout(function(){ generateBill(saleData); }, 300);
 }
@@ -1388,20 +1411,68 @@ function recSaleAndBill() {
 }
 
 
-function emailBill() {
-  if(!lastSale || !lastSale.customerEmail) return;
+
+function downloadBillPDF() {
+  if(!lastSale) return;
   var shopName = user && user.displayName ? user.displayName + "'s Shop" : 'Textile Shop';
   var date = new Date().toLocaleDateString('en-IN');
-  emailjs.send(EJS_SVC, EJS_TPL, {
-    to_email: lastSale.customerEmail,
-    to_name: lastSale.customer || 'Customer',
-    fabric_name: shopName + ' - Bill',
-    meters: lastSale.fabName + ' | ' + lastSale.meters + 'm x Rs.' + lastSale.rate + '/m',
-    threshold: 'TOTAL: Rs.' + lastSale.total.toLocaleString('en-IN') + ' | Date: ' + date
+  var billNo = 'BILL-' + Date.now().toString().slice(-6);
+  var billContent = document.getElementById('bill-preview').innerHTML;
+  var win = window.open('', '_blank', 'width=500,height=700');
+  if(!win) { toast('Popup blocked! Allow popups and try again.'); return; }
+  win.document.write('<html><head><title>Bill-'+billNo+'</title>');
+  win.document.write('<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">');
+  win.document.write('<style>body{margin:0;padding:20px;font-family:"Plus Jakarta Sans",sans-serif;background:white}*{box-sizing:border-box}@media print{body{margin:0;padding:0}}</style>');
+  win.document.write('</head><body>');
+  win.document.write(billContent);
+  win.document.write('<script>setTimeout(function(){window.print();},800);<\/script>');
+  win.document.write('</body></html>');
+  win.document.close();
+}
+
+function downloadAndWhatsapp() {
+  if(!lastSale) return;
+  // Step 1: Open print dialog for PDF
+  downloadBillPDF();
+  // Step 2: After short delay, open WhatsApp so user can attach the saved PDF
+  setTimeout(function(){
+    var phone = lastSale.customerPhone;
+    var msg = 'Hi ' + (lastSale.customer||'') + ', please find your bill attached.';
+    var url = phone
+      ? 'https://wa.me/91' + phone + '?text=' + encodeURIComponent(msg)
+      : 'https://wa.me/?text=' + encodeURIComponent(msg);
+    toast('1. Save PDF from print dialog. 2. Attach it in WhatsApp!');
+    setTimeout(function(){ window.open(url, '_blank'); }, 1500);
+  }, 500);
+}
+
+function emailBill() {
+  if(!lastSale || !lastSale.customerEmail) {
+    toast('Customer email daalo pehle!');
+    return;
+  }
+  var shopName = user && user.displayName ? user.displayName + "'s Shop" : 'Textile Shop';
+  var date = new Date().toLocaleDateString('en-IN');
+  var emailBtn = document.getElementById('email-bill-btn');
+  if(emailBtn) { emailBtn.disabled=true; emailBtn.textContent='Sending...'; }
+
+  // Use a dedicated bill template service ID
+  emailjs.send(EJS_SVC, EJS_BILL_TPL, {
+    to_email:    lastSale.customerEmail,
+    to_name:     lastSale.customer || 'Customer',
+    shop_name:   shopName,
+    date:        date,
+    fabric_name: lastSale.fabName,
+    meters:      lastSale.meters,
+    rate:        lastSale.rate,
+    total:       lastSale.total.toLocaleString('en-IN')
   }).then(function(){
-    toast('📧 Bill emailed to ' + lastSale.customerEmail + '!');
+    if(emailBtn) { emailBtn.disabled=false; emailBtn.textContent='📧 Email'; }
+    toast('📧 Bill sent to ' + lastSale.customerEmail + '!');
   }).catch(function(e){
-    toast('Email failed. Check EmailJS settings.');
+    console.log('Email error:', e);
+    if(emailBtn) { emailBtn.disabled=false; emailBtn.textContent='📧 Email'; }
+    toast('Email failed: ' + (e.text||e.message||'Check EmailJS template'));
   });
 }
 
