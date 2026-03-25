@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>StockSaathi — Kapda Stock Manager</title>
+<title>StockSaathi1 — Kapda Stock Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -334,7 +334,6 @@ select option{background:var(--white)}
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <div class="sb">
   <div class="sb-top">
     <div class="sb-logo">
@@ -357,7 +356,6 @@ select option{background:var(--white)}
   <div class="sb-foot" id="sb-foot">Powered by Niori · v5.0</div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
   <div class="topbar">
     <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">☰</button>
@@ -396,7 +394,6 @@ select option{background:var(--white)}
     </div>
   </div>
 
-  <!-- ══ DASHBOARD ══ -->
   <div class="page on" id="pg-dash">
     <div class="stats">
       <div class="stat"><div class="stat-l">Kul Kapde</div><div class="stat-v" id="st-c">0</div><div class="stat-h">prakar</div></div>
@@ -417,7 +414,6 @@ select option{background:var(--white)}
     </div>
   </div>
 
-  <!-- ══ INVENTORY ══ -->
   <div class="page" id="pg-inv">
     <div class="content">
       <div class="sh">
@@ -446,7 +442,6 @@ select option{background:var(--white)}
     </div>
   </div>
 
-  <!-- ══ SALES ══ -->
   <div class="page" id="pg-sales">
     <div class="content">
       <div class="sh"><div><div class="sh-title">💰 Bikri</div><div class="sh-sub">Sale record karo</div></div></div>
@@ -458,7 +453,22 @@ select option{background:var(--white)}
             <div class="fg"><label class="fl">Meter <span class="fl-hindi">बेचे</span></label><input id="s-m" type="number" placeholder="0" min="0" oninput="calcSaleAmt()"/></div>
             <div class="fg"><label class="fl">Daam <span class="fl-hindi">₹/m</span></label><input id="s-r" type="number" placeholder="auto" oninput="calcSaleAmt()"/></div>
           </div>
-          <!-- GST Section -->
+          <div class="g2">
+            <div class="fg"><label class="fl">Discount (₹)</label><input id="s-discount" type="number" placeholder="0" oninput="calcSaleAmt()"/></div>
+            <div class="fg"><label class="fl">Invoice Type</label>
+              <select id="s-inv-type">
+                <option value="Cash">Cash</option><option value="Credit">Credit</option>
+              </select>
+            </div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Payment Method</label>
+              <select id="s-pay-mode">
+                <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Bank">Bank</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">Paid Amount (₹)</label><input id="s-paid" type="number" placeholder="Leave empty for auto"/></div>
+          </div>
           <div style="background:var(--blue-light);border:2px solid #b8d0f4;border-radius:10px;padding:14px 16px;margin-bottom:14px">
             <div style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">GST Settings</div>
             <div class="g2" style="margin-bottom:8px">
@@ -505,7 +515,6 @@ select option{background:var(--white)}
     </div>
   </div>
 
-  <!-- ══ BAHI KHATA (Ledger) ══ -->
   <div class="page" id="pg-ledger">
     <div class="content">
       <div class="sh">
@@ -513,7 +522,6 @@ select option{background:var(--white)}
         <button class="btn btn-gold" onclick="openPurchaseModal()">+ Purchase Record</button>
       </div>
 
-      <!-- Summary Cards -->
       <div class="ledger-summary">
         <div class="ls-card">
           <div class="ls-label">Total Sales</div>
@@ -532,13 +540,11 @@ select option{background:var(--white)}
         </div>
       </div>
 
-      <!-- Tabs -->
       <div class="ledger-tabs">
         <button class="ledger-tab active" id="tab-sales" onclick="switchLedger('sales')">💰 Sales Book</button>
         <button class="ledger-tab" id="tab-purchases" onclick="switchLedger('purchases')">📥 Purchase Book</button>
       </div>
 
-      <!-- Search -->
       <div class="search-big">
         <div class="search-wrap">
           <span class="search-ic">🔍</span>
@@ -550,7 +556,6 @@ select option{background:var(--white)}
     </div>
   </div>
 
-  <!-- ══ CALCULATOR ══ -->
   <div class="page" id="pg-calc">
     <div class="content">
       <div class="sh"><div><div class="sh-title">🧮 Calculator</div><div class="sh-sub">Jaldi hisaab lagao</div></div></div>
@@ -595,7 +600,6 @@ select option{background:var(--white)}
     </div>
   </div>
 
-  <!-- ══ REPORT ══ -->
   <div class="page" id="pg-report">
     <div class="content">
       <div class="sh">
@@ -620,10 +624,7 @@ select option{background:var(--white)}
       </div>
     </div>
   </div>
-</div><!-- /main -->
-
-<!-- ADD STOCK QUICK MODAL -->
-<div class="qmodal-bg" id="addstock-modal">
+</div><div class="qmodal-bg" id="addstock-modal">
   <div class="qmodal">
     <div class="qmodal-title">📥 Stock Add Karo</div>
     <div class="qmodal-fab" id="addstock-fab-name">—</div>
@@ -638,14 +639,30 @@ select option{background:var(--white)}
   </div>
 </div>
 
-<!-- QUICK SELL MODAL -->
 <div class="qmodal-bg" id="quicksell-modal">
   <div class="qmodal" style="width:460px">
     <div class="qmodal-title">💰 Jaldi Becho</div>
     <div class="qmodal-fab" id="qs-fab-name">—</div>
     <div class="fg"><label class="fl">Kitna Meter Becha? <span class="fl-hindi">मीटर</span></label><input id="qs-m" type="number" placeholder="e.g. 20" min="0" oninput="calcQSAmt()"/></div>
     <div class="fg"><label class="fl">Daam <span class="fl-hindi">₹/meter</span></label><input id="qs-r" type="number" placeholder="auto" oninput="calcQSAmt()"/></div>
-    <!-- GST -->
+    
+    <div class="g2">
+      <div class="fg"><label class="fl">Discount (₹) <span class="fl-hindi">(Optional)</span></label><input id="qs-discount" type="number" placeholder="0" oninput="calcQSAmt()"/></div>
+      <div class="fg"><label class="fl">Invoice Type</label>
+        <select id="qs-inv-type">
+          <option value="Cash">Cash</option><option value="Credit">Credit</option>
+        </select>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="fg"><label class="fl">Payment Mode</label>
+        <select id="qs-pay-mode">
+          <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Bank">Bank</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Paid Amount (₹)</label><input id="qs-paid" type="number" placeholder="Leave empty for auto"/></div>
+    </div>
+
     <div style="background:var(--blue-light);border:2px solid #b8d0f4;border-radius:10px;padding:12px 14px;margin-bottom:12px">
       <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">GST</div>
       <div class="g2">
@@ -689,7 +706,6 @@ select option{background:var(--white)}
   </div>
 </div>
 
-<!-- PURCHASE MODAL -->
 <div class="qmodal-bg" id="purchase-modal">
   <div class="qmodal" style="width:460px">
     <div class="qmodal-title">📥 Purchase Record Karo</div>
@@ -701,7 +717,6 @@ select option{background:var(--white)}
       <div class="fg"><label class="fl">Meter *</label><input id="pur-meters" type="number" placeholder="0" min="0" oninput="calcPurAmt()"/></div>
       <div class="fg"><label class="fl">Rate <span class="fl-hindi">₹/m</span> *</label><input id="pur-rate" type="number" placeholder="0" min="0" oninput="calcPurAmt()"/></div>
     </div>
-    <!-- GST for purchase -->
     <div style="background:var(--blue-light);border:2px solid #b8d0f4;border-radius:10px;padding:12px 14px;margin-bottom:12px">
       <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">GST on Purchase</div>
       <div class="g2">
@@ -727,14 +742,16 @@ select option{background:var(--white)}
       <span class="res-v" id="pur-total">₹0</span>
     </div>
     <div class="fg"><label class="fl">Note <span class="fl-hindi">(Optional)</span></label><input id="pur-note" placeholder="Invoice no, note..."/></div>
-    <div class="qmodal-foot">
-      <button class="btn btn-ghost" onclick="closePurchaseModal()">Ruk Jao</button>
-      <button class="btn btn-gold" onclick="savePurchase()">✅ Record Karo</button>
+    <div class="qmodal-foot" style="flex-direction:column;gap:8px">
+      <div style="display:flex;gap:8px;width:100%">
+        <button class="btn btn-ghost" onclick="closePurchaseModal()" style="flex:1;justify-content:center">Ruk Jao</button>
+        <button class="btn btn-gold" onclick="savePurchase(false)" style="flex:1;justify-content:center">✅ Record Karo</button>
+      </div>
+      <button class="btn btn-full" onclick="savePurchase(true)" style="background:var(--blue);color:white;border:none;justify-content:center;width:100%">🧾 Record + Generate Receipt</button>
     </div>
   </div>
 </div>
 
-<!-- ADD FABRIC MODAL -->
 <div class="modal-bg" id="add-modal">
   <div class="modal">
     <div class="modal-title">🧵 Naya Kapda Daalo</div>
@@ -765,7 +782,6 @@ select option{background:var(--white)}
   </div>
 </div>
 
-<!-- ONBOARDING -->
 <div id="onboarding">
   <div class="ob-card">
     <div class="ob-top">
@@ -788,7 +804,6 @@ select option{background:var(--white)}
   </div>
 </div>
 
-<!-- BILL MODAL -->
 <div class="qmodal-bg" id="bill-modal">
   <div class="qmodal" style="width:500px;max-width:95vw">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
@@ -801,16 +816,20 @@ select option{background:var(--white)}
       </div>
       <div style="background:#f5f0e8;padding:24px 28px;">
         <div style="text-align:center;border-bottom:1.5px dashed #c8b99a;padding-bottom:18px;margin-bottom:18px">
-          <div style="font-size:22px;font-weight:800;color:#2d2416;letter-spacing:-0.5px" id="bill-shop-name">Shop Name</div>
+          <div style="font-size:22px;font-weight:800;color:#2d2416;letter-spacing:-0.5px" id="bill-shop-name">Firm Name</div>
           <div id="bill-shop-gstin" style="font-size:11px;color:#8a7a5a;margin-top:2px"></div>
-          <div style="font-size:11px;color:#8a7a5a;margin-top:4px;letter-spacing:1px;text-transform:uppercase">CASH RECEIPT / TAX INVOICE</div>
+          <div id="bill-type-lbl" style="font-size:11px;color:#8a7a5a;margin-top:4px;letter-spacing:1px;text-transform:uppercase">BILL</div>
           <div style="margin-top:10px;display:flex;justify-content:space-between;font-size:12px;color:#6b5c3e">
             <span><b>Bill No:</b> <span id="bill-no">—</span></span>
             <span><b>Date:</b> <span id="bill-date">—</span></span>
           </div>
+          <div style="margin-top:4px;display:flex;justify-content:space-between;font-size:12px;color:#6b5c3e">
+            <span><b>Pay Mode:</b> <span id="bill-pay-mode">—</span></span>
+            <span><b>Inv Type:</b> <span id="bill-inv-type">—</span></span>
+          </div>
         </div>
         <div style="margin-bottom:16px">
-          <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">To / Grahak</div>
+          <div id="bill-to-lbl" style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">To / Grahak</div>
           <div style="font-size:16px;font-weight:700;color:#2d2416" id="bill-customer">—</div>
           <div style="font-size:12px;color:#8a7a5a;margin-top:2px" id="bill-buyer-gstin"></div>
           <div style="font-size:12px;color:#8a7a5a;margin-top:2px" id="bill-customer-email"></div>
@@ -823,13 +842,27 @@ select option{background:var(--white)}
           <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;text-align:right">Amt</div>
         </div>
         <div id="bill-items" style="margin-bottom:14px"></div>
+        <div id="bill-discount-section"></div>
         <div style="border-top:1.5px dashed #c8b99a;margin-bottom:14px"></div>
-        <!-- GST Breakdown in bill -->
         <div id="bill-gst-section" style="margin-bottom:14px;font-size:12px;color:#6b5c3e"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;background:white;border-radius:10px;padding:14px 16px;border:2px solid #e8dfc8">
+        <div style="display:flex;justify-content:space-between;align-items:center;background:white;border-radius:10px;padding:14px 16px;border:2px solid #e8dfc8;margin-bottom:10px">
           <span style="font-size:16px;font-weight:800;color:#2d2416;text-transform:uppercase;letter-spacing:0.5px">Total (incl. GST)</span>
           <span style="font-size:26px;font-weight:800;color:#b8860b;font-family:'Baloo 2',cursive" id="bill-total">₹0</span>
         </div>
+        
+        <div id="bill-payment-status" style="margin-bottom:14px;font-size:12px;color:#6b5c3e;background:white;padding:10px;border-radius:8px;border:1px solid #e8dfc8;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Paid Amount:</span><span id="bill-paid-amt">₹0</span></div>
+            <div style="display:flex;justify-content:space-between;font-weight:700"><span>Due Amount:</span><span id="bill-due-amt">₹0</span></div>
+        </div>
+
+        <div style="margin-top:30px;display:flex;justify-content:space-between;align-items:flex-end;">
+            <div></div>
+            <div style="text-align:center">
+                <div style="border-bottom:1.5px solid #2d2416;width:120px;margin-bottom:6px"></div>
+                <div style="font-size:11px;color:#8a7a5a;font-weight:700">Authorized Sign</div>
+            </div>
+        </div>
+
         <div style="border-top:1.5px dashed #c8b99a;margin:18px 0 14px"></div>
         <div style="text-align:center">
           <div style="font-size:16px;font-weight:800;color:#2d2416;letter-spacing:0.5px;margin-bottom:4px">THANK YOU! 🙏</div>
@@ -851,7 +884,6 @@ select option{background:var(--white)}
   </div>
 </div>
 
-<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-wrap">
     <div class="login-left">
@@ -1124,6 +1156,7 @@ function openQS(id){
   qsFabId=id;var f=inv.find(function(f){return f.id===id;});if(!f)return;
   document.getElementById('qs-fab-name').textContent=f.name+' — Available: '+f.meters+'m';
   document.getElementById('qs-m').value='';document.getElementById('qs-r').value=f.rate||'';
+  document.getElementById('qs-discount').value='';document.getElementById('qs-paid').value='';
   document.getElementById('qs-c').value='';document.getElementById('qs-amt').textContent='₹0';
   document.getElementById('qs-gst-breakdown').innerHTML='';
   document.getElementById('quicksell-modal').classList.add('on');document.getElementById('qs-m').focus();
@@ -1134,7 +1167,12 @@ function calcQSAmt(){
   var r=parseFloat(document.getElementById('qs-r').value)||0;
   var rate=parseFloat(document.getElementById('qs-gst-rate').value)||0;
   var type=document.getElementById('qs-gst-type').value;
-  var g=calcGST(m*r,rate,type);
+  var discount=parseFloat(document.getElementById('qs-discount').value)||0;
+  
+  var sub = m*r;
+  var subAfterDiscount = Math.max(0, sub - discount);
+  var g=calcGST(subAfterDiscount,rate,type);
+  
   document.getElementById('qs-amt').textContent=fv(g.total);
   document.getElementById('qs-gst-breakdown').innerHTML=gstBreakdownHTML(g,type);
 }
@@ -1145,19 +1183,32 @@ function _doQSSale(withBill){
   var cust=document.getElementById('qs-c').value.trim()||'Walk-in';
   var f=inv.find(function(f){return f.id===qsFabId;});
   if(!f){toast('Error!');return;}if(!m||m<=0){toast('Enter meters!');return;}if(m>f.meters){toast('Only '+f.meters+'m available!');return;}
+  
   var rate=r||f.rate;
   var gstRate=parseFloat(document.getElementById('qs-gst-rate').value)||0;
   var gstType=document.getElementById('qs-gst-type').value;
-  var g=calcGST(m*rate,gstRate,gstType);
+  var discount=parseFloat(document.getElementById('qs-discount').value)||0;
+  
+  var subAfterDiscount = Math.max(0, (m*rate) - discount);
+  var g=calcGST(subAfterDiscount,gstRate,gstType);
+  
+  var invType = document.getElementById('qs-inv-type').value;
+  var payMode = document.getElementById('qs-pay-mode').value;
+  var paidInput = parseFloat(document.getElementById('qs-paid').value);
+  var paidAmt = isNaN(paidInput) ? (invType === 'Credit' ? 0 : g.total) : paidInput;
+  var dueAmt = g.total - paidAmt;
+
   f.meters-=m;
   var custEmail=(document.getElementById('qs-email')||{value:''}).value.trim();
   var custPhone=(document.getElementById('qs-phone')||{value:''}).value.trim().replace(/\D/g,'');
   var buyerGstin=(document.getElementById('qs-buyer-gstin')||{value:''}).value.trim();
-  var saleData={id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,subtotal:g.subtotal,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,customerEmail:custEmail,customerPhone:custPhone,buyerGstin:buyerGstin,note:'',date:new Date().toISOString()};
+  
+  var saleData={id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,customerEmail:custEmail,customerPhone:custPhone,buyerGstin:buyerGstin,note:'',date:new Date().toISOString()};
   sales.unshift(saleData);
+  
   save();updateStats();renderDash();renderInv();closeQS();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
-  // Low stock alert (dedicated alert template)
+  // Low stock alert
   if(f.meters<f.threshold){
     emailjs.send(EJS_SVC, EJS_ALERT_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(e){console.log('Low stock alert err:',e);});
   }
@@ -1178,8 +1229,13 @@ function calcSaleAmt(){
   var r=parseFloat(document.getElementById('s-r').value)||0;
   var rate=parseFloat(document.getElementById('s-gst-rate').value)||0;
   var type=document.getElementById('s-gst-type').value;
-  var g=calcGST(m*r,rate,type);
-  document.getElementById('s-subtotal').textContent=fv(g.subtotal);
+  var discount=parseFloat(document.getElementById('s-discount').value)||0;
+  
+  var sub = m*r;
+  var subAfterDiscount = Math.max(0, sub - discount);
+  var g=calcGST(subAfterDiscount,rate,type);
+  
+  document.getElementById('s-subtotal').textContent=fv(sub) + (discount>0?' (Disc: -₹'+discount+')':'');
   document.getElementById('s-amt').textContent=fv(g.total);
   document.getElementById('s-gst-breakdown').innerHTML=gstBreakdownHTML(g,type);
 }
@@ -1192,21 +1248,33 @@ function _doSale(withBill){
   var note=document.getElementById('s-n').value.trim();
   var f=inv.find(function(f){return f.id===id;});
   if(!f){toast('Select a fabric!');return;}if(!m||m<=0){toast('Enter meters!');return;}if(m>f.meters){toast('Only '+f.meters+'m available!');return;}
+  
   var rate=r||f.rate;
   var gstRate=parseFloat(document.getElementById('s-gst-rate').value)||0;
   var gstType=document.getElementById('s-gst-type').value;
+  var discount=parseFloat(document.getElementById('s-discount').value)||0;
   var buyerGstin=document.getElementById('s-buyer-gstin').value.trim();
-  var g=calcGST(m*rate,gstRate,gstType);
+  
+  var subAfterDiscount = Math.max(0, (m*rate) - discount);
+  var g=calcGST(subAfterDiscount,gstRate,gstType);
+  
+  var invType = document.getElementById('s-inv-type').value;
+  var payMode = document.getElementById('s-pay-mode').value;
+  var paidInput = parseFloat(document.getElementById('s-paid').value);
+  var paidAmt = isNaN(paidInput) ? (invType === 'Credit' ? 0 : g.total) : paidInput;
+  var dueAmt = g.total - paidAmt;
+
   f.meters-=m;
-  var saleData={id:Date.now(),fabId:id,fabName:f.name,meters:m,rate:rate,subtotal:g.subtotal,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,buyerGstin:buyerGstin,note:note,date:new Date().toISOString()};
+  var saleData={id:Date.now(),fabId:id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,buyerGstin:buyerGstin,note:note,date:new Date().toISOString()};
   sales.unshift(saleData);
   save();updateStats();renderSalesList();fillSD();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
-  ['s-m','s-c','s-n','s-buyer-gstin'].forEach(function(i){document.getElementById(i).value='';});
+  
+  ['s-m','s-c','s-n','s-buyer-gstin','s-discount','s-paid'].forEach(function(i){document.getElementById(i).value='';});
   document.getElementById('s-amt').textContent='₹0';
   document.getElementById('s-subtotal').textContent='₹0';
   document.getElementById('s-gst-breakdown').innerHTML='';
-  // Low stock alert
+  
   if(f.meters<f.threshold){
     emailjs.send(EJS_SVC, EJS_ALERT_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(e){console.log('Low stock alert err:',e);});
   }
@@ -1307,7 +1375,7 @@ function calcPurAmt(){
   document.getElementById('pur-total').textContent=fv(g.total);
   document.getElementById('pur-gst-breakdown').innerHTML=gstBreakdownHTML(g,type);
 }
-function savePurchase(){
+function savePurchase(withBill){
   var party=document.getElementById('pur-party').value.trim();
   var item=document.getElementById('pur-item').value.trim();
   var m=parseFloat(document.getElementById('pur-meters').value);
@@ -1319,9 +1387,11 @@ function savePurchase(){
   var gstRate=parseFloat(document.getElementById('pur-gst-rate').value)||0;
   var gstType=document.getElementById('pur-gst-type').value;
   var g=calcGST(m*r,gstRate,gstType);
-  purchases.unshift({id:Date.now(),party:party,supplierGstin:document.getElementById('pur-gstin').value.trim(),item:item,meters:m,rate:r,subtotal:g.subtotal,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,note:document.getElementById('pur-note').value.trim(),date:new Date().toISOString()});
+  var purchaseData = {id:Date.now(),party:party,supplierGstin:document.getElementById('pur-gstin').value.trim(),item:item,meters:m,rate:r,subtotal:g.subtotal,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,note:document.getElementById('pur-note').value.trim(),date:new Date().toISOString()};
+  purchases.unshift(purchaseData);
   save();renderLedgerSummary();renderLedger();closePurchaseModal();
   toast('✓ Purchase recorded — '+fv(g.total));
+  if(withBill) setTimeout(function(){generatePurchaseBill(purchaseData);},300);
 }
 
 // ══ CALCULATORS ══
@@ -1404,24 +1474,39 @@ function generateBill(saleData){
   lastSale=saleData;
   var billNo='BILL-'+Date.now().toString().slice(-6);
   var dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-  var shopName=user&&user.displayName?user.displayName+"'s Shop":'Textile Shop';
+  var shopName=user&&user.displayName?user.displayName:'Firm Name';
+
+  document.getElementById('bill-type-lbl').textContent = 'BILL';
+  document.getElementById('bill-to-lbl').textContent = 'To / Grahak';
   document.getElementById('bill-no').textContent=billNo;
   document.getElementById('bill-date').textContent=dateStr;
   document.getElementById('bill-customer').textContent=saleData.customer||'Walk-in';
   document.getElementById('bill-shop-name').textContent=shopName;
   var shopGstinEl=document.getElementById('bill-shop-gstin');
-  if(shopGstinEl) shopGstinEl.textContent=''; // could add shop GSTIN from profile in future
+  if(shopGstinEl) shopGstinEl.textContent='';
   var buyerGstinEl=document.getElementById('bill-buyer-gstin');
   if(buyerGstinEl) buyerGstinEl.textContent=saleData.buyerGstin?'GSTIN: '+saleData.buyerGstin:'';
   var emailEl=document.getElementById('bill-customer-email');
   if(emailEl) emailEl.textContent=saleData.customerEmail||'';
+
+  document.getElementById('bill-inv-type').textContent = saleData.invType || 'Cash';
+  document.getElementById('bill-pay-mode').textContent = saleData.payMode || 'Cash';
+
+  var baseAmt = (saleData.meters * saleData.rate);
   document.getElementById('bill-items').innerHTML=
     '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:10px 0">'
     +'<div style="font-size:14px;font-weight:600;color:#2d2416">'+esc(saleData.fabName)+'</div>'
     +'<div style="font-size:14px;color:#2d2416;text-align:center">'+saleData.meters+'m</div>'
     +'<div style="font-size:14px;color:#2d2416;text-align:center">₹'+saleData.rate+'</div>'
-    +'<div style="font-size:14px;font-weight:700;color:#2d2416;text-align:right">₹'+Math.round(saleData.subtotal||saleData.total).toLocaleString('en-IN')+'</div>'
+    +'<div style="font-size:14px;font-weight:700;color:#2d2416;text-align:right">₹'+Math.round(baseAmt).toLocaleString('en-IN')+'</div>'
     +'</div>';
+
+  if(saleData.discount > 0) {
+      document.getElementById('bill-discount-section').innerHTML = '<div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:12px;color:#c0392b;width:100%"><span>Discount</span><span>-₹' + saleData.discount + '</span></div>';
+  } else {
+      document.getElementById('bill-discount-section').innerHTML = '';
+  }
+
   // GST section in bill
   var gstSec=document.getElementById('bill-gst-section');
   if(gstSec){
@@ -1433,12 +1518,73 @@ function generateBill(saleData){
     }
   }
   document.getElementById('bill-total').textContent='₹'+Math.round(saleData.total).toLocaleString('en-IN');
+  
+  document.getElementById('bill-paid-amt').textContent = '₹' + Math.round(saleData.paidAmt||0).toLocaleString('en-IN');
+  document.getElementById('bill-due-amt').textContent = '₹' + Math.round(saleData.dueAmt||0).toLocaleString('en-IN');
+
   var emailBillBtn=document.getElementById('email-bill-btn');
   if(emailBillBtn) emailBillBtn.style.display=saleData.customerEmail?'flex':'none';
   var waBillBtn=document.getElementById('wa-bill-btn');
   if(waBillBtn){waBillBtn.style.display='flex';waBillBtn.textContent='💬 WhatsApp';}
   document.getElementById('bill-modal').classList.add('on');
 }
+
+function generatePurchaseBill(p) {
+  lastSale = null;
+  var billNo='PUR-'+Date.now().toString().slice(-6);
+  var dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  var shopName=user&&user.displayName?user.displayName:'Firm Name';
+
+  document.getElementById('bill-type-lbl').textContent = 'PURCHASE RECEIPT';
+  document.getElementById('bill-to-lbl').textContent = 'From / Supplier';
+  document.getElementById('bill-no').textContent=billNo;
+  document.getElementById('bill-date').textContent=dateStr;
+  document.getElementById('bill-customer').textContent=p.party||'Unknown';
+  document.getElementById('bill-shop-name').textContent=shopName;
+
+  var shopGstinEl=document.getElementById('bill-shop-gstin');
+  if(shopGstinEl) shopGstinEl.textContent='';
+  var buyerGstinEl=document.getElementById('bill-buyer-gstin');
+  if(buyerGstinEl) buyerGstinEl.textContent=p.supplierGstin?'GSTIN: '+p.supplierGstin:'';
+  var emailEl=document.getElementById('bill-customer-email');
+  if(emailEl) emailEl.textContent='';
+
+  document.getElementById('bill-inv-type').textContent = '-';
+  document.getElementById('bill-pay-mode').textContent = '-';
+
+  var baseAmt = (p.meters * p.rate);
+  document.getElementById('bill-items').innerHTML=
+    '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:10px 0">'
+    +'<div style="font-size:14px;font-weight:600;color:#2d2416">'+esc(p.item)+'</div>'
+    +'<div style="font-size:14px;color:#2d2416;text-align:center">'+p.meters+'m</div>'
+    +'<div style="font-size:14px;color:#2d2416;text-align:center">₹'+p.rate+'</div>'
+    +'<div style="font-size:14px;font-weight:700;color:#2d2416;text-align:right">₹'+Math.round(baseAmt).toLocaleString('en-IN')+'</div>'
+    +'</div>';
+
+  document.getElementById('bill-discount-section').innerHTML = '';
+
+  var gstSec=document.getElementById('bill-gst-section');
+  if(gstSec){
+    if(p.gstRate>0){
+      var g={rate:p.gstRate,subtotal:p.subtotal||p.total,gstAmount:p.gstAmount||0,cgst:p.cgst||0,sgst:p.sgst||0,igst:p.igst||0};
+      gstSec.innerHTML=billGSTSection(g,p.gstType||'intra');
+    } else {
+      gstSec.innerHTML='';
+    }
+  }
+  document.getElementById('bill-total').textContent='₹'+Math.round(p.total).toLocaleString('en-IN');
+
+  document.getElementById('bill-paid-amt').textContent = '₹' + Math.round(p.total).toLocaleString('en-IN');
+  document.getElementById('bill-due-amt').textContent = '₹0';
+
+  var emailBillBtn=document.getElementById('email-bill-btn');
+  if(emailBillBtn) emailBillBtn.style.display='none';
+  var waBillBtn=document.getElementById('wa-bill-btn');
+  if(waBillBtn) waBillBtn.style.display='none';
+
+  document.getElementById('bill-modal').classList.add('on');
+}
+
 function closeBill(){document.getElementById('bill-modal').classList.remove('on');}
 function printBill(){
   var billContent=document.getElementById('bill-preview').innerHTML;
