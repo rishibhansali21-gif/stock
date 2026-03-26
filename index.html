@@ -499,6 +499,14 @@ body.staff-mode .hide-staff { display: none !important; }
           <div class="fg hide-staff"><label class="fl">Buyer GSTIN <span class="fl-hindi">(Optional)</span></label><input id="s-buyer-gstin" list="gstin-list" placeholder="e.g. 24XXXXX1234X1Z5"/></div>
           <div class="fg"><label class="fl">Grahak <span class="fl-hindi">का नाम</span></label><input id="s-c" list="party-list" placeholder="e.g. Rajesh Bhai, Mehta & Sons"/></div>
           
+          <div class="fg hide-staff"><label class="fl">WhatsApp Number</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span style="padding:10px 12px;background:var(--bg);border:2px solid var(--border);border-radius:9px;font-size:13px;color:var(--muted2);flex-shrink:0">+91</span>
+              <input id="s-phone" type="tel" placeholder="9876543210" style="flex:1"/>
+            </div>
+          </div>
+          <div class="fg hide-staff"><label class="fl">Email <span class="fl-hindi">(optional)</span></label><input id="s-email" type="email" placeholder="e.g. rajesh@gmail.com"/></div>
+
           <div class="hide-staff" style="background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px">
             <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">🚚 Transport / E-Way Bill (Optional)</div>
             <div class="g2" style="margin-bottom:8px">
@@ -739,6 +747,14 @@ body.staff-mode .hide-staff { display: none !important; }
     <div class="fg hide-staff"><label class="fl">Buyer GSTIN <span class="fl-hindi">(Optional)</span></label><input id="qs-buyer-gstin" list="gstin-list" placeholder="e.g. 24XXXXX1234X1Z5"/></div>
     <div class="fg"><label class="fl">Grahak <span class="fl-hindi">का नाम</span></label><input id="qs-c" list="party-list" placeholder="e.g. Rajesh Bhai"/></div>
     
+    <div class="fg hide-staff"><label class="fl">WhatsApp Number</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="padding:10px 12px;background:var(--bg);border:2px solid var(--border);border-radius:9px;font-size:13px;color:var(--muted2);flex-shrink:0">+91</span>
+        <input id="qs-phone" type="tel" placeholder="9876543210" style="flex:1"/>
+      </div>
+    </div>
+    <div class="fg hide-staff"><label class="fl">Email <span class="fl-hindi">(optional)</span></label><input id="qs-email" type="email" placeholder="e.g. rajesh@gmail.com"/></div>
+
     <div class="hide-staff" style="background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px">
       <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">🚚 Transport / E-Way Bill (Optional)</div>
       <div class="g2" style="margin-bottom:8px">
@@ -1320,13 +1336,20 @@ function saveAddStock(withBill){
 function openQS(id){
   qsFabId=id;var f=inv.find(function(f){return f.id===id;});if(!f)return;
   document.getElementById('qs-fab-name').textContent=f.name+' — Available: '+f.meters+'m';
-  ['qs-m','qs-discount','qs-paid','qs-c','qs-buyer-gstin','qs-phone','qs-trans','qs-lr','qs-eway'].forEach(function(i){document.getElementById(i).value='';});
+  
+  // Safe clear
+  ['qs-m','qs-discount','qs-paid','qs-c','qs-buyer-gstin','qs-phone','qs-email','qs-trans','qs-lr','qs-eway'].forEach(function(i){
+      var el = document.getElementById(i); if(el) el.value='';
+  });
+
   document.getElementById('qs-r').value=f.rate||'';
   document.getElementById('qs-amt').textContent='₹0';
   document.getElementById('qs-gst-breakdown').innerHTML='';
-  document.getElementById('quicksell-modal').classList.add('on');document.getElementById('qs-m').focus();
+  document.getElementById('quicksell-modal').classList.add('on');
+  document.getElementById('qs-m').focus();
 }
 function closeQS(){document.getElementById('quicksell-modal').classList.remove('on');}
+
 function calcQSAmt(){
   var m=parseFloat(document.getElementById('qs-m').value)||0;
   var r=parseFloat(document.getElementById('qs-r').value)||0;
@@ -1364,22 +1387,20 @@ function _doQSSale(withBill){
   var dueAmt = g.total - paidAmt;
 
   f.meters-=m;
+  var custEmail=(document.getElementById('qs-email')||{value:''}).value.trim();
   var custPhone=(document.getElementById('qs-phone')||{value:''}).value.trim().replace(/\D/g,'');
   var buyerGstin=(document.getElementById('qs-buyer-gstin')||{value:''}).value.trim();
   
-  // Capturing new E-Way Bill info
-  var trans = document.getElementById('qs-trans').value.trim();
-  var lr = document.getElementById('qs-lr').value.trim();
-  var eway = document.getElementById('qs-eway').value.trim();
+  var trans = document.getElementById('qs-trans') ? document.getElementById('qs-trans').value.trim() : '';
+  var lr = document.getElementById('qs-lr') ? document.getElementById('qs-lr').value.trim() : '';
+  var eway = document.getElementById('qs-eway') ? document.getElementById('qs-eway').value.trim() : '';
   
-  var saleData={id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,customerEmail:'',customerPhone:custPhone,buyerGstin:buyerGstin,transport:trans,lr:lr,eway:eway,note:'',date:new Date().toISOString()};
+  var saleData={id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,customerEmail:custEmail,customerPhone:custPhone,buyerGstin:buyerGstin,transport:trans,lr:lr,eway:eway,note:'',date:new Date().toISOString()};
   sales.unshift(saleData);
   
   updatePartyList(); save();updateStats();renderDash();renderInv();closeQS();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
-  if(f.meters<f.threshold){
-    emailjs.send(EJS_SVC, EJS_ALERT_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(e){console.log('Low stock alert err:',e);});
-  }
+  
   if(withBill && !appSettings.isStaffMode) setTimeout(function(){generateBill(saleData);},300);
 }
 function saveQS(){_doQSSale(false);}
@@ -1431,26 +1452,26 @@ function _doSale(withBill){
   var paidInput = parseFloat(document.getElementById('s-paid').value);
   var paidAmt = isNaN(paidInput) ? (invType === 'Credit' ? 0 : g.total) : paidInput;
   var dueAmt = g.total - paidAmt;
-  
-  // Capturing new E-Way Bill info
-  var trans = document.getElementById('s-trans').value.trim();
-  var lr = document.getElementById('s-lr').value.trim();
-  var eway = document.getElementById('s-eway').value.trim();
+
+  var custPhone=(document.getElementById('s-phone')||{value:''}).value.trim().replace(/\D/g,'');
+  var custEmail=(document.getElementById('s-email')||{value:''}).value.trim();
+  var trans = document.getElementById('s-trans') ? document.getElementById('s-trans').value.trim() : '';
+  var lr = document.getElementById('s-lr') ? document.getElementById('s-lr').value.trim() : '';
+  var eway = document.getElementById('s-eway') ? document.getElementById('s-eway').value.trim() : '';
 
   f.meters-=m;
-  var saleData={id:Date.now(),fabId:id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,buyerGstin:buyerGstin,transport:trans,lr:lr,eway:eway,note:note,date:new Date().toISOString()};
+  var saleData={id:Date.now(),fabId:id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,buyerGstin:buyerGstin,customerPhone:custPhone,customerEmail:custEmail,transport:trans,lr:lr,eway:eway,note:note,date:new Date().toISOString()};
   sales.unshift(saleData);
   updatePartyList(); save();updateStats();renderSalesList();fillSD();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
   
-  ['s-m','s-c','s-n','s-buyer-gstin','s-discount','s-paid','s-trans','s-lr','s-eway'].forEach(function(i){document.getElementById(i).value='';});
+  ['s-m','s-c','s-n','s-buyer-gstin','s-discount','s-paid','s-trans','s-lr','s-eway','s-phone','s-email'].forEach(function(i){
+      var el = document.getElementById(i); if(el) el.value='';
+  });
   document.getElementById('s-amt').textContent='₹0';
   document.getElementById('s-subtotal').textContent='₹0';
   document.getElementById('s-gst-breakdown').innerHTML='';
   
-  if(f.meters<f.threshold){
-    emailjs.send(EJS_SVC, EJS_ALERT_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(e){console.log('Low stock alert err:',e);});
-  }
   if(withBill && !appSettings.isStaffMode) setTimeout(function(){generateBill(saleData);},300);
 }
 function recSale(){_doSale(false);}
@@ -1892,7 +1913,6 @@ function shareBillPDF(){
               downloadFallback(pdfBlob, opt.filename);
           });
       } else {
-          // Fallback for desktop browsers that don't support native file sharing
           toast('Sharing not supported on this browser. Downloading instead.');
           downloadFallback(pdfBlob, opt.filename);
       }
