@@ -272,10 +272,10 @@ select option{background:var(--white)}
 /* ══ PROFILES ══ */
 #profile-screen {position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#2d2416 0%,#4a3820 40%,#6b5030 100%);display:none;align-items:center;justify-content:center;flex-direction:column}
 .profile-cards { display:flex; gap:20px; margin-top:30px; flex-wrap:wrap; justify-content:center; }
-.profile-card { background:var(--white); border:3px solid transparent; border-radius:24px; padding:35px 20px; text-align:center; cursor:pointer; transition:all 0.2s; width:180px; box-shadow:0 10px 30px rgba(0,0,0,0.2); }
-.profile-card:hover { transform:translateY(-5px); box-shadow:0 15px 40px rgba(0,0,0,0.3); }
+.profile-card { background:var(--white); border:3px solid transparent; border-radius:24px; padding:35px 20px; text-align:center; cursor:pointer; transition:all 0.2s; width:180px; box-shadow:0 10px 30px rgba(0,0,0,0.2); position:relative; }
+.profile-card:hover { transform:translateY(-5px); box-shadow:0 15px 40px rgba(0,0,0,0.3); border-color:var(--gold2); }
 .profile-avatar { width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:40px; }
-.profile-name { font-family:var(--ff-h); font-size:20px; font-weight:800; color:var(--text); }
+.profile-name { font-family:var(--ff-h); font-size:20px; font-weight:800; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
 /* STAFF MODE */
 body.staff-mode .hide-staff { display: none !important; }
@@ -357,19 +357,22 @@ body.staff-mode .hide-staff { display: none !important; }
     <div class="sb-sec">Main</div>
     <div class="sb-item active" onclick="goto('dash',this)"><span class="sb-ic">🏠</span>Dashboard</div>
     <div class="sb-item" onclick="goto('inv',this)"><span class="sb-ic">📦</span>Inventory<span class="sb-badge" id="low-badge">0</span></div>
+    
     <div class="sb-sec hide-staff">Manage</div>
     <div class="sb-item" onclick="goto('sales',this)"><span class="sb-ic">💰</span>Sales</div>
     <div class="sb-item hide-staff" onclick="goto('ledger',this)"><span class="sb-ic">📒</span>Ledger</div>
     <div class="sb-item hide-staff" onclick="goto('calc',this)"><span class="sb-ic">🧮</span>Calculator</div>
-    <div class="sb-sec hide-staff">Reports</div>
+    
+    <div class="sb-sec hide-staff">Admin</div>
     <div class="sb-item hide-staff" onclick="goto('report',this)"><span class="sb-ic">📊</span>Monthly Report</div>
+    <div class="sb-item hide-staff" onclick="goto('profiles',this)"><span class="sb-ic">👥</span>Manage Profiles</div>
   </nav>
   <div class="sb-foot" id="sb-foot">
     <div>
         <strong id="user-display-name">User</strong><br>
         <span style="cursor:pointer;color:var(--muted);font-weight:600" onclick="switchProfileBtn()">🔄 Switch Profile</span>
     </div>
-    <div style="cursor:pointer;font-size:20px;padding:5px" onclick="openSettings()" title="Settings">⚙️</div>
+    <div style="cursor:pointer;font-size:20px;padding:5px" class="hide-staff" onclick="openSettings()" title="Settings">⚙️</div>
   </div>
 </div>
 
@@ -402,13 +405,14 @@ body.staff-mode .hide-staff { display: none !important; }
       <div class="mob-item" id="mob-sales" onclick="mobileGoto('sales')">💰 Sales</div>
       <div class="mob-item hide-staff" id="mob-ledger" onclick="mobileGoto('ledger')">📒 Ledger</div>
       <div class="mob-item hide-staff" id="mob-calc" onclick="mobileGoto('calc')">🧮 Calculator</div>
-      <div class="mob-sec hide-staff">Reports</div>
+      <div class="mob-sec hide-staff">Admin</div>
       <div class="mob-item hide-staff" id="mob-report" onclick="mobileGoto('report')">📊 Monthly Report</div>
+      <div class="mob-item hide-staff" id="mob-profiles" onclick="mobileGoto('profiles')">👥 Manage Profiles</div>
     </div>
     <div class="mob-menu-foot">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div id="mob-user" style="font-size:13px;font-weight:600;color:var(--text);padding:8px 10px;background:var(--bg);border-radius:8px;border:1.5px solid var(--border)"></div>
-        <button onclick="openSettings(); closeMobileMenu()" style="background:none;border:none;font-size:22px;cursor:pointer">⚙️</button>
+        <button onclick="openSettings(); closeMobileMenu()" class="hide-staff" style="background:none;border:none;font-size:22px;cursor:pointer">⚙️</button>
       </div>
       <button onclick="switchProfileBtn(); closeMobileMenu()" style="width:100%;padding:12px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--ff-h);font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px">🔄 Switch Profile</button>
       <button onclick="signOut()" style="width:100%;padding:12px;background:rgba(192,57,43,0.08);border:1.5px solid rgba(192,57,43,0.25);border-radius:10px;color:var(--red);font-family:var(--ff-h);font-size:14px;font-weight:700;cursor:pointer;">🚪 Sign Out</button>
@@ -679,28 +683,29 @@ body.staff-mode .hide-staff { display: none !important; }
       </div>
     </div>
   </div>
+  
+  <div class="page" id="pg-profiles">
+    <div class="content">
+      <div class="sh">
+        <div><div class="sh-title">👥 Manage Profiles</div><div class="sh-sub">Add or remove app access (Owners & Staff)</div></div>
+        <button class="btn btn-gold hide-print" onclick="openEditProfileModal()">+ Add New Profile</button>
+      </div>
+      <div id="profiles-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:16px;"></div>
+    </div>
+  </div>
 </div>
 
 <div class="qmodal-bg" id="settings-modal">
   <div class="qmodal">
-    <div class="qmodal-title">⚙️ Settings</div>
-    <div class="qmodal-fab">App Preferences</div>
+    <div class="qmodal-title">⚙️ App Settings</div>
+    <div class="qmodal-fab">Global App Preferences</div>
     
-    <div class="fc" style="padding:16px;margin-bottom:12px">
+    <div class="fc" style="padding:16px;margin-bottom:0">
         <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:var(--blue)">📱 UPI QR for Bills</div>
         <div class="fg" style="margin-bottom:0">
             <label class="fl">Your UPI ID</label>
             <input id="set-upi" placeholder="e.g. 9876543210@paytm" />
             <div style="font-size:11px;color:var(--muted);margin-top:4px">QR code will automatically appear on generated bills if this is set.</div>
-        </div>
-    </div>
-
-    <div class="fc" style="padding:16px;margin-bottom:0">
-        <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:var(--text)">🔒 Owner PIN</div>
-        <div class="fg">
-            <label class="fl">Set/Change Owner PIN</label>
-            <input id="set-pin" type="password" placeholder="Enter 4 digit PIN" />
-            <div style="font-size:11px;color:var(--muted);margin-top:4px">Required to access Owner profile.</div>
         </div>
     </div>
 
@@ -715,11 +720,40 @@ body.staff-mode .hide-staff { display: none !important; }
   <div class="qmodal" style="width:320px;text-align:center;padding:30px">
     <div style="font-size:40px;margin-bottom:10px">🔒</div>
     <div class="qmodal-title">Enter PIN</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Owner profile requires a PIN</div>
-    <input type="password" id="owner-pin-input" style="text-align:center;font-size:24px;letter-spacing:10px;font-family:monospace;padding:15px;margin-bottom:20px" maxlength="4" placeholder="••••" onkeyup="if(event.key === 'Enter') verifyPin()">
+    <div style="font-size:13px;color:var(--muted);margin-bottom:20px">This profile requires a PIN</div>
+    <input type="password" id="owner-pin-input" style="text-align:center;font-size:24px;letter-spacing:10px;font-family:monospace;padding:15px;margin-bottom:20px;border-color:var(--gold)" maxlength="4" placeholder="••••" onkeyup="if(event.key === 'Enter') verifyPin()">
     <div style="display:flex;gap:10px">
       <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('pin-modal').classList.remove('on')">Cancel</button>
       <button class="btn btn-gold" style="flex:1" onclick="verifyPin()">Enter</button>
+    </div>
+  </div>
+</div>
+
+<div class="qmodal-bg" id="edit-profile-modal" style="z-index:10000;">
+  <div class="qmodal" style="width:400px">
+    <div class="qmodal-title" id="ep-title">Add Profile</div>
+    <div class="qmodal-fab">Create access for Owners or Staff</div>
+    <input type="hidden" id="ep-id">
+    
+    <div class="fg"><label class="fl">Name *</label><input id="ep-name" placeholder="e.g. Ramesh Bhai" /></div>
+    
+    <div class="fg">
+        <label class="fl">Role *</label>
+        <select id="ep-role">
+            <option value="owner">👑 Owner (Full Access & Admin)</option>
+            <option value="staff" selected>👦 Staff (Stock & Sales Only)</option>
+        </select>
+    </div>
+    
+    <div class="fg" style="margin-bottom:0">
+        <label class="fl">4-Digit Security PIN (Optional)</label>
+        <input type="password" id="ep-pin" maxlength="4" placeholder="Leave empty for no PIN" style="font-family:monospace;letter-spacing:4px"/>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">If set, users will need to enter this PIN to open this profile.</div>
+    </div>
+
+    <div class="qmodal-foot" style="margin-top:24px">
+      <button class="btn btn-ghost" onclick="closeEditProfileModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveEditProfile()">✅ Save Profile</button>
     </div>
   </div>
 </div>
@@ -1047,18 +1081,8 @@ body.staff-mode .hide-staff { display: none !important; }
 <div id="profile-screen">
   <div style="font-family:var(--ff-h);font-size:32px;font-weight:800;color:#faf7f0">Who is using this?</div>
   <div style="color:#b8a888;margin-bottom:10px">Select your profile to continue</div>
-  <div class="profile-cards">
-    <div class="profile-card" onclick="attemptOwnerLogin()">
-      <div class="profile-avatar">👑</div>
-      <div class="profile-name">Owner</div>
-      <div style="font-size:12px;color:var(--muted)">Full Access</div>
-    </div>
-    <div class="profile-card" onclick="loginAsStaff(false)">
-      <div class="profile-avatar" style="background:var(--blue-light);color:var(--blue)">👦</div>
-      <div class="profile-name">Staff</div>
-      <div style="font-size:12px;color:var(--muted)">Stock & Sell Only</div>
-    </div>
-  </div>
+  <div class="profile-cards" id="profile-cards-container">
+     </div>
 </div>
 
 <div id="toast"></div>
@@ -1091,7 +1115,8 @@ var EJS_KEY      = 'Ux_cTro8ToCSm2LUY';
 
 // ══ STATE ══
 var auth, db, user=null, inv=[], sales=[], purchases=[], asFabId=null, qsFabId=null, selCatV='', activeLedgerTab='sales';
-var appSettings = { upiId: '', staffPin: '', isStaffMode: false };
+var appSettings = { upiId: '', profiles: [] };
+var currentProfile = null;
 
 var ICONS={Georgette:'🟥',Chiffon:'🔵',Silk:'✨',Cotton:'🤍',Velvet:'🖤',Satin:'💗',Net:'🕸️',Rayon:'🟤',Linen:'🟡',Other:'🧵'};
 var COLORS={Georgette:'#fdecea',Chiffon:'#e8f0fe',Silk:'#fef9e0',Cotton:'#f8f8f8',Velvet:'#f0e8f8',Satin:'#fde8f0',Net:'#e8f5f0',Rayon:'#fdecd8',Linen:'#fdf8e8',Other:'#f5efe0'};
@@ -1145,23 +1170,21 @@ function startApp() {
   auth = firebase.auth();
   db   = firebase.firestore();
   
-  // Turn on Offline persistence
   db.enablePersistence().catch(function(err) { console.log("Offline mode error", err); });
 
   auth.onAuthStateChanged(async function(u){
     if(u){
       user=u;
       document.getElementById('login-screen').style.display='none';
-      document.getElementById('user-display-name').textContent=u.displayName;
-      var mobUser=document.getElementById('mob-user');
-      if(mobUser) mobUser.textContent='👤 '+u.displayName;
       
       await loadCloud();
       updatePartyList();
+      renderProfileSelection();
       
-      var savedProfile = sessionStorage.getItem('stocksaathi_profile');
-      if(savedProfile === 'staff') { loginAsStaff(true); }
-      else if(savedProfile === 'owner') { loginAsOwner(true); }
+      var savedProfileId = sessionStorage.getItem('stocksaathi_profile_id');
+      var foundProfile = savedProfileId ? appSettings.profiles.find(p => p.id === savedProfileId) : null;
+      
+      if(foundProfile) { completeLogin(foundProfile); }
       else { showProfileScreen(); }
       
     } else {
@@ -1172,75 +1195,24 @@ function startApp() {
   });
 }
 
-// ══ AUTH & PROFILES ══
+// ══ AUTH ══
 function signInGoogle(){
   var btn=document.getElementById('login-btn');
   if(btn){btn.disabled=true;btn.textContent='Opening Google...';}
   var p=new firebase.auth.GoogleAuthProvider();
   p.setCustomParameters({prompt:'select_account'});
-  auth.signInWithPopup(p).then(function(){
-      if(btn) btn.innerHTML='<svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Google se Login Karo';
-    }).catch(function(e){
+  auth.signInWithPopup(p).catch(function(e){
       if(btn){btn.disabled=false;btn.textContent='Google se Login Karo';}
       if(e.code==='auth/popup-blocked') showLoginErr('Popup blocked! Please allow popups.');
-      else if(e.code==='auth/unauthorized-domain') showLoginErr('Domain not authorized in Firebase.');
-      else if(e.code!=='auth/cancelled-popup-request'&&e.code!=='auth/popup-cancelled-by-user') showLoginErr('Login error: '+e.message);
-    });
+      else showLoginErr('Login error: '+e.message);
+  });
 }
 function showLoginErr(msg){var el=document.getElementById('login-err');if(!el){el=document.createElement('div');el.id='login-err';el.style.cssText='margin-top:10px;padding:10px 14px;background:rgba(192,57,43,0.08);border:1.5px solid rgba(192,57,43,0.25);border-radius:8px;font-size:12px;color:#c0392b;line-height:1.5';var lb=document.getElementById('login-btn');if(lb)lb.after(el);}el.textContent=msg;el.style.display='block';}
 function signOut(){
     if(confirm('Sign out karna hai?')){
-        sessionStorage.removeItem('stocksaathi_profile');
+        sessionStorage.removeItem('stocksaathi_profile_id');
         auth.signOut();
     }
-}
-
-// ══ PROFILES ══
-function showProfileScreen() {
-    document.getElementById('profile-screen').style.display = 'flex';
-}
-function switchProfileBtn() {
-    sessionStorage.removeItem('stocksaathi_profile');
-    showProfileScreen();
-}
-function loginAsStaff(skipSave) {
-    if(!skipSave) sessionStorage.setItem('stocksaathi_profile', 'staff');
-    appSettings.isStaffMode = true;
-    applyStaffMode();
-    document.getElementById('profile-screen').style.display = 'none';
-    updateStats(); renderDash(); goto('dash', document.querySelectorAll('.sb-item')[0]);
-}
-function attemptOwnerLogin() {
-    if(appSettings.staffPin) {
-        document.getElementById('owner-pin-input').value = '';
-        document.getElementById('pin-modal').classList.add('on');
-        setTimeout(() => document.getElementById('owner-pin-input').focus(), 100);
-    } else {
-        loginAsOwner(false);
-    }
-}
-function verifyPin() {
-    var input = document.getElementById('owner-pin-input').value;
-    if(input === appSettings.staffPin) {
-        document.getElementById('pin-modal').classList.remove('on');
-        loginAsOwner(false);
-    } else {
-        toast("❌ Incorrect PIN!");
-        document.getElementById('owner-pin-input').value = '';
-    }
-}
-function loginAsOwner(skipSave) {
-    if(!skipSave) sessionStorage.setItem('stocksaathi_profile', 'owner');
-    appSettings.isStaffMode = false;
-    applyStaffMode();
-    document.getElementById('profile-screen').style.display = 'none';
-    updateStats(); renderDash(); goto('dash', document.querySelectorAll('.sb-item')[0]);
-}
-function applyStaffMode() {
-    if(appSettings.isStaffMode) document.body.classList.add('staff-mode');
-    else document.body.classList.remove('staff-mode');
-    var sw = document.getElementById('dash-smart-widgets');
-    if(sw) sw.style.display = appSettings.isStaffMode ? 'none' : 'grid';
 }
 
 // ══ CLOUD ══
@@ -1253,24 +1225,173 @@ async function loadCloud(){
   if(!user)return;
   try{
     var doc=await db.collection('users').doc(user.uid).get();
-    if(doc.exists){var d=doc.data();inv=d.inv||[];sales=d.sales||[];purchases=d.purchases||[];appSettings=d.settings||{upiId:'',staffPin:'',isStaffMode:false};}
-    else{inv=[];sales=[];purchases=[];await save();setTimeout(showOnboarding,600);}
+    if(doc.exists){
+        var d=doc.data();
+        inv=d.inv||[]; sales=d.sales||[]; purchases=d.purchases||[]; 
+        appSettings=d.settings||{};
+        if(!appSettings.profiles || appSettings.profiles.length === 0) {
+            appSettings.profiles = [
+                {id: 'p_owner', name: 'Owner', role: 'owner', pin: appSettings.staffPin || ''},
+                {id: 'p_staff', name: 'Staff', role: 'staff', pin: ''}
+            ];
+        }
+    }
+    else {
+        inv=[]; sales=[]; purchases=[]; 
+        appSettings = { upiId: '', profiles: [{id: 'p_owner', name: 'Owner', role: 'owner', pin: ''}, {id: 'p_staff', name: 'Staff', role: 'staff', pin: ''}] };
+        await save(); setTimeout(showOnboarding,600);
+    }
   }catch(e){inv=[];sales=[];purchases=[];}
+}
+
+// ══ MULTI-USER PROFILES ══
+var pendingProfileLogin = null;
+
+function showProfileScreen() { document.getElementById('profile-screen').style.display = 'flex'; }
+function switchProfileBtn() {
+    sessionStorage.removeItem('stocksaathi_profile_id');
+    showProfileScreen();
+}
+
+function renderProfileSelection() {
+   var html = '';
+   appSettings.profiles.forEach(p => {
+       var avatar = p.role === 'owner' ? '👑' : '👦';
+       var color = p.role === 'owner' ? '' : 'background:var(--blue-light);color:var(--blue)';
+       var subtitle = p.role === 'owner' ? 'Full Access' : 'Sales Only';
+       var lock = p.pin ? '<div style="position:absolute;top:10px;right:15px;font-size:16px">🔒</div>' : '';
+       
+       html += `<div class="profile-card" onclick="attemptProfileLogin('${p.id}')">
+          ${lock}
+          <div class="profile-avatar" style="${color}">${avatar}</div>
+          <div class="profile-name">${esc(p.name)}</div>
+          <div style="font-size:12px;color:var(--muted)">${subtitle}</div>
+       </div>`;
+   });
+   document.getElementById('profile-cards-container').innerHTML = html;
+}
+
+function attemptProfileLogin(id) {
+    var p = appSettings.profiles.find(x => x.id === id);
+    if(p.pin) {
+        pendingProfileLogin = p;
+        document.getElementById('owner-pin-input').value = '';
+        document.getElementById('pin-modal').classList.add('on');
+        setTimeout(() => document.getElementById('owner-pin-input').focus(), 100);
+    } else {
+        completeLogin(p);
+    }
+}
+
+function verifyPin() {
+    var input = document.getElementById('owner-pin-input').value;
+    if(input === pendingProfileLogin.pin) {
+        document.getElementById('pin-modal').classList.remove('on');
+        completeLogin(pendingProfileLogin);
+    } else {
+        toast("❌ Incorrect PIN!");
+        document.getElementById('owner-pin-input').value = '';
+    }
+}
+
+function completeLogin(profile) {
+    sessionStorage.setItem('stocksaathi_profile_id', profile.id);
+    currentProfile = profile;
+    
+    document.getElementById('user-display-name').textContent = user.displayName + " (" + profile.name + ")";
+    var mobUser=document.getElementById('mob-user');
+    if(mobUser) mobUser.textContent='👤 '+ profile.name;
+    
+    if(profile.role === 'staff') document.body.classList.add('staff-mode');
+    else document.body.classList.remove('staff-mode');
+    
+    var sw = document.getElementById('dash-smart-widgets');
+    if(sw) sw.style.display = (profile.role === 'staff') ? 'none' : 'grid';
+    
+    document.getElementById('profile-screen').style.display = 'none';
+    updateStats(); renderDash(); goto('dash', document.querySelectorAll('.sb-item')[0]);
+}
+
+// ══ ADMIN: MANAGE PROFILES ══
+function renderProfilesPage() {
+   var html = '';
+   appSettings.profiles.forEach(p => {
+       var avatar = p.role === 'owner' ? '👑' : '👦';
+       var roleName = p.role === 'owner' ? 'Owner (Full Access)' : 'Staff (Sales Only)';
+       var pinText = p.pin ? '🔒 PIN Protected' : '🔓 No PIN';
+       html += `
+       <div style="background:var(--white);border:2px solid var(--border);border-radius:12px;padding:20px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow)">
+          <div style="font-size:32px">${avatar}</div>
+          <div style="flex:1">
+             <div style="font-family:var(--ff-h);font-size:18px;font-weight:700">${esc(p.name)}</div>
+             <div style="font-size:12px;color:var(--muted)">${roleName} · ${pinText}</div>
+          </div>
+          <div style="display:flex;gap:8px">
+             <button class="btn btn-ghost" style="padding:8px 12px;font-size:12px" onclick="openEditProfileModal('${p.id}')">✏️ Edit</button>
+             ${appSettings.profiles.filter(x=>x.role==='owner').length > 1 || p.role !== 'owner' ? `<button class="btn btn-ghost" style="padding:8px 12px;font-size:12px;color:var(--red);border-color:#f4c0ba" onclick="deleteProfile('${p.id}')">🗑️</button>` : ''}
+          </div>
+       </div>`;
+   });
+   document.getElementById('profiles-grid').innerHTML = html;
+}
+
+function openEditProfileModal(id) {
+   if(id) {
+      var p = appSettings.profiles.find(x => x.id === id);
+      document.getElementById('ep-title').textContent = "Edit Profile";
+      document.getElementById('ep-id').value = p.id;
+      document.getElementById('ep-name').value = p.name;
+      document.getElementById('ep-role').value = p.role;
+      document.getElementById('ep-pin').value = p.pin;
+   } else {
+      document.getElementById('ep-title').textContent = "Add Profile";
+      document.getElementById('ep-id').value = '';
+      document.getElementById('ep-name').value = '';
+      document.getElementById('ep-role').value = 'staff';
+      document.getElementById('ep-pin').value = '';
+   }
+   document.getElementById('edit-profile-modal').classList.add('on');
+}
+
+function closeEditProfileModal() { document.getElementById('edit-profile-modal').classList.remove('on'); }
+
+function saveEditProfile() {
+   var id = document.getElementById('ep-id').value;
+   var name = document.getElementById('ep-name').value.trim();
+   var role = document.getElementById('ep-role').value;
+   var pin = document.getElementById('ep-pin').value.trim();
+   
+   if(!name) { toast("Name is required!"); return; }
+   
+   if(id) {
+       var p = appSettings.profiles.find(x => x.id === id);
+       if(p) { p.name = name; p.role = role; p.pin = pin; }
+   } else {
+       appSettings.profiles.push({ id: 'p_' + Date.now(), name: name, role: role, pin: pin });
+   }
+   
+   save(); renderProfilesPage(); renderProfileSelection(); closeEditProfileModal(); toast("Profile Saved!");
+}
+
+function deleteProfile(id) {
+   var p = appSettings.profiles.find(x => x.id === id);
+   if(p.role === 'owner' && appSettings.profiles.filter(x => x.role === 'owner').length <= 1) {
+       toast("Cannot delete the only owner profile!"); return;
+   }
+   if(confirm("Delete profile '"+p.name+"'?")) {
+       appSettings.profiles = appSettings.profiles.filter(x => x.id !== id);
+       save(); renderProfilesPage(); renderProfileSelection(); toast("Profile deleted");
+   }
 }
 
 // ══ SETTINGS ══
 function openSettings() {
-    if(appSettings.isStaffMode) {
-        toast("🔒 Restricted in Staff Mode"); return;
-    }
     document.getElementById('set-upi').value = appSettings.upiId || '';
-    document.getElementById('set-pin').value = appSettings.staffPin || '';
     document.getElementById('settings-modal').classList.add('on');
 }
 function closeSettings() { document.getElementById('settings-modal').classList.remove('on'); }
 function saveSettings() {
     appSettings.upiId = document.getElementById('set-upi').value.trim();
-    appSettings.staffPin = document.getElementById('set-pin').value.trim();
     save(); closeSettings(); toast('⚙️ Settings Saved');
 }
 
@@ -1285,11 +1406,11 @@ function updatePartyList() {
 }
 
 // ══ NAV ══
-var pgMap={dash:['Dashboard',''],inv:['Inventory','— All Fabrics'],sales:['Sales','— Record & History'],ledger:['Ledger','— Sales & Purchase Book'],calc:['Calculator','— Quick Calculations'],report:['Monthly Report','']};
+var pgMap={dash:['Dashboard',''],inv:['Inventory','— All Fabrics'],sales:['Sales','— Record & History'],ledger:['Ledger','— Sales & Purchase Book'],calc:['Calculator','— Quick Calculations'],report:['Monthly Report',''],profiles:['Manage Profiles','Add or remove users']};
 
 function goto(pg,el){
-  if(appSettings.isStaffMode && (pg === 'ledger' || pg === 'calc' || pg === 'report')) {
-      toast("🔒 Restricted in Staff Mode"); return;
+  if(currentProfile && currentProfile.role === 'staff' && (pg === 'ledger' || pg === 'calc' || pg === 'report' || pg === 'profiles')) {
+      toast("🔒 Restricted Access"); return;
   }
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
   document.querySelectorAll('.sb-item').forEach(function(n){n.classList.remove('active');});
@@ -1303,15 +1424,16 @@ function goto(pg,el){
   if(pg==='sales'){fillSD();renderSalesList();}
   if(pg==='ledger'){renderLedgerSummary();renderLedger();}
   if(pg==='report')renderReport();
+  if(pg==='profiles')renderProfilesPage();
   if(pg==='dash') { renderDash(); renderDashHighlights(); }
 }
 function toggleMobileMenu(){document.getElementById('mob-menu').classList.toggle('on');document.getElementById('mob-overlay').classList.toggle('on');}
 function closeMobileMenu(){document.getElementById('mob-menu').classList.remove('on');document.getElementById('mob-overlay').classList.remove('on');}
 function mobileGoto(pg){
-    if(appSettings.isStaffMode && (pg === 'ledger' || pg === 'calc' || pg === 'report')) {
-      toast("🔒 Restricted in Staff Mode"); return;
+    if(currentProfile && currentProfile.role === 'staff' && (pg === 'ledger' || pg === 'calc' || pg === 'report' || pg === 'profiles')) {
+      toast("🔒 Restricted Access"); return;
     }
-    ['dash','inv','sales','ledger','calc','report'].forEach(function(p){var el=document.getElementById('mob-'+p);if(el)el.classList.toggle('active',p===pg);});
+    ['dash','inv','sales','ledger','calc','report','profiles'].forEach(function(p){var el=document.getElementById('mob-'+p);if(el)el.classList.toggle('active',p===pg);});
     closeMobileMenu();goto(pg,null);
 }
 
@@ -1331,7 +1453,7 @@ function updateStats(){
 }
 
 function renderDashHighlights() {
-    if(appSettings.isStaffMode) return;
+    if(currentProfile && currentProfile.role === 'staff') return;
     
     var thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     var recentSales = sales.filter(s => new Date(s.date) >= thirtyDaysAgo && !s.isReturned && !s.isKacha);
@@ -1425,7 +1547,7 @@ function saveModal(withBill){
   }
 
   updatePartyList(); save();updateStats();renderDash();renderInv();closeModal();
-  if(withBill && purchaseData && !appSettings.isStaffMode) setTimeout(function(){generatePurchaseBill(purchaseData);},300);
+  if(withBill && purchaseData && currentProfile && currentProfile.role === 'owner') setTimeout(function(){generatePurchaseBill(purchaseData);},300);
 }
 
 // ══ ADD STOCK (EXISTING FABRIC) ══
@@ -1455,7 +1577,7 @@ function saveAddStock(withBill){
   updatePartyList(); save();updateStats();renderDash();renderInv();closeAddStock();
   toast('✓ '+m+'m added to '+f.name+'!');
   
-  if(withBill && !appSettings.isStaffMode) setTimeout(function(){generatePurchaseBill(purchaseData);},300);
+  if(withBill && currentProfile && currentProfile.role === 'owner') setTimeout(function(){generatePurchaseBill(purchaseData);},300);
 }
 
 // ══ QUICK SELL ══
@@ -1537,7 +1659,7 @@ function _doQSSale(withBill){
   updatePartyList(); save();updateStats();renderDash();renderInv();closeQS();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
   
-  if(withBill && !appSettings.isStaffMode) setTimeout(function(){generateBill(saleData);},300);
+  if(withBill && currentProfile && currentProfile.role === 'owner') setTimeout(function(){generateBill(saleData);},300);
 }
 function saveQS(){_doQSSale(false);}
 function saveQSAndBill(){_doQSSale(true);}
@@ -1622,7 +1744,7 @@ function _doSale(withBill){
   if(f.meters<f.threshold){
     emailjs.send(EJS_SVC, EJS_ALERT_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(e){console.log('Low stock alert err:',e);});
   }
-  if(withBill && !appSettings.isStaffMode) setTimeout(function(){generateBill(saleData);},300);
+  if(withBill && currentProfile && currentProfile.role === 'owner') setTimeout(function(){generateBill(saleData);},300);
 }
 function recSale(){_doSale(false);}
 function recSaleAndBill(){_doSale(true);}
