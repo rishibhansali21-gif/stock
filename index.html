@@ -209,7 +209,6 @@ select option{background:var(--white)}
 .qmodal-bg{position:fixed;inset:0;background:rgba(45,36,22,0.5);z-index:600;display:none;align-items:center;justify-content:center}
 .qmodal-bg.on{display:flex;animation:fadeIn 0.15s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-/* FIXED: ADDED max-height: 90vh and overflow-y: auto */
 .qmodal{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);width:420px;max-width:95vw;max-height:90vh;overflow-y:auto;padding:28px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
 @keyframes popIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
 .qmodal-title{font-family:var(--ff-h);font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px}
@@ -625,17 +624,23 @@ select option{background:var(--white)}
       </div>
     </div>
   </div>
-</div><div class="qmodal-bg" id="addstock-modal">
+</div>
+
+<div class="qmodal-bg" id="addstock-modal">
   <div class="qmodal">
-    <div class="qmodal-title">📥 Stock Add Karo</div>
+    <div class="qmodal-title">📥 Add Stock</div>
     <div class="qmodal-fab" id="addstock-fab-name">—</div>
     <div class="fg"><label class="fl">Kitna Meter Aaya? <span class="fl-hindi">नया</span></label><input id="as-m" type="number" placeholder="e.g. 100" min="0"/></div>
     <div class="fg"><label class="fl">Daam <span class="fl-hindi">₹/meter (Optional)</span></label><input id="as-r" type="number" placeholder="Same as before"/></div>
     <div class="fg"><label class="fl">Supplier <span class="fl-hindi">(Optional)</span></label><input id="as-s" placeholder="e.g. Rajan Textiles"/></div>
     <div class="fg"><label class="fl">Supplier GSTIN <span class="fl-hindi">(Optional)</span></label><input id="as-gstin" placeholder="e.g. 24XXXXX1234X1Z5"/></div>
-    <div class="qmodal-foot">
-      <button class="btn btn-ghost" onclick="closeAddStock()">Ruk Jao</button>
-      <button class="btn btn-green" onclick="saveAddStock()">✅ Add Karo</button>
+    
+    <div class="qmodal-foot" style="flex-direction:column;gap:8px;margin-top:24px">
+      <div style="display:flex;gap:8px;width:100%">
+        <button class="btn btn-ghost" onclick="closeAddStock()" style="flex:1;justify-content:center">Cancel</button>
+        <button class="btn btn-gold" onclick="saveAddStock(false)" style="flex:1;justify-content:center">✅ Add Stock</button>
+      </div>
+      <button class="btn btn-full" onclick="saveAddStock(true)" style="background:var(--blue);color:white;border:none;justify-content:center;width:100%">🧾 Add + Generate Receipt</button>
     </div>
   </div>
 </div>
@@ -697,7 +702,7 @@ select option{background:var(--white)}
       </div>
     </div>
     <div class="fg"><label class="fl">Email <span class="fl-hindi">(optional)</span></label><input id="qs-email" type="email" placeholder="e.g. rajesh@gmail.com"/></div>
-    <div class="qmodal-foot" style="flex-direction:column;gap:8px">
+    <div class="qmodal-foot" style="flex-direction:column;gap:8px;margin-top:24px">
       <div style="display:flex;gap:8px;width:100%">
         <button class="btn btn-ghost" onclick="closeQS()" style="flex:1;justify-content:center">Cancel</button>
         <button class="btn btn-gold" onclick="saveQS()" style="flex:1;justify-content:center">✅ Sell</button>
@@ -743,7 +748,7 @@ select option{background:var(--white)}
       <span class="res-v" id="pur-total">₹0</span>
     </div>
     <div class="fg"><label class="fl">Note <span class="fl-hindi">(Optional)</span></label><input id="pur-note" placeholder="Invoice no, note..."/></div>
-    <div class="qmodal-foot" style="flex-direction:column;gap:8px">
+    <div class="qmodal-foot" style="flex-direction:column;gap:8px;margin-top:24px">
       <div style="display:flex;gap:8px;width:100%">
         <button class="btn btn-ghost" onclick="closePurchaseModal()" style="flex:1;justify-content:center">Cancel</button>
         <button class="btn btn-gold" onclick="savePurchase(false)" style="flex:1;justify-content:center">✅ Record Purchase</button>
@@ -755,7 +760,7 @@ select option{background:var(--white)}
 
 <div class="modal-bg" id="add-modal">
   <div class="modal">
-    <div class="modal-title">🧵 Naya Kapda Daalo</div>
+    <div class="modal-title">🧵 Add New Fabric</div>
     <div class="modal-sub">Inventory mein naya kapda add karo</div>
     <div class="fg"><label class="fl">Kapde Ka Naam *</label><input id="m-name" placeholder="e.g. Lal Banarasi Georgette"/></div>
     <div class="g2">
@@ -776,9 +781,13 @@ select option{background:var(--white)}
       <div class="fg"><label class="fl">Daam <span class="fl-hindi">₹/meter</span></label><input id="m-r" type="number" placeholder="0" min="0"/></div>
       <div class="fg"><label class="fl">Supplier</label><input id="m-s" placeholder="e.g. Rajan Textiles"/></div>
     </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal()">Ruk Jao</button>
-      <button class="btn btn-gold" onclick="saveModal()">✅ Add Karo</button>
+    
+    <div class="modal-foot" style="flex-direction:column;gap:8px;margin-top:24px">
+      <div style="display:flex;gap:8px;width:100%">
+        <button class="btn btn-ghost" onclick="closeModal()" style="flex:1;justify-content:center">Cancel</button>
+        <button class="btn btn-gold" onclick="saveModal(false)" style="flex:1;justify-content:center">✅ Add Fabric</button>
+      </div>
+      <button class="btn btn-full" onclick="saveModal(true)" style="background:var(--blue);color:white;border:none;justify-content:center;width:100%">🧾 Add + Generate Receipt</button>
     </div>
   </div>
 </div>
@@ -1117,20 +1126,39 @@ function renderInv(){
 }
 function delFab(id){if(!confirm('Delete this fabric?'))return;inv=inv.filter(function(f){return f.id!==id;});save();updateStats();renderDash();renderInv();toast('Fabric deleted');}
 
-// ══ MAIN MODAL ══
+// ══ MAIN MODAL (ADD NEW FABRIC) ══
 function openModal(){document.getElementById('add-modal').classList.add('on');document.getElementById('m-name').focus();}
 function closeModal(){document.getElementById('add-modal').classList.remove('on');['m-name','m-color','m-m','m-t','m-r','m-s'].forEach(function(id){document.getElementById(id).value='';});}
-function saveModal(){
+function saveModal(withBill){
   var name=document.getElementById('m-name').value.trim();
   var m=parseFloat(document.getElementById('m-m').value)||0;
   if(!name){toast('Fabric name required!');return;}
+  
+  var r=parseFloat(document.getElementById('m-r').value)||0;
+  var s=document.getElementById('m-s').value.trim()||'—';
+
   var ex=inv.find(function(f){return f.name.toLowerCase()===name.toLowerCase();});
-  if(ex){ex.meters+=m;toast('✓ '+m+'m added to '+name);}
-  else inv.push({id:Date.now(),name:name,type:document.getElementById('m-type').value,color:document.getElementById('m-color').value.trim()||'—',meters:m,threshold:parseFloat(document.getElementById('m-t').value)||50,rate:parseFloat(document.getElementById('m-r').value)||0,supplier:document.getElementById('m-s').value.trim()||'—',addedAt:new Date().toISOString()});
-  save();updateStats();renderDash();renderInv();closeModal();toast('✓ Added!');
+  if(ex){
+      ex.meters+=m;
+      if(r>0) ex.rate=r;
+      toast('✓ '+m+'m added to '+name);
+  }
+  else {
+      inv.push({id:Date.now(),name:name,type:document.getElementById('m-type').value,color:document.getElementById('m-color').value.trim()||'—',meters:m,threshold:parseFloat(document.getElementById('m-t').value)||50,rate:r,supplier:s,addedAt:new Date().toISOString()});
+      toast('✓ Added!');
+  }
+
+  var purchaseData = null;
+  if(m>0) {
+      purchaseData = {id:Date.now(),party:s==='—'?'Unknown':s,supplierGstin:'',item:name,meters:m,rate:r,subtotal:m*r,gstRate:0,gstType:'intra',gstAmount:0,cgst:0,sgst:0,igst:0,total:m*r,note:'Initial stock added',date:new Date().toISOString()};
+      purchases.unshift(purchaseData);
+  }
+
+  save();updateStats();renderDash();renderInv();closeModal();
+  if(withBill && purchaseData) setTimeout(function(){generatePurchaseBill(purchaseData);},300);
 }
 
-// ══ ADD STOCK ══
+// ══ ADD STOCK (EXISTING FABRIC) ══
 function openAddStock(id){
   asFabId=id;var f=inv.find(function(f){return f.id===id;});if(!f)return;
   document.getElementById('addstock-fab-name').textContent=f.name+' — Current: '+f.meters+'m';
@@ -1138,18 +1166,27 @@ function openAddStock(id){
   document.getElementById('addstock-modal').classList.add('on');document.getElementById('as-m').focus();
 }
 function closeAddStock(){document.getElementById('addstock-modal').classList.remove('on');}
-function saveAddStock(){
+function saveAddStock(withBill){
   var m=parseFloat(document.getElementById('as-m').value);
   if(!m||m<=0){toast('Enter meters!');return;}
   var f=inv.find(function(f){return f.id===asFabId;});if(!f)return;
   f.meters+=m;
-  var r=parseFloat(document.getElementById('as-r').value);if(r>0)f.rate=r;
+  
+  var r=parseFloat(document.getElementById('as-r').value);
+  var rateToUse = r>0 ? r : f.rate;
+  if(r>0) f.rate=r;
+  
   var s=document.getElementById('as-s').value.trim();if(s)f.supplier=s;
+  
   // Record in purchase book
   var gstin=document.getElementById('as-gstin').value.trim();
-  purchases.unshift({id:Date.now(),party:f.supplier||'Unknown',supplierGstin:gstin,item:f.name,meters:m,rate:f.rate,total:m*f.rate,gstRate:0,gstAmount:0,gstType:'intra',note:'Stock added via inventory',date:new Date().toISOString()});
+  var purchaseData = {id:Date.now(),party:f.supplier||'Unknown',supplierGstin:gstin,item:f.name,meters:m,rate:rateToUse,subtotal:m*rateToUse,gstRate:0,gstAmount:0,gstType:'intra',cgst:0,sgst:0,igst:0,total:m*rateToUse,note:'Stock added via inventory',date:new Date().toISOString()};
+  purchases.unshift(purchaseData);
+  
   save();updateStats();renderDash();renderInv();closeAddStock();
   toast('✓ '+m+'m added to '+f.name+'!');
+  
+  if(withBill) setTimeout(function(){generatePurchaseBill(purchaseData);},300);
 }
 
 // ══ QUICK SELL ══
@@ -1476,14 +1513,14 @@ function generateBill(saleData){
   var dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
   var shopName=user&&user.displayName?user.displayName:'Firm Name';
 
-  document.getElementById('bill-type-lbl').textContent = 'BILL';
+  document.getElementById('bill-type-lbl').textContent = 'TAX INVOICE / BILL';
   document.getElementById('bill-to-lbl').textContent = 'To / Grahak';
   document.getElementById('bill-no').textContent=billNo;
   document.getElementById('bill-date').textContent=dateStr;
   document.getElementById('bill-customer').textContent=saleData.customer||'Walk-in';
   document.getElementById('bill-shop-name').textContent=shopName;
   var shopGstinEl=document.getElementById('bill-shop-gstin');
-  if(shopGstinEl) shopGstinEl.textContent='';
+  if(shopGstinEl) shopGstinEl.textContent='GSTIN: 24XXXXX0000X0Z0';
   var buyerGstinEl=document.getElementById('bill-buyer-gstin');
   if(buyerGstinEl) buyerGstinEl.textContent=saleData.buyerGstin?'GSTIN: '+saleData.buyerGstin:'';
   var emailEl=document.getElementById('bill-customer-email');
@@ -1507,7 +1544,6 @@ function generateBill(saleData){
       document.getElementById('bill-discount-section').innerHTML = '';
   }
 
-  // GST section in bill
   var gstSec=document.getElementById('bill-gst-section');
   if(gstSec){
     if(saleData.gstRate>0){
@@ -1618,7 +1654,6 @@ function emailBill(){
   if(lastSale.gstRate>0){
     gstNote=(lastSale.gstType==='intra'?'CGST+SGST':'IGST')+' @ '+lastSale.gstRate+'% = Rs.'+Math.round(lastSale.gstAmount).toLocaleString('en-IN');
   }
-  // Sale invoice uses dedicated bill template
   emailjs.send(EJS_SVC, EJS_BILL_TPL,{
     to_email:lastSale.customerEmail,to_name:lastSale.customer||'Customer',
     shop_name:shopName,date:date,
