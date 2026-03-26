@@ -2,10 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>StockSaathi — Kapda Stock Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2d2416">
+<link rel="apple-touch-icon" href="https://via.placeholder.com/192/b8860b/ffffff?text=S">
+
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
@@ -267,6 +272,9 @@ select option{background:var(--white)}
 /* STAFF MODE */
 body.staff-mode .hide-staff { display: none !important; }
 
+/* ══ INSTALL BANNER ══ */
+#install-banner { position:fixed; bottom:0; left:0; width:100%; background:var(--gold); color:white; padding:12px 20px; display:none; justify-content:space-between; align-items:center; z-index:10000; box-shadow:0 -4px 10px rgba(0,0,0,0.1); }
+
 /* ══ MOBILE ══ */
 .hamburger{display:none;background:none;border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:18px;cursor:pointer;width:36px;height:36px;align-items:center;justify-content:center;flex-shrink:0;}
 .mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;backdrop-filter:blur(2px);}
@@ -276,9 +284,10 @@ body.staff-mode .hide-staff { display: none !important; }
 .mob-menu-head{display:flex;align-items:center;justify-content:space-between;padding:20px 18px;border-bottom:2px solid var(--border);background:linear-gradient(135deg,#2d2416,#4a3820);}
 
 @media print{
-  .sb,.topbar,.modal-bg,.qmodal-bg,#toast,#login-screen,.fab-actions,.search-big,.cat-row,.hide-print{display:none!important}
+  .sb,.topbar,.modal-bg,.qmodal-bg,#toast,#login-screen,.fab-actions,.search-big,.cat-row,.hide-print,#install-banner{display:none!important}
   body{background:white;color:black;overflow:visible}
   .main,.page,.content{overflow:visible;height:auto}
+  .watermark{display:block !important; position:absolute; top:40%; left:50%; transform:translate(-50%,-50%) rotate(-45deg); font-size:60px; color:rgba(0,0,0,0.08); font-weight:800; white-space:nowrap; pointer-events:none; z-index:0;}
 }
 
 @media(max-width:768px){
@@ -316,6 +325,17 @@ body.staff-mode .hide-staff { display: none !important; }
 
 <datalist id="party-list"></datalist>
 <datalist id="gstin-list"></datalist>
+
+<div id="install-banner">
+    <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;background:white;color:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--ff-h);font-size:18px;font-weight:800;">S</div>
+        <div>
+            <div style="font-family:var(--ff-h);font-weight:700;font-size:15px;line-height:1">Install StockSaathi</div>
+            <div style="font-size:11px;opacity:0.9">Get the free app on your home screen</div>
+        </div>
+    </div>
+    <button id="install-btn" style="padding:8px 16px;background:var(--text);color:white;border:none;border-radius:6px;font-weight:700;font-family:var(--ff-b);cursor:pointer;">Install App</button>
+</div>
 
 <div class="sb">
   <div class="sb-top">
@@ -505,7 +525,14 @@ body.staff-mode .hide-staff { display: none !important; }
               <input id="s-phone" type="tel" placeholder="9876543210" style="flex:1"/>
             </div>
           </div>
-          <div class="fg hide-staff"><label class="fl">Email <span class="fl-hindi">(optional)</span></label><input id="s-email" type="email" placeholder="e.g. rajesh@gmail.com"/></div>
+
+          <div style="margin-bottom:14px;padding:12px;background:var(--gold-light);border-radius:10px;border:1.5px solid #e8d090">
+              <label style="display:flex;align-items:center;gap:8px;font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--gold);cursor:pointer">
+                  <input type="checkbox" id="s-kacha" style="width:18px;height:18px;accent-color:var(--gold)">
+                  📝 Kacha Bill (Estimate)
+              </label>
+              <div style="font-size:11px;color:var(--muted2);margin-left:26px;margin-top:2px">Does not deduct stock or go to Bahi Khata.</div>
+          </div>
 
           <div class="hide-staff" style="background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px">
             <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">🚚 Transport / E-Way Bill (Optional)</div>
@@ -519,7 +546,7 @@ body.staff-mode .hide-staff { display: none !important; }
           <div class="fg hide-staff"><label class="fl">Note <span class="fl-hindi">(Optional)</span></label><input id="s-n" placeholder="Koi note..."/></div>
           <div style="display:flex;gap:8px">
             <button class="btn btn-ghost" style="flex:1;justify-content:center;font-size:13px" onclick="recSale()">✅ Record</button>
-            <button class="btn btn-gold hide-staff" style="flex:1;justify-content:center;font-size:13px" onclick="recSaleAndBill()">🧾 Record + Bill</button>
+            <button class="btn btn-gold hide-staff" style="flex:1;justify-content:center;font-size:13px" onclick="recSaleAndBill()">🧾 Generate Bill</button>
           </div>
         </div>
         <div>
@@ -753,7 +780,14 @@ body.staff-mode .hide-staff { display: none !important; }
         <input id="qs-phone" type="tel" placeholder="9876543210" style="flex:1"/>
       </div>
     </div>
-    <div class="fg hide-staff"><label class="fl">Email <span class="fl-hindi">(optional)</span></label><input id="qs-email" type="email" placeholder="e.g. rajesh@gmail.com"/></div>
+
+    <div style="margin-bottom:14px;padding:12px;background:var(--gold-light);border-radius:10px;border:1.5px solid #e8d090">
+        <label style="display:flex;align-items:center;gap:8px;font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--gold);cursor:pointer">
+            <input type="checkbox" id="qs-kacha" style="width:18px;height:18px;accent-color:var(--gold)">
+            📝 Kacha Bill (Estimate)
+        </label>
+        <div style="font-size:11px;color:var(--muted2);margin-left:26px;margin-top:2px">Does not deduct stock or go to Bahi Khata.</div>
+    </div>
 
     <div class="hide-staff" style="background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px">
       <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">🚚 Transport / E-Way Bill (Optional)</div>
@@ -767,9 +801,9 @@ body.staff-mode .hide-staff { display: none !important; }
     <div class="qmodal-foot" style="flex-direction:column;gap:8px;margin-top:24px">
       <div style="display:flex;gap:8px;width:100%">
         <button class="btn btn-ghost" onclick="closeQS()" style="flex:1;justify-content:center">Cancel</button>
-        <button class="btn btn-gold" onclick="saveQS()" style="flex:1;justify-content:center">✅ Sell</button>
+        <button class="btn btn-gold" onclick="saveQS()" style="flex:1;justify-content:center">✅ Record</button>
       </div>
-      <button class="btn btn-full hide-staff" onclick="saveQSAndBill()" style="background:var(--green);color:white;border:none;justify-content:center;width:100%">🧾 Sell + Generate Bill</button>
+      <button class="btn btn-full hide-staff" onclick="saveQSAndBill()" style="background:var(--green);color:white;border:none;justify-content:center;width:100%">🧾 Generate Bill</button>
     </div>
   </div>
 </div>
@@ -882,11 +916,12 @@ body.staff-mode .hide-staff { display: none !important; }
       <div class="qmodal-title" style="margin-bottom:0">Bill / Receipt</div>
       <button onclick="closeBill()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer">✕</button>
     </div>
-    <div id="bill-preview" style="background:white;color:#1a1815;font-family:'Baloo 2',cursive;max-width:440px;margin:0 auto;">
+    <div id="bill-preview" style="background:white;color:#1a1815;font-family:'Baloo 2',cursive;max-width:440px;margin:0 auto;position:relative">
+      <div id="bill-watermark" class="watermark" style="display:none">ESTIMATE</div>
       <div style="height:18px;background:white;position:relative;overflow:hidden">
         <svg viewBox="0 0 420 18" style="width:100%;height:18px;display:block"><path d="M0,0 Q10,18 20,0 Q30,18 40,0 Q50,18 60,0 Q70,18 80,0 Q90,18 100,0 Q110,18 120,0 Q130,18 140,0 Q150,18 160,0 Q170,18 180,0 Q190,18 200,0 Q210,18 220,0 Q230,18 240,0 Q250,18 260,0 Q270,18 280,0 Q290,18 300,0 Q310,18 320,0 Q330,18 340,0 Q350,18 360,0 Q370,18 380,0 Q390,18 400,0 Q410,18 420,0 L420,18 L0,18 Z" fill="#f5f0e8"/></svg>
       </div>
-      <div style="background:#f5f0e8;padding:24px 28px;">
+      <div style="background:#f5f0e8;padding:24px 28px;position:relative;z-index:1">
         <div style="text-align:center;border-bottom:1.5px dashed #c8b99a;padding-bottom:18px;margin-bottom:18px">
           <div style="font-size:22px;font-weight:800;color:#2d2416;letter-spacing:-0.5px" id="bill-shop-name">Firm Name</div>
           <div id="bill-shop-gstin" style="font-size:11px;color:#8a7a5a;margin-top:2px"></div>
@@ -996,6 +1031,22 @@ body.staff-mode .hide-staff { display: none !important; }
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
+// ══ PWA INSTALL LOGIC ══
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault(); deferredPrompt = e;
+  document.getElementById('install-banner').style.display = 'flex';
+});
+document.getElementById('install-btn').addEventListener('click', async () => {
+  if (deferredPrompt) {
+    document.getElementById('install-banner').style.display = 'none';
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+  }
+});
+if('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW ref failed')); }); }
+
 // ══ CONFIG ══
 var EJS_SVC      = 'service_j84y5ge';
 var EJS_ALERT_TPL = 'template_8pvu8qc';
@@ -1208,7 +1259,7 @@ function renderDashHighlights() {
     if(appSettings.isStaffMode) return;
     
     var thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    var recentSales = sales.filter(s => new Date(s.date) >= thirtyDaysAgo && !s.isReturned);
+    var recentSales = sales.filter(s => new Date(s.date) >= thirtyDaysAgo && !s.isReturned && !s.isKacha);
     var fabSales = {};
     recentSales.forEach(s => { fabSales[s.fabName] = (fabSales[s.fabName] || 0) + s.meters; });
     var topSelling = Object.entries(fabSales).sort((a,b) => b[1] - a[1]).slice(0,3);
@@ -1217,7 +1268,7 @@ function renderDashHighlights() {
     document.getElementById('dash-top-sell').innerHTML = topHTML;
 
     var sixtyDaysAgo = new Date(); sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
-    var recentSaleFabs = new Set(sales.filter(s => new Date(s.date) >= sixtyDaysAgo && !s.isReturned).map(s => s.fabId));
+    var recentSaleFabs = new Set(sales.filter(s => new Date(s.date) >= sixtyDaysAgo && !s.isReturned && !s.isKacha).map(s => s.fabId));
     var deadStock = inv.filter(f => f.meters > 0 && !recentSaleFabs.has(f.id)).sort((a,b) => b.meters - a.meters).slice(0,3);
     
     var deadHTML = deadStock.length ? deadStock.map(f => `<div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border)"><span style="font-weight:600">${esc(f.name)}</span><span style="color:var(--red);font-weight:700">${f.meters}m left</span></div>`).join('') : '<div class="empty-s">Great! No dead stock.</div>';
@@ -1337,10 +1388,10 @@ function openQS(id){
   qsFabId=id;var f=inv.find(function(f){return f.id===id;});if(!f)return;
   document.getElementById('qs-fab-name').textContent=f.name+' — Available: '+f.meters+'m';
   
-  // Safe clear
-  ['qs-m','qs-discount','qs-paid','qs-c','qs-buyer-gstin','qs-phone','qs-email','qs-trans','qs-lr','qs-eway'].forEach(function(i){
+  ['qs-m','qs-discount','qs-paid','qs-c','qs-buyer-gstin','qs-phone','qs-trans','qs-lr','qs-eway'].forEach(function(i){
       var el = document.getElementById(i); if(el) el.value='';
   });
+  var kachaEl = document.getElementById('qs-kacha'); if(kachaEl) kachaEl.checked = false;
 
   document.getElementById('qs-r').value=f.rate||'';
   document.getElementById('qs-amt').textContent='₹0';
@@ -1370,7 +1421,10 @@ function _doQSSale(withBill){
   var r=parseFloat(document.getElementById('qs-r').value);
   var cust=document.getElementById('qs-c').value.trim()||'Walk-in';
   var f=inv.find(function(f){return f.id===qsFabId;});
-  if(!f){toast('Error!');return;}if(!m||m<=0){toast('Enter meters!');return;}if(m>f.meters){toast('Only '+f.meters+'m available!');return;}
+  if(!f){toast('Error!');return;}if(!m||m<=0){toast('Enter meters!');return;}
+  
+  var isKacha = document.getElementById('qs-kacha') && document.getElementById('qs-kacha').checked;
+  if(!isKacha && m>f.meters){toast('Only '+f.meters+'m available!');return;}
   
   var rate=r||f.rate;
   var gstRate=parseFloat(document.getElementById('qs-gst-rate').value)||0;
@@ -1386,8 +1440,6 @@ function _doQSSale(withBill){
   var paidAmt = isNaN(paidInput) ? (invType === 'Credit' ? 0 : g.total) : paidInput;
   var dueAmt = g.total - paidAmt;
 
-  f.meters-=m;
-  var custEmail=(document.getElementById('qs-email')||{value:''}).value.trim();
   var custPhone=(document.getElementById('qs-phone')||{value:''}).value.trim().replace(/\D/g,'');
   var buyerGstin=(document.getElementById('qs-buyer-gstin')||{value:''}).value.trim();
   
@@ -1395,7 +1447,16 @@ function _doQSSale(withBill){
   var lr = document.getElementById('qs-lr') ? document.getElementById('qs-lr').value.trim() : '';
   var eway = document.getElementById('qs-eway') ? document.getElementById('qs-eway').value.trim() : '';
   
-  var saleData={id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,customerEmail:custEmail,customerPhone:custPhone,buyerGstin:buyerGstin,transport:trans,lr:lr,eway:eway,note:'',date:new Date().toISOString()};
+  var saleData={id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,customerEmail:'',customerPhone:custPhone,buyerGstin:buyerGstin,transport:trans,lr:lr,eway:eway,note:'',date:new Date().toISOString(), isKacha: isKacha};
+  
+  if(isKacha) {
+      toast('📝 Kacha Bill Generated (Stock NOT deducted)');
+      closeQS();
+      if(withBill) setTimeout(function(){generateBill(saleData);},300);
+      return;
+  }
+
+  f.meters-=m;
   sales.unshift(saleData);
   
   updatePartyList(); save();updateStats();renderDash();renderInv();closeQS();
@@ -1436,7 +1497,10 @@ function _doSale(withBill){
   var cust=document.getElementById('s-c').value.trim()||'Walk-in';
   var note=document.getElementById('s-n').value.trim();
   var f=inv.find(function(f){return f.id===id;});
-  if(!f){toast('Select a fabric!');return;}if(!m||m<=0){toast('Enter meters!');return;}if(m>f.meters){toast('Only '+f.meters+'m available!');return;}
+  if(!f){toast('Select a fabric!');return;}if(!m||m<=0){toast('Enter meters!');return;}
+  
+  var isKacha = document.getElementById('s-kacha') && document.getElementById('s-kacha').checked;
+  if(!isKacha && m>f.meters){toast('Only '+f.meters+'m available!');return;}
   
   var rate=r||f.rate;
   var gstRate=parseFloat(document.getElementById('s-gst-rate').value)||0;
@@ -1454,24 +1518,35 @@ function _doSale(withBill){
   var dueAmt = g.total - paidAmt;
 
   var custPhone=(document.getElementById('s-phone')||{value:''}).value.trim().replace(/\D/g,'');
-  var custEmail=(document.getElementById('s-email')||{value:''}).value.trim();
   var trans = document.getElementById('s-trans') ? document.getElementById('s-trans').value.trim() : '';
   var lr = document.getElementById('s-lr') ? document.getElementById('s-lr').value.trim() : '';
   var eway = document.getElementById('s-eway') ? document.getElementById('s-eway').value.trim() : '';
 
+  var saleData={id:Date.now(),fabId:id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,buyerGstin:buyerGstin,customerPhone:custPhone,customerEmail:'',transport:trans,lr:lr,eway:eway,note:note,date:new Date().toISOString(), isKacha: isKacha};
+  
+  if(isKacha) {
+      toast('📝 Kacha Bill Generated (Stock NOT deducted)');
+      if(withBill) setTimeout(function(){generateBill(saleData);},300);
+      return;
+  }
+
   f.meters-=m;
-  var saleData={id:Date.now(),fabId:id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,buyerGstin:buyerGstin,customerPhone:custPhone,customerEmail:custEmail,transport:trans,lr:lr,eway:eway,note:note,date:new Date().toISOString()};
   sales.unshift(saleData);
   updatePartyList(); save();updateStats();renderSalesList();fillSD();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
   
-  ['s-m','s-c','s-n','s-buyer-gstin','s-discount','s-paid','s-trans','s-lr','s-eway','s-phone','s-email'].forEach(function(i){
+  ['s-m','s-c','s-n','s-buyer-gstin','s-discount','s-paid','s-trans','s-lr','s-eway','s-phone'].forEach(function(i){
       var el = document.getElementById(i); if(el) el.value='';
   });
+  var skEl = document.getElementById('s-kacha'); if(skEl) skEl.checked=false;
+  
   document.getElementById('s-amt').textContent='₹0';
   document.getElementById('s-subtotal').textContent='₹0';
   document.getElementById('s-gst-breakdown').innerHTML='';
   
+  if(f.meters<f.threshold){
+    emailjs.send(EJS_SVC, EJS_ALERT_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(e){console.log('Low stock alert err:',e);});
+  }
   if(withBill && !appSettings.isStaffMode) setTimeout(function(){generateBill(saleData);},300);
 }
 function recSale(){_doSale(false);}
@@ -1482,6 +1557,7 @@ function renderSalesList(){
   if(!el)return;
   if(!sales.length){el.innerHTML='<div class="empty" style="padding:30px"><div class="empty-ic">📋</div><div class="empty-t">No Sales Yet</div></div>';return;}
   el.innerHTML=sales.slice(0,10).map(function(s){
+    if(s.isKacha) return '';
     var gstTag=s.gstRate?'<span style="font-size:11px;background:var(--blue-light);color:var(--blue);border-radius:5px;padding:1px 7px;font-weight:600">GST '+s.gstRate+'%</span>':'';
     var returnTag=s.isReturned?'<span style="color:var(--red);font-size:10px;font-weight:700">RETURNED</span>':'';
     return '<div style="background:var(--white);border:2px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow)">'
@@ -1502,11 +1578,11 @@ function switchLedger(tab){
 }
 
 function renderLedgerSummary(){
-  var totalSales=sales.filter(s=>!s.isReturned).reduce(function(a,s){return a+s.total;},0);
+  var totalSales=sales.filter(s=>!s.isReturned && !s.isKacha).reduce(function(a,s){return a+s.total;},0);
   var totalPurchases=purchases.filter(p=>!p.isReturned).reduce(function(a,p){return a+p.total;},0);
   var net=totalSales-totalPurchases;
   document.getElementById('ls-total-sales').textContent=fv(totalSales);
-  document.getElementById('ls-sales-count').textContent=sales.filter(s=>!s.isReturned).length+' entries';
+  document.getElementById('ls-sales-count').textContent=sales.filter(s=>!s.isReturned && !s.isKacha).length+' entries';
   document.getElementById('ls-total-purchases').textContent=fv(totalPurchases);
   document.getElementById('ls-purchases-count').textContent=purchases.filter(p=>!p.isReturned).length+' entries';
   var netEl=document.getElementById('ls-net-profit');
@@ -1519,7 +1595,7 @@ function returnLedgerItem(id, isSale) {
     
     if(isSale) {
         var s = sales.find(x => x.id === id);
-        if(!s) return;
+        if(!s || s.isKacha) return;
         var f = inv.find(x => x.id === s.fabId || x.name === s.fabName);
         if(f) { f.meters += s.meters; } 
         s.isReturned = true;
@@ -1543,7 +1619,7 @@ function settleDue(customer) {
 function exportCSV() {
     var csv = "Type,Date,Party,Item,Meters,Rate,Total,GST,Due Amount,Returned\n";
     sales.forEach(s => {
-        csv += `"Sale","${s.date.split('T')[0]}","${s.customer||''}","${s.fabName}",${s.meters},${s.rate},${s.total},${s.gstAmount},${s.dueAmt||0},${s.isReturned?'Yes':'No'}\n`;
+        if(!s.isKacha) csv += `"Sale","${s.date.split('T')[0]}","${s.customer||''}","${s.fabName}",${s.meters},${s.rate},${s.total},${s.gstAmount},${s.dueAmt||0},${s.isReturned?'Yes':'No'}\n`;
     });
     purchases.forEach(p => {
         csv += `"Purchase","${p.date.split('T')[0]}","${p.party||''}","${p.item}",${p.meters},${p.rate},${p.total},${p.gstAmount},0,${p.isReturned?'Yes':'No'}\n`;
@@ -1560,17 +1636,21 @@ function renderLedger(){
   
   if(activeLedgerTab === 'udhaar') {
       var dues = {};
-      sales.filter(s => !s.isReturned && s.dueAmt > 0 && (s.customer||'').toLowerCase().includes(q)).forEach(s => {
-          if(!dues[s.customer]) dues[s.customer] = { totalDue: 0, count: 0 };
+      sales.filter(s => !s.isReturned && !s.isKacha && s.dueAmt > 0 && (s.customer||'').toLowerCase().includes(q)).forEach(s => {
+          if(!dues[s.customer]) dues[s.customer] = { totalDue: 0, count: 0, phone: s.customerPhone || '' };
           dues[s.customer].totalDue += s.dueAmt;
           dues[s.customer].count++;
+          if(!dues[s.customer].phone && s.customerPhone) dues[s.customer].phone = s.customerPhone;
       });
       var html = '';
       for(var cust in dues) {
+          var contactHtml = dues[cust].phone ? `<a href="tel:${dues[cust].phone}" class="btn btn-ghost" style="padding:6px;font-size:14px;border-color:var(--border2)" title="Call">📞</a> <a href="https://wa.me/91${dues[cust].phone}?text=${encodeURIComponent('Jai Jinendra ' + esc(cust) + ', aapka pichla ₹' + Math.round(dues[cust].totalDue) + ' baaki hai. Kripya payment karwa dijiye.')}" target="_blank" class="btn btn-ghost" style="padding:6px;font-size:14px;border-color:#25D366;color:#25D366" title="WhatsApp Reminder">💬</a>` : '';
+          
           html += `<div class="udhaar-card">
               <div>
                 <div style="font-family:var(--ff-h);font-size:18px;font-weight:700;color:var(--text)">${esc(cust)}</div>
                 <div style="font-size:12px;color:var(--muted)">Pending across ${dues[cust].count} bills</div>
+                <div style="margin-top:6px;display:flex;gap:6px">${contactHtml}</div>
               </div>
               <div style="text-align:right">
                 <div style="font-family:var(--ff-h);font-size:22px;font-weight:800;color:var(--orange)">${fv(dues[cust].totalDue)}</div>
@@ -1584,6 +1664,7 @@ function renderLedger(){
   
   var list=activeLedgerTab==='sales'?sales:purchases;
   var filtered=list.filter(function(e){
+    if(activeLedgerTab==='sales' && e.isKacha) return false;
     return (e.fabName||e.item||'').toLowerCase().includes(q)||(e.customer||e.party||'').toLowerCase().includes(q)||String(e.total).includes(q);
   });
   if(!filtered.length){
@@ -1685,7 +1766,7 @@ function c3(){
 function renderReport(){
   var now=new Date();
   document.getElementById('rpt-month').textContent=now.toLocaleString('en-IN',{month:'long',year:'numeric'});
-  var ms=sales.filter(function(s){var d=new Date(s.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()&&!s.isReturned;});
+  var ms=sales.filter(function(s){var d=new Date(s.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()&&!s.isReturned&&!s.isKacha;});
   var sa=ms.reduce(function(a,s){return a+s.total;},0),sm=ms.reduce(function(a,s){return a+s.meters;},0);
   var iv=inv.reduce(function(a,f){return a+f.meters*f.rate;},0),lc=inv.filter(function(f){return f.meters<f.threshold;}).length;
   document.getElementById('rpt-stats').innerHTML=[
@@ -1739,7 +1820,14 @@ function generateBill(saleData){
   var dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
   var shopName=user&&user.displayName?user.displayName:'Firm Name';
 
-  document.getElementById('bill-type-lbl').textContent = 'TAX INVOICE / BILL';
+  if(saleData.isKacha) {
+      document.getElementById('bill-type-lbl').textContent = 'ESTIMATE / KACHA BILL';
+      document.getElementById('bill-watermark').style.display = 'block';
+  } else {
+      document.getElementById('bill-type-lbl').textContent = 'TAX INVOICE / BILL';
+      document.getElementById('bill-watermark').style.display = 'none';
+  }
+  
   document.getElementById('bill-to-lbl').textContent = 'To / Grahak';
   document.getElementById('bill-no').textContent=billNo;
   document.getElementById('bill-date').textContent=dateStr;
@@ -1753,7 +1841,6 @@ function generateBill(saleData){
   document.getElementById('bill-inv-type').textContent = saleData.invType || 'Cash';
   document.getElementById('bill-pay-mode').textContent = saleData.payMode || 'Cash';
 
-  // Shipping details container on invoice
   var shipEl = document.getElementById('bill-shipping');
   if(saleData.transport || saleData.eway || saleData.lr) {
       var sHtml = '<div style="margin-top:14px;padding:10px;border:1.5px solid #e8dfc8;border-radius:8px;font-size:11px;color:#6b5c3e;background:white">';
@@ -1784,7 +1871,7 @@ function generateBill(saleData){
 
   var gstSec=document.getElementById('bill-gst-section');
   if(gstSec){
-    if(saleData.gstRate>0){
+    if(saleData.gstRate>0 && !saleData.isKacha){
       var g={rate:saleData.gstRate,subtotal:saleData.subtotal||saleData.total,gstAmount:saleData.gstAmount||0,cgst:saleData.cgst||0,sgst:saleData.sgst||0,igst:saleData.igst||0};
       gstSec.innerHTML=billGSTSection(g,saleData.gstType||'intra');
     } else {
@@ -1814,6 +1901,7 @@ function generatePurchaseBill(p) {
   var dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
   var shopName=user&&user.displayName?user.displayName:'Firm Name';
 
+  document.getElementById('bill-watermark').style.display = 'none';
   document.getElementById('bill-type-lbl').textContent = 'PURCHASE RECEIPT';
   document.getElementById('bill-to-lbl').textContent = 'From / Supplier';
   document.getElementById('bill-no').textContent=billNo;
@@ -1828,7 +1916,7 @@ function generatePurchaseBill(p) {
 
   document.getElementById('bill-inv-type').textContent = '-';
   document.getElementById('bill-pay-mode').textContent = '-';
-  document.getElementById('bill-shipping').innerHTML = ''; // Hide shipping on purchase receipt
+  document.getElementById('bill-shipping').innerHTML = ''; 
 
   var baseAmt = (p.meters * p.rate);
   document.getElementById('bill-items').innerHTML=
@@ -1871,8 +1959,10 @@ function whatsappBill(){
   if(!lastSale)return;
   var shopName=user&&user.displayName?user.displayName+" ka Shop":'Textile Shop';
   var date=new Date().toLocaleDateString('en-IN');
-  var msg='*'+shopName+'*\n_StockSaathi Receipt_\n\n*Date:* '+date+'\n*Customer:* '+(lastSale.customer||'Walk-in')+'\n\n---\n*'+lastSale.fabName+'*\n'+lastSale.meters+'m x Rs.'+lastSale.rate+'/m\n';
-  if(lastSale.gstRate>0){
+  
+  var title = lastSale.isKacha ? '_StockSaathi Estimate_' : '_StockSaathi Receipt_';
+  var msg='*'+shopName+'*\n'+title+'\n\n*Date:* '+date+'\n*Customer:* '+(lastSale.customer||'Walk-in')+'\n\n---\n*'+lastSale.fabName+'*\n'+lastSale.meters+'m x Rs.'+lastSale.rate+'/m\n';
+  if(lastSale.gstRate>0 && !lastSale.isKacha){
     msg+='Subtotal: Rs.'+Math.round(lastSale.subtotal).toLocaleString('en-IN')+'\n';
     if(lastSale.gstType==='intra') msg+='CGST/SGST @'+lastSale.gstRate+'%: +Rs.'+Math.round(lastSale.gstAmount).toLocaleString('en-IN')+'\n';
     else msg+='IGST @'+lastSale.gstRate+'%: +Rs.'+Math.round(lastSale.gstAmount).toLocaleString('en-IN')+'\n';
@@ -1890,7 +1980,7 @@ function shareBillPDF(){
   var element = document.getElementById('bill-preview');
   var opt = {
     margin:       0.1,
-    filename:     'Invoice_'+(lastSale ? (lastSale.customer||'Customer') : 'Purchase')+'.pdf',
+    filename:     (lastSale && lastSale.isKacha ? 'Estimate_' : 'Invoice_')+(lastSale ? (lastSale.customer||'Customer') : 'Purchase')+'.pdf',
     image:        { type: 'jpeg', quality: 0.98 },
     html2canvas:  { scale: 2 },
     jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
@@ -1903,8 +1993,8 @@ function shareBillPDF(){
       
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
           navigator.share({
-              title: 'Invoice',
-              text: 'Please find the invoice attached.',
+              title: lastSale && lastSale.isKacha ? 'Estimate' : 'Invoice',
+              text: 'Please find the document attached.',
               files: [file]
           }).then(function() {
               toast('Share dialog opened!');
