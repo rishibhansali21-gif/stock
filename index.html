@@ -209,7 +209,8 @@ select option{background:var(--white)}
 .qmodal-bg{position:fixed;inset:0;background:rgba(45,36,22,0.5);z-index:600;display:none;align-items:center;justify-content:center}
 .qmodal-bg.on{display:flex;animation:fadeIn 0.15s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.qmodal{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);width:420px;max-width:95vw;padding:28px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
+/* FIXED: ADDED max-height: 90vh and overflow-y: auto */
+.qmodal{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);width:420px;max-width:95vw;max-height:90vh;overflow-y:auto;padding:28px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
 @keyframes popIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
 .qmodal-title{font-family:var(--ff-h);font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px}
 .qmodal-fab{font-size:13px;color:var(--muted);margin-bottom:20px;font-weight:600}
@@ -347,8 +348,8 @@ select option{background:var(--white)}
     <div class="sb-item active" onclick="goto('dash',this)"><span class="sb-ic">🏠</span>Dashboard</div>
     <div class="sb-item" onclick="goto('inv',this)"><span class="sb-ic">📦</span>Inventory<span class="sb-badge" id="low-badge">0</span></div>
     <div class="sb-sec">Manage</div>
-    <div class="sb-item" onclick="goto('sales',this)"><span class="sb-ic">💰</span>Bikri</div>
-    <div class="sb-item" onclick="goto('ledger',this)"><span class="sb-ic">📒</span>Bahi Khata</div>
+    <div class="sb-item" onclick="goto('sales',this)"><span class="sb-ic">💰</span>Sales</div>
+    <div class="sb-item" onclick="goto('ledger',this)"><span class="sb-ic">📒</span>Ledger</div>
     <div class="sb-item" onclick="goto('calc',this)"><span class="sb-ic">🧮</span>Calculator</div>
     <div class="sb-sec">Reports</div>
     <div class="sb-item" onclick="goto('report',this)"><span class="sb-ic">📊</span>Monthly Report</div>
@@ -382,8 +383,8 @@ select option{background:var(--white)}
       <div class="mob-item active" id="mob-dash" onclick="mobileGoto('dash')">🏠 Dashboard</div>
       <div class="mob-item" id="mob-inv" onclick="mobileGoto('inv')">📦 Inventory</div>
       <div class="mob-sec">Manage</div>
-      <div class="mob-item" id="mob-sales" onclick="mobileGoto('sales')">💰 Sales / Bikri</div>
-      <div class="mob-item" id="mob-ledger" onclick="mobileGoto('ledger')">📒 Bahi Khata</div>
+      <div class="mob-item" id="mob-sales" onclick="mobileGoto('sales')">💰 Sales</div>
+      <div class="mob-item" id="mob-ledger" onclick="mobileGoto('ledger')">📒 Ledger</div>
       <div class="mob-item" id="mob-calc" onclick="mobileGoto('calc')">🧮 Calculator</div>
       <div class="mob-sec">Reports</div>
       <div class="mob-item" id="mob-report" onclick="mobileGoto('report')">📊 Monthly Report</div>
@@ -444,10 +445,10 @@ select option{background:var(--white)}
 
   <div class="page" id="pg-sales">
     <div class="content">
-      <div class="sh"><div><div class="sh-title">💰 Bikri</div><div class="sh-sub">Sale record karo</div></div></div>
+      <div class="sh"><div><div class="sh-title">💰 Sales</div><div class="sh-sub">Record a sale</div></div></div>
       <div style="display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start">
         <div class="fc">
-          <div class="fc-title">🛒 Nai Bikri</div>
+          <div class="fc-title">🛒 New Sale</div>
           <div class="fg"><label class="fl">Kapda <span class="fl-hindi">चुनो</span></label><select id="s-fab" onchange="onFabChange()"></select></div>
           <div class="g2">
             <div class="fg"><label class="fl">Meter <span class="fl-hindi">बेचे</span></label><input id="s-m" type="number" placeholder="0" min="0" oninput="calcSaleAmt()"/></div>
@@ -508,7 +509,7 @@ select option{background:var(--white)}
           </div>
         </div>
         <div>
-          <div class="fc-title" style="font-family:var(--ff-h);font-size:16px;font-weight:700;margin-bottom:14px">📋 Recent Bikri</div>
+          <div class="fc-title" style="font-family:var(--ff-h);font-size:16px;font-weight:700;margin-bottom:14px">📋 Recent Sales</div>
           <div id="sales-list"></div>
         </div>
       </div>
@@ -518,7 +519,7 @@ select option{background:var(--white)}
   <div class="page" id="pg-ledger">
     <div class="content">
       <div class="sh">
-        <div><div class="sh-title">📒 Bahi Khata</div><div class="sh-sub">Sales Book aur Purchase Book</div></div>
+        <div><div class="sh-title">📒 Ledger</div><div class="sh-sub">Sales Book & Purchase Book</div></div>
         <button class="btn btn-gold" onclick="openPurchaseModal()">+ Purchase Record</button>
       </div>
 
@@ -641,7 +642,7 @@ select option{background:var(--white)}
 
 <div class="qmodal-bg" id="quicksell-modal">
   <div class="qmodal" style="width:460px">
-    <div class="qmodal-title">💰 Jaldi Becho</div>
+    <div class="qmodal-title">💰 Quick Sell</div>
     <div class="qmodal-fab" id="qs-fab-name">—</div>
     <div class="fg"><label class="fl">Kitna Meter Becha? <span class="fl-hindi">मीटर</span></label><input id="qs-m" type="number" placeholder="e.g. 20" min="0" oninput="calcQSAmt()"/></div>
     <div class="fg"><label class="fl">Daam <span class="fl-hindi">₹/meter</span></label><input id="qs-r" type="number" placeholder="auto" oninput="calcQSAmt()"/></div>
@@ -708,8 +709,8 @@ select option{background:var(--white)}
 
 <div class="qmodal-bg" id="purchase-modal">
   <div class="qmodal" style="width:460px">
-    <div class="qmodal-title">📥 Purchase Record Karo</div>
-    <div class="qmodal-fab">Naya maal kharida? Yahan record karo</div>
+    <div class="qmodal-title">📥 Record Purchase</div>
+    <div class="qmodal-fab">Bought new stock? Record it here</div>
     <div class="fg"><label class="fl">Supplier / Party Naam *</label><input id="pur-party" placeholder="e.g. Rajan Textiles, Mehta Fabrics"/></div>
     <div class="fg"><label class="fl">Supplier GSTIN <span class="fl-hindi">(Optional)</span></label><input id="pur-gstin" placeholder="e.g. 24XXXXX1234X1Z5"/></div>
     <div class="fg"><label class="fl">Kapde Ka Naam *</label><input id="pur-item" placeholder="e.g. Lal Georgette, Neela Chiffon"/></div>
@@ -744,8 +745,8 @@ select option{background:var(--white)}
     <div class="fg"><label class="fl">Note <span class="fl-hindi">(Optional)</span></label><input id="pur-note" placeholder="Invoice no, note..."/></div>
     <div class="qmodal-foot" style="flex-direction:column;gap:8px">
       <div style="display:flex;gap:8px;width:100%">
-        <button class="btn btn-ghost" onclick="closePurchaseModal()" style="flex:1;justify-content:center">Ruk Jao</button>
-        <button class="btn btn-gold" onclick="savePurchase(false)" style="flex:1;justify-content:center">✅ Record Karo</button>
+        <button class="btn btn-ghost" onclick="closePurchaseModal()" style="flex:1;justify-content:center">Cancel</button>
+        <button class="btn btn-gold" onclick="savePurchase(false)" style="flex:1;justify-content:center">✅ Record Purchase</button>
       </div>
       <button class="btn btn-full" onclick="savePurchase(true)" style="background:var(--blue);color:white;border:none;justify-content:center;width:100%">🧾 Record + Generate Receipt</button>
     </div>
@@ -932,11 +933,11 @@ var COLORS={Georgette:'#fdecea',Chiffon:'#e8f0fe',Silk:'#fef9e0',Cotton:'#f8f8f8
 
 // ══ GST HELPERS ══
 function calcGST(subtotal, rate, type) {
-  var gst = subtotal * (rate / 100);
-  var result = { rate: rate, subtotal: subtotal, gstAmount: gst, total: subtotal + gst };
-  if(type === 'intra') {
-    result.cgst = gst / 2;
-    result.sgst = gst / 2;
+  var gst = subtotal * rate / 100;
+  var result = {rate:rate, subtotal:subtotal, gstAmount:gst, total:subtotal+gst};
+  if(type==='intra') {
+    result.cgst = gst/2;
+    result.sgst = gst/2;
     result.igst = 0;
   } else {
     result.cgst = 0;
@@ -949,7 +950,7 @@ function calcGST(subtotal, rate, type) {
 function gstBreakdownHTML(g, type) {
   if(!g.rate) return '<span style="color:var(--muted)">No GST applied</span>';
   var rows = '';
-  if(type === 'intra') {
+  if(type==='intra') {
     rows = '<div style="display:flex;justify-content:space-between;margin-bottom:2px"><span>CGST ('+g.rate/2+'%)</span><span>+'+fv(g.cgst)+'</span></div>'
          + '<div style="display:flex;justify-content:space-between;margin-bottom:2px"><span>SGST ('+g.rate/2+'%)</span><span>+'+fv(g.sgst)+'</span></div>';
   } else {
@@ -961,7 +962,7 @@ function gstBreakdownHTML(g, type) {
 function billGSTSection(g, type) {
   if(!g.rate) return '';
   var rows = '<div style="font-weight:700;margin-bottom:6px;font-size:12px;color:#6b5c3e;text-transform:uppercase;letter-spacing:0.5px">Tax Breakdown</div>';
-  if(type === 'intra') {
+  if(type==='intra') {
     rows += '<div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:12px"><span>Subtotal</span><span>'+fv(g.subtotal)+'</span></div>';
     rows += '<div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:12px"><span>CGST @'+g.rate/2+'%</span><span>+'+fv(g.cgst)+'</span></div>';
     rows += '<div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:12px"><span>SGST @'+g.rate/2+'%</span><span>+'+fv(g.sgst)+'</span></div>';
@@ -976,185 +977,110 @@ function billGSTSection(g, type) {
 function startApp() {
   emailjs.init(EJS_KEY);
   firebase.initializeApp({
-    apiKey: 'AIzaSyB5oBVuaur5Yl_gxfde9NFYtanLZdr6Qjs',
-    authDomain: 'stock-98c39.firebaseapp.com',
-    projectId: 'stock-98c39',
-    storageBucket: 'stock-98c39.firebasestorage.app',
-    messagingSenderId: '728990720851',
-    appId: '1:728990720851:web:eada0eac44cef8424cb7a6'
+    apiKey:'AIzaSyB5oBVuaur5Yl_gxfde9NFYtanLZdr6Qjs',
+    authDomain:'stock-98c39.firebaseapp.com',
+    projectId:'stock-98c39',
+    storageBucket:'stock-98c39.firebasestorage.app',
+    messagingSenderId:'728990720851',
+    appId:'1:728990720851:web:eada0eac44cef8424cb7a6'
   });
   auth = firebase.auth();
   db   = firebase.firestore();
 
   auth.onAuthStateChanged(async function(u){
     if(u){
-      user = u;
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('sb-foot').innerHTML = '<strong>'+u.displayName+'</strong><br><span style="cursor:pointer;color:var(--red)" onclick="signOut()">Sign Out</span>';
-      var mobUser = document.getElementById('mob-user');
-      if(mobUser) mobUser.textContent = '👤 ' + u.displayName;
+      user=u;
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('sb-foot').innerHTML='<strong>'+u.displayName+'</strong><br><span style="cursor:pointer;color:var(--red)" onclick="signOut()">Sign Out</span>';
+      var mobUser=document.getElementById('mob-user');
+      if(mobUser) mobUser.textContent='👤 '+u.displayName;
       await loadCloud();
       updateStats();
       renderDash();
     } else {
-      user = null;
-      document.getElementById('login-screen').style.display = 'flex';
+      user=null;
+      document.getElementById('login-screen').style.display='flex';
     }
   });
 }
 
 // ══ AUTH ══
 function signInGoogle(){
-  var btn = document.getElementById('login-btn');
-  if(btn) { btn.disabled=true; btn.textContent='Opening Google...'; }
-  var p = new firebase.auth.GoogleAuthProvider();
-  p.setCustomParameters({ prompt: 'select_account' });
-  
+  var btn=document.getElementById('login-btn');
+  if(btn){btn.disabled=true;btn.textContent='Opening Google...';}
+  var p=new firebase.auth.GoogleAuthProvider();
+  p.setCustomParameters({prompt:'select_account'});
   auth.signInWithPopup(p)
-    .then(function(){
-        if(btn){
-            btn.disabled=false; 
-            btn.innerHTML='<svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Google se Login Karo';
-        }
-    })
+    .then(function(){if(btn){btn.disabled=false;btn.innerHTML='<svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Google se Login Karo';};})
     .catch(function(e){
-      if(btn) { btn.disabled=false; btn.textContent='Google se Login Karo'; }
+      if(btn){btn.disabled=false;btn.textContent='Google se Login Karo';}
       if(e.code==='auth/popup-blocked') showLoginErr('Popup blocked! Please allow popups.');
       else if(e.code==='auth/unauthorized-domain') showLoginErr('Domain not authorized in Firebase.');
-      else if(e.code!=='auth/cancelled-popup-request' && e.code!=='auth/popup-cancelled-by-user') showLoginErr('Login error: '+e.message);
+      else if(e.code!=='auth/cancelled-popup-request'&&e.code!=='auth/popup-cancelled-by-user') showLoginErr('Login error: '+e.message);
     });
 }
-
-function showLoginErr(msg){
-    var el = document.getElementById('login-err');
-    if(!el){
-        el = document.createElement('div');
-        el.id = 'login-err';
-        el.style.cssText = 'margin-top:10px;padding:10px 14px;background:rgba(192,57,43,0.08);border:1.5px solid rgba(192,57,43,0.25);border-radius:8px;font-size:12px;color:#c0392b;line-height:1.5';
-        var lb = document.getElementById('login-btn');
-        if(lb) lb.after(el);
-    }
-    el.textContent = msg;
-    el.style.display = 'block';
-}
-
-function signOut(){ if(confirm('Sign out karna hai?')) auth.signOut(); }
+function showLoginErr(msg){var el=document.getElementById('login-err');if(!el){el=document.createElement('div');el.id='login-err';el.style.cssText='margin-top:10px;padding:10px 14px;background:rgba(192,57,43,0.08);border:1.5px solid rgba(192,57,43,0.25);border-radius:8px;font-size:12px;color:#c0392b;line-height:1.5';var lb=document.getElementById('login-btn');if(lb)lb.after(el);}el.textContent=msg;el.style.display='block';}
+function signOut(){if(confirm('Sign out karna hai?'))auth.signOut();}
 
 // ══ CLOUD ══
 async function save(){
-  if(!user) return;
-  try {
-      await db.collection('users').doc(user.uid).set({ inv: inv, sales: sales, purchases: purchases || [] });
-  } catch(e) { console.error('Save error:', e); }
+  if(!user)return;
+  try{await db.collection('users').doc(user.uid).set({inv:inv,sales:sales,purchases:purchases||[]});}
+  catch(e){console.error('Save error:',e);}
 }
-
 async function loadCloud(){
-  if(!user) return;
-  try {
-    var doc = await db.collection('users').doc(user.uid).get();
-    if(doc.exists){
-        var d = doc.data();
-        inv = d.inv || [];
-        sales = d.sales || [];
-        purchases = d.purchases || [];
-    } else {
-        inv = []; sales = []; purchases = [];
-        await save();
-        setTimeout(showOnboarding, 600);
-    }
-  } catch(e) { inv = []; sales = []; purchases = []; }
+  if(!user)return;
+  try{
+    var doc=await db.collection('users').doc(user.uid).get();
+    if(doc.exists){var d=doc.data();inv=d.inv||[];sales=d.sales||[];purchases=d.purchases||[];}
+    else{inv=[];sales=[];purchases=[];await save();setTimeout(showOnboarding,600);}
+  }catch(e){inv=[];sales=[];purchases=[];}
 }
 
 // ══ NAV ══
-var pgMap = {
-    dash: ['Dashboard',''],
-    inv: ['Inventory','— All Fabrics'],
-    sales: ['Sales / Bikri','— Record & History'],
-    ledger: ['Bahi Khata','— Sales & Purchase Book'],
-    calc: ['Calculator','— Quick Calculations'],
-    report: ['Monthly Report','']
-};
+var pgMap={dash:['Dashboard',''],inv:['Inventory','— All Fabrics'],sales:['Sales','— Record & History'],ledger:['Ledger','— Sales & Purchase Book'],calc:['Calculator','— Quick Calculations'],report:['Monthly Report','']};
 
-function goto(pg, el){
-  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
-  document.querySelectorAll('.sb-item').forEach(function(n){ n.classList.remove('active'); });
+function goto(pg,el){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.sb-item').forEach(function(n){n.classList.remove('active');});
   document.getElementById('pg-'+pg).classList.add('on');
-  if(el) el.classList.add('active');
-  
-  var ts = pgMap[pg] || [pg,''];
-  document.getElementById('pg-title').textContent = ts[0];
-  document.getElementById('pg-sub').textContent = ts[1];
-  
-  if(pg === 'inv') renderInv();
-  if(pg === 'sales'){ fillSD(); renderSalesList(); }
-  if(pg === 'ledger'){ renderLedgerSummary(); renderLedger(); }
-  if(pg === 'report') renderReport();
-  if(pg === 'dash') renderDash();
+  if(el)el.classList.add('active');
+  var ts=pgMap[pg]||[pg,''];
+  document.getElementById('pg-title').textContent=ts[0];
+  document.getElementById('pg-sub').textContent=ts[1];
+  if(pg==='inv')renderInv();
+  if(pg==='sales'){fillSD();renderSalesList();}
+  if(pg==='ledger'){renderLedgerSummary();renderLedger();}
+  if(pg==='report')renderReport();
+  if(pg==='dash')renderDash();
 }
-
-function toggleMobileMenu(){
-    document.getElementById('mob-menu').classList.toggle('on');
-    document.getElementById('mob-overlay').classList.toggle('on');
-    if(user){
-        var m = document.getElementById('mob-user');
-        if(m) m.textContent = '👤 ' + user.displayName;
-    }
-}
-
-function closeMobileMenu(){
-    document.getElementById('mob-menu').classList.remove('on');
-    document.getElementById('mob-overlay').classList.remove('on');
-}
-
-function mobileGoto(pg){
-    ['dash','inv','sales','ledger','calc','report'].forEach(function(p){
-        var el = document.getElementById('mob-'+p);
-        if(el) el.classList.toggle('active', p === pg);
-    });
-    closeMobileMenu();
-    goto(pg, null);
-}
+function toggleMobileMenu(){document.getElementById('mob-menu').classList.toggle('on');document.getElementById('mob-overlay').classList.toggle('on');if(user){var m=document.getElementById('mob-user');if(m)m.textContent='👤 '+user.displayName;}}
+function closeMobileMenu(){document.getElementById('mob-menu').classList.remove('on');document.getElementById('mob-overlay').classList.remove('on');}
+function mobileGoto(pg){['dash','inv','sales','ledger','calc','report'].forEach(function(p){var el=document.getElementById('mob-'+p);if(el)el.classList.toggle('active',p===pg);});closeMobileMenu();goto(pg,null);}
 
 // ══ STATS ══
 function updateStats(){
-  var tot = inv.reduce(function(a,f){ return a + f.meters; }, 0);
-  var low = inv.filter(function(f){ return f.meters < f.threshold; }).length;
-  var val = inv.reduce(function(a,f){ return a + (f.meters * f.rate); }, 0);
-  
-  document.getElementById('st-c').textContent = inv.length;
-  document.getElementById('st-m').textContent = tot.toLocaleString('en-IN') + 'm';
-  document.getElementById('st-l').textContent = low;
-  document.getElementById('st-v').textContent = fv(val);
-  
-  var b = document.getElementById('low-badge');
-  b.textContent = low;
-  b.classList.toggle('on', low > 0);
-  
-  var ban = document.getElementById('low-banner');
-  if(low > 0){
-      document.getElementById('low-banner-txt').textContent = inv.filter(function(f){ return f.meters < f.threshold; }).map(function(f){ return f.name; }).join(', ') + ' — reorder karo!';
-      ban.style.display = 'block';
-  } else {
-      ban.style.display = 'none';
-  }
+  var tot=inv.reduce(function(a,f){return a+f.meters;},0);
+  var low=inv.filter(function(f){return f.meters<f.threshold;}).length;
+  var val=inv.reduce(function(a,f){return a+f.meters*f.rate;},0);
+  document.getElementById('st-c').textContent=inv.length;
+  document.getElementById('st-m').textContent=tot.toLocaleString('en-IN')+'m';
+  document.getElementById('st-l').textContent=low;
+  document.getElementById('st-v').textContent=fv(val);
+  var b=document.getElementById('low-badge');b.textContent=low;b.classList.toggle('on',low>0);
+  var ban=document.getElementById('low-banner');
+  if(low>0){document.getElementById('low-banner-txt').textContent=inv.filter(function(f){return f.meters<f.threshold;}).map(function(f){return f.name;}).join(', ')+' — reorder karo!';ban.style.display='block';}
+  else ban.style.display='none';
 }
-
-function fv(v){
-    if(v === undefined || v === null) return '₹0';
-    v = Math.round(v);
-    if(v >= 10000000) return '₹' + (v / 10000000).toFixed(1) + 'Cr';
-    if(v >= 100000) return '₹' + (v / 100000).toFixed(1) + 'L';
-    return '₹' + v.toLocaleString('en-IN');
-}
+function fv(v){if(v===undefined||v===null)return '₹0';v=Math.round(v);if(v>=10000000)return '₹'+(v/10000000).toFixed(1)+'Cr';if(v>=100000)return '₹'+(v/100000).toFixed(1)+'L';return '₹'+v.toLocaleString('en-IN');}
 
 // ══ FABRIC CARD ══
 function fabCardHTML(f){
-  var pct = Math.min(100, Math.round(f.meters / Math.max(f.threshold * 3, 1) * 100));
-  var st = (f.meters < f.threshold) ? 'low' : f.meters < f.threshold * 1.5 ? 'med' : 'ok';
-  var pill = st === 'low' ? '<span class="fab-tag" style="color:var(--red);border-color:#f4b0ac">⚠ Low Stock</span>' : st === 'med' ? '<span class="fab-tag" style="color:var(--orange);border-color:#f4c09a">▼ Running Low</span>' : '<span class="fab-tag" style="color:var(--green2);border-color:#aadec0">✓ OK</span>';
-  var bc = st === 'ok' ? 'var(--green2)' : st === 'med' ? 'var(--orange)' : 'var(--red)';
-  var ic = ICONS[f.type] || '🧵', bg = COLORS[f.type] || '#f5efe0';
-  
+  var pct=Math.min(100,Math.round(f.meters/Math.max(f.threshold*3,1)*100));
+  var st=(f.meters<f.threshold)?'low':f.meters<f.threshold*1.5?'med':'ok';
+  var pill=st==='low'?'<span class="fab-tag" style="color:var(--red);border-color:#f4b0ac">⚠ Low Stock</span>':st==='med'?'<span class="fab-tag" style="color:var(--orange);border-color:#f4c09a">▼ Running Low</span>':'<span class="fab-tag" style="color:var(--green2);border-color:#aadec0">✓ OK</span>';
+  var bc=st==='ok'?'var(--green2)':st==='med'?'var(--orange)':'var(--red)';
+  var ic=ICONS[f.type]||'🧵', bg=COLORS[f.type]||'#f5efe0';
   return '<div class="fab-card '+st+'">'
     +'<div class="fab-left">'
       +'<div class="fab-icon" style="background:'+bg+'">'+ic+'</div>'
@@ -1177,174 +1103,95 @@ function fabCardHTML(f){
 }
 
 function renderDash(){
-  var el = document.getElementById('dash-grid');
-  if(!inv.length){
-      el.innerHTML='<div class="empty"><div class="empty-ic">🧵</div><div class="empty-t">No Fabric Added</div><div class="empty-s">Add your first fabric to get started!</div><button class="btn btn-gold" onclick="openModal()" style="margin:0 auto">+ Add First Fabric</button></div>';
-      return;
-  }
-  el.innerHTML = inv.slice(0, 7).map(fabCardHTML).join('');
+  var el=document.getElementById('dash-grid');
+  if(!inv.length){el.innerHTML='<div class="empty"><div class="empty-ic">🧵</div><div class="empty-t">No Fabric Added</div><div class="empty-s">Add your first fabric to get started!</div><button class="btn btn-gold" onclick="openModal()" style="margin:0 auto">+ Add First Fabric</button></div>';return;}
+  el.innerHTML=inv.slice(0,7).map(fabCardHTML).join('');
 }
-
-function filterCat(cat, el){
-    selCatV = cat;
-    document.querySelectorAll('.cat-p').forEach(function(p){ p.classList.remove('active'); });
-    if(el) el.classList.add('active');
-    renderInv();
-}
-
+function filterCat(cat,el){selCatV=cat;document.querySelectorAll('.cat-p').forEach(function(p){p.classList.remove('active');});if(el)el.classList.add('active');renderInv();}
 function renderInv(){
-  var q = (document.getElementById('inv-q')||{value:''}).value.toLowerCase();
-  var list = inv.filter(function(f){ return(!selCatV||f.type===selCatV) && (f.name.toLowerCase().includes(q) || f.type.toLowerCase().includes(q) || f.color.toLowerCase().includes(q)); });
-  var el = document.getElementById('inv-grid');
-  
-  if(!list.length){
-      el.innerHTML='<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">No results found</div></div>';
-      return;
-  }
-  el.innerHTML = list.map(fabCardHTML).join('');
+  var q=(document.getElementById('inv-q')||{value:''}).value.toLowerCase();
+  var list=inv.filter(function(f){return(!selCatV||f.type===selCatV)&&(f.name.toLowerCase().includes(q)||f.type.toLowerCase().includes(q)||f.color.toLowerCase().includes(q));});
+  var el=document.getElementById('inv-grid');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">No results found</div></div>';return;}
+  el.innerHTML=list.map(fabCardHTML).join('');
 }
+function delFab(id){if(!confirm('Delete this fabric?'))return;inv=inv.filter(function(f){return f.id!==id;});save();updateStats();renderDash();renderInv();toast('Fabric deleted');}
 
-function delFab(id){
-    if(!confirm('Delete this fabric?')) return;
-    inv = inv.filter(function(f){ return f.id !== id; });
-    save(); updateStats(); renderDash(); renderInv();
-    toast('Fabric deleted');
-}
-
-// ══ MAIN MODAL (ADD FABRIC) ══
-function openModal(){ document.getElementById('add-modal').classList.add('on'); document.getElementById('m-name').focus(); }
-function closeModal(){
-    document.getElementById('add-modal').classList.remove('on');
-    ['m-name','m-color','m-m','m-t','m-r','m-s'].forEach(function(id){ document.getElementById(id).value=''; });
-}
+// ══ MAIN MODAL ══
+function openModal(){document.getElementById('add-modal').classList.add('on');document.getElementById('m-name').focus();}
+function closeModal(){document.getElementById('add-modal').classList.remove('on');['m-name','m-color','m-m','m-t','m-r','m-s'].forEach(function(id){document.getElementById(id).value='';});}
 function saveModal(){
-  var name = document.getElementById('m-name').value.trim();
-  var m = parseFloat(document.getElementById('m-m').value) || 0;
-  if(!name){ toast('Fabric name required!'); return; }
-  
-  var ex = inv.find(function(f){ return f.name.toLowerCase() === name.toLowerCase(); });
-  if(ex){
-      ex.meters += m;
-      toast('✓ ' + m + 'm added to ' + name);
-  } else {
-      inv.push({
-          id: Date.now(),
-          name: name,
-          type: document.getElementById('m-type').value,
-          color: document.getElementById('m-color').value.trim() || '—',
-          meters: m,
-          threshold: parseFloat(document.getElementById('m-t').value) || 50,
-          rate: parseFloat(document.getElementById('m-r').value) || 0,
-          supplier: document.getElementById('m-s').value.trim() || '—',
-          addedAt: new Date().toISOString()
-      });
-  }
-  save(); updateStats(); renderDash(); renderInv(); closeModal();
-  toast('✓ Added!');
+  var name=document.getElementById('m-name').value.trim();
+  var m=parseFloat(document.getElementById('m-m').value)||0;
+  if(!name){toast('Fabric name required!');return;}
+  var ex=inv.find(function(f){return f.name.toLowerCase()===name.toLowerCase();});
+  if(ex){ex.meters+=m;toast('✓ '+m+'m added to '+name);}
+  else inv.push({id:Date.now(),name:name,type:document.getElementById('m-type').value,color:document.getElementById('m-color').value.trim()||'—',meters:m,threshold:parseFloat(document.getElementById('m-t').value)||50,rate:parseFloat(document.getElementById('m-r').value)||0,supplier:document.getElementById('m-s').value.trim()||'—',addedAt:new Date().toISOString()});
+  save();updateStats();renderDash();renderInv();closeModal();toast('✓ Added!');
 }
 
-// ══ ADD STOCK (EXISTING FABRIC) ══
+// ══ ADD STOCK ══
 function openAddStock(id){
-  asFabId = id;
-  var f = inv.find(function(f){ return f.id === id; });
-  if(!f) return;
-  document.getElementById('addstock-fab-name').textContent = f.name + ' — Current: ' + f.meters + 'm';
-  ['as-m','as-r','as-s','as-gstin'].forEach(function(i){ document.getElementById(i).value=''; });
-  document.getElementById('addstock-modal').classList.add('on');
-  document.getElementById('as-m').focus();
+  asFabId=id;var f=inv.find(function(f){return f.id===id;});if(!f)return;
+  document.getElementById('addstock-fab-name').textContent=f.name+' — Current: '+f.meters+'m';
+  ['as-m','as-r','as-s','as-gstin'].forEach(function(i){document.getElementById(i).value='';});
+  document.getElementById('addstock-modal').classList.add('on');document.getElementById('as-m').focus();
 }
-function closeAddStock(){ document.getElementById('addstock-modal').classList.remove('on'); }
-
+function closeAddStock(){document.getElementById('addstock-modal').classList.remove('on');}
 function saveAddStock(){
-  var m = parseFloat(document.getElementById('as-m').value);
-  if(!m || m <= 0){ toast('Enter meters!'); return; }
-  
-  var f = inv.find(function(f){ return f.id === asFabId; });
-  if(!f) return;
-  
-  f.meters += m;
-  var r = parseFloat(document.getElementById('as-r').value);
-  if(r > 0) f.rate = r;
-  
-  var s = document.getElementById('as-s').value.trim();
-  if(s) f.supplier = s;
-  
-  var gstin = document.getElementById('as-gstin').value.trim();
-  purchases.unshift({
-      id: Date.now(),
-      party: f.supplier || 'Unknown',
-      supplierGstin: gstin,
-      item: f.name,
-      meters: m,
-      rate: f.rate,
-      total: m * f.rate,
-      gstRate: 0,
-      gstAmount: 0,
-      gstType: 'intra',
-      note: 'Stock added via inventory',
-      date: new Date().toISOString()
-  });
-  
-  save(); updateStats(); renderDash(); renderInv(); closeAddStock();
-  toast('✓ ' + m + 'm added to ' + f.name + '!');
+  var m=parseFloat(document.getElementById('as-m').value);
+  if(!m||m<=0){toast('Enter meters!');return;}
+  var f=inv.find(function(f){return f.id===asFabId;});if(!f)return;
+  f.meters+=m;
+  var r=parseFloat(document.getElementById('as-r').value);if(r>0)f.rate=r;
+  var s=document.getElementById('as-s').value.trim();if(s)f.supplier=s;
+  // Record in purchase book
+  var gstin=document.getElementById('as-gstin').value.trim();
+  purchases.unshift({id:Date.now(),party:f.supplier||'Unknown',supplierGstin:gstin,item:f.name,meters:m,rate:f.rate,total:m*f.rate,gstRate:0,gstAmount:0,gstType:'intra',note:'Stock added via inventory',date:new Date().toISOString()});
+  save();updateStats();renderDash();renderInv();closeAddStock();
+  toast('✓ '+m+'m added to '+f.name+'!');
 }
 
 // ══ QUICK SELL ══
 function openQS(id){
-  qsFabId = id;
-  var f = inv.find(function(f){ return f.id === id; });
-  if(!f) return;
-  
-  document.getElementById('qs-fab-name').textContent = f.name + ' — Available: ' + f.meters + 'm';
-  document.getElementById('qs-m').value = '';
-  document.getElementById('qs-r').value = f.rate || '';
-  document.getElementById('qs-discount').value = '';
-  document.getElementById('qs-paid').value = '';
-  document.getElementById('qs-c').value = '';
-  document.getElementById('qs-buyer-gstin').value = '';
-  document.getElementById('qs-email').value = '';
-  document.getElementById('qs-phone').value = '';
-  
-  document.getElementById('qs-amt').textContent = '₹0';
-  document.getElementById('qs-gst-breakdown').innerHTML = '';
-  document.getElementById('quicksell-modal').classList.add('on');
-  document.getElementById('qs-m').focus();
+  qsFabId=id;var f=inv.find(function(f){return f.id===id;});if(!f)return;
+  document.getElementById('qs-fab-name').textContent=f.name+' — Available: '+f.meters+'m';
+  document.getElementById('qs-m').value='';document.getElementById('qs-r').value=f.rate||'';
+  document.getElementById('qs-discount').value='';document.getElementById('qs-paid').value='';
+  document.getElementById('qs-c').value='';document.getElementById('qs-amt').textContent='₹0';
+  document.getElementById('qs-gst-breakdown').innerHTML='';
+  document.getElementById('quicksell-modal').classList.add('on');document.getElementById('qs-m').focus();
 }
-
-function closeQS(){ document.getElementById('quicksell-modal').classList.remove('on'); }
-
+function closeQS(){document.getElementById('quicksell-modal').classList.remove('on');}
 function calcQSAmt(){
-  var m = parseFloat(document.getElementById('qs-m').value) || 0;
-  var r = parseFloat(document.getElementById('qs-r').value) || 0;
-  var rate = parseFloat(document.getElementById('qs-gst-rate').value) || 0;
-  var type = document.getElementById('qs-gst-type').value;
-  var discount = parseFloat(document.getElementById('qs-discount').value) || 0;
+  var m=parseFloat(document.getElementById('qs-m').value)||0;
+  var r=parseFloat(document.getElementById('qs-r').value)||0;
+  var rate=parseFloat(document.getElementById('qs-gst-rate').value)||0;
+  var type=document.getElementById('qs-gst-type').value;
+  var discount=parseFloat(document.getElementById('qs-discount').value)||0;
   
-  var sub = m * r;
+  var sub = m*r;
   var subAfterDiscount = Math.max(0, sub - discount);
-  var g = calcGST(subAfterDiscount, rate, type);
+  var g=calcGST(subAfterDiscount,rate,type);
   
-  document.getElementById('qs-amt').textContent = fv(g.total);
-  document.getElementById('qs-gst-breakdown').innerHTML = gstBreakdownHTML(g, type);
+  document.getElementById('qs-amt').textContent=fv(g.total);
+  document.getElementById('qs-gst-breakdown').innerHTML=gstBreakdownHTML(g,type);
 }
 
 function _doQSSale(withBill){
-  var m = parseFloat(document.getElementById('qs-m').value);
-  var r = parseFloat(document.getElementById('qs-r').value);
-  var cust = document.getElementById('qs-c').value.trim() || 'Walk-in';
-  var f = inv.find(function(f){ return f.id === qsFabId; });
+  var m=parseFloat(document.getElementById('qs-m').value);
+  var r=parseFloat(document.getElementById('qs-r').value);
+  var cust=document.getElementById('qs-c').value.trim()||'Walk-in';
+  var f=inv.find(function(f){return f.id===qsFabId;});
+  if(!f){toast('Error!');return;}if(!m||m<=0){toast('Enter meters!');return;}if(m>f.meters){toast('Only '+f.meters+'m available!');return;}
   
-  if(!f){ toast('Error!'); return; }
-  if(!m || m <= 0){ toast('Enter meters!'); return; }
-  if(m > f.meters){ toast('Only ' + f.meters + 'm available!'); return; }
+  var rate=r||f.rate;
+  var gstRate=parseFloat(document.getElementById('qs-gst-rate').value)||0;
+  var gstType=document.getElementById('qs-gst-type').value;
+  var discount=parseFloat(document.getElementById('qs-discount').value)||0;
   
-  var rate = r || f.rate;
-  var gstRate = parseFloat(document.getElementById('qs-gst-rate').value) || 0;
-  var gstType = document.getElementById('qs-gst-type').value;
-  var discount = parseFloat(document.getElementById('qs-discount').value) || 0;
-  
-  var subAfterDiscount = Math.max(0, (m * rate) - discount);
-  var g = calcGST(subAfterDiscount, gstRate, gstType);
+  var subAfterDiscount = Math.max(0, (m*rate) - discount);
+  var g=calcGST(subAfterDiscount,gstRate,gstType);
   
   var invType = document.getElementById('qs-inv-type').value;
   var payMode = document.getElementById('qs-pay-mode').value;
@@ -1352,112 +1199,64 @@ function _doQSSale(withBill){
   var paidAmt = isNaN(paidInput) ? (invType === 'Credit' ? 0 : g.total) : paidInput;
   var dueAmt = g.total - paidAmt;
 
-  f.meters -= m;
+  f.meters-=m;
+  var custEmail=(document.getElementById('qs-email')||{value:''}).value.trim();
+  var custPhone=(document.getElementById('qs-phone')||{value:''}).value.trim().replace(/\D/g,'');
+  var buyerGstin=(document.getElementById('qs-buyer-gstin')||{value:''}).value.trim();
   
-  var custEmail = (document.getElementById('qs-email') || {value:''}).value.trim();
-  var custPhone = (document.getElementById('qs-phone') || {value:''}).value.trim().replace(/\D/g,'');
-  var buyerGstin = (document.getElementById('qs-buyer-gstin') || {value:''}).value.trim();
-  
-  var saleData = {
-      id: Date.now(),
-      fabId: f.id,
-      fabName: f.name,
-      meters: m,
-      rate: rate,
-      subtotal: subAfterDiscount,
-      discount: discount,
-      invType: invType,
-      payMode: payMode,
-      paidAmt: paidAmt,
-      dueAmt: dueAmt,
-      gstRate: gstRate,
-      gstType: gstType,
-      gstAmount: g.gstAmount,
-      cgst: g.cgst,
-      sgst: g.sgst,
-      igst: g.igst,
-      total: g.total,
-      customer: cust,
-      customerEmail: custEmail,
-      customerPhone: custPhone,
-      buyerGstin: buyerGstin,
-      note: '',
-      date: new Date().toISOString()
-  };
-  
+  var saleData={id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,customerEmail:custEmail,customerPhone:custPhone,buyerGstin:buyerGstin,note:'',date:new Date().toISOString()};
   sales.unshift(saleData);
-  save(); updateStats(); renderDash(); renderInv(); closeQS();
   
-  toast('✓ ' + m + 'm ' + f.name + ' sold — ' + fv(g.total));
-  
-  if(f.meters < f.threshold){
-    emailjs.send(EJS_SVC, EJS_ALERT_TPL, {
-        fabric_name: f.name,
-        meters: f.meters,
-        threshold: f.threshold,
-        to_email: user ? user.email : '',
-        to_name: user ? user.displayName : 'Shop Owner'
-    }).catch(function(e){ console.log('Low stock alert err:', e); });
+  save();updateStats();renderDash();renderInv();closeQS();
+  toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
+  if(f.meters<f.threshold){
+    emailjs.send(EJS_SVC, EJS_ALERT_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(e){console.log('Low stock alert err:',e);});
   }
-  
-  if(withBill) setTimeout(function(){ generateBill(saleData); }, 300);
+  if(withBill) setTimeout(function(){generateBill(saleData);},300);
 }
+function saveQS(){_doQSSale(false);}
+function saveQSAndBill(){_doQSSale(true);}
 
-function saveQS(){ _doQSSale(false); }
-function saveQSAndBill(){ _doQSSale(true); }
-
-// ══ SALES PAGE (FULL FORM) ══
+// ══ SALES PAGE ══
 function fillSD(){
-  var sel = document.getElementById('s-fab');
-  sel.innerHTML = inv.length ? inv.map(function(f){ return '<option value="'+f.id+'" data-rate="'+f.rate+'">'+esc(f.name)+' ('+f.meters+'m)</option>'; }).join('') : '<option>Add stock first</option>';
-  if(inv.length){
-      document.getElementById('s-r').value = inv[0].rate || '';
-      calcSaleAmt();
-  }
+  var sel=document.getElementById('s-fab');
+  sel.innerHTML=inv.length?inv.map(function(f){return '<option value="'+f.id+'" data-rate="'+f.rate+'">'+esc(f.name)+' ('+f.meters+'m)</option>';}).join(''):'<option>Add stock first</option>';
+  if(inv.length){document.getElementById('s-r').value=inv[0].rate||'';calcSaleAmt();}
 }
-
-function onFabChange(){
-    var opt = document.getElementById('s-fab').options[document.getElementById('s-fab').selectedIndex];
-    document.getElementById('s-r').value = (opt && opt.dataset && opt.dataset.rate) || '';
-    calcSaleAmt();
-}
-
+function onFabChange(){var opt=document.getElementById('s-fab').options[document.getElementById('s-fab').selectedIndex];document.getElementById('s-r').value=(opt&&opt.dataset&&opt.dataset.rate)||'';calcSaleAmt();}
 function calcSaleAmt(){
-  var m = parseFloat(document.getElementById('s-m').value) || 0;
-  var r = parseFloat(document.getElementById('s-r').value) || 0;
-  var rate = parseFloat(document.getElementById('s-gst-rate').value) || 0;
-  var type = document.getElementById('s-gst-type').value;
-  var discount = parseFloat(document.getElementById('s-discount').value) || 0;
+  var m=parseFloat(document.getElementById('s-m').value)||0;
+  var r=parseFloat(document.getElementById('s-r').value)||0;
+  var rate=parseFloat(document.getElementById('s-gst-rate').value)||0;
+  var type=document.getElementById('s-gst-type').value;
+  var discount=parseFloat(document.getElementById('s-discount').value)||0;
   
-  var sub = m * r;
+  var sub = m*r;
   var subAfterDiscount = Math.max(0, sub - discount);
-  var g = calcGST(subAfterDiscount, rate, type);
+  var g=calcGST(subAfterDiscount,rate,type);
   
-  document.getElementById('s-subtotal').textContent = fv(sub) + (discount > 0 ? ' (Disc: -₹'+discount+')' : '');
-  document.getElementById('s-amt').textContent = fv(g.total);
-  document.getElementById('s-gst-breakdown').innerHTML = gstBreakdownHTML(g, type);
+  document.getElementById('s-subtotal').textContent=fv(sub) + (discount>0?' (Disc: -₹'+discount+')':'');
+  document.getElementById('s-amt').textContent=fv(g.total);
+  document.getElementById('s-gst-breakdown').innerHTML=gstBreakdownHTML(g,type);
 }
 
 function _doSale(withBill){
-  var id = parseInt(document.getElementById('s-fab').value);
-  var m = parseFloat(document.getElementById('s-m').value);
-  var r = parseFloat(document.getElementById('s-r').value);
-  var cust = document.getElementById('s-c').value.trim() || 'Walk-in';
-  var note = document.getElementById('s-n').value.trim();
+  var id=parseInt(document.getElementById('s-fab').value);
+  var m=parseFloat(document.getElementById('s-m').value);
+  var r=parseFloat(document.getElementById('s-r').value);
+  var cust=document.getElementById('s-c').value.trim()||'Walk-in';
+  var note=document.getElementById('s-n').value.trim();
+  var f=inv.find(function(f){return f.id===id;});
+  if(!f){toast('Select a fabric!');return;}if(!m||m<=0){toast('Enter meters!');return;}if(m>f.meters){toast('Only '+f.meters+'m available!');return;}
   
-  var f = inv.find(function(f){ return f.id === id; });
-  if(!f){ toast('Select a fabric!'); return; }
-  if(!m || m <= 0){ toast('Enter meters!'); return; }
-  if(m > f.meters){ toast('Only ' + f.meters + 'm available!'); return; }
+  var rate=r||f.rate;
+  var gstRate=parseFloat(document.getElementById('s-gst-rate').value)||0;
+  var gstType=document.getElementById('s-gst-type').value;
+  var discount=parseFloat(document.getElementById('s-discount').value)||0;
+  var buyerGstin=document.getElementById('s-buyer-gstin').value.trim();
   
-  var rate = r || f.rate;
-  var gstRate = parseFloat(document.getElementById('s-gst-rate').value) || 0;
-  var gstType = document.getElementById('s-gst-type').value;
-  var discount = parseFloat(document.getElementById('s-discount').value) || 0;
-  var buyerGstin = document.getElementById('s-buyer-gstin').value.trim();
-  
-  var subAfterDiscount = Math.max(0, (m * rate) - discount);
-  var g = calcGST(subAfterDiscount, gstRate, gstType);
+  var subAfterDiscount = Math.max(0, (m*rate) - discount);
+  var g=calcGST(subAfterDiscount,gstRate,gstType);
   
   var invType = document.getElementById('s-inv-type').value;
   var payMode = document.getElementById('s-pay-mode').value;
@@ -1465,68 +1264,31 @@ function _doSale(withBill){
   var paidAmt = isNaN(paidInput) ? (invType === 'Credit' ? 0 : g.total) : paidInput;
   var dueAmt = g.total - paidAmt;
 
-  f.meters -= m;
-  
-  var saleData = {
-      id: Date.now(),
-      fabId: id,
-      fabName: f.name,
-      meters: m,
-      rate: rate,
-      subtotal: subAfterDiscount,
-      discount: discount,
-      invType: invType,
-      payMode: payMode,
-      paidAmt: paidAmt,
-      dueAmt: dueAmt,
-      gstRate: gstRate,
-      gstType: gstType,
-      gstAmount: g.gstAmount,
-      cgst: g.cgst,
-      sgst: g.sgst,
-      igst: g.igst,
-      total: g.total,
-      customer: cust,
-      buyerGstin: buyerGstin,
-      note: note,
-      date: new Date().toISOString()
-  };
-  
+  f.meters-=m;
+  var saleData={id:Date.now(),fabId:id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,buyerGstin:buyerGstin,note:note,date:new Date().toISOString()};
   sales.unshift(saleData);
-  save(); updateStats(); renderSalesList(); fillSD();
+  save();updateStats();renderSalesList();fillSD();
+  toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
   
-  toast('✓ ' + m + 'm ' + f.name + ' sold — ' + fv(g.total));
+  ['s-m','s-c','s-n','s-buyer-gstin','s-discount','s-paid'].forEach(function(i){document.getElementById(i).value='';});
+  document.getElementById('s-amt').textContent='₹0';
+  document.getElementById('s-subtotal').textContent='₹0';
+  document.getElementById('s-gst-breakdown').innerHTML='';
   
-  ['s-m','s-c','s-n','s-buyer-gstin','s-discount','s-paid'].forEach(function(i){ document.getElementById(i).value=''; });
-  document.getElementById('s-amt').textContent = '₹0';
-  document.getElementById('s-subtotal').textContent = '₹0';
-  document.getElementById('s-gst-breakdown').innerHTML = '';
-  
-  if(f.meters < f.threshold){
-    emailjs.send(EJS_SVC, EJS_ALERT_TPL, {
-        fabric_name: f.name,
-        meters: f.meters,
-        threshold: f.threshold,
-        to_email: user ? user.email : '',
-        to_name: user ? user.displayName : 'Shop Owner'
-    }).catch(function(e){ console.log('Low stock alert err:', e); });
+  if(f.meters<f.threshold){
+    emailjs.send(EJS_SVC, EJS_ALERT_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(e){console.log('Low stock alert err:',e);});
   }
-  
-  if(withBill) setTimeout(function(){ generateBill(saleData); }, 300);
+  if(withBill) setTimeout(function(){generateBill(saleData);},300);
 }
-
-function recSale(){ _doSale(false); }
-function recSaleAndBill(){ _doSale(true); }
+function recSale(){_doSale(false);}
+function recSaleAndBill(){_doSale(true);}
 
 function renderSalesList(){
-  var el = document.getElementById('sales-list');
-  if(!el) return;
-  if(!sales.length){
-      el.innerHTML='<div class="empty" style="padding:30px"><div class="empty-ic">📋</div><div class="empty-t">No Sales Yet</div></div>';
-      return;
-  }
-  el.innerHTML = sales.slice(0, 10).map(function(s){
-    var gstTag = s.gstRate ? '<span style="font-size:11px;background:var(--blue-light);color:var(--blue);border-radius:5px;padding:1px 7px;font-weight:600">GST '+s.gstRate+'%</span>' : '';
+  var el=document.getElementById('sales-list');
+  if(!el)return;
+  if(!sales.length){el.innerHTML='<div class="empty" style="padding:30px"><div class="empty-ic">📋</div><div class="empty-t">No Sales Yet</div></div>';return;}
+  el.innerHTML=sales.slice(0,10).map(function(s){
+    var gstTag=s.gstRate?'<span style="font-size:11px;background:var(--blue-light);color:var(--blue);border-radius:5px;padding:1px 7px;font-weight:600">GST '+s.gstRate+'%</span>':'';
     return '<div style="background:var(--white);border:2px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow)">'
       +'<div><div style="font-family:var(--ff-h);font-size:14px;font-weight:700">'+esc(s.fabName)+'</div>'
       +'<div style="font-size:12px;color:var(--muted)">'+s.meters+'m · '+esc(s.customer)+' · '+new Date(s.date).toLocaleDateString('en-IN')+' '+gstTag+'</div></div>'
@@ -1535,69 +1297,59 @@ function renderSalesList(){
   }).join('');
 }
 
-// ══ LEDGER (SALES BOOK & PURCHASE BOOK) ══
+// ══ LEDGER ══
 function switchLedger(tab){
-  activeLedgerTab = tab;
-  document.getElementById('tab-sales').classList.toggle('active', tab === 'sales');
-  document.getElementById('tab-purchases').classList.toggle('active', tab === 'purchases');
+  activeLedgerTab=tab;
+  document.getElementById('tab-sales').classList.toggle('active',tab==='sales');
+  document.getElementById('tab-purchases').classList.toggle('active',tab==='purchases');
   renderLedger();
 }
 
 function renderLedgerSummary(){
-  var totalSales = sales.reduce(function(a,s){ return a + s.total; }, 0);
-  var totalPurchases = purchases.reduce(function(a,p){ return a + p.total; }, 0);
-  var net = totalSales - totalPurchases;
-  
-  document.getElementById('ls-total-sales').textContent = fv(totalSales);
-  document.getElementById('ls-sales-count').textContent = sales.length + ' entries';
-  document.getElementById('ls-total-purchases').textContent = fv(totalPurchases);
-  document.getElementById('ls-purchases-count').textContent = purchases.length + ' entries';
-  
-  var netEl = document.getElementById('ls-net-profit');
-  netEl.textContent = fv(Math.abs(net));
-  netEl.style.color = net >= 0 ? 'var(--green2)' : 'var(--red)';
+  var totalSales=sales.reduce(function(a,s){return a+s.total;},0);
+  var totalPurchases=purchases.reduce(function(a,p){return a+p.total;},0);
+  var net=totalSales-totalPurchases;
+  document.getElementById('ls-total-sales').textContent=fv(totalSales);
+  document.getElementById('ls-sales-count').textContent=sales.length+' entries';
+  document.getElementById('ls-total-purchases').textContent=fv(totalPurchases);
+  document.getElementById('ls-purchases-count').textContent=purchases.length+' entries';
+  var netEl=document.getElementById('ls-net-profit');
+  netEl.textContent=fv(Math.abs(net));
+  netEl.style.color=net>=0?'var(--green2)':'var(--red)';
 }
 
 function renderLedger(){
-  var q = (document.getElementById('ledger-q')||{value:''}).value.toLowerCase();
-  var el = document.getElementById('ledger-grid');
-  if(!el) return;
-  
-  var list = activeLedgerTab === 'sales' ? sales : purchases;
-  var filtered = list.filter(function(e){
-    return (e.fabName || e.item || '').toLowerCase().includes(q) || 
-           (e.customer || e.party || '').toLowerCase().includes(q) || 
-           String(e.total).includes(q);
+  var q=(document.getElementById('ledger-q')||{value:''}).value.toLowerCase();
+  var el=document.getElementById('ledger-grid');
+  if(!el)return;
+  var list=activeLedgerTab==='sales'?sales:purchases;
+  var filtered=list.filter(function(e){
+    return (e.fabName||e.item||'').toLowerCase().includes(q)||(e.customer||e.party||'').toLowerCase().includes(q)||String(e.total).includes(q);
   });
-  
   if(!filtered.length){
-    el.innerHTML='<div class="empty"><div class="empty-ic">'+(activeLedgerTab==='sales'?'💰':'📥')+'</div><div class="empty-t">Koi record nahi</div><div class="empty-s">'+(activeLedgerTab==='sales'?'Koi bikri record karo':'Koi purchase record karo')+'</div></div>';
+    el.innerHTML='<div class="empty"><div class="empty-ic">'+(activeLedgerTab==='sales'?'💰':'📥')+'</div><div class="empty-t">No records found</div><div class="empty-s">'+(activeLedgerTab==='sales'?'Record a sale to see it here':'Record a purchase to see it here')+'</div></div>';
     return;
   }
-  
-  el.innerHTML = filtered.map(function(e){
-    var isSale = activeLedgerTab === 'sales';
-    var party = isSale ? (e.customer || 'Walk-in') : (e.party || 'Unknown');
-    var item = isSale ? e.fabName : (e.item || '—');
-    var qty = e.meters ? e.meters + 'm' : '—';
-    var rate = e.rate ? '₹' + e.rate + '/m' : '—';
-    var d = new Date(e.date);
-    var dateStr = d.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
-    
-    var gstInfo = '';
-    if(e.gstRate > 0){
-      gstInfo = '<span style="font-size:10px;background:var(--blue-light);color:var(--blue);border-radius:5px;padding:1px 7px;font-weight:600;margin-left:4px">GST '+e.gstRate+'% ('+e.gstType.toUpperCase()+')</span>';
+  el.innerHTML=filtered.map(function(e){
+    var isSale=activeLedgerTab==='sales';
+    var party=isSale?(e.customer||'Walk-in'):(e.party||'Unknown');
+    var item=isSale?e.fabName:(e.item||'—');
+    var qty=e.meters?e.meters+'m':'—';
+    var rate=e.rate?'₹'+e.rate+'/m':'—';
+    var d=new Date(e.date);
+    var dateStr=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+    var gstInfo='';
+    if(e.gstRate>0){
+      gstInfo='<span style="font-size:10px;background:var(--blue-light);color:var(--blue);border-radius:5px;padding:1px 7px;font-weight:600;margin-left:4px">GST '+e.gstRate+'% ('+e.gstType.toUpperCase()+')</span>';
     }
-    
-    var gstin = isSale ? (e.buyerGstin || '') : (e.supplierGstin || '');
-    var gstinTag = gstin ? '<span style="font-size:10px;color:var(--muted);margin-left:4px">GSTIN: '+esc(gstin)+'</span>' : '';
-    
+    var gstin=isSale?(e.buyerGstin||''):(e.supplierGstin||'');
+    var gstinTag=gstin?'<span style="font-size:10px;color:var(--muted);margin-left:4px">GSTIN: '+esc(gstin)+'</span>':'';
     return '<div class="ledger-entry '+(isSale?'sale-entry':'purchase-entry')+'">'
       +'<div class="le-icon '+(isSale?'sale':'purchase')+'">'+(isSale?'💰':'📥')+'</div>'
       +'<div>'
         +'<div class="le-name">'+esc(item)+'</div>'
         +'<div class="le-meta">'+esc(party)+' · '+qty+' · '+rate+gstInfo+gstinTag+'</div>'
-        +(e.note ? '<div style="font-size:11px;color:var(--muted);margin-top:2px;font-style:italic">'+esc(e.note)+'</div>' : '')
+        +(e.note?'<div style="font-size:11px;color:var(--muted);margin-top:2px;font-style:italic">'+esc(e.note)+'</div>':'')
       +'</div>'
       +'<div class="le-date">'+dateStr+'</div>'
       +'<div class="le-amount '+(isSale?'sale':'purchase')+'">'+fv(e.total)+'</div>'
@@ -1607,218 +1359,141 @@ function renderLedger(){
 
 // ══ PURCHASE MODAL ══
 function openPurchaseModal(){
-  ['pur-party','pur-gstin','pur-item','pur-meters','pur-rate','pur-note'].forEach(function(i){ document.getElementById(i).value=''; });
-  document.getElementById('pur-total').textContent = '₹0';
-  document.getElementById('pur-gst-breakdown').innerHTML = '';
+  ['pur-party','pur-gstin','pur-item','pur-meters','pur-rate','pur-note'].forEach(function(i){document.getElementById(i).value='';});
+  document.getElementById('pur-total').textContent='₹0';
+  document.getElementById('pur-gst-breakdown').innerHTML='';
   document.getElementById('purchase-modal').classList.add('on');
   document.getElementById('pur-party').focus();
 }
-
-function closePurchaseModal(){ document.getElementById('purchase-modal').classList.remove('on'); }
-
+function closePurchaseModal(){document.getElementById('purchase-modal').classList.remove('on');}
 function calcPurAmt(){
-  var m = parseFloat(document.getElementById('pur-meters').value) || 0;
-  var r = parseFloat(document.getElementById('pur-rate').value) || 0;
-  var rate = parseFloat(document.getElementById('pur-gst-rate').value) || 0;
-  var type = document.getElementById('pur-gst-type').value;
-  var g = calcGST(m * r, rate, type);
-  
-  document.getElementById('pur-total').textContent = fv(g.total);
-  document.getElementById('pur-gst-breakdown').innerHTML = gstBreakdownHTML(g, type);
+  var m=parseFloat(document.getElementById('pur-meters').value)||0;
+  var r=parseFloat(document.getElementById('pur-rate').value)||0;
+  var rate=parseFloat(document.getElementById('pur-gst-rate').value)||0;
+  var type=document.getElementById('pur-gst-type').value;
+  var g=calcGST(m*r,rate,type);
+  document.getElementById('pur-total').textContent=fv(g.total);
+  document.getElementById('pur-gst-breakdown').innerHTML=gstBreakdownHTML(g,type);
 }
-
 function savePurchase(withBill){
-  var party = document.getElementById('pur-party').value.trim();
-  var item = document.getElementById('pur-item').value.trim();
-  var m = parseFloat(document.getElementById('pur-meters').value);
-  var r = parseFloat(document.getElementById('pur-rate').value);
-  
-  if(!party){ toast('Party naam daalo!'); return; }
-  if(!item){ toast('Kapde ka naam daalo!'); return; }
-  if(!m || m <= 0){ toast('Meter daalo!'); return; }
-  if(!r || r <= 0){ toast('Rate daalo!'); return; }
-  
-  var gstRate = parseFloat(document.getElementById('pur-gst-rate').value) || 0;
-  var gstType = document.getElementById('pur-gst-type').value;
-  var g = calcGST(m * r, gstRate, gstType);
-  
-  var purchaseData = {
-      id: Date.now(),
-      party: party,
-      supplierGstin: document.getElementById('pur-gstin').value.trim(),
-      item: item,
-      meters: m,
-      rate: r,
-      subtotal: g.subtotal,
-      gstRate: gstRate,
-      gstType: gstType,
-      gstAmount: g.gstAmount,
-      cgst: g.cgst,
-      sgst: g.sgst,
-      igst: g.igst,
-      total: g.total,
-      note: document.getElementById('pur-note').value.trim(),
-      date: new Date().toISOString()
-  };
-  
+  var party=document.getElementById('pur-party').value.trim();
+  var item=document.getElementById('pur-item').value.trim();
+  var m=parseFloat(document.getElementById('pur-meters').value);
+  var r=parseFloat(document.getElementById('pur-rate').value);
+  if(!party){toast('Party naam daalo!');return;}
+  if(!item){toast('Kapde ka naam daalo!');return;}
+  if(!m||m<=0){toast('Meter daalo!');return;}
+  if(!r||r<=0){toast('Rate daalo!');return;}
+  var gstRate=parseFloat(document.getElementById('pur-gst-rate').value)||0;
+  var gstType=document.getElementById('pur-gst-type').value;
+  var g=calcGST(m*r,gstRate,gstType);
+  var purchaseData = {id:Date.now(),party:party,supplierGstin:document.getElementById('pur-gstin').value.trim(),item:item,meters:m,rate:r,subtotal:g.subtotal,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,note:document.getElementById('pur-note').value.trim(),date:new Date().toISOString()};
   purchases.unshift(purchaseData);
-  save(); renderLedgerSummary(); renderLedger(); closePurchaseModal();
-  
-  toast('✓ Purchase recorded — ' + fv(g.total));
-  if(withBill) setTimeout(function(){ generatePurchaseBill(purchaseData); }, 300);
+  save();renderLedgerSummary();renderLedger();closePurchaseModal();
+  toast('✓ Purchase recorded — '+fv(g.total));
+  if(withBill) setTimeout(function(){generatePurchaseBill(purchaseData);},300);
 }
 
 // ══ CALCULATORS ══
-function c1(){
-    document.getElementById('c1-r').textContent = fv((parseFloat(document.getElementById('c1m').value)||0) * (parseFloat(document.getElementById('c1r').value)||0));
-}
+function c1(){document.getElementById('c1-r').textContent=fv((parseFloat(document.getElementById('c1m').value)||0)*(parseFloat(document.getElementById('c1r').value)||0));}
 function c2(){
-  var b = parseFloat(document.getElementById('c2b').value)||0, s = parseFloat(document.getElementById('c2s').value)||0, m = parseFloat(document.getElementById('c2m').value)||0;
-  var pm = s - b, tot = pm * m;
-  var pe = document.getElementById('c2-pm'), te = document.getElementById('c2-r');
-  pe.textContent = (pm >= 0 ? '+' : '') + fv(pm);
-  te.textContent = (tot >= 0 ? '+' : '') + fv(tot);
-  pe.style.color = te.style.color = pm >= 0 ? 'var(--green2)' : 'var(--red)';
+  var b=parseFloat(document.getElementById('c2b').value)||0,s=parseFloat(document.getElementById('c2s').value)||0,m=parseFloat(document.getElementById('c2m').value)||0,pm=s-b,tot=pm*m;
+  var pe=document.getElementById('c2-pm'),te=document.getElementById('c2-r');
+  pe.textContent=(pm>=0?'+':'')+fv(pm);te.textContent=(tot>=0?'+':'')+fv(tot);
+  pe.style.color=te.style.color=pm>=0?'var(--green2)':'var(--red)';
 }
 function c3(){
-  var p = parseFloat(document.getElementById('c3g').value) || 5;
-  var type = document.getElementById('c3type').value;
-  var a = parseFloat(document.getElementById('c3a').value) || 0;
-  var g = calcGST(a, p, type);
-  
-  document.getElementById('c3-g').textContent = fv(g.gstAmount);
-  document.getElementById('c3-t').textContent = fv(g.total);
-  var bd = document.getElementById('c3-breakdown');
-  if(a > 0){
-    bd.style.display = 'block';
-    bd.innerHTML = gstBreakdownHTML(g, type);
+  var p=parseFloat(document.getElementById('c3g').value)||5;
+  var type=document.getElementById('c3type').value;
+  var a=parseFloat(document.getElementById('c3a').value)||0;
+  var g=calcGST(a,p,type);
+  document.getElementById('c3-g').textContent=fv(g.gstAmount);
+  document.getElementById('c3-t').textContent=fv(g.total);
+  var bd=document.getElementById('c3-breakdown');
+  if(a>0){
+    bd.style.display='block';
+    bd.innerHTML=gstBreakdownHTML(g,type);
   } else {
-    bd.style.display = 'none';
+    bd.style.display='none';
   }
 }
 
 // ══ REPORT ══
 function renderReport(){
-  var now = new Date();
-  document.getElementById('rpt-month').textContent = now.toLocaleString('en-IN', {month:'long', year:'numeric'});
-  
-  var ms = sales.filter(function(s){ var d = new Date(s.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); });
-  var sa = ms.reduce(function(a,s){ return a + s.total; }, 0);
-  var sm = ms.reduce(function(a,s){ return a + s.meters; }, 0);
-  var iv = inv.reduce(function(a,f){ return a + (f.meters * f.rate); }, 0);
-  var lc = inv.filter(function(f){ return f.meters < f.threshold; }).length;
-  
-  document.getElementById('rpt-stats').innerHTML = [
-    ['Sales Amount', fv(sa), 'gold'],
-    ['Meters Sold', sm + 'm', ''],
-    ['Stock Value', fv(iv), ''],
-    ['Low Stock', lc, lc > 0 ? 'red' : '']
-  ].map(function(x){
-      return '<div style="background:var(--white);border:2px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow)"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:6px">'+x[0]+'</div><div style="font-family:var(--ff-h);font-size:28px;font-weight:800;color:'+(x[2]==='gold'?'var(--gold)':x[2]==='red'?'var(--red)':'var(--text)')+'">'+x[1]+'</div></div>';
-  }).join('');
-  
-  var mx = Math.max.apply(null, inv.map(function(f){ return f.meters; }).concat([1]));
-  document.getElementById('rpt-stock').innerHTML = inv.length ? inv.map(function(f){
-      return '<div class="bar-row"><div class="bar-lbl" title="'+esc(f.name)+'">'+esc(f.name)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(f.meters/mx*100)+'%"></div></div><div class="bar-val">'+f.meters+'m</div></div>';
-  }).join('') : '<div style="color:var(--muted);font-size:12px">No data</div>';
-  
-  var sf = {};
-  ms.forEach(function(s){ sf[s.fabName] = (sf[s.fabName] || 0) + s.meters; });
-  var mxs = Math.max.apply(null, Object.values(sf).concat([1]));
-  
-  document.getElementById('rpt-sales').innerHTML = Object.keys(sf).length ? Object.entries(sf).map(function(e){
-      return '<div class="bar-row"><div class="bar-lbl">'+esc(e[0])+'</div><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(e[1]/mxs*100)+'%;background:var(--green2)"></div></div><div class="bar-val">'+e[1]+'m</div></div>';
-  }).join('') : '<div style="color:var(--muted);font-size:12px">No sales this month</div>';
-  
-  document.getElementById('rpt-body').innerHTML = inv.length ? inv.map(function(f){
-    var sold = ms.filter(function(s){ return s.fabId === f.id; }).reduce(function(a,s){ return a + s.meters; }, 0);
-    var status = f.meters < f.threshold ? '<span class="pill pill-r">LOW</span>' : '<span class="pill pill-g">OK</span>';
+  var now=new Date();
+  document.getElementById('rpt-month').textContent=now.toLocaleString('en-IN',{month:'long',year:'numeric'});
+  var ms=sales.filter(function(s){var d=new Date(s.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+  var sa=ms.reduce(function(a,s){return a+s.total;},0),sm=ms.reduce(function(a,s){return a+s.meters;},0);
+  var iv=inv.reduce(function(a,f){return a+f.meters*f.rate;},0),lc=inv.filter(function(f){return f.meters<f.threshold;}).length;
+  document.getElementById('rpt-stats').innerHTML=[
+    ['Sales Amount',fv(sa),'gold'],['Meters Sold',sm+'m',''],['Stock Value',fv(iv),''],['Low Stock',lc,lc>0?'red':'']
+  ].map(function(x){return '<div style="background:var(--white);border:2px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow)"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:6px">'+x[0]+'</div><div style="font-family:var(--ff-h);font-size:28px;font-weight:800;color:'+(x[2]==='gold'?'var(--gold)':x[2]==='red'?'var(--red)':'var(--text)')+'">'+x[1]+'</div></div>';}).join('');
+  var mx=Math.max.apply(null,inv.map(function(f){return f.meters;}).concat([1]));
+  document.getElementById('rpt-stock').innerHTML=inv.length?inv.map(function(f){return '<div class="bar-row"><div class="bar-lbl" title="'+esc(f.name)+'">'+esc(f.name)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(f.meters/mx*100)+'%"></div></div><div class="bar-val">'+f.meters+'m</div></div>';}).join(''):'<div style="color:var(--muted);font-size:12px">No data</div>';
+  var sf={};ms.forEach(function(s){sf[s.fabName]=(sf[s.fabName]||0)+s.meters;});
+  var mxs=Math.max.apply(null,Object.values(sf).concat([1]));
+  document.getElementById('rpt-sales').innerHTML=Object.keys(sf).length?Object.entries(sf).map(function(e){return '<div class="bar-row"><div class="bar-lbl">'+esc(e[0])+'</div><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(e[1]/mxs*100)+'%;background:var(--green2)"></div></div><div class="bar-val">'+e[1]+'m</div></div>';}).join(''):'<div style="color:var(--muted);font-size:12px">No sales this month</div>';
+  document.getElementById('rpt-body').innerHTML=inv.length?inv.map(function(f){
+    var sold=ms.filter(function(s){return s.fabId===f.id;}).reduce(function(a,s){return a+s.meters;},0);
+    var status=f.meters<f.threshold?'<span class="pill pill-r">LOW</span>':'<span class="pill pill-g">OK</span>';
     return '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px;padding:14px 20px;border-bottom:1.5px solid var(--border);align-items:center;gap:8px">'
       +'<div><div style="font-weight:700;font-size:14px">'+esc(f.name)+'</div><div style="font-size:12px;color:var(--muted)">'+f.type+'</div></div>'
-      +'<div style="color:var(--muted2)">'+(f.meters + sold)+'m</div>'
+      +'<div style="color:var(--muted2)">'+(f.meters+sold)+'m</div>'
       +'<div style="color:var(--green2)">'+sold+'m</div>'
       +'<div style="font-weight:700">'+f.meters+'m</div>'
-      +'<div style="color:var(--gold)">'+fv(f.meters * f.rate)+'</div>'
+      +'<div style="color:var(--gold)">'+fv(f.meters*f.rate)+'</div>'
       +'<div>'+status+'</div>'
     +'</div>';
-  }).join('') : '<div style="padding:20px;color:var(--muted);text-align:center">No data</div>';
+  }).join(''):'<div style="padding:20px;color:var(--muted);text-align:center">No data</div>';
 }
 
 // ══ ONBOARDING ══
-var obStep = 1;
-var OB_STEPS = [
+var obStep=1;
+var OB_STEPS=[
   {title:'Welcome to StockSaathi! 🎉',sub:'2 minute mein apna stock manager ready',feats:[['📦','Stock Track Karo','Meter by meter hisaab'],['💰','Bikri Record Karo','Customer ka naam aur raqam'],['⚠️','Auto Alert','Jab stock kam ho, alert aayega'],['📒','Bahi Khata','Sales + Purchase Book']]},
   {title:'GST Ready System 🧾',sub:'Intra/Inter state GST — bilkul sahi',feats:[['5%','Fabric / <₹1000','Standard textile GST rate'],['12%','Garments >₹1000','Higher GST bracket'],['🔵','CGST + SGST','Gujarat ke andar — split equally'],['🔴','IGST','Dusre states ke liye']]},
   {title:'All Set! Lets Begin 🚀',sub:'StockSaathi is ready',feats:[['📥','Add Stock','Inventory mein fabric daalo'],['💰','Sell + Bill','Quick sell with GST invoice'],['📒','Bahi Khata','Full ledger — sales aur purchases'],['📊','Reports','Monthly summary']]},
 ];
-
-function showOnboarding(){ obStep = 1; renderOB(); document.getElementById('onboarding').classList.add('on'); }
+function showOnboarding(){obStep=1;renderOB();document.getElementById('onboarding').classList.add('on');}
 function renderOB(){
-  var s = OB_STEPS[obStep - 1];
-  document.getElementById('ob-title').textContent = s.title;
-  document.getElementById('ob-sub').textContent = s.sub;
-  document.getElementById('ob-body').innerHTML = '<div class="ob-features">'+s.feats.map(function(f){ return '<div class="ob-feat"><div class="ob-feat-ic">'+f[0]+'</div><div><div class="ob-feat-t">'+f[1]+'</div><div class="ob-feat-s">'+f[2]+'</div></div></div>'; }).join('')+'</div>';
-  document.getElementById('ob-counter').textContent = 'Step ' + obStep + ' / 3';
-  document.getElementById('ob-next').textContent = obStep === 3 ? 'Lets Go! ✓' : 'Next →';
-  [1, 2, 3].forEach(function(i){
-      var el = document.getElementById('ob-s'+i);
-      if(el) el.className = 'ob-step' + (i < obStep ? ' done' : i === obStep ? ' active' : '');
-  });
+  var s=OB_STEPS[obStep-1];
+  document.getElementById('ob-title').textContent=s.title;
+  document.getElementById('ob-sub').textContent=s.sub;
+  document.getElementById('ob-body').innerHTML='<div class="ob-features">'+s.feats.map(function(f){return '<div class="ob-feat"><div class="ob-feat-ic">'+f[0]+'</div><div><div class="ob-feat-t">'+f[1]+'</div><div class="ob-feat-s">'+f[2]+'</div></div></div>';}).join('')+'</div>';
+  document.getElementById('ob-counter').textContent='Step '+obStep+' / 3';
+  document.getElementById('ob-next').textContent=obStep===3?'Lets Go! ✓':'Next →';
+  [1,2,3].forEach(function(i){var el=document.getElementById('ob-s'+i);if(el)el.className='ob-step'+(i<obStep?' done':i===obStep?' active':'');});
 }
-function obNext(){ if(obStep < 3){ obStep++; renderOB(); } else { closeOB(); setTimeout(function(){ openModal(); }, 400); } }
-function skipOnboarding(){ closeOB(); }
-function closeOB(){ document.getElementById('onboarding').classList.remove('on'); }
+function obNext(){if(obStep<3){obStep++;renderOB();}else{closeOB();setTimeout(function(){openModal();},400);}}
+function skipOnboarding(){closeOB();}
+function closeOB(){document.getElementById('onboarding').classList.remove('on');}
 
-// ══ BILL GENERATION (SALES) ══
-var lastSale = null;
+// ══ BILL GENERATION ══
+var lastSale=null;
 function generateBill(saleData){
-  lastSale = saleData;
-  var billNo = 'BILL-' + Date.now().toString().slice(-6);
-  var dateStr = new Date().toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
-  
-  var shopName = user && user.displayName ? user.displayName : 'Firm Name';
+  lastSale=saleData;
+  var billNo='BILL-'+Date.now().toString().slice(-6);
+  var dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  var shopName=user&&user.displayName?user.displayName:'Firm Name';
 
-  var topHeader = document.querySelector('#bill-preview > div:nth-child(2) > div:nth-child(1)');
-  if(topHeader) {
-      topHeader.style.background = 'linear-gradient(135deg, #2d2416 0%, #4a3820 100%)';
-      topHeader.style.color = '#faf7f0';
-      topHeader.style.padding = '20px';
-      topHeader.style.borderRadius = '12px';
-      topHeader.style.borderBottom = 'none';
-      topHeader.style.marginBottom = '20px';
-  }
-
-  var billShopNameEl = document.getElementById('bill-shop-name');
-  if(billShopNameEl) {
-      billShopNameEl.textContent = shopName;
-      billShopNameEl.style.color = '#c8973a';
-  }
-
-  document.getElementById('bill-type-lbl').textContent = 'TAX INVOICE / BILL';
-  document.getElementById('bill-type-lbl').style.color = '#b8a888';
-  
+  document.getElementById('bill-type-lbl').textContent = 'BILL';
   document.getElementById('bill-to-lbl').textContent = 'To / Grahak';
-  document.getElementById('bill-no').textContent = billNo;
-  document.getElementById('bill-date').textContent = dateStr;
-  document.getElementById('bill-customer').textContent = saleData.customer || 'Walk-in';
-  
-  var shopGstinEl = document.getElementById('bill-shop-gstin');
-  if(shopGstinEl) {
-      shopGstinEl.textContent = 'GSTIN: 24XXXXX0000X0Z0'; 
-      shopGstinEl.style.color = '#e8dfc8';
-  }
-
-  var buyerGstinEl = document.getElementById('bill-buyer-gstin');
-  if(buyerGstinEl) buyerGstinEl.textContent = saleData.buyerGstin ? 'GSTIN: ' + saleData.buyerGstin : '';
-  
-  var emailEl = document.getElementById('bill-customer-email');
-  if(emailEl) emailEl.textContent = saleData.customerEmail || '';
+  document.getElementById('bill-no').textContent=billNo;
+  document.getElementById('bill-date').textContent=dateStr;
+  document.getElementById('bill-customer').textContent=saleData.customer||'Walk-in';
+  document.getElementById('bill-shop-name').textContent=shopName;
+  var shopGstinEl=document.getElementById('bill-shop-gstin');
+  if(shopGstinEl) shopGstinEl.textContent='';
+  var buyerGstinEl=document.getElementById('bill-buyer-gstin');
+  if(buyerGstinEl) buyerGstinEl.textContent=saleData.buyerGstin?'GSTIN: '+saleData.buyerGstin:'';
+  var emailEl=document.getElementById('bill-customer-email');
+  if(emailEl) emailEl.textContent=saleData.customerEmail||'';
 
   document.getElementById('bill-inv-type').textContent = saleData.invType || 'Cash';
   document.getElementById('bill-pay-mode').textContent = saleData.payMode || 'Cash';
 
   var baseAmt = (saleData.meters * saleData.rate);
-  document.getElementById('bill-items').innerHTML =
+  document.getElementById('bill-items').innerHTML=
     '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:10px 0">'
     +'<div style="font-size:14px;font-weight:600;color:#2d2416">'+esc(saleData.fabName)+'</div>'
     +'<div style="font-size:14px;color:#2d2416;text-align:center">'+saleData.meters+'m</div>'
@@ -1832,73 +1507,53 @@ function generateBill(saleData){
       document.getElementById('bill-discount-section').innerHTML = '';
   }
 
-  var gstSec = document.getElementById('bill-gst-section');
+  // GST section in bill
+  var gstSec=document.getElementById('bill-gst-section');
   if(gstSec){
-    if(saleData.gstRate > 0){
-      var g = {rate: saleData.gstRate, subtotal: saleData.subtotal || saleData.total, gstAmount: saleData.gstAmount || 0, cgst: saleData.cgst || 0, sgst: saleData.sgst || 0, igst: saleData.igst || 0};
-      gstSec.innerHTML = billGSTSection(g, saleData.gstType || 'intra');
+    if(saleData.gstRate>0){
+      var g={rate:saleData.gstRate,subtotal:saleData.subtotal||saleData.total,gstAmount:saleData.gstAmount||0,cgst:saleData.cgst||0,sgst:saleData.sgst||0,igst:saleData.igst||0};
+      gstSec.innerHTML=billGSTSection(g,saleData.gstType||'intra');
     } else {
-      gstSec.innerHTML = '';
+      gstSec.innerHTML='';
     }
   }
+  document.getElementById('bill-total').textContent='₹'+Math.round(saleData.total).toLocaleString('en-IN');
   
-  document.getElementById('bill-total').textContent = '₹' + Math.round(saleData.total).toLocaleString('en-IN');
-  document.getElementById('bill-paid-amt').textContent = '₹' + Math.round(saleData.paidAmt || 0).toLocaleString('en-IN');
-  document.getElementById('bill-due-amt').textContent = '₹' + Math.round(saleData.dueAmt || 0).toLocaleString('en-IN');
+  document.getElementById('bill-paid-amt').textContent = '₹' + Math.round(saleData.paidAmt||0).toLocaleString('en-IN');
+  document.getElementById('bill-due-amt').textContent = '₹' + Math.round(saleData.dueAmt||0).toLocaleString('en-IN');
 
-  var emailBillBtn = document.getElementById('email-bill-btn');
-  if(emailBillBtn) emailBillBtn.style.display = saleData.customerEmail ? 'flex' : 'none';
-  
-  var waBillBtn = document.getElementById('wa-bill-btn');
-  if(waBillBtn){ waBillBtn.style.display = 'flex'; waBillBtn.textContent = '💬 WhatsApp'; }
-  
+  var emailBillBtn=document.getElementById('email-bill-btn');
+  if(emailBillBtn) emailBillBtn.style.display=saleData.customerEmail?'flex':'none';
+  var waBillBtn=document.getElementById('wa-bill-btn');
+  if(waBillBtn){waBillBtn.style.display='flex';waBillBtn.textContent='💬 WhatsApp';}
   document.getElementById('bill-modal').classList.add('on');
 }
 
-// ══ BILL GENERATION (PURCHASES) ══
 function generatePurchaseBill(p) {
   lastSale = null;
-  var billNo = 'PUR-' + Date.now().toString().slice(-6);
-  var dateStr = new Date().toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
-  var shopName = user && user.displayName ? user.displayName : 'Firm Name';
-
-  var topHeader = document.querySelector('#bill-preview > div:nth-child(2) > div:nth-child(1)');
-  if(topHeader) {
-      topHeader.style.background = 'transparent';
-      topHeader.style.color = 'inherit';
-      topHeader.style.padding = '0';
-      topHeader.style.borderBottom = '1.5px dashed #c8b99a';
-      topHeader.style.marginBottom = '18px';
-      topHeader.style.paddingBottom = '18px';
-  }
-
-  var billShopNameEl = document.getElementById('bill-shop-name');
-  if(billShopNameEl) {
-      billShopNameEl.textContent = shopName;
-      billShopNameEl.style.color = '#2d2416';
-  }
+  var billNo='PUR-'+Date.now().toString().slice(-6);
+  var dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  var shopName=user&&user.displayName?user.displayName:'Firm Name';
 
   document.getElementById('bill-type-lbl').textContent = 'PURCHASE RECEIPT';
-  document.getElementById('bill-type-lbl').style.color = '#8a7a5a';
   document.getElementById('bill-to-lbl').textContent = 'From / Supplier';
-  document.getElementById('bill-no').textContent = billNo;
-  document.getElementById('bill-date').textContent = dateStr;
-  document.getElementById('bill-customer').textContent = p.party || 'Unknown';
+  document.getElementById('bill-no').textContent=billNo;
+  document.getElementById('bill-date').textContent=dateStr;
+  document.getElementById('bill-customer').textContent=p.party||'Unknown';
+  document.getElementById('bill-shop-name').textContent=shopName;
 
-  var shopGstinEl = document.getElementById('bill-shop-gstin');
-  if(shopGstinEl) shopGstinEl.textContent = '';
-  
-  var buyerGstinEl = document.getElementById('bill-buyer-gstin');
-  if(buyerGstinEl) buyerGstinEl.textContent = p.supplierGstin ? 'GSTIN: ' + p.supplierGstin : '';
-  
-  var emailEl = document.getElementById('bill-customer-email');
-  if(emailEl) emailEl.textContent = '';
+  var shopGstinEl=document.getElementById('bill-shop-gstin');
+  if(shopGstinEl) shopGstinEl.textContent='';
+  var buyerGstinEl=document.getElementById('bill-buyer-gstin');
+  if(buyerGstinEl) buyerGstinEl.textContent=p.supplierGstin?'GSTIN: '+p.supplierGstin:'';
+  var emailEl=document.getElementById('bill-customer-email');
+  if(emailEl) emailEl.textContent='';
 
   document.getElementById('bill-inv-type').textContent = '-';
   document.getElementById('bill-pay-mode').textContent = '-';
 
   var baseAmt = (p.meters * p.rate);
-  document.getElementById('bill-items').innerHTML =
+  document.getElementById('bill-items').innerHTML=
     '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:10px 0">'
     +'<div style="font-size:14px;font-weight:600;color:#2d2416">'+esc(p.item)+'</div>'
     +'<div style="font-size:14px;color:#2d2416;text-align:center">'+p.meters+'m</div>'
@@ -1908,128 +1563,104 @@ function generatePurchaseBill(p) {
 
   document.getElementById('bill-discount-section').innerHTML = '';
 
-  var gstSec = document.getElementById('bill-gst-section');
+  var gstSec=document.getElementById('bill-gst-section');
   if(gstSec){
-    if(p.gstRate > 0){
-      var g = {rate: p.gstRate, subtotal: p.subtotal || p.total, gstAmount: p.gstAmount || 0, cgst: p.cgst || 0, sgst: p.sgst || 0, igst: p.igst || 0};
-      gstSec.innerHTML = billGSTSection(g, p.gstType || 'intra');
+    if(p.gstRate>0){
+      var g={rate:p.gstRate,subtotal:p.subtotal||p.total,gstAmount:p.gstAmount||0,cgst:p.cgst||0,sgst:p.sgst||0,igst:p.igst||0};
+      gstSec.innerHTML=billGSTSection(g,p.gstType||'intra');
     } else {
-      gstSec.innerHTML = '';
+      gstSec.innerHTML='';
     }
   }
-  document.getElementById('bill-total').textContent = '₹' + Math.round(p.total).toLocaleString('en-IN');
+  document.getElementById('bill-total').textContent='₹'+Math.round(p.total).toLocaleString('en-IN');
 
   document.getElementById('bill-paid-amt').textContent = '₹' + Math.round(p.total).toLocaleString('en-IN');
   document.getElementById('bill-due-amt').textContent = '₹0';
 
-  var emailBillBtn = document.getElementById('email-bill-btn');
-  if(emailBillBtn) emailBillBtn.style.display = 'none';
-  
-  var waBillBtn = document.getElementById('wa-bill-btn');
-  if(waBillBtn) waBillBtn.style.display = 'none';
+  var emailBillBtn=document.getElementById('email-bill-btn');
+  if(emailBillBtn) emailBillBtn.style.display='none';
+  var waBillBtn=document.getElementById('wa-bill-btn');
+  if(waBillBtn) waBillBtn.style.display='none';
 
   document.getElementById('bill-modal').classList.add('on');
 }
 
-function closeBill(){ document.getElementById('bill-modal').classList.remove('on'); }
-
+function closeBill(){document.getElementById('bill-modal').classList.remove('on');}
 function printBill(){
-  var billContent = document.getElementById('bill-preview').innerHTML;
-  var win = window.open('','_blank','width=500,height=700');
+  var billContent=document.getElementById('bill-preview').innerHTML;
+  var win=window.open('','_blank','width=500,height=700');
   win.document.write('<html><head><title>Bill - StockSaathi</title><link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&display=swap" rel="stylesheet"><style>body{margin:20px;font-family:sans-serif;background:white}*{box-sizing:border-box}</style></head><body>'+billContent+'</body></html>');
   win.document.close();
-  setTimeout(function(){ win.print(); }, 800);
+  setTimeout(function(){win.print();},800);
 }
-
 function whatsappBill(){
-  if(!lastSale) return;
-  var shopName = user && user.displayName ? user.displayName + " ka Shop" : 'Textile Shop';
-  var date = new Date().toLocaleDateString('en-IN');
-  
-  var msg = '*' + shopName + '*\n_StockSaathi Receipt_\n\n*Date:* ' + date + '\n*Customer:* ' + (lastSale.customer || 'Walk-in') + '\n\n---\n*' + lastSale.fabName + '*\n' + lastSale.meters + 'm x Rs.' + lastSale.rate + '/m\n';
-  
-  if(lastSale.discount > 0) msg += 'Discount: -Rs.' + lastSale.discount + '\n';
-  
-  if(lastSale.gstRate > 0){
-    msg += 'Subtotal: Rs.' + Math.round(lastSale.subtotal).toLocaleString('en-IN') + '\n';
-    if(lastSale.gstType === 'intra') msg += 'CGST/SGST @'+lastSale.gstRate+'%: +Rs.'+Math.round(lastSale.gstAmount).toLocaleString('en-IN')+'\n';
-    else msg += 'IGST @'+lastSale.gstRate+'%: +Rs.'+Math.round(lastSale.gstAmount).toLocaleString('en-IN')+'\n';
+  if(!lastSale)return;
+  var shopName=user&&user.displayName?user.displayName+" ka Shop":'Textile Shop';
+  var date=new Date().toLocaleDateString('en-IN');
+  var msg='*'+shopName+'*\n_StockSaathi Receipt_\n\n*Date:* '+date+'\n*Customer:* '+(lastSale.customer||'Walk-in')+'\n\n---\n*'+lastSale.fabName+'*\n'+lastSale.meters+'m x Rs.'+lastSale.rate+'/m\n';
+  if(lastSale.gstRate>0){
+    msg+='Subtotal: Rs.'+Math.round(lastSale.subtotal).toLocaleString('en-IN')+'\n';
+    if(lastSale.gstType==='intra') msg+='CGST/SGST @'+lastSale.gstRate+'%: +Rs.'+Math.round(lastSale.gstAmount).toLocaleString('en-IN')+'\n';
+    else msg+='IGST @'+lastSale.gstRate+'%: +Rs.'+Math.round(lastSale.gstAmount).toLocaleString('en-IN')+'\n';
   }
-  msg += '---\n*TOTAL: Rs.' + Math.round(lastSale.total).toLocaleString('en-IN') + '*\n\nThank you! 🙏\n_StockSaathi by Niori_';
-  
-  var phone = lastSale.customerPhone;
-  var url = phone ? 'https://wa.me/91' + phone + '?text=' + encodeURIComponent(msg) : 'https://wa.me/?text=' + encodeURIComponent(msg);
-  window.open(url, '_blank');
+  msg+='---\n*TOTAL: Rs.'+Math.round(lastSale.total).toLocaleString('en-IN')+'*\n\nThank you! 🙏\n_StockSaathi by Niori_';
+  var phone=lastSale.customerPhone;
+  var url=phone?'https://wa.me/91'+phone+'?text='+encodeURIComponent(msg):'https://wa.me/?text='+encodeURIComponent(msg);
+  window.open(url,'_blank');
 }
-
 function emailBill(){
-  if(!lastSale || !lastSale.customerEmail){ toast('Customer email daalo pehle!'); return; }
-  var shopName = user && user.displayName ? user.displayName + "'s Shop" : 'Textile Shop';
-  var date = new Date().toLocaleDateString('en-IN');
-  var emailBtn = document.getElementById('email-bill-btn');
-  
-  if(emailBtn){ emailBtn.disabled = true; emailBtn.textContent = 'Sending...'; }
-  
-  var gstNote = '';
-  if(lastSale.gstRate > 0){
-    gstNote = (lastSale.gstType === 'intra' ? 'CGST+SGST' : 'IGST') + ' @ ' + lastSale.gstRate + '% = Rs.' + Math.round(lastSale.gstAmount).toLocaleString('en-IN');
+  if(!lastSale||!lastSale.customerEmail){toast('Customer email daalo pehle!');return;}
+  var shopName=user&&user.displayName?user.displayName+"'s Shop":'Textile Shop';
+  var date=new Date().toLocaleDateString('en-IN');
+  var emailBtn=document.getElementById('email-bill-btn');
+  if(emailBtn){emailBtn.disabled=true;emailBtn.textContent='Sending...';}
+  var gstNote='';
+  if(lastSale.gstRate>0){
+    gstNote=(lastSale.gstType==='intra'?'CGST+SGST':'IGST')+' @ '+lastSale.gstRate+'% = Rs.'+Math.round(lastSale.gstAmount).toLocaleString('en-IN');
   }
-  
-  emailjs.send(EJS_SVC, EJS_BILL_TPL, {
-    to_email: lastSale.customerEmail,
-    to_name: lastSale.customer || 'Customer',
-    shop_name: shopName,
-    date: date,
-    fabric_name: lastSale.fabName,
-    meters: lastSale.meters,
-    rate: lastSale.rate,
-    subtotal: Math.round(lastSale.subtotal || lastSale.total).toLocaleString('en-IN'),
-    gst_info: gstNote || 'No GST',
-    total: Math.round(lastSale.total).toLocaleString('en-IN')
+  // Sale invoice uses dedicated bill template
+  emailjs.send(EJS_SVC, EJS_BILL_TPL,{
+    to_email:lastSale.customerEmail,to_name:lastSale.customer||'Customer',
+    shop_name:shopName,date:date,
+    fabric_name:lastSale.fabName,meters:lastSale.meters,rate:lastSale.rate,
+    subtotal:Math.round(lastSale.subtotal||lastSale.total).toLocaleString('en-IN'),
+    gst_info:gstNote||'No GST',
+    total:Math.round(lastSale.total).toLocaleString('en-IN')
   }).then(function(){
-    if(emailBtn){ emailBtn.disabled = false; emailBtn.textContent = '📧 Email'; }
-    toast('📧 Bill sent to ' + lastSale.customerEmail + '!');
+    if(emailBtn){emailBtn.disabled=false;emailBtn.textContent='📧 Email';}
+    toast('📧 Bill sent to '+lastSale.customerEmail+'!');
   }).catch(function(e){
-    console.log('Email error:', e);
-    if(emailBtn){ emailBtn.disabled = false; emailBtn.textContent = '📧 Email'; }
-    toast('Email failed: ' + (e.text || e.message || 'Check EmailJS template'));
+    console.log('Email error:',e);
+    if(emailBtn){emailBtn.disabled=false;emailBtn.textContent='📧 Email';}
+    toast('Email failed: '+(e.text||e.message||'Check EmailJS template'));
   });
 }
-
 function downloadBillPDF(){
-  if(!lastSale) return;
-  var billNo = 'BILL-' + Date.now().toString().slice(-6);
-  var billContent = document.getElementById('bill-preview').innerHTML;
-  var win = window.open('','_blank','width=500,height=700');
-  if(!win){ toast('Popup blocked! Allow popups and try again.'); return; }
-  
-  win.document.write('<html><head><title>Bill-' + billNo + '</title><link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&display=swap" rel="stylesheet"><style>body{margin:0;padding:20px;background:white}*{box-sizing:border-box}@media print{body{margin:0;padding:0}}</style></head><body>' + billContent + '<script>setTimeout(function(){window.print();},800);<\/script></body></html>');
+  if(!lastSale)return;
+  var billNo='BILL-'+Date.now().toString().slice(-6);
+  var billContent=document.getElementById('bill-preview').innerHTML;
+  var win=window.open('','_blank','width=500,height=700');
+  if(!win){toast('Popup blocked! Allow popups and try again.');return;}
+  win.document.write('<html><head><title>Bill-'+billNo+'</title><link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&display=swap" rel="stylesheet"><style>body{margin:0;padding:20px;background:white}*{box-sizing:border-box}@media print{body{margin:0;padding:0}}</style></head><body>'+billContent+'<script>setTimeout(function(){window.print();},800);<\/script></body></html>');
   win.document.close();
 }
-
 function downloadAndWhatsapp(){
-  if(!lastSale) return;
+  if(!lastSale)return;
   downloadBillPDF();
   setTimeout(function(){
-    var phone = lastSale.customerPhone;
-    var msg = 'Hi ' + (lastSale.customer || '') + ', please find your bill attached.';
-    var url = phone ? 'https://wa.me/91' + phone + '?text=' + encodeURIComponent(msg) : 'https://wa.me/?text=' + encodeURIComponent(msg);
+    var phone=lastSale.customerPhone;
+    var msg='Hi '+(lastSale.customer||'')+', please find your bill attached.';
+    var url=phone?'https://wa.me/91'+phone+'?text='+encodeURIComponent(msg):'https://wa.me/?text='+encodeURIComponent(msg);
     toast('1. Save PDF from print dialog. 2. Attach in WhatsApp!');
-    setTimeout(function(){ window.open(url, '_blank'); }, 1500);
-  }, 500);
+    setTimeout(function(){window.open(url,'_blank');},1500);
+  },500);
 }
 
 // ══ UTILS ══
-function esc(t){ return String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-function toast(msg){
-    var t = document.getElementById('toast');
-    t.textContent = msg;
-    t.style.display = 'block';
-    clearTimeout(t._tid);
-    t._tid = setTimeout(function(){ t.style.display = 'none'; }, 3500);
-}
+function esc(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._tid);t._tid=setTimeout(function(){t.style.display='none';},3500);}
 
-window.onload = function(){ startApp(); };
+window.onload=function(){startApp();};
 </script>
 </body>
 </html>
