@@ -277,8 +277,9 @@ select option{background:var(--white)}
 .profile-avatar { width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:40px; }
 .profile-name { font-family:var(--ff-h); font-size:20px; font-weight:800; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-/* STAFF MODE */
+/* ══ ROLES CSS ══ */
 body.staff-mode .hide-staff { display: none !important; }
+body.manager-mode .hide-manager { display: none !important; }
 
 /* ══ INSTALL BANNER ══ */
 #install-banner { position:fixed; bottom:0; left:0; width:100%; background:var(--gold); color:white; padding:12px 20px; display:none; justify-content:space-between; align-items:center; z-index:10000; box-shadow:0 -4px 10px rgba(0,0,0,0.1); }
@@ -365,14 +366,14 @@ body.staff-mode .hide-staff { display: none !important; }
     
     <div class="sb-sec hide-staff">Admin</div>
     <div class="sb-item hide-staff" onclick="goto('report',this)"><span class="sb-ic">📊</span>Monthly Report</div>
-    <div class="sb-item hide-staff" onclick="goto('profiles',this)"><span class="sb-ic">👥</span>Manage Profiles</div>
+    <div class="sb-item hide-staff hide-manager" onclick="goto('profiles',this)"><span class="sb-ic">👥</span>Manage Profiles</div>
   </nav>
   <div class="sb-foot" id="sb-foot">
     <div>
         <strong id="user-display-name">User</strong><br>
         <span style="cursor:pointer;color:var(--muted);font-weight:600" onclick="switchProfileBtn()">🔄 Switch Profile</span>
     </div>
-    <div style="cursor:pointer;font-size:20px;padding:5px" class="hide-staff" onclick="openSettings()" title="Settings">⚙️</div>
+    <div style="cursor:pointer;font-size:20px;padding:5px" class="hide-staff hide-manager" onclick="openSettings()" title="Settings">⚙️</div>
   </div>
 </div>
 
@@ -407,12 +408,12 @@ body.staff-mode .hide-staff { display: none !important; }
       <div class="mob-item hide-staff" id="mob-calc" onclick="mobileGoto('calc')">🧮 Calculator</div>
       <div class="mob-sec hide-staff">Admin</div>
       <div class="mob-item hide-staff" id="mob-report" onclick="mobileGoto('report')">📊 Monthly Report</div>
-      <div class="mob-item hide-staff" id="mob-profiles" onclick="mobileGoto('profiles')">👥 Manage Profiles</div>
+      <div class="mob-item hide-staff hide-manager" id="mob-profiles" onclick="mobileGoto('profiles')">👥 Manage Profiles</div>
     </div>
     <div class="mob-menu-foot">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div id="mob-user" style="font-size:13px;font-weight:600;color:var(--text);padding:8px 10px;background:var(--bg);border-radius:8px;border:1.5px solid var(--border)"></div>
-        <button onclick="openSettings(); closeMobileMenu()" class="hide-staff" style="background:none;border:none;font-size:22px;cursor:pointer">⚙️</button>
+        <button onclick="openSettings(); closeMobileMenu()" class="hide-staff hide-manager" style="background:none;border:none;font-size:22px;cursor:pointer">⚙️</button>
       </div>
       <button onclick="switchProfileBtn(); closeMobileMenu()" style="width:100%;padding:12px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--ff-h);font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px">🔄 Switch Profile</button>
       <button onclick="signOut()" style="width:100%;padding:12px;background:rgba(192,57,43,0.08);border:1.5px solid rgba(192,57,43,0.25);border-radius:10px;color:var(--red);font-family:var(--ff-h);font-size:14px;font-weight:700;cursor:pointer;">🚪 Sign Out</button>
@@ -687,7 +688,7 @@ body.staff-mode .hide-staff { display: none !important; }
   <div class="page" id="pg-profiles">
     <div class="content">
       <div class="sh">
-        <div><div class="sh-title">👥 Manage Profiles</div><div class="sh-sub">Add or remove app access (Owners & Staff)</div></div>
+        <div><div class="sh-title">👥 Manage Profiles</div><div class="sh-sub">Add or remove app access (Owners, Managers & Staff)</div></div>
         <button class="btn btn-gold hide-print" onclick="openEditProfileModal()">+ Add New Profile</button>
       </div>
       <div id="profiles-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:16px;"></div>
@@ -730,9 +731,9 @@ body.staff-mode .hide-staff { display: none !important; }
 </div>
 
 <div class="qmodal-bg" id="edit-profile-modal" style="z-index:10000;">
-  <div class="qmodal" style="width:400px">
+  <div class="qmodal" style="width:420px">
     <div class="qmodal-title" id="ep-title">Add Profile</div>
-    <div class="qmodal-fab">Create access for Owners or Staff</div>
+    <div class="qmodal-fab">Create access for your team</div>
     <input type="hidden" id="ep-id">
     
     <div class="fg"><label class="fl">Name *</label><input id="ep-name" placeholder="e.g. Ramesh Bhai" /></div>
@@ -741,6 +742,7 @@ body.staff-mode .hide-staff { display: none !important; }
         <label class="fl">Role *</label>
         <select id="ep-role">
             <option value="owner">👑 Owner (Full Access & Admin)</option>
+            <option value="manager">💼 Manager (View All, No Admin/Delete)</option>
             <option value="staff" selected>👦 Staff (Stock & Sales Only)</option>
         </select>
     </div>
@@ -1078,13 +1080,6 @@ body.staff-mode .hide-staff { display: none !important; }
   </div>
 </div>
 
-<div id="profile-screen">
-  <div style="font-family:var(--ff-h);font-size:32px;font-weight:800;color:#faf7f0">Who is using this?</div>
-  <div style="color:#b8a888;margin-bottom:10px">Select your profile to continue</div>
-  <div class="profile-cards" id="profile-cards-container">
-     </div>
-</div>
-
 <div id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -1156,7 +1151,7 @@ function billGSTSection(g, type) {
   return rows;
 }
 
-// ══ APP INIT ══
+// ══ APP INIT & CONCURRENT LOGIN LOGIC ══
 function startApp() {
   emailjs.init(EJS_KEY);
   firebase.initializeApp({
@@ -1176,10 +1171,27 @@ function startApp() {
     if(u){
       user=u;
       document.getElementById('login-screen').style.display='none';
-      
       await loadCloud();
       updatePartyList();
-      renderProfileSelection();
+      
+      // Start Realtime Listener for Sessions and Data
+      db.collection('users').doc(user.uid).onSnapshot((doc) => {
+          if(doc.exists) {
+              var d = doc.data();
+              if(d.settings && d.settings.profiles) {
+                  appSettings.profiles = d.settings.profiles;
+                  // Kickout Logic: If my session ID is no longer the active one in the DB
+                  if(currentProfile) {
+                      var p = appSettings.profiles.find(x => x.id === currentProfile.id);
+                      if(p && p.activeSession && p.activeSession !== window.currentSessionId) {
+                          toast("🔒 Logged out: Profile opened on another device!");
+                          switchProfileBtn();
+                      }
+                  }
+                  if(document.getElementById('pg-profiles').classList.contains('on')) renderProfilesPage();
+              }
+          }
+      });
       
       var savedProfileId = sessionStorage.getItem('stocksaathi_profile_id');
       var foundProfile = savedProfileId ? appSettings.profiles.find(p => p.id === savedProfileId) : null;
@@ -1247,7 +1259,12 @@ async function loadCloud(){
 // ══ MULTI-USER PROFILES ══
 var pendingProfileLogin = null;
 
-function showProfileScreen() { document.getElementById('profile-screen').style.display = 'flex'; }
+function showProfileScreen() { 
+    currentProfile = null;
+    renderProfileSelection();
+    document.getElementById('profile-screen').style.display = 'flex'; 
+}
+
 function switchProfileBtn() {
     sessionStorage.removeItem('stocksaathi_profile_id');
     showProfileScreen();
@@ -1256,9 +1273,9 @@ function switchProfileBtn() {
 function renderProfileSelection() {
    var html = '';
    appSettings.profiles.forEach(p => {
-       var avatar = p.role === 'owner' ? '👑' : '👦';
-       var color = p.role === 'owner' ? '' : 'background:var(--blue-light);color:var(--blue)';
-       var subtitle = p.role === 'owner' ? 'Full Access' : 'Sales Only';
+       var avatar = p.role === 'owner' ? '👑' : (p.role === 'manager' ? '💼' : '👦');
+       var color = p.role === 'owner' ? '' : (p.role === 'manager' ? 'background:var(--orange-light);color:var(--orange)' : 'background:var(--blue-light);color:var(--blue)');
+       var subtitle = p.role === 'owner' ? 'Full Access' : (p.role === 'manager' ? 'Manager' : 'Sales Only');
        var lock = p.pin ? '<div style="position:absolute;top:10px;right:15px;font-size:16px">🔒</div>' : '';
        
        html += `<div class="profile-card" onclick="attemptProfileLogin('${p.id}')">
@@ -1298,12 +1315,21 @@ function completeLogin(profile) {
     sessionStorage.setItem('stocksaathi_profile_id', profile.id);
     currentProfile = profile;
     
+    // Generate a unique session token
+    window.currentSessionId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+    var pIndex = appSettings.profiles.findIndex(x => x.id === profile.id);
+    if(pIndex > -1) {
+        appSettings.profiles[pIndex].activeSession = window.currentSessionId;
+        save(); // Sync to cloud
+    }
+    
     document.getElementById('user-display-name').textContent = user.displayName + " (" + profile.name + ")";
     var mobUser=document.getElementById('mob-user');
     if(mobUser) mobUser.textContent='👤 '+ profile.name;
     
+    document.body.classList.remove('staff-mode', 'manager-mode');
     if(profile.role === 'staff') document.body.classList.add('staff-mode');
-    else document.body.classList.remove('staff-mode');
+    if(profile.role === 'manager') document.body.classList.add('manager-mode');
     
     var sw = document.getElementById('dash-smart-widgets');
     if(sw) sw.style.display = (profile.role === 'staff') ? 'none' : 'grid';
@@ -1316,8 +1342,8 @@ function completeLogin(profile) {
 function renderProfilesPage() {
    var html = '';
    appSettings.profiles.forEach(p => {
-       var avatar = p.role === 'owner' ? '👑' : '👦';
-       var roleName = p.role === 'owner' ? 'Owner (Full Access)' : 'Staff (Sales Only)';
+       var avatar = p.role === 'owner' ? '👑' : (p.role === 'manager' ? '💼' : '👦');
+       var roleName = p.role === 'owner' ? 'Owner (Full Access)' : (p.role === 'manager' ? 'Manager (No Admin)' : 'Staff (Sales Only)');
        var pinText = p.pin ? '🔒 PIN Protected' : '🔓 No PIN';
        html += `
        <div style="background:var(--white);border:2px solid var(--border);border-radius:12px;padding:20px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow)">
@@ -1367,7 +1393,7 @@ function saveEditProfile() {
        var p = appSettings.profiles.find(x => x.id === id);
        if(p) { p.name = name; p.role = role; p.pin = pin; }
    } else {
-       appSettings.profiles.push({ id: 'p_' + Date.now(), name: name, role: role, pin: pin });
+       appSettings.profiles.push({ id: 'p_' + Date.now(), name: name, role: role, pin: pin, activeSession: '' });
    }
    
    save(); renderProfilesPage(); renderProfileSelection(); closeEditProfileModal(); toast("Profile Saved!");
@@ -1386,6 +1412,7 @@ function deleteProfile(id) {
 
 // ══ SETTINGS ══
 function openSettings() {
+    if(currentProfile && currentProfile.role !== 'owner') { toast("🔒 Owner Access Required"); return; }
     document.getElementById('set-upi').value = appSettings.upiId || '';
     document.getElementById('settings-modal').classList.add('on');
 }
@@ -1409,7 +1436,10 @@ function updatePartyList() {
 var pgMap={dash:['Dashboard',''],inv:['Inventory','— All Fabrics'],sales:['Sales','— Record & History'],ledger:['Ledger','— Sales & Purchase Book'],calc:['Calculator','— Quick Calculations'],report:['Monthly Report',''],profiles:['Manage Profiles','Add or remove users']};
 
 function goto(pg,el){
-  if(currentProfile && currentProfile.role === 'staff' && (pg === 'ledger' || pg === 'calc' || pg === 'report' || pg === 'profiles')) {
+  if(currentProfile && (currentProfile.role === 'staff' || currentProfile.role === 'manager') && pg === 'profiles') {
+      toast("🔒 Owner Access Required"); return;
+  }
+  if(currentProfile && currentProfile.role === 'staff' && (pg === 'ledger' || pg === 'calc' || pg === 'report')) {
       toast("🔒 Restricted Access"); return;
   }
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
@@ -1430,7 +1460,10 @@ function goto(pg,el){
 function toggleMobileMenu(){document.getElementById('mob-menu').classList.toggle('on');document.getElementById('mob-overlay').classList.toggle('on');}
 function closeMobileMenu(){document.getElementById('mob-menu').classList.remove('on');document.getElementById('mob-overlay').classList.remove('on');}
 function mobileGoto(pg){
-    if(currentProfile && currentProfile.role === 'staff' && (pg === 'ledger' || pg === 'calc' || pg === 'report' || pg === 'profiles')) {
+    if(currentProfile && (currentProfile.role === 'staff' || currentProfile.role === 'manager') && pg === 'profiles') {
+      toast("🔒 Owner Access Required"); return;
+    }
+    if(currentProfile && currentProfile.role === 'staff' && (pg === 'ledger' || pg === 'calc' || pg === 'report')) {
       toast("🔒 Restricted Access"); return;
     }
     ['dash','inv','sales','ledger','calc','report','profiles'].forEach(function(p){var el=document.getElementById('mob-'+p);if(el)el.classList.toggle('active',p===pg);});
@@ -1496,7 +1529,7 @@ function fabCardHTML(f){
       +'<div class="fab-actions">'
         +'<button class="fab-btn fab-btn-add" onclick="openAddStock('+f.id+')">📥 Add</button>'
         +'<button class="fab-btn fab-btn-sell" onclick="openQS('+f.id+')">💰 Sell</button>'
-        +'<button class="fab-btn fab-btn-del hide-staff" onclick="delFab('+f.id+')" title="Delete">🗑️</button>'
+        +'<button class="fab-btn fab-btn-del hide-staff hide-manager" onclick="delFab('+f.id+')" title="Delete">🗑️</button>'
       +'</div>'
     +'</div>'
   +'</div>';
@@ -1516,7 +1549,12 @@ function renderInv(){
   if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">No results found</div></div>';return;}
   el.innerHTML=list.map(fabCardHTML).join('');
 }
-function delFab(id){if(!confirm('Delete this fabric?'))return;inv=inv.filter(function(f){return f.id!==id;});save();updateStats();renderDash();renderInv();toast('Fabric deleted');}
+function delFab(id){
+    if(currentProfile && currentProfile.role !== 'owner') { toast("🔒 Only Owner can delete"); return; }
+    if(!confirm('Delete this fabric?'))return;
+    inv=inv.filter(function(f){return f.id!==id;});
+    save();updateStats();renderDash();renderInv();toast('Fabric deleted');
+}
 
 // ══ MAIN MODAL (ADD NEW FABRIC) ══
 function openModal(){document.getElementById('add-modal').classList.add('on');document.getElementById('m-name').focus();}
@@ -1659,7 +1697,7 @@ function _doQSSale(withBill){
   updatePartyList(); save();updateStats();renderDash();renderInv();closeQS();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
   
-  if(withBill && currentProfile && currentProfile.role === 'owner') setTimeout(function(){generateBill(saleData);},300);
+  if(withBill) setTimeout(function(){generateBill(saleData);},300);
 }
 function saveQS(){_doQSSale(false);}
 function saveQSAndBill(){_doQSSale(true);}
@@ -1744,7 +1782,7 @@ function _doSale(withBill){
   if(f.meters<f.threshold){
     emailjs.send(EJS_SVC, EJS_ALERT_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(e){console.log('Low stock alert err:',e);});
   }
-  if(withBill && currentProfile && currentProfile.role === 'owner') setTimeout(function(){generateBill(saleData);},300);
+  if(withBill) setTimeout(function(){generateBill(saleData);},300);
 }
 function recSale(){_doSale(false);}
 function recSaleAndBill(){_doSale(true);}
@@ -1788,6 +1826,7 @@ function renderLedgerSummary(){
 }
 
 function returnLedgerItem(id, isSale) {
+    if(currentProfile && currentProfile.role !== 'owner') { toast("🔒 Only Owner can process returns"); return; }
     if(!confirm("Maal Wapsi: Return this item and put stock back?")) return;
     
     if(isSale) {
@@ -1881,7 +1920,12 @@ function renderLedger(){
     var gstin=isSale?(e.buyerGstin||''):(e.supplierGstin||'');
     var gstinTag=gstin?'<span style="font-size:10px;color:var(--muted);margin-left:4px">GSTIN: '+esc(gstin)+'</span>':'';
     
-    var returnBtn = e.isReturned ? `<span class="pill pill-r" style="margin-left:10px">RETURNED</span>` : `<button onclick="returnLedgerItem(${e.id}, ${isSale})" class="btn btn-ghost hide-print" style="padding:4px 8px;font-size:11px;margin-left:10px" title="Mark Return">↩️ Return</button>`;
+    var returnBtn = '';
+    if(currentProfile && currentProfile.role === 'owner') {
+        returnBtn = e.isReturned ? `<span class="pill pill-r" style="margin-left:10px">RETURNED</span>` : `<button onclick="returnLedgerItem(${e.id}, ${isSale})" class="btn btn-ghost hide-print" style="padding:4px 8px;font-size:11px;margin-left:10px" title="Mark Return">↩️ Return</button>`;
+    } else if(e.isReturned) {
+        returnBtn = `<span class="pill pill-r" style="margin-left:10px">RETURNED</span>`;
+    }
     
     return `<div class="ledger-entry ${isSale?'sale-entry':'purchase-entry'} ${e.isReturned?'returned':''}">
       <div class="le-icon ${isSale?'sale':'purchase'}">${isSale?'💰':'📥'}</div>
@@ -2113,7 +2157,7 @@ function generatePurchaseBill(p) {
 
   document.getElementById('bill-inv-type').textContent = '-';
   document.getElementById('bill-pay-mode').textContent = '-';
-  document.getElementById('bill-shipping').innerHTML = ''; // Hide shipping on purchase receipt
+  document.getElementById('bill-shipping').innerHTML = ''; 
 
   var baseAmt = (p.meters * p.rate);
   document.getElementById('bill-items').innerHTML=
