@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>StockSaathi — Kapda Stock Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
@@ -159,7 +160,7 @@ select option{background:var(--white)}
 .res-l{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
 .res-v{font-family:var(--ff-h);font-size:24px;font-weight:800;color:var(--gold)}
 
-/* ══ LEDGER (Sales/Purchase Book) ══ */
+/* ══ LEDGER ══ */
 .ledger-tabs{display:flex;gap:0;border:2px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;background:var(--white)}
 .ledger-tab{flex:1;padding:12px 20px;font-family:var(--ff-h);font-size:14px;font-weight:700;cursor:pointer;text-align:center;color:var(--muted2);border:none;background:transparent;transition:all 0.15s}
 .ledger-tab.active{background:var(--gold-light);color:var(--gold)}
@@ -497,6 +498,16 @@ body.staff-mode .hide-staff { display: none !important; }
           </div>
           <div class="fg hide-staff"><label class="fl">Buyer GSTIN <span class="fl-hindi">(Optional)</span></label><input id="s-buyer-gstin" list="gstin-list" placeholder="e.g. 24XXXXX1234X1Z5"/></div>
           <div class="fg"><label class="fl">Grahak <span class="fl-hindi">का नाम</span></label><input id="s-c" list="party-list" placeholder="e.g. Rajesh Bhai, Mehta & Sons"/></div>
+          
+          <div class="hide-staff" style="background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px">
+            <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">🚚 Transport / E-Way Bill (Optional)</div>
+            <div class="g2" style="margin-bottom:8px">
+              <div class="fg" style="margin-bottom:0"><label class="fl">Transport Name</label><input id="s-trans" placeholder="e.g. VRL Logistics"/></div>
+              <div class="fg" style="margin-bottom:0"><label class="fl">LR / Bilty No.</label><input id="s-lr" placeholder="e.g. 12345"/></div>
+            </div>
+            <div class="fg" style="margin-bottom:0"><label class="fl">E-Way Bill No.</label><input id="s-eway" placeholder="12 digit E-Way Bill"/></div>
+          </div>
+
           <div class="fg hide-staff"><label class="fl">Note <span class="fl-hindi">(Optional)</span></label><input id="s-n" placeholder="Koi note..."/></div>
           <div style="display:flex;gap:8px">
             <button class="btn btn-ghost" style="flex:1;justify-content:center;font-size:13px" onclick="recSale()">✅ Record</button>
@@ -727,13 +738,16 @@ body.staff-mode .hide-staff { display: none !important; }
     </div>
     <div class="fg hide-staff"><label class="fl">Buyer GSTIN <span class="fl-hindi">(Optional)</span></label><input id="qs-buyer-gstin" list="gstin-list" placeholder="e.g. 24XXXXX1234X1Z5"/></div>
     <div class="fg"><label class="fl">Grahak <span class="fl-hindi">का नाम</span></label><input id="qs-c" list="party-list" placeholder="e.g. Rajesh Bhai"/></div>
-    <div class="fg hide-staff"><label class="fl">WhatsApp Number</label>
-      <div style="display:flex;gap:8px;align-items:center">
-        <span style="padding:10px 12px;background:var(--bg);border:2px solid var(--border);border-radius:9px;font-size:13px;color:var(--muted2);flex-shrink:0">+91</span>
-        <input id="qs-phone" type="tel" placeholder="9876543210" style="flex:1"/>
+    
+    <div class="hide-staff" style="background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">🚚 Transport / E-Way Bill (Optional)</div>
+      <div class="g2" style="margin-bottom:8px">
+        <div class="fg" style="margin-bottom:0"><label class="fl">Transport Name</label><input id="qs-trans" placeholder="e.g. VRL Logistics"/></div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">LR / Bilty No.</label><input id="qs-lr" placeholder="e.g. 12345"/></div>
       </div>
+      <div class="fg" style="margin-bottom:0"><label class="fl">E-Way Bill No.</label><input id="qs-eway" placeholder="12 digit E-Way Bill"/></div>
     </div>
-    <div class="fg hide-staff"><label class="fl">Email <span class="fl-hindi">(optional)</span></label><input id="qs-email" type="email" placeholder="e.g. rajesh@gmail.com"/></div>
+
     <div class="qmodal-foot" style="flex-direction:column;gap:8px;margin-top:24px">
       <div style="display:flex;gap:8px;width:100%">
         <button class="btn btn-ghost" onclick="closeQS()" style="flex:1;justify-content:center">Cancel</button>
@@ -874,8 +888,10 @@ body.staff-mode .hide-staff { display: none !important; }
           <div id="bill-to-lbl" style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">To / Grahak</div>
           <div style="font-size:16px;font-weight:700;color:#2d2416" id="bill-customer">—</div>
           <div style="font-size:12px;color:#8a7a5a;margin-top:2px" id="bill-buyer-gstin"></div>
-          <div style="font-size:12px;color:#8a7a5a;margin-top:2px" id="bill-customer-email"></div>
         </div>
+        
+        <div id="bill-shipping"></div>
+
         <div style="border-top:1.5px dashed #c8b99a;margin-bottom:14px"></div>
         <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px">
           <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px">Item</div>
@@ -924,9 +940,8 @@ body.staff-mode .hide-staff { display: none !important; }
     <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
       <button onclick="closeBill()" class="btn btn-ghost" style="flex:1;justify-content:center;min-width:80px">✕ Close</button>
       <button onclick="printBill()" class="btn btn-ghost" style="flex:1;justify-content:center;min-width:80px">🖨️ Print</button>
-      <button id="wa-bill-btn" onclick="whatsappBill()" style="flex:1;justify-content:center;min-width:80px;padding:10px 14px;background:#25D366;color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">💬 WhatsApp</button>
-      <button onclick="downloadAndWhatsapp()" style="flex:1;justify-content:center;min-width:90px;padding:10px 14px;background:#128C7E;color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px">📄+💬 PDF+WA</button>
-      <button id="email-bill-btn" onclick="emailBill()" style="flex:1;justify-content:center;min-width:80px;padding:10px 14px;background:var(--green);color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:13px;font-weight:700;cursor:pointer;display:none;align-items:center;gap:6px">📧 Email</button>
+      <button id="wa-bill-btn" onclick="whatsappBill()" style="flex:1;justify-content:center;min-width:80px;padding:10px 14px;background:#25D366;color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">💬 Text WA</button>
+      <button id="share-bill-btn" onclick="shareBillPDF()" style="flex:1;justify-content:center;min-width:120px;padding:10px 14px;background:var(--blue);color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">📤 Share PDF</button>
     </div>
   </div>
 </div>
@@ -968,7 +983,6 @@ body.staff-mode .hide-staff { display: none !important; }
 // ══ CONFIG ══
 var EJS_SVC      = 'service_j84y5ge';
 var EJS_ALERT_TPL = 'template_8pvu8qc';
-var EJS_BILL_TPL  = 'template_bxt1inw';
 var EJS_KEY      = 'Ux_cTro8ToCSm2LUY';
 
 // ══ STATE ══
@@ -1108,7 +1122,7 @@ function toggleStaffMode() {
     applyStaffMode();
     save();
     closeSettings();
-    goto('dash', document.querySelectorAll('.sb-item')[0]); // Force back to dash
+    goto('dash', document.querySelectorAll('.sb-item')[0]);
 }
 function applyStaffMode() {
     if(appSettings.isStaffMode) document.body.classList.add('staff-mode');
@@ -1177,7 +1191,6 @@ function updateStats(){
 function renderDashHighlights() {
     if(appSettings.isStaffMode) return;
     
-    // Top Selling (last 30 days)
     var thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     var recentSales = sales.filter(s => new Date(s.date) >= thirtyDaysAgo && !s.isReturned);
     var fabSales = {};
@@ -1187,7 +1200,6 @@ function renderDashHighlights() {
     var topHTML = topSelling.length ? topSelling.map((t,i) => `<div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border)"><span style="font-weight:600">${i+1}. ${esc(t[0])}</span><span style="color:var(--green2);font-weight:700">${t[1]}m</span></div>`).join('') : '<div class="empty-s">No sales this month yet.</div>';
     document.getElementById('dash-top-sell').innerHTML = topHTML;
 
-    // Dead Stock (In inv, >0 meters, no sales in 60 days)
     var sixtyDaysAgo = new Date(); sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
     var recentSaleFabs = new Set(sales.filter(s => new Date(s.date) >= sixtyDaysAgo && !s.isReturned).map(s => s.fabId));
     var deadStock = inv.filter(f => f.meters > 0 && !recentSaleFabs.has(f.id)).sort((a,b) => b.meters - a.meters).slice(0,3);
@@ -1308,9 +1320,9 @@ function saveAddStock(withBill){
 function openQS(id){
   qsFabId=id;var f=inv.find(function(f){return f.id===id;});if(!f)return;
   document.getElementById('qs-fab-name').textContent=f.name+' — Available: '+f.meters+'m';
-  document.getElementById('qs-m').value='';document.getElementById('qs-r').value=f.rate||'';
-  document.getElementById('qs-discount').value='';document.getElementById('qs-paid').value='';
-  document.getElementById('qs-c').value='';document.getElementById('qs-amt').textContent='₹0';
+  ['qs-m','qs-discount','qs-paid','qs-c','qs-buyer-gstin','qs-phone','qs-trans','qs-lr','qs-eway'].forEach(function(i){document.getElementById(i).value='';});
+  document.getElementById('qs-r').value=f.rate||'';
+  document.getElementById('qs-amt').textContent='₹0';
   document.getElementById('qs-gst-breakdown').innerHTML='';
   document.getElementById('quicksell-modal').classList.add('on');document.getElementById('qs-m').focus();
 }
@@ -1352,11 +1364,15 @@ function _doQSSale(withBill){
   var dueAmt = g.total - paidAmt;
 
   f.meters-=m;
-  var custEmail=(document.getElementById('qs-email')||{value:''}).value.trim();
   var custPhone=(document.getElementById('qs-phone')||{value:''}).value.trim().replace(/\D/g,'');
   var buyerGstin=(document.getElementById('qs-buyer-gstin')||{value:''}).value.trim();
   
-  var saleData={id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,customerEmail:custEmail,customerPhone:custPhone,buyerGstin:buyerGstin,note:'',date:new Date().toISOString()};
+  // Capturing new E-Way Bill info
+  var trans = document.getElementById('qs-trans').value.trim();
+  var lr = document.getElementById('qs-lr').value.trim();
+  var eway = document.getElementById('qs-eway').value.trim();
+  
+  var saleData={id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,customerEmail:'',customerPhone:custPhone,buyerGstin:buyerGstin,transport:trans,lr:lr,eway:eway,note:'',date:new Date().toISOString()};
   sales.unshift(saleData);
   
   updatePartyList(); save();updateStats();renderDash();renderInv();closeQS();
@@ -1415,14 +1431,19 @@ function _doSale(withBill){
   var paidInput = parseFloat(document.getElementById('s-paid').value);
   var paidAmt = isNaN(paidInput) ? (invType === 'Credit' ? 0 : g.total) : paidInput;
   var dueAmt = g.total - paidAmt;
+  
+  // Capturing new E-Way Bill info
+  var trans = document.getElementById('s-trans').value.trim();
+  var lr = document.getElementById('s-lr').value.trim();
+  var eway = document.getElementById('s-eway').value.trim();
 
   f.meters-=m;
-  var saleData={id:Date.now(),fabId:id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,buyerGstin:buyerGstin,note:note,date:new Date().toISOString()};
+  var saleData={id:Date.now(),fabId:id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,buyerGstin:buyerGstin,transport:trans,lr:lr,eway:eway,note:note,date:new Date().toISOString()};
   sales.unshift(saleData);
   updatePartyList(); save();updateStats();renderSalesList();fillSD();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
   
-  ['s-m','s-c','s-n','s-buyer-gstin','s-discount','s-paid'].forEach(function(i){document.getElementById(i).value='';});
+  ['s-m','s-c','s-n','s-buyer-gstin','s-discount','s-paid','s-trans','s-lr','s-eway'].forEach(function(i){document.getElementById(i).value='';});
   document.getElementById('s-amt').textContent='₹0';
   document.getElementById('s-subtotal').textContent='₹0';
   document.getElementById('s-gst-breakdown').innerHTML='';
@@ -1479,14 +1500,14 @@ function returnLedgerItem(id, isSale) {
         var s = sales.find(x => x.id === id);
         if(!s) return;
         var f = inv.find(x => x.id === s.fabId || x.name === s.fabName);
-        if(f) { f.meters += s.meters; } // Put stock back
+        if(f) { f.meters += s.meters; } 
         s.isReturned = true;
-        s.dueAmt = 0; // Clear any due if returned
+        s.dueAmt = 0; 
     } else {
         var p = purchases.find(x => x.id === id);
         if(!p) return;
         var f = inv.find(x => x.name === p.item);
-        if(f) { f.meters -= p.meters; } // Take stock out
+        if(f) { f.meters -= p.meters; } 
         p.isReturned = true;
     }
     save(); updateStats(); renderLedgerSummary(); renderLedger(); toast("↩️ Marked as Returned");
@@ -1532,7 +1553,7 @@ function renderLedger(){
               </div>
               <div style="text-align:right">
                 <div style="font-family:var(--ff-h);font-size:22px;font-weight:800;color:var(--orange)">${fv(dues[cust].totalDue)}</div>
-                <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;margin-top:4px" onclick="settleDue('${esc(cust)}')">✅ Settle</button>
+                <button class="btn btn-ghost hide-print" style="padding:6px 12px;font-size:12px;margin-top:4px" onclick="settleDue('${esc(cust)}')">✅ Settle</button>
               </div>
           </div>`;
       }
@@ -1707,11 +1728,23 @@ function generateBill(saleData){
   if(shopGstinEl) shopGstinEl.textContent='GSTIN: 24XXXXX0000X0Z0';
   var buyerGstinEl=document.getElementById('bill-buyer-gstin');
   if(buyerGstinEl) buyerGstinEl.textContent=saleData.buyerGstin?'GSTIN: '+saleData.buyerGstin:'';
-  var emailEl=document.getElementById('bill-customer-email');
-  if(emailEl) emailEl.textContent=saleData.customerEmail||'';
 
   document.getElementById('bill-inv-type').textContent = saleData.invType || 'Cash';
   document.getElementById('bill-pay-mode').textContent = saleData.payMode || 'Cash';
+
+  // Shipping details container on invoice
+  var shipEl = document.getElementById('bill-shipping');
+  if(saleData.transport || saleData.eway || saleData.lr) {
+      var sHtml = '<div style="margin-top:14px;padding:10px;border:1.5px solid #e8dfc8;border-radius:8px;font-size:11px;color:#6b5c3e;background:white">';
+      sHtml += '<div style="font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px">Dispatch Details</div>';
+      if(saleData.transport) sHtml += '<div style="display:flex;justify-content:space-between"><span>Transport:</span> <b>'+esc(saleData.transport)+'</b></div>';
+      if(saleData.lr) sHtml += '<div style="display:flex;justify-content:space-between"><span>LR/Bilty No:</span> <b>'+esc(saleData.lr)+'</b></div>';
+      if(saleData.eway) sHtml += '<div style="display:flex;justify-content:space-between"><span>E-Way Bill:</span> <b>'+esc(saleData.eway)+'</b></div>';
+      sHtml += '</div>';
+      shipEl.innerHTML = sHtml;
+  } else {
+      shipEl.innerHTML = '';
+  }
 
   var baseAmt = (saleData.meters * saleData.rate);
   document.getElementById('bill-items').innerHTML=
@@ -1751,10 +1784,6 @@ function generateBill(saleData){
       qrBox.style.display = 'none';
   }
 
-  var emailBillBtn=document.getElementById('email-bill-btn');
-  if(emailBillBtn) emailBillBtn.style.display=saleData.customerEmail?'flex':'none';
-  var waBillBtn=document.getElementById('wa-bill-btn');
-  if(waBillBtn){waBillBtn.style.display='flex';waBillBtn.textContent='💬 WhatsApp';}
   document.getElementById('bill-modal').classList.add('on');
 }
 
@@ -1775,11 +1804,10 @@ function generatePurchaseBill(p) {
   if(shopGstinEl) shopGstinEl.textContent='';
   var buyerGstinEl=document.getElementById('bill-buyer-gstin');
   if(buyerGstinEl) buyerGstinEl.textContent=p.supplierGstin?'GSTIN: '+p.supplierGstin:'';
-  var emailEl=document.getElementById('bill-customer-email');
-  if(emailEl) emailEl.textContent='';
 
   document.getElementById('bill-inv-type').textContent = '-';
   document.getElementById('bill-pay-mode').textContent = '-';
+  document.getElementById('bill-shipping').innerHTML = ''; // Hide shipping on purchase receipt
 
   var baseAmt = (p.meters * p.rate);
   document.getElementById('bill-items').innerHTML=
@@ -1807,11 +1835,6 @@ function generatePurchaseBill(p) {
   document.getElementById('bill-due-amt').textContent = '₹0';
   document.getElementById('bill-qr').style.display = 'none';
 
-  var emailBillBtn=document.getElementById('email-bill-btn');
-  if(emailBillBtn) emailBillBtn.style.display='none';
-  var waBillBtn=document.getElementById('wa-bill-btn');
-  if(waBillBtn) waBillBtn.style.display='none';
-
   document.getElementById('bill-modal').classList.add('on');
 }
 
@@ -1838,51 +1861,53 @@ function whatsappBill(){
   var url=phone?'https://wa.me/91'+phone+'?text='+encodeURIComponent(msg):'https://wa.me/?text='+encodeURIComponent(msg);
   window.open(url,'_blank');
 }
-function emailBill(){
-  if(!lastSale||!lastSale.customerEmail){toast('Customer email daalo pehle!');return;}
-  var shopName=user&&user.displayName?user.displayName+"'s Shop":'Textile Shop';
-  var date=new Date().toLocaleDateString('en-IN');
-  var emailBtn=document.getElementById('email-bill-btn');
-  if(emailBtn){emailBtn.disabled=true;emailBtn.textContent='Sending...';}
-  var gstNote='';
-  if(lastSale.gstRate>0){
-    gstNote=(lastSale.gstType==='intra'?'CGST+SGST':'IGST')+' @ '+lastSale.gstRate+'% = Rs.'+Math.round(lastSale.gstAmount).toLocaleString('en-IN');
-  }
-  emailjs.send(EJS_SVC, EJS_BILL_TPL,{
-    to_email:lastSale.customerEmail,to_name:lastSale.customer||'Customer',
-    shop_name:shopName,date:date,
-    fabric_name:lastSale.fabName,meters:lastSale.meters,rate:lastSale.rate,
-    subtotal:Math.round(lastSale.subtotal||lastSale.total).toLocaleString('en-IN'),
-    gst_info:gstNote||'No GST',
-    total:Math.round(lastSale.total).toLocaleString('en-IN')
-  }).then(function(){
-    if(emailBtn){emailBtn.disabled=false;emailBtn.textContent='📧 Email';}
-    toast('📧 Bill sent to '+lastSale.customerEmail+'!');
-  }).catch(function(e){
-    console.log('Email error:',e);
-    if(emailBtn){emailBtn.disabled=false;emailBtn.textContent='📧 Email';}
-    toast('Email failed: '+(e.text||e.message||'Check EmailJS template'));
+
+function shareBillPDF(){
+  var shareBtn = document.getElementById('share-bill-btn');
+  if(shareBtn) { shareBtn.disabled = true; shareBtn.textContent = 'Generating PDF...'; }
+  
+  var element = document.getElementById('bill-preview');
+  var opt = {
+    margin:       0.1,
+    filename:     'Invoice_'+(lastSale ? (lastSale.customer||'Customer') : 'Purchase')+'.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(element).outputPdf('blob').then(function(pdfBlob) {
+      if(shareBtn) { shareBtn.disabled = false; shareBtn.textContent = '📤 Share PDF'; }
+      
+      var file = new File([pdfBlob], opt.filename, { type: "application/pdf" });
+      
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({
+              title: 'Invoice',
+              text: 'Please find the invoice attached.',
+              files: [file]
+          }).then(function() {
+              toast('Share dialog opened!');
+          }).catch(function(e) {
+              console.log('Share failed:', e);
+              downloadFallback(pdfBlob, opt.filename);
+          });
+      } else {
+          // Fallback for desktop browsers that don't support native file sharing
+          toast('Sharing not supported on this browser. Downloading instead.');
+          downloadFallback(pdfBlob, opt.filename);
+      }
   });
 }
-function downloadBillPDF(){
-  if(!lastSale)return;
-  var billNo='BILL-'+Date.now().toString().slice(-6);
-  var billContent=document.getElementById('bill-preview').innerHTML;
-  var win=window.open('','_blank','width=500,height=700');
-  if(!win){toast('Popup blocked! Allow popups and try again.');return;}
-  win.document.write('<html><head><title>Bill-'+billNo+'</title><link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&display=swap" rel="stylesheet"><style>body{margin:0;padding:20px;background:white}*{box-sizing:border-box}@media print{body{margin:0;padding:0}}</style></head><body>'+billContent+'<script>setTimeout(function(){window.print();},800);<\/script></body></html>');
-  win.document.close();
-}
-function downloadAndWhatsapp(){
-  if(!lastSale)return;
-  downloadBillPDF();
-  setTimeout(function(){
-    var phone=lastSale.customerPhone;
-    var msg='Hi '+(lastSale.customer||'')+', please find your bill attached.';
-    var url=phone?'https://wa.me/91'+phone+'?text='+encodeURIComponent(msg):'https://wa.me/?text='+encodeURIComponent(msg);
-    toast('1. Save PDF from print dialog. 2. Attach in WhatsApp!');
-    setTimeout(function(){window.open(url,'_blank');},1500);
-  },500);
+
+function downloadFallback(blob, filename) {
+    var url = window.URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
 }
 
 // ══ UTILS ══
