@@ -3,2066 +3,386 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>StockSaathi — Kapda Stock Manager</title>
+<title>StockSaathi — Textile Management</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2d2416">
-<link rel="apple-touch-icon" href="https://via.placeholder.com/192/b8860b/ffffff?text=S">
-
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-
 :root{
-  --bg:#faf7f0;
-  --white:#ffffff;
-  --card:#fffdf8;
-  --border:#e8dfc8;
-  --border2:#d4c9a8;
-  --text:#2d2416;
-  --muted:#8a7a5a;
-  --muted2:#6b5c3e;
-  --gold:#b8860b;
-  --gold2:#d4a017;
-  --gold-light:#fef3d0;
-  --gold-btn:#c8973a;
-  --green:#1a6b3a;
-  --green2:#22873f;
-  --green-light:#e8f5ed;
-  --red:#c0392b;
-  --red-light:#fdecea;
-  --orange:#d4600a;
-  --orange-light:#fef0e6;
-  --blue:#1a56a0;
-  --blue-light:#e8f0fe;
-  --shadow:0 2px 8px rgba(45,36,22,0.08);
-  --shadow-md:0 4px 20px rgba(45,36,22,0.12);
-  --ff-h:'Baloo 2',cursive;
-  --ff-b:'Noto Sans',sans-serif;
-  --r:10px;
-  --r2:16px;
+  --bg:#fdfbf7; --white:#ffffff; --card:#ffffff;
+  --border:#e2decb; --border2:#c4b998;
+  --text:#1a150e; --muted:#7a715a; --muted2:#5c5440;
+  --gold:#a67c00; --gold2:#856404; --gold-light:#fff9e6; --gold-btn:#b8860b;
+  --green:#1a6b3a; --green2:#22873f; --green-light:#e8f5ed;
+  --red:#c0392b; --red-light:#fdecea;
+  --orange:#d4600a; --orange-light:#fef0e6;
+  --blue:#1a56a0; --blue-light:#e8f0fe;
+  --shadow:0 2px 10px rgba(26,21,14,0.05);
+  --shadow-md:0 10px 30px rgba(26,21,14,0.1);
+  --ff-h:'Baloo 2',cursive; --ff-b:'Noto Sans',sans-serif;
 }
-
-html,body{height:100%}
-body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:15px;display:flex;overflow:hidden}
-
-/* ══ SIDEBAR ══ */
-.sb{width:240px;flex-shrink:0;background:var(--white);border-right:2px solid var(--border);display:flex;flex-direction:column;box-shadow:2px 0 12px rgba(45,36,22,0.06);}
-.sb-top{padding:22px 20px 18px;border-bottom:2px solid var(--border);background:linear-gradient(135deg,#2d2416 0%,#4a3820 100%);}
+html,body{height:100dvh; overflow:hidden; background:var(--bg); color:var(--text); font-family:var(--ff-b); font-size:15px; display:flex;}
+.sb{width:260px;flex-shrink:0;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
+.sb-top{padding:25px 20px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#1a150e 0%,#3d3428 100%);}
 .sb-logo{display:flex;align-items:center;gap:12px}
-.sb-ico{width:42px;height:42px;background:linear-gradient(135deg,var(--gold2),var(--gold));border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--ff-h);font-size:20px;font-weight:800;color:#2d2416;}
-.sb-name{font-family:var(--ff-h);font-size:20px;font-weight:700;color:#faf7f0}
-.sb-tag{font-size:11px;color:#b8a888;margin-top:3px;padding-left:54px}
-.sb-nav{padding:16px 12px;flex:1;overflow-y:auto}
-.sb-sec{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:14px 8px 6px}
-.sb-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;cursor:pointer;color:var(--muted2);font-size:14px;font-weight:500;transition:all 0.15s;margin-bottom:2px;}
-.sb-item:hover{background:#f5efe0;color:var(--text)}
-.sb-item.active{background:var(--gold-light);color:var(--gold);border:1px solid #e8d090;font-weight:600}
-.sb-ic{font-size:18px;width:22px;text-align:center}
-.sb-badge{margin-left:auto;background:var(--red-light);color:var(--red);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;display:none}
-.sb-badge.on{display:block}
-.sb-foot{padding:16px 20px;border-top:2px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
-
-/* ══ MAIN ══ */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.topbar{height:60px;background:var(--white);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:14px;box-shadow:0 2px 8px rgba(45,36,22,0.06);flex-shrink:0;}
-.tb-title{font-family:var(--ff-h);font-size:20px;font-weight:700;color:var(--text)}
-.tb-sub{font-size:12px;color:var(--muted)}
-.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
-.add-btn{padding:10px 22px;background:linear-gradient(135deg,var(--gold-btn),var(--gold));border:none;border-radius:10px;font-family:var(--ff-h);font-size:14px;font-weight:700;color:var(--white);cursor:pointer;transition:all 0.15s;box-shadow:0 3px 10px rgba(184,134,11,0.3);}
-.add-btn:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(184,134,11,0.4)}
-
-/* ══ PAGES ══ */
-.page{display:none;flex:1;flex-direction:column;overflow:hidden}
+.sb-ico{width:42px;height:42px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--ff-h);font-size:22px;font-weight:800;color:#1a150e;}
+.sb-name{font-family:var(--ff-h);font-size:22px;font-weight:700;color:#fdfbf7}
+.sb-nav{padding:15px 10px;flex:1;overflow-y:auto; -webkit-overflow-scrolling:touch;}
+.sb-item{display:flex;align-items:center;gap:12px;padding:12px 15px;border-radius:12px;cursor:pointer;color:var(--muted2);font-size:14px;font-weight:600;transition:all 0.2s;margin-bottom:4px;}
+.sb-item:hover{background:var(--gold-light);color:var(--gold)}
+.sb-item.active{background:var(--gold-light);color:var(--gold);border:1px solid rgba(166,124,0,0.2);}
+.sb-foot{padding:15px;border-top:1px solid var(--border);font-size:12px;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.topbar{height:65px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 25px;gap:15px;flex-shrink:0;z-index:90;}
+.page{display:none;flex:1;flex-direction:column;overflow:hidden;}
 .page.on{display:flex}
+.content{flex:1;overflow-y:auto; -webkit-overflow-scrolling:touch; padding:25px;}
+input,select,textarea{width:100%;background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:12px;font-family:var(--ff-b);outline:none;transition:all 0.2s;}
+input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(166,124,0,0.1)}
+.btn{padding:12px 20px;border-radius:10px;font-family:var(--ff-h);font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;transition:all 0.2s;}
+.btn-gold{background:var(--gold);color:var(--white);}
+.btn-gold:hover{background:var(--gold2);transform:translateY(-1px);}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--muted2);}
+.btn-red{background:var(--red-light);color:var(--red);border:1.5px solid #f4c0ba;}
 
-/* ══ STATS ══ */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:2px solid var(--border);flex-shrink:0;background:var(--white)}
-.stat{padding:20px 24px;border-right:2px solid var(--border);cursor:default}
-.stat:last-child{border-right:none}
-.stat:hover{background:#fdf9ef}
-.stat-l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:6px}
-.stat-v{font-family:var(--ff-h);font-size:30px;font-weight:800;line-height:1;color:var(--text)}
-.stat-v.red{color:var(--red)}
-.stat-v.gold{color:var(--gold)}
-.stat-h{font-size:11px;color:var(--muted);margin-top:4px}
+/* Profile/Netflix Screen */
+#profile-screen{position:fixed;inset:0;z-index:10000;background:#1a150e;display:none;align-items:center;justify-content:center;flex-direction:column;}
+.p-card{background:rgba(255,255,255,0.05);border-radius:20px;padding:40px 30px;width:180px;text-align:center;cursor:pointer;transition:all 0.3s;border:2px solid transparent;}
+.p-card:hover{background:rgba(255,255,255,0.1);border-color:var(--gold);transform:scale(1.05);}
+.p-img{width:80px;height:80px;background:var(--gold);border-radius:50%;margin:0 auto 15px;display:flex;align-items:center;justify-content:center;font-size:40px;}
 
-/* ══ CONTENT ══ */
-.content{flex:1;overflow-y:auto;padding:28px}
-.content::-webkit-scrollbar{width:5px}
-.content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
-.sh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
-.sh-title{font-family:var(--ff-h);font-size:24px;font-weight:700;color:var(--text)}
-.sh-sub{font-size:12px;color:var(--muted);margin-top:2px}
+/* Onboarding */
+#ob-overlay{position:fixed;inset:0;z-index:11000;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;padding:20px;}
+.ob-modal{background:var(--white);width:100%;max-width:450px;border-radius:24px;overflow:hidden;animation:pop 0.3s ease;}
+@keyframes pop{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}
+.ob-head{padding:30px;background:var(--gold);color:#1a150e;text-align:center;}
+.ob-body{padding:30px;}
 
-/* ══ FABRIC CARDS ══ */
-.fab-grid{display:flex;flex-direction:column;gap:12px}
-.fab-card{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);padding:18px 20px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;transition:all 0.15s;box-shadow:var(--shadow);}
-.fab-card:hover{border-color:var(--gold2);box-shadow:var(--shadow-md);transform:translateY(-1px)}
-.fab-card.low{border-left:4px solid var(--red)}
-.fab-card.med{border-left:4px solid var(--orange)}
-.fab-card.ok{border-left:4px solid var(--green2)}
-.fab-left{display:flex;align-items:center;gap:16px}
-.fab-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
-.fab-name{font-family:var(--ff-h);font-size:17px;font-weight:700;color:var(--text);margin-bottom:3px}
-.fab-meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
-.fab-tag{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;color:var(--muted2)}
-.fab-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
-.fab-meter-box{text-align:center;min-width:90px}
-.fab-meter-num{font-family:var(--ff-h);font-size:28px;font-weight:800;line-height:1;color:var(--text)}
-.fab-meter-lbl{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
-.fab-bar-wrap{min-width:80px}
-.fab-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:4px}
-.fab-bar-f{height:100%;border-radius:3px;transition:width 0.4s}
-.fab-actions{display:flex;gap:8px;flex-shrink:0}
-.fab-btn{padding:9px 16px;border-radius:8px;font-family:var(--ff-b);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s;display:flex;align-items:center;gap:5px;white-space:nowrap;}
-.fab-btn-add{background:var(--green-light);color:var(--green);border:1.5px solid #aadec0}
-.fab-btn-add:hover{background:#c0ecd4;transform:translateY(-1px)}
-.fab-btn-sell{background:var(--orange-light);color:var(--orange);border:1.5px solid #f4c09a}
-.fab-btn-sell:hover{background:#fde0c0;transform:translateY(-1px)}
-.fab-btn-del{background:var(--red-light);color:var(--red);border:1.5px solid #f4c0ba;padding:9px 12px}
-.fab-btn-del:hover{background:#f8d0cc}
-.pill{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.3px}
-.pill-r{background:var(--red-light);color:var(--red)}
-.pill-o{background:var(--orange-light);color:var(--orange)}
-.pill-g{background:var(--green-light);color:var(--green)}
-
-/* ══ CATEGORY PILLS ══ */
-.cat-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.cat-p{padding:7px 16px;border-radius:22px;font-size:13px;font-weight:600;border:1.5px solid var(--border);color:var(--muted2);cursor:pointer;background:var(--white);font-family:var(--ff-b);transition:all 0.15s;}
-.cat-p:hover{border-color:var(--gold2);color:var(--gold)}
-.cat-p.active{background:var(--gold-light);border-color:var(--gold2);color:var(--gold)}
-
-/* ══ SEARCH ══ */
-.search-big{display:flex;gap:10px;margin-bottom:20px;}
-.search-big input{font-size:15px;padding:12px 16px 12px 42px;border-radius:10px;border:2px solid var(--border);background:var(--white);}
-.search-big input:focus{border-color:var(--gold2)}
-.search-wrap{position:relative;flex:1}
-.search-ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--muted);pointer-events:none}
-
-/* ══ FORM ══ */
-input,select,textarea{width:100%;background:var(--white);border:2px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--ff-b);font-size:14px;padding:11px 14px;outline:none;transition:border-color 0.15s,box-shadow 0.15s;}
-input:focus,select:focus{border-color:var(--gold2);box-shadow:0 0 0 3px rgba(212,160,23,0.12)}
-input::placeholder{color:var(--muted)}
-select option{background:var(--white)}
-.fc{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);padding:22px;margin-bottom:18px;box-shadow:var(--shadow)}
-.fc-title{font-family:var(--ff-h);font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
-.fg{margin-bottom:14px}
-.fl{display:block;font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px}
-.fl-hindi{font-size:13px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.btn{padding:12px 24px;border:none;border-radius:10px;font-family:var(--ff-h);font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:8px}
-.btn-gold{background:linear-gradient(135deg,var(--gold-btn),var(--gold));color:var(--white);box-shadow:0 3px 10px rgba(184,134,11,0.3)}
-.btn-gold:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(184,134,11,0.4)}
-.btn-ghost{background:transparent;color:var(--muted2);border:2px solid var(--border)}
-.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
-.btn-green{background:var(--green);color:var(--white)}
-.btn-green:hover{background:var(--green2);transform:translateY(-1px)}
-.btn-full{width:100%;justify-content:center}
-.res-box{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:10px;display:flex;justify-content:space-between;align-items:center}
-.res-l{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
-.res-v{font-family:var(--ff-h);font-size:24px;font-weight:800;color:var(--gold)}
-
-/* ══ LEDGER ══ */
-.ledger-tabs{display:flex;gap:0;border:2px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;background:var(--white)}
-.ledger-tab{flex:1;padding:12px 20px;font-family:var(--ff-h);font-size:14px;font-weight:700;cursor:pointer;text-align:center;color:var(--muted2);border:none;background:transparent;transition:all 0.15s}
-.ledger-tab.active{background:var(--gold-light);color:var(--gold)}
-.ledger-tab:not(:last-child){border-right:2px solid var(--border)}
-
-.ledger-entry{background:var(--white);border:2px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;display:grid;grid-template-columns:auto 1fr auto auto;gap:14px;align-items:center;transition:all 0.15s;box-shadow:var(--shadow)}
-.ledger-entry:hover{border-color:var(--border2);box-shadow:var(--shadow-md)}
-.ledger-entry.sale-entry{border-left:4px solid var(--green2)}
-.ledger-entry.purchase-entry{border-left:4px solid var(--blue)}
-.ledger-entry.returned{opacity:0.6;border-left-color:var(--muted)}
-.le-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.le-icon.sale{background:var(--green-light)}
-.le-icon.purchase{background:var(--blue-light)}
-.le-name{font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px}
-.le-meta{font-size:12px;color:var(--muted)}
-.le-date{font-size:12px;color:var(--muted);text-align:right;min-width:80px}
-.le-amount{font-family:var(--ff-h);font-size:20px;font-weight:800;text-align:right;min-width:100px}
-.le-amount.sale{color:var(--green2)}
-.le-amount.purchase{color:var(--blue)}
-
-.ledger-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
-.ls-card{background:var(--white);border:2px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow)}
-.ls-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:6px}
-.ls-value{font-family:var(--ff-h);font-size:26px;font-weight:800}
-.ls-sub{font-size:11px;color:var(--muted);margin-top:4px}
-
-.udhaar-card{background:var(--white);border:2px solid var(--orange-light);border-left:4px solid var(--orange);border-radius:12px;padding:16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-
-/* ══ GST BOX ══ */
-.gst-box{background:var(--blue-light);border:2px solid #b8d0f4;border-radius:10px;padding:14px 16px;margin-top:12px}
-
-/* ══ CALC ══ */
-.calc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-
-/* ══ REPORT ══ */
-.rpt-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
-.rpt-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
-.rpt-card{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);padding:22px;box-shadow:var(--shadow)}
-.rpt-card-t{font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--text);margin-bottom:16px}
-.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.bar-lbl{font-size:12px;color:var(--muted2);width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
-.bar-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
-.bar-fill{height:100%;border-radius:4px;background:var(--gold2);transition:width 0.4s}
-.bar-val{font-size:12px;color:var(--muted2);width:55px;text-align:right;font-weight:600}
-
-/* ══ MODALS ══ */
-.qmodal-bg{position:fixed;inset:0;background:rgba(45,36,22,0.5);z-index:600;display:none;align-items:center;justify-content:center}
-.qmodal-bg.on{display:flex;animation:fadeIn 0.15s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.qmodal{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);width:420px;max-width:95vw;max-height:90vh;overflow-y:auto;padding:28px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
-@keyframes popIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
-.qmodal-title{font-family:var(--ff-h);font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px}
-.qmodal-fab{font-size:13px;color:var(--muted);margin-bottom:20px;font-weight:600}
-.qmodal-foot{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
-
-.modal-bg{position:fixed;inset:0;background:rgba(45,36,22,0.5);z-index:500;display:none;align-items:center;justify-content:center}
-.modal-bg.on{display:flex}
-.modal{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);width:500px;max-width:95vw;max-height:92vh;overflow-y:auto;padding:30px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
-.modal-title{font-family:var(--ff-h);font-size:22px;font-weight:800;margin-bottom:4px}
-.modal-sub{font-size:13px;color:var(--muted);margin-bottom:22px}
-.modal-foot{display:flex;gap:10px;margin-top:22px;justify-content:flex-end}
-
-/* ══ ONBOARDING ══ */
-#onboarding{position:fixed;inset:0;background:rgba(45,36,22,0.6);z-index:800;display:none;align-items:center;justify-content:center}
-#onboarding.on{display:flex;animation:fadeIn 0.3s ease}
-.ob-card{background:var(--white);border-radius:24px;width:520px;max-width:95vw;max-height:90vh;overflow:hidden;box-shadow:0 40px 80px rgba(45,36,22,0.25)}
-.ob-top{background:linear-gradient(135deg,#2d2416,#4a3820);padding:32px 36px 28px}
-.ob-step-row{display:flex;gap:8px;margin-bottom:20px}
-.ob-step{height:4px;flex:1;background:rgba(255,255,255,0.2);border-radius:2px;transition:background 0.3s}
-.ob-step.done{background:var(--gold2)}
-.ob-step.active{background:var(--gold-btn)}
-.ob-title{font-family:var(--ff-h);font-size:22px;font-weight:800;color:#faf7f0;margin-bottom:6px}
-.ob-sub{font-size:13px;color:#b8a888;line-height:1.6}
-.ob-body{padding:28px 36px}
-.ob-features{display:flex;flex-direction:column;gap:12px;margin-bottom:8px}
-.ob-feat{display:flex;align-items:flex-start;gap:12px;padding:14px;background:var(--bg);border:2px solid var(--border);border-radius:12px}
-.ob-feat-ic{font-size:22px;flex-shrink:0}
-.ob-feat-t{font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px}
-.ob-feat-s{font-size:12px;color:var(--muted)}
-.ob-foot{padding:0 36px 28px;display:flex;justify-content:space-between;align-items:center}
-.ob-counter{font-size:12px;color:var(--muted)}
-.ob-btns{display:flex;gap:10px}
-
-/* ══ TOAST ══ */
-#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#2d2416;color:#faf7f0;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;display:none;z-index:999;box-shadow:0 8px 24px rgba(45,36,22,0.3);white-space:nowrap;animation:toastIn 0.2s ease}
-@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-
-/* ══ LOGIN ══ */
-#login-screen{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#2d2416 0%,#4a3820 40%,#6b5030 100%);display:flex;align-items:center;justify-content:center;}
-.login-wrap{display:grid;grid-template-columns:1fr 1fr;max-width:900px;width:95%;gap:0;border-radius:24px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,0.4)}
-.login-left{background:linear-gradient(160deg,#c8973a,#8b6020);padding:50px 40px;display:flex;flex-direction:column;justify-content:center}
-.login-left-ico{font-size:50px;margin-bottom:20px}
-.login-left-t{font-family:var(--ff-h);font-size:34px;font-weight:800;color:#faf7f0;line-height:1.2;margin-bottom:12px}
-.login-left-s{font-size:14px;color:rgba(250,247,240,0.8);line-height:1.7}
-.login-feat{margin-top:24px;display:flex;flex-direction:column;gap:10px}
-.login-feat-item{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(250,247,240,0.9)}
-.login-feat-dot{width:8px;height:8px;background:#faf7f0;border-radius:50%;flex-shrink:0}
-.login-right{background:var(--white);padding:50px 40px;display:flex;flex-direction:column;justify-content:center}
-.login-right-t{font-family:var(--ff-h);font-size:26px;font-weight:800;color:var(--text);margin-bottom:6px}
-.login-right-s{font-size:13px;color:var(--muted);margin-bottom:32px}
-.login-google{width:100%;padding:15px 20px;background:var(--white);border:2px solid var(--border);border-radius:12px;font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;transition:all 0.15s;margin-bottom:16px;box-shadow:var(--shadow)}
-.login-google:hover{border-color:var(--gold2);background:var(--gold-light);transform:translateY(-1px);box-shadow:var(--shadow-md)}
-
-/* STAFF MODE */
-body.staff-mode .hide-staff { display: none !important; }
-
-/* ══ INSTALL BANNER ══ */
-#install-banner { position:fixed; bottom:0; left:0; width:100%; background:var(--gold); color:white; padding:12px 20px; display:none; justify-content:space-between; align-items:center; z-index:10000; box-shadow:0 -4px 10px rgba(0,0,0,0.1); }
-
-/* ══ MOBILE ══ */
-.hamburger{display:none;background:none;border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:18px;cursor:pointer;width:36px;height:36px;align-items:center;justify-content:center;flex-shrink:0;}
-.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;backdrop-filter:blur(2px);}
-.mob-overlay.on{display:block}
-.mob-menu{position:fixed;left:0;top:0;bottom:0;width:280px;background:var(--white);z-index:400;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform 0.25s ease;box-shadow:4px 0 20px rgba(45,36,22,0.15);}
-.mob-menu.on{transform:translateX(0)}
-.mob-menu-head{display:flex;align-items:center;justify-content:space-between;padding:20px 18px;border-bottom:2px solid var(--border);background:linear-gradient(135deg,#2d2416,#4a3820);}
-
-@media print{
-  .sb,.topbar,.modal-bg,.qmodal-bg,#toast,#login-screen,.fab-actions,.search-big,.cat-row,.hide-print,#install-banner{display:none!important}
-  body{background:white;color:black;overflow:visible}
-  .main,.page,.content{overflow:visible;height:auto}
-  .watermark{display:block !important; position:absolute; top:40%; left:50%; transform:translate(-50%,-50%) rotate(-45deg); font-size:60px; color:rgba(0,0,0,0.08); font-weight:800; white-space:nowrap; pointer-events:none; z-index:0;}
-}
+/* Utils */
+.hide-staff, .hide-manager { display: none; }
+body. مالकि-mode .hide-staff, body. مالकि-mode .hide-manager { display: block; }
+body.manager-mode .hide-staff { display: block; }
 
 @media(max-width:768px){
-  body{flex-direction:column;overflow:auto}
-  html,body{height:auto}
-  .main{height:auto;overflow:visible}
-  .page{overflow:visible;height:auto}
-  .page.on{display:flex;flex-direction:column}
-  .sb{display:none !important}
-  .hamburger{display:flex !important}
-  .topbar{padding:0 14px;height:52px;gap:10px}
-  .tb-title{font-size:15px}
-  .tb-sub{display:none}
-  .add-btn{font-size:12px;padding:8px 12px}
+  .sb{display:none!important}
+  .hamburger{display:flex!important}
+  .topbar{padding:0 15px}
+  .content{padding:15px}
   .stats{grid-template-columns:1fr 1fr}
-  .stat{padding:12px 14px}
-  .stat-v{font-size:22px}
-  .content{padding:14px}
-  .fab-card{grid-template-columns:1fr;gap:10px}
-  .fab-right{flex-wrap:wrap;justify-content:space-between;gap:8px}
-  .fab-actions{width:100%;justify-content:flex-end}
-  .calc-grid{grid-template-columns:1fr}
-  .rpt-grid{grid-template-columns:1fr}
-  .rpt-stats{grid-template-columns:1fr 1fr}
-  .modal,.qmodal{width:95vw;padding:20px}
-  .g2{grid-template-columns:1fr;gap:0}
-  .ledger-summary{grid-template-columns:1fr 1fr}
-  .login-wrap{grid-template-columns:1fr}
-  .login-left{display:none}
-  .login-right{padding:36px 28px}
 }
 </style>
 </head>
-<body>
+<body class="staff-mode">
 
 <datalist id="party-list"></datalist>
-<datalist id="gstin-list"></datalist>
+<datalist id="color-list"></datalist>
 
-<div id="install-banner">
-    <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:36px;height:36px;background:white;color:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--ff-h);font-size:18px;font-weight:800;">S</div>
-        <div>
-            <div style="font-family:var(--ff-h);font-weight:700;font-size:15px;line-height:1">Install StockSaathi</div>
-            <div style="font-size:11px;opacity:0.9">Get the free app on your home screen</div>
+<div id="profile-screen">
+    <h1 style="color:white;font-family:var(--ff-h);margin-bottom:40px;font-size:32px">Who is using StockSaathi?</h1>
+    <div style="display:flex;gap:30px;flex-wrap:wrap;justify-content:center" id="profiles-box">
+        </div>
+</div>
+
+<div id="ob-overlay">
+    <div class="ob-modal">
+        <div class="ob-head">
+            <h2 id="ob-title" style="font-family:var(--ff-h)">Welcome to StockSaathi!</h2>
+            <p id="ob-step-txt" style="font-size:12px;font-weight:700;text-transform:uppercase;margin-top:5px;opacity:0.8">Step 1 of 4</p>
+        </div>
+        <div class="ob-body">
+            <div id="ob-content">
+                </div>
+            <div style="margin-top:25px;display:flex;gap:10px">
+                <button class="btn btn-gold" style="flex:1" onclick="nextObStep()">Next Step →</button>
+            </div>
         </div>
     </div>
-    <button id="install-btn" style="padding:8px 16px;background:var(--text);color:white;border:none;border-radius:6px;font-weight:700;font-family:var(--ff-b);cursor:pointer;">Install App</button>
 </div>
 
 <div class="sb">
-  <div class="sb-top">
-    <div class="sb-logo">
-      <div class="sb-ico">S</div>
-      <span class="sb-name">StockSaathi</span>
+    <div class="sb-top">
+        <div class="sb-logo"><div class="sb-ico">S</div><span class="sb-name">StockSaathi</span></div>
     </div>
-    <div class="sb-tag">Kapda Stock Manager</div>
-  </div>
-  <nav class="sb-nav">
-    <div class="sb-sec">Main</div>
-    <div class="sb-item active" onclick="goto('dash',this)"><span class="sb-ic">🏠</span>Dashboard</div>
-    <div class="sb-item" onclick="goto('inv',this)"><span class="sb-ic">📦</span>Inventory<span class="sb-badge" id="low-badge">0</span></div>
-    <div class="sb-sec hide-staff">Manage</div>
-    <div class="sb-item" onclick="goto('sales',this)"><span class="sb-ic">💰</span>Sales</div>
-    <div class="sb-item hide-staff" onclick="goto('ledger',this)"><span class="sb-ic">📒</span>Ledger</div>
-    <div class="sb-item hide-staff" onclick="goto('calc',this)"><span class="sb-ic">🧮</span>Calculator</div>
-    <div class="sb-sec hide-staff">Reports</div>
-    <div class="sb-item hide-staff" onclick="goto('report',this)"><span class="sb-ic">📊</span>Monthly Report</div>
-  </nav>
-  <div class="sb-foot" id="sb-foot">
-    <div>
-        <strong id="user-display-name">User</strong><br>
-        <span style="cursor:pointer;color:var(--red)" onclick="signOut()">Sign Out</span>
+    <div class="sb-nav">
+        <div class="sb-sec">Main</div>
+        <div class="sb-item active" onclick="goto('dash',this)">🏠 Dashboard</div>
+        <div class="sb-item" onclick="goto('inv',this)">📦 Inventory</div>
+        <div class="sb-sec staff-lock">Transactions</div>
+        <div class="sb-item" onclick="goto('sales',this)">💰 Sales</div>
+        <div class="sb-item staff-lock" onclick="goto('ledger',this)">📒 Ledger</div>
+        <div class="sb-sec admin-lock">Business</div>
+        <div class="sb-item admin-lock" onclick="goto('report',this)">📊 Reports</div>
+        <div class="sb-item admin-lock" onclick="goto('profiles',this)">👥 Profiles</div>
     </div>
-    <div style="cursor:pointer;font-size:20px;padding:5px" onclick="openSettings()" title="Settings">⚙️</div>
-  </div>
+    <div class="sb-foot">
+        <div style="flex:1">
+            <b id="active-p-name">Malik</b><br>
+            <span style="color:var(--gold);cursor:pointer;font-weight:700" onclick="switchProfile()">🔄 Switch</span>
+        </div>
+        <button class="btn btn-ghost admin-lock" style="padding:8px" onclick="openSettings()">⚙️</button>
+    </div>
 </div>
 
 <div class="main">
-  <div class="topbar">
-    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">☰</button>
-    <div>
-      <span class="tb-title" id="pg-title">Dashboard</span>
-      <span class="tb-sub" id="pg-sub"></span>
-    </div>
-    <div class="tb-right">
-      <button class="add-btn" onclick="openModal()">+ Add Fabric</button>
-    </div>
-  </div>
-
-  <div class="mob-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
-  <div class="mob-menu" id="mob-menu">
-    <div class="mob-menu-head">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:34px;height:34px;background:var(--gold-btn);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--ff-h);font-size:16px;font-weight:800;color:var(--white)">S</div>
-        <span style="font-family:var(--ff-h);font-size:17px;font-weight:700;color:#faf7f0">StockSaathi</span>
-      </div>
-      <button onclick="closeMobileMenu()" style="background:none;border:none;font-size:22px;color:rgba(250,247,240,0.7);cursor:pointer;line-height:1">✕</button>
-    </div>
-    <div class="mob-menu-body">
-      <div class="mob-sec">Main</div>
-      <div class="mob-item active" id="mob-dash" onclick="mobileGoto('dash')">🏠 Dashboard</div>
-      <div class="mob-item" id="mob-inv" onclick="mobileGoto('inv')">📦 Inventory</div>
-      <div class="mob-sec hide-staff">Manage</div>
-      <div class="mob-item" id="mob-sales" onclick="mobileGoto('sales')">💰 Sales</div>
-      <div class="mob-item hide-staff" id="mob-ledger" onclick="mobileGoto('ledger')">📒 Ledger</div>
-      <div class="mob-item hide-staff" id="mob-calc" onclick="mobileGoto('calc')">🧮 Calculator</div>
-      <div class="mob-sec hide-staff">Reports</div>
-      <div class="mob-item hide-staff" id="mob-report" onclick="mobileGoto('report')">📊 Monthly Report</div>
-    </div>
-    <div class="mob-menu-foot">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div id="mob-user" style="font-size:13px;font-weight:600;color:var(--text);padding:8px 10px;background:var(--bg);border-radius:8px;border:1.5px solid var(--border)"></div>
-        <button onclick="openSettings(); closeMobileMenu()" style="background:none;border:none;font-size:22px;cursor:pointer">⚙️</button>
-      </div>
-      <button onclick="signOut()" style="width:100%;padding:12px;background:rgba(192,57,43,0.08);border:1.5px solid rgba(192,57,43,0.25);border-radius:10px;color:var(--red);font-family:var(--ff-h);font-size:14px;font-weight:700;cursor:pointer;">🚪 Sign Out</button>
-    </div>
-  </div>
-
-  <div class="page on" id="pg-dash">
-    <div class="stats">
-      <div class="stat"><div class="stat-l">Kul Kapde</div><div class="stat-v" id="st-c">0</div><div class="stat-h">prakar</div></div>
-      <div class="stat"><div class="stat-l">Kul Meter</div><div class="stat-v" id="st-m">0</div><div class="stat-h">meter stock mein</div></div>
-      <div class="stat hide-staff"><div class="stat-l">Kam Stock</div><div class="stat-v red" id="st-l">0</div><div class="stat-h">order karna hai</div></div>
-      <div class="stat hide-staff"><div class="stat-l">Stock Ki Kimat</div><div class="stat-v gold" id="st-v">₹0</div><div class="stat-h">kul value</div></div>
-    </div>
-    <div class="content">
-      <div class="sh">
-        <div><div class="sh-title">Aaj Ka Hisaab 📋</div><div class="sh-sub">Apna poora stock ek nazar mein</div></div>
-        <button class="btn btn-ghost" style="font-size:13px" onclick="goto('inv',document.querySelectorAll('.sb-item')[1])">Sab Dekho →</button>
-      </div>
-      <div class="low-banner hide-staff" id="low-banner">
-        <div class="low-banner-t">⚠️ Kam Stock Alert!</div>
-        <div class="low-banner-s" id="low-banner-txt"></div>
-      </div>
-      <div class="fab-grid" id="dash-grid" style="margin-bottom:30px"></div>
-      
-      <div class="rpt-grid hide-staff" id="dash-smart-widgets" style="display:none">
-        <div class="rpt-card" style="border-top:4px solid var(--green2)"><div class="rpt-card-t">🔥 Top Selling (Last 30 Days)</div><div id="dash-top-sell"></div></div>
-        <div class="rpt-card" style="border-top:4px solid var(--red)"><div class="rpt-card-t">⚠️ Dead Stock (No sales 60 days)</div><div id="dash-dead-stock"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="page" id="pg-inv">
-    <div class="content">
-      <div class="sh">
-        <div><div class="sh-title">📦 Inventory</div><div class="sh-sub">Sabhi kapdon ka stock</div></div>
-        <button class="btn btn-gold" onclick="openModal()">+ Naya Kapda</button>
-      </div>
-      <div class="cat-row">
-        <button class="cat-p active" onclick="filterCat('',this)">🧵 Sab</button>
-        <button class="cat-p" onclick="filterCat('Georgette',this)">Georgette</button>
-        <button class="cat-p" onclick="filterCat('Chiffon',this)">Chiffon</button>
-        <button class="cat-p" onclick="filterCat('Silk',this)">Silk</button>
-        <button class="cat-p" onclick="filterCat('Cotton',this)">Cotton</button>
-        <button class="cat-p" onclick="filterCat('Velvet',this)">Velvet</button>
-        <button class="cat-p" onclick="filterCat('Satin',this)">Satin</button>
-        <button class="cat-p" onclick="filterCat('Net',this)">Net</button>
-        <button class="cat-p" onclick="filterCat('Linen',this)">Linen</button>
-        <button class="cat-p" onclick="filterCat('Rayon',this)">Rayon</button>
-      </div>
-      <div class="search-big">
-        <div class="search-wrap">
-          <span class="search-ic">🔍</span>
-          <input id="inv-q" placeholder="Kapde ka naam, rang ya supplier dhundho..." oninput="renderInv()"/>
+    <div class="topbar">
+        <button class="btn btn-ghost hamburger" onclick="toggleMob()" style="display:none;padding:10px">☰</button>
+        <h2 id="pg-title" style="font-family:var(--ff-h)">Dashboard</h2>
+        <div style="margin-left:auto" id="top-add-btn">
+            <button class="btn btn-gold" onclick="openFabModal()">+ New Fabric</button>
         </div>
-      </div>
-      <div class="fab-grid" id="inv-grid"></div>
     </div>
-  </div>
 
-  <div class="page" id="pg-sales">
-    <div class="content">
-      <div class="sh"><div><div class="sh-title">💰 Sales</div><div class="sh-sub">Record a sale</div></div></div>
-      <div style="display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start">
-        <div class="fc">
-          <div class="fc-title">🛒 New Sale</div>
-          <div class="fg"><label class="fl">Kapda <span class="fl-hindi">चुनो</span></label><select id="s-fab" onchange="onFabChange()"></select></div>
-          <div class="g2">
-            <div class="fg"><label class="fl">Meter <span class="fl-hindi">बेचे</span></label><input id="s-m" type="number" placeholder="0" min="0" oninput="calcSaleAmt()"/></div>
-            <div class="fg hide-staff"><label class="fl">Daam <span class="fl-hindi">₹/m</span></label><input id="s-r" type="number" placeholder="auto" oninput="calcSaleAmt()"/></div>
-          </div>
-          <div class="g2 hide-staff">
-            <div class="fg"><label class="fl">Discount (₹)</label><input id="s-discount" type="number" placeholder="0" oninput="calcSaleAmt()"/></div>
-            <div class="fg"><label class="fl">Invoice Type</label>
-              <select id="s-inv-type">
-                <option value="Cash">Cash</option><option value="Credit">Credit</option>
-              </select>
-            </div>
-          </div>
-          <div class="g2 hide-staff">
-            <div class="fg"><label class="fl">Payment Method</label>
-              <select id="s-pay-mode">
-                <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Bank">Bank</option>
-              </select>
-            </div>
-            <div class="fg"><label class="fl">Paid Amount (₹)</label><input id="s-paid" type="number" placeholder="Leave empty for auto"/></div>
-          </div>
-          <div class="hide-staff" style="background:var(--blue-light);border:2px solid #b8d0f4;border-radius:10px;padding:14px 16px;margin-bottom:14px">
-            <div style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">GST Settings</div>
-            <div class="g2" style="margin-bottom:8px">
-              <div class="fg" style="margin-bottom:0">
-                <label class="fl" style="color:var(--blue)">GST Rate</label>
-                <select id="s-gst-rate" onchange="calcSaleAmt()" style="border-color:#b8d0f4">
-                  <option value="0">No GST (0%)</option>
-                  <option value="5" selected>5% (Fabric / &lt;₹1000)</option>
-                  <option value="12">12% (Garments &gt;₹1000)</option>
-                  <option value="18">18%</option>
-                </select>
-              </div>
-              <div class="fg" style="margin-bottom:0">
-                <label class="fl" style="color:var(--blue)">Transaction Type</label>
-                <select id="s-gst-type" onchange="calcSaleAmt()" style="border-color:#b8d0f4">
-                  <option value="intra">Intra-State (Gujarat) — CGST+SGST</option>
-                  <option value="inter">Inter-State — IGST</option>
-                </select>
-              </div>
-            </div>
-            <div id="s-gst-breakdown" style="font-size:12px;color:var(--blue)"></div>
-          </div>
-          <div class="res-box hide-staff" style="margin-bottom:14px">
-            <span class="res-l">Subtotal</span>
-            <span id="s-subtotal" style="font-family:var(--ff-h);font-size:18px;font-weight:700;color:var(--muted2)">₹0</span>
-          </div>
-          <div class="res-box hide-staff" style="margin-bottom:14px">
-            <span class="res-l">Kul Raqam (with GST)</span>
-            <span class="res-v" id="s-amt">₹0</span>
-          </div>
-          <div class="fg hide-staff"><label class="fl">Buyer GSTIN <span class="fl-hindi">(Optional)</span></label><input id="s-buyer-gstin" list="gstin-list" placeholder="e.g. 24XXXXX1234X1Z5"/></div>
-          <div class="fg"><label class="fl">Grahak <span class="fl-hindi">का नाम</span></label><input id="s-c" list="party-list" placeholder="e.g. Rajesh Bhai, Mehta & Sons"/></div>
-          
-          <div class="fg hide-staff"><label class="fl">WhatsApp Number</label>
-            <div style="display:flex;gap:8px;align-items:center">
-              <span style="padding:10px 12px;background:var(--bg);border:2px solid var(--border);border-radius:9px;font-size:13px;color:var(--muted2);flex-shrink:0">+91</span>
-              <input id="s-phone" type="tel" placeholder="9876543210" style="flex:1"/>
-            </div>
-          </div>
-
-          <div style="margin-bottom:14px;padding:12px;background:var(--gold-light);border-radius:10px;border:1.5px solid #e8d090">
-              <label style="display:flex;align-items:center;gap:8px;font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--gold);cursor:pointer">
-                  <input type="checkbox" id="s-kacha" style="width:18px;height:18px;accent-color:var(--gold)">
-                  📝 Kacha Bill (Estimate)
-              </label>
-              <div style="font-size:11px;color:var(--muted2);margin-left:26px;margin-top:2px">Does not deduct stock or go to Bahi Khata.</div>
-          </div>
-
-          <div class="hide-staff" style="background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px">
-            <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">🚚 Transport / E-Way Bill (Optional)</div>
-            <div class="g2" style="margin-bottom:8px">
-              <div class="fg" style="margin-bottom:0"><label class="fl">Transport Name</label><input id="s-trans" placeholder="e.g. VRL Logistics"/></div>
-              <div class="fg" style="margin-bottom:0"><label class="fl">LR / Bilty No.</label><input id="s-lr" placeholder="e.g. 12345"/></div>
-            </div>
-            <div class="fg" style="margin-bottom:0"><label class="fl">E-Way Bill No.</label><input id="s-eway" placeholder="12 digit E-Way Bill"/></div>
-          </div>
-
-          <div class="fg hide-staff"><label class="fl">Note <span class="fl-hindi">(Optional)</span></label><input id="s-n" placeholder="Koi note..."/></div>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-ghost" style="flex:1;justify-content:center;font-size:13px" onclick="recSale()">✅ Record</button>
-            <button class="btn btn-gold hide-staff" style="flex:1;justify-content:center;font-size:13px" onclick="recSaleAndBill()">🧾 Generate Bill</button>
-          </div>
+    <div id="pg-dash" class="page on">
+        <div class="stats">
+            <div class="stat"><div class="stat-l">Kul Kapde</div><div class="stat-v" id="st-c">0</div></div>
+            <div class="stat"><div class="stat-l">Kul Meter</div><div class="stat-v" id="st-m">0</div></div>
+            <div class="stat hide-staff"><div class="stat-l">Kam Stock</div><div class="stat-v red" id="st-l">0</div></div>
+            <div class="stat hide-staff"><div class="stat-l">Stock Value</div><div class="stat-v gold" id="st-v">₹0</div></div>
         </div>
-        <div>
-          <div class="fc-title" style="font-family:var(--ff-h);font-size:16px;font-weight:700;margin-bottom:14px">📋 Recent Sales</div>
-          <div id="sales-list"></div>
+        <div class="content">
+            <h3 style="font-family:var(--ff-h);margin-bottom:15px">Recent Inventory</h3>
+            <div id="dash-grid" class="fab-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:15px"></div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <div class="page" id="pg-ledger">
-    <div class="content">
-      <div class="sh">
-        <div><div class="sh-title">📒 Ledger</div><div class="sh-sub">Sales Book & Purchase Book</div></div>
-        <div style="display:flex;gap:10px">
-          <button class="btn btn-ghost hide-print" onclick="exportCSV()">📥 Export CSV</button>
-          <button class="btn btn-gold hide-print" onclick="openPurchaseModal()">+ Purchase Record</button>
-        </div>
-      </div>
-
-      <div class="ledger-summary">
-        <div class="ls-card">
-          <div class="ls-label">Total Sales (Valid)</div>
-          <div class="ls-value" id="ls-total-sales" style="color:var(--green2)">₹0</div>
-          <div class="ls-sub" id="ls-sales-count">0 entries</div>
-        </div>
-        <div class="ls-card">
-          <div class="ls-label">Total Purchases (Valid)</div>
-          <div class="ls-value" id="ls-total-purchases" style="color:var(--blue)">₹0</div>
-          <div class="ls-sub" id="ls-purchases-count">0 entries</div>
-        </div>
-        <div class="ls-card">
-          <div class="ls-label">Net Profit (Est.)</div>
-          <div class="ls-value" id="ls-net-profit">₹0</div>
-          <div class="ls-sub">Sales - Purchases</div>
-        </div>
-      </div>
-
-      <div class="ledger-tabs">
-        <button class="ledger-tab active" id="tab-sales" onclick="switchLedger('sales')">💰 Sales Book</button>
-        <button class="ledger-tab" id="tab-purchases" onclick="switchLedger('purchases')">📥 Purchase Book</button>
-        <button class="ledger-tab" id="tab-udhaar" onclick="switchLedger('udhaar')" style="color:var(--orange)">⏳ Udhaar Khata</button>
-      </div>
-
-      <div class="search-big hide-print">
-        <div class="search-wrap">
-          <span class="search-ic">🔍</span>
-          <input id="ledger-q" placeholder="Party naam, kapda ya amount dhundho..." oninput="renderLedger()"/>
-        </div>
-      </div>
-
-      <div id="ledger-grid"></div>
-    </div>
-  </div>
-
-  <div class="page" id="pg-calc">
-    <div class="content">
-      <div class="sh"><div><div class="sh-title">🧮 Calculator</div><div class="sh-sub">Jaldi hisaab lagao</div></div></div>
-      <div class="calc-grid">
-        <div class="fc">
-          <div class="fc-title">💰 Kapde Ki Kimat</div>
-          <div class="fg"><label class="fl">Meter <span class="fl-hindi">kitne</span></label><input id="c1m" type="number" placeholder="100" oninput="c1()"/></div>
-          <div class="fg"><label class="fl">Daam <span class="fl-hindi">₹/meter</span></label><input id="c1r" type="number" placeholder="120" oninput="c1()"/></div>
-          <div class="res-box"><span class="res-l">Kul Kimat / Total Cost</span><span class="res-v" id="c1-r">₹0</span></div>
-        </div>
-        <div class="fc">
-          <div class="fc-title">📈 Munafa / Profit</div>
-          <div class="g2">
-            <div class="fg"><label class="fl">Kharidi <span class="fl-hindi">₹/m</span></label><input id="c2b" type="number" placeholder="100" oninput="c2()"/></div>
-            <div class="fg"><label class="fl">Becha <span class="fl-hindi">₹/m</span></label><input id="c2s" type="number" placeholder="140" oninput="c2()"/></div>
-          </div>
-          <div class="fg"><label class="fl">Meter <span class="fl-hindi">kitne</span></label><input id="c2m" type="number" placeholder="50" oninput="c2()"/></div>
-          <div class="res-box" style="margin-bottom:8px"><span class="res-l">Munafa / Meter</span><span class="res-v" id="c2-pm">₹0</span></div>
-          <div class="res-box"><span class="res-l">Kul Munafa / Total Profit</span><span class="res-v" id="c2-r">₹0</span></div>
-        </div>
-        <div class="fc">
-          <div class="fc-title">🧾 GST Calculator</div>
-          <div class="fg"><label class="fl">GST <span class="fl-hindi">kitna %</span></label>
-            <select id="c3g" onchange="c3()">
-              <option value="5">5% (Textile/Kapda &lt;₹1000)</option>
-              <option value="12">12% (Garments &gt;₹1000)</option>
-              <option value="18">18%</option>
-            </select>
-          </div>
-          <div class="fg"><label class="fl">Transaction <span class="fl-hindi">type</span></label>
-            <select id="c3type" onchange="c3()">
-              <option value="intra">Intra-State (CGST+SGST)</option>
-              <option value="inter">Inter-State (IGST)</option>
-            </select>
-          </div>
-          <div class="fg"><label class="fl">Raqam <span class="fl-hindi">₹ mein</span></label><input id="c3a" type="number" placeholder="5000" oninput="c3()"/></div>
-          <div id="c3-breakdown" style="font-size:13px;color:var(--blue);background:var(--blue-light);border:2px solid #b8d0f4;border-radius:10px;padding:12px 14px;margin-bottom:8px;display:none"></div>
-          <div class="res-box" style="margin-bottom:8px"><span class="res-l">GST Amount</span><span class="res-v" id="c3-g">₹0</span></div>
-          <div class="res-box"><span class="res-l">GST Samet Kul / Total</span><span class="res-v" id="c3-t">₹0</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="page" id="pg-report">
-    <div class="content">
-      <div class="sh">
-        <div><div class="sh-title">📊 Monthly Report</div><div class="sh-sub" id="rpt-month">—</div></div>
-        <button class="btn btn-ghost hide-print" style="font-size:13px" onclick="window.print()">🖨️ Print Karo</button>
-      </div>
-      <div class="rpt-stats" id="rpt-stats"></div>
-      <div class="rpt-grid">
-        <div class="rpt-card"><div class="rpt-card-t">📦 Stock Kitna Bacha</div><div id="rpt-stock"></div></div>
-        <div class="rpt-card"><div class="rpt-card-t">💰 Is Mahine Ki Bikri</div><div id="rpt-sales"></div></div>
-      </div>
-      <div style="background:var(--white);border:2px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--shadow)">
-        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px;padding:14px 20px;border-bottom:2px solid var(--border);background:var(--bg)">
-          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Kapda</div>
-          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Shuruaat</div>
-          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Becha</div>
-          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Bacha</div>
-          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Kimat</div>
-          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Haal</div>
-        </div>
-        <div id="rpt-body"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="qmodal-bg" id="settings-modal">
-  <div class="qmodal">
-    <div class="qmodal-title">⚙️ Settings</div>
-    <div class="qmodal-fab">App Preferences & Staff Mode</div>
+    <div id="pg-inv" class="page"><div class="content"><div id="inv-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:15px"></div></div></div>
     
-    <div class="fc" style="padding:16px;margin-bottom:12px">
-        <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:var(--blue)">📱 UPI QR for Bills</div>
-        <div class="fg" style="margin-bottom:0">
-            <label class="fl">Your UPI ID</label>
-            <input id="set-upi" placeholder="e.g. 9876543210@paytm" />
-            <div style="font-size:11px;color:var(--muted);margin-top:4px">QR code will automatically appear on generated bills if this is set.</div>
+    <div id="pg-ledger" class="page">
+        <div class="content">
+            <div style="display:flex;justify-content:space-between;margin-bottom:20px">
+                <div class="ledger-tabs" style="display:flex;gap:10px">
+                    <button class="btn btn-gold" onclick="setLedgerTab('sales')">Sales Book</button>
+                    <button class="btn btn-ghost" onclick="setLedgerTab('pur')">Purchase Book</button>
+                </div>
+                <button class="btn btn-ghost" onclick="exportCSV()">Download Excel</button>
+            </div>
+            <div id="ledger-list"></div>
         </div>
     </div>
 
-    <div class="fc" style="padding:16px;margin-bottom:12px">
-        <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:var(--text)">🔒 Staff Mode</div>
-        <div class="fg">
-            <label class="fl">Set/Change Staff PIN</label>
-            <input id="set-pin" type="password" placeholder="Enter 4 digit PIN" />
-        </div>
-        <button class="btn btn-ghost" style="width:100%;justify-content:center;color:var(--text);border-color:var(--border)" onclick="toggleStaffMode()">
-            Toggle Staff Mode ON/OFF
-        </button>
-    </div>
-
-    <div class="fc" style="padding:16px;margin-bottom:0;background:var(--red-light);border-color:#f4c0ba">
-        <div style="font-size:14px;font-weight:700;margin-bottom:5px;color:var(--red)">⚠️ Danger Zone</div>
-        <div style="font-size:11px;color:var(--red);margin-bottom:12px;opacity:0.8">This will permanently delete all your fabrics, sales, and ledger data.</div>
-        <button class="btn" style="width:100%;justify-content:center;background:var(--red);color:white;border:none" onclick="handleHardReset()">
-            Hard Reset Account
-        </button>
-    </div>
-
-    <div class="qmodal-foot" style="margin-top:20px">
-      <button class="btn btn-ghost" onclick="closeSettings()">Cancel</button>
-      <button class="btn btn-gold" onclick="saveSettings()">✅ Save Settings</button>
-    </div>
-  </div>
-</div>
-
-<div class="qmodal-bg" id="addstock-modal">
-  <div class="qmodal">
-    <div class="qmodal-title">📥 Add Stock</div>
-    <div class="qmodal-fab" id="addstock-fab-name">—</div>
-    <div class="fg"><label class="fl">Kitna Meter Aaya? <span class="fl-hindi">नया</span></label><input id="as-m" type="number" placeholder="e.g. 100" min="0"/></div>
-    <div class="fg hide-staff"><label class="fl">Daam <span class="fl-hindi">₹/meter (Optional)</span></label><input id="as-r" type="number" placeholder="Same as before"/></div>
-    <div class="fg"><label class="fl">Supplier <span class="fl-hindi">(Optional)</span></label><input id="as-s" list="party-list" placeholder="e.g. Rajan Textiles"/></div>
-    <div class="fg hide-staff"><label class="fl">Supplier GSTIN <span class="fl-hindi">(Optional)</span></label><input id="as-gstin" list="gstin-list" placeholder="e.g. 24XXXXX1234X1Z5"/></div>
-    
-    <div class="qmodal-foot" style="flex-direction:column;gap:8px;margin-top:24px">
-      <div style="display:flex;gap:8px;width:100%">
-        <button class="btn btn-ghost" onclick="closeAddStock()" style="flex:1;justify-content:center">Cancel</button>
-        <button class="btn btn-gold" onclick="saveAddStock(false)" style="flex:1;justify-content:center">✅ Add Stock</button>
-      </div>
-      <button class="btn btn-full hide-staff" onclick="saveAddStock(true)" style="background:var(--blue);color:white;border:none;justify-content:center;width:100%">🧾 Add + Generate Receipt</button>
-    </div>
-  </div>
-</div>
-
-<div class="qmodal-bg" id="quicksell-modal">
-  <div class="qmodal" style="width:460px">
-    <div class="qmodal-title">💰 Quick Sell</div>
-    <div class="qmodal-fab" id="qs-fab-name">—</div>
-    <div class="fg"><label class="fl">Kitna Meter Becha? <span class="fl-hindi">मीटर</span></label><input id="qs-m" type="number" placeholder="e.g. 20" min="0" oninput="calcQSAmt()"/></div>
-    <div class="fg hide-staff"><label class="fl">Daam <span class="fl-hindi">₹/meter</span></label><input id="qs-r" type="number" placeholder="auto" oninput="calcQSAmt()"/></div>
-    
-    <div class="g2 hide-staff">
-      <div class="fg"><label class="fl">Discount (₹) <span class="fl-hindi">(Optional)</span></label><input id="qs-discount" type="number" placeholder="0" oninput="calcQSAmt()"/></div>
-      <div class="fg"><label class="fl">Invoice Type</label>
-        <select id="qs-inv-type">
-          <option value="Cash">Cash</option><option value="Credit">Credit</option>
-        </select>
-      </div>
-    </div>
-    <div class="g2 hide-staff">
-      <div class="fg"><label class="fl">Payment Mode</label>
-        <select id="qs-pay-mode">
-          <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Bank">Bank</option>
-        </select>
-      </div>
-      <div class="fg"><label class="fl">Paid Amount (₹)</label><input id="qs-paid" type="number" placeholder="Leave empty for auto"/></div>
-    </div>
-
-    <div class="hide-staff" style="background:var(--blue-light);border:2px solid #b8d0f4;border-radius:10px;padding:12px 14px;margin-bottom:12px">
-      <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">GST</div>
-      <div class="g2">
-        <div class="fg" style="margin-bottom:0"><label class="fl" style="color:var(--blue)">Rate</label>
-          <select id="qs-gst-rate" onchange="calcQSAmt()" style="border-color:#b8d0f4;font-size:12px;padding:8px 10px">
-            <option value="0">No GST</option>
-            <option value="5" selected>5%</option>
-            <option value="12">12%</option>
-            <option value="18">18%</option>
-          </select>
-        </div>
-        <div class="fg" style="margin-bottom:0"><label class="fl" style="color:var(--blue)">Type</label>
-          <select id="qs-gst-type" onchange="calcQSAmt()" style="border-color:#b8d0f4;font-size:12px;padding:8px 10px">
-            <option value="intra">Intra (CGST+SGST)</option>
-            <option value="inter">Inter (IGST)</option>
-          </select>
-        </div>
-      </div>
-      <div id="qs-gst-breakdown" style="font-size:12px;color:var(--blue);margin-top:6px"></div>
-    </div>
-    <div class="res-box hide-staff" style="margin-bottom:14px">
-      <span class="res-l">Kul Raqam (with GST)</span>
-      <span class="res-v" id="qs-amt">₹0</span>
-    </div>
-    <div class="fg hide-staff"><label class="fl">Buyer GSTIN <span class="fl-hindi">(Optional)</span></label><input id="qs-buyer-gstin" list="gstin-list" placeholder="e.g. 24XXXXX1234X1Z5"/></div>
-    <div class="fg"><label class="fl">Grahak <span class="fl-hindi">का नाम</span></label><input id="qs-c" list="party-list" placeholder="e.g. Rajesh Bhai"/></div>
-    
-    <div class="fg hide-staff"><label class="fl">WhatsApp Number</label>
-      <div style="display:flex;gap:8px;align-items:center">
-        <span style="padding:10px 12px;background:var(--bg);border:2px solid var(--border);border-radius:9px;font-size:13px;color:var(--muted2);flex-shrink:0">+91</span>
-        <input id="qs-phone" type="tel" placeholder="9876543210" style="flex:1"/>
-      </div>
-    </div>
-
-    <div style="margin-bottom:14px;padding:12px;background:var(--gold-light);border-radius:10px;border:1.5px solid #e8d090">
-        <label style="display:flex;align-items:center;gap:8px;font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--gold);cursor:pointer">
-            <input type="checkbox" id="qs-kacha" style="width:18px;height:18px;accent-color:var(--gold)">
-            📝 Kacha Bill (Estimate)
-        </label>
-        <div style="font-size:11px;color:var(--muted2);margin-left:26px;margin-top:2px">Does not deduct stock or go to Bahi Khata.</div>
-    </div>
-
-    <div class="hide-staff" style="background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px">
-      <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">🚚 Transport / E-Way Bill (Optional)</div>
-      <div class="g2" style="margin-bottom:8px">
-        <div class="fg" style="margin-bottom:0"><label class="fl">Transport Name</label><input id="qs-trans" placeholder="e.g. VRL Logistics"/></div>
-        <div class="fg" style="margin-bottom:0"><label class="fl">LR / Bilty No.</label><input id="qs-lr" placeholder="e.g. 12345"/></div>
-      </div>
-      <div class="fg" style="margin-bottom:0"><label class="fl">E-Way Bill No.</label><input id="qs-eway" placeholder="12 digit E-Way Bill"/></div>
-    </div>
-
-    <div class="qmodal-foot" style="flex-direction:column;gap:8px;margin-top:24px">
-      <div style="display:flex;gap:8px;width:100%">
-        <button class="btn btn-ghost" onclick="closeQS()" style="flex:1;justify-content:center">Cancel</button>
-        <button class="btn btn-gold" onclick="saveQS()" style="flex:1;justify-content:center">✅ Record</button>
-      </div>
-      <button class="btn btn-full hide-staff" onclick="saveQSAndBill()" style="background:var(--green);color:white;border:none;justify-content:center;width:100%">🧾 Generate Bill</button>
-    </div>
-  </div>
-</div>
-
-<div class="qmodal-bg" id="purchase-modal">
-  <div class="qmodal" style="width:460px">
-    <div class="qmodal-title">📥 Record Purchase</div>
-    <div class="qmodal-fab">Bought new stock? Record it here</div>
-    <div class="fg"><label class="fl">Supplier / Party Naam *</label><input id="pur-party" list="party-list" placeholder="e.g. Rajan Textiles, Mehta Fabrics"/></div>
-    <div class="fg"><label class="fl">Supplier GSTIN <span class="fl-hindi">(Optional)</span></label><input id="pur-gstin" list="gstin-list" placeholder="e.g. 24XXXXX1234X1Z5"/></div>
-    <div class="fg"><label class="fl">Kapde Ka Naam *</label><input id="pur-item" placeholder="e.g. Lal Georgette, Neela Chiffon"/></div>
-    <div class="g2">
-      <div class="fg"><label class="fl">Meter *</label><input id="pur-meters" type="number" placeholder="0" min="0" oninput="calcPurAmt()"/></div>
-      <div class="fg"><label class="fl">Rate <span class="fl-hindi">₹/m</span> *</label><input id="pur-rate" type="number" placeholder="0" min="0" oninput="calcPurAmt()"/></div>
-    </div>
-    <div style="background:var(--blue-light);border:2px solid #b8d0f4;border-radius:10px;padding:12px 14px;margin-bottom:12px">
-      <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">GST on Purchase</div>
-      <div class="g2">
-        <div class="fg" style="margin-bottom:0"><label class="fl" style="color:var(--blue)">GST Rate</label>
-          <select id="pur-gst-rate" onchange="calcPurAmt()" style="border-color:#b8d0f4">
-            <option value="0">No GST</option>
-            <option value="5" selected>5%</option>
-            <option value="12">12%</option>
-            <option value="18">18%</option>
-          </select>
-        </div>
-        <div class="fg" style="margin-bottom:0"><label class="fl" style="color:var(--blue)">Type</label>
-          <select id="pur-gst-type" onchange="calcPurAmt()" style="border-color:#b8d0f4">
-            <option value="intra">Intra (CGST+SGST)</option>
-            <option value="inter">Inter (IGST)</option>
-          </select>
-        </div>
-      </div>
-      <div id="pur-gst-breakdown" style="font-size:12px;color:var(--blue);margin-top:6px"></div>
-    </div>
-    <div class="res-box" style="margin-bottom:14px">
-      <span class="res-l">Kul Raqam (with GST)</span>
-      <span class="res-v" id="pur-total">₹0</span>
-    </div>
-    <div class="fg"><label class="fl">Note <span class="fl-hindi">(Optional)</span></label><input id="pur-note" placeholder="Invoice no, note..."/></div>
-    <div class="qmodal-foot" style="flex-direction:column;gap:8px;margin-top:24px">
-      <div style="display:flex;gap:8px;width:100%">
-        <button class="btn btn-ghost" onclick="closePurchaseModal()" style="flex:1;justify-content:center">Cancel</button>
-        <button class="btn btn-gold" onclick="savePurchase(false)" style="flex:1;justify-content:center">✅ Record Purchase</button>
-      </div>
-      <button class="btn btn-full" onclick="savePurchase(true)" style="background:var(--blue);color:white;border:none;justify-content:center;width:100%">🧾 Record + Generate Receipt</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-bg" id="add-modal">
-  <div class="modal">
-    <div class="modal-title">🧵 Add New Fabric</div>
-    <div class="modal-sub">Inventory mein naya kapda add karo</div>
-    <div class="fg"><label class="fl">Kapde Ka Naam *</label><input id="m-name" placeholder="e.g. Lal Banarasi Georgette"/></div>
-    <div class="g2">
-      <div class="fg"><label class="fl">Category *</label>
-        <select id="m-type">
-          <option>Georgette</option><option>Chiffon</option><option>Silk</option>
-          <option>Cotton</option><option>Velvet</option><option>Satin</option>
-          <option>Net</option><option>Rayon</option><option>Linen</option><option>Other</option>
-        </select>
-      </div>
-      <div class="fg"><label class="fl">Rang <span class="fl-hindi">color</span></label><input id="m-color" placeholder="e.g. Lal, Neela"/></div>
-    </div>
-    <div class="g2">
-      <div class="fg"><label class="fl">Meter *</label><input id="m-m" type="number" placeholder="0" min="0"/></div>
-      <div class="fg"><label class="fl">Alert <span class="fl-hindi">kitne pe</span></label><input id="m-t" type="number" placeholder="50" min="0"/></div>
-    </div>
-    <div class="g2">
-      <div class="fg hide-staff"><label class="fl">Daam <span class="fl-hindi">₹/meter</span></label><input id="m-r" type="number" placeholder="0" min="0"/></div>
-      <div class="fg"><label class="fl">Supplier</label><input id="m-s" list="party-list" placeholder="e.g. Rajan Textiles"/></div>
-    </div>
-    
-    <div class="modal-foot" style="flex-direction:column;gap:8px;margin-top:24px">
-      <div style="display:flex;gap:8px;width:100%">
-        <button class="btn btn-ghost" onclick="closeModal()" style="flex:1;justify-content:center">Cancel</button>
-        <button class="btn btn-gold" onclick="saveModal(false)" style="flex:1;justify-content:center">✅ Add Fabric</button>
-      </div>
-      <button class="btn btn-full hide-staff" onclick="saveModal(true)" style="background:var(--blue);color:white;border:none;justify-content:center;width:100%">🧾 Add + Generate Receipt</button>
-    </div>
-  </div>
-</div>
-
-<div id="onboarding">
-  <div class="ob-card">
-    <div class="ob-top">
-      <div class="ob-step-row">
-        <div class="ob-step active" id="ob-s1"></div>
-        <div class="ob-step" id="ob-s2"></div>
-        <div class="ob-step" id="ob-s3"></div>
-      </div>
-      <div class="ob-title" id="ob-title">StockSaathi mein Aapka Swagat Hai! 🎉</div>
-      <div class="ob-sub" id="ob-sub">2 minute mein apna stock manager ready ho jayega</div>
-    </div>
-    <div class="ob-body" id="ob-body"></div>
-    <div class="ob-foot">
-      <div class="ob-counter" id="ob-counter">Step 1 / 3</div>
-      <div class="ob-btns">
-        <button class="btn btn-ghost" onclick="skipOnboarding()">Baad Mein</button>
-        <button class="btn btn-gold" id="ob-next" onclick="obNext()">Aage Chalo →</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="qmodal-bg" id="bill-modal">
-  <div class="qmodal" style="width:500px;max-width:95vw">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-      <div class="qmodal-title" style="margin-bottom:0">Bill / Receipt</div>
-      <button onclick="closeBill()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer">✕</button>
-    </div>
-    <div id="bill-preview" style="background:white;color:#1a1815;font-family:'Baloo 2',cursive;max-width:440px;margin:0 auto;position:relative">
-      <div id="bill-watermark" class="watermark" style="display:none">ESTIMATE</div>
-      <div style="height:18px;background:white;position:relative;overflow:hidden">
-        <svg viewBox="0 0 420 18" style="width:100%;height:18px;display:block"><path d="M0,0 Q10,18 20,0 Q30,18 40,0 Q50,18 60,0 Q70,18 80,0 Q90,18 100,0 Q110,18 120,0 Q130,18 140,0 Q150,18 160,0 Q170,18 180,0 Q190,18 200,0 Q210,18 220,0 Q230,18 240,0 Q250,18 260,0 Q270,18 280,0 Q290,18 300,0 Q310,18 320,0 Q330,18 340,0 Q350,18 360,0 Q370,18 380,0 Q390,18 400,0 Q410,18 420,0 L420,18 L0,18 Z" fill="#f5f0e8"/></svg>
-      </div>
-      <div style="background:#f5f0e8;padding:24px 28px;position:relative;z-index:1">
-        <div style="text-align:center;border-bottom:1.5px dashed #c8b99a;padding-bottom:18px;margin-bottom:18px">
-          <div style="font-size:22px;font-weight:800;color:#2d2416;letter-spacing:-0.5px" id="bill-shop-name">Firm Name</div>
-          <div id="bill-shop-gstin" style="font-size:11px;color:#8a7a5a;margin-top:2px"></div>
-          <div id="bill-type-lbl" style="font-size:11px;color:#8a7a5a;margin-top:4px;letter-spacing:1px;text-transform:uppercase">BILL</div>
-          <div style="margin-top:10px;display:flex;justify-content:space-between;font-size:12px;color:#6b5c3e">
-            <span><b>Bill No:</b> <span id="bill-no">—</span></span>
-            <span><b>Date:</b> <span id="bill-date">—</span></span>
-          </div>
-          <div style="margin-top:4px;display:flex;justify-content:space-between;font-size:12px;color:#6b5c3e">
-            <span><b>Pay Mode:</b> <span id="bill-pay-mode">—</span></span>
-            <span><b>Inv Type:</b> <span id="bill-inv-type">—</span></span>
-          </div>
-        </div>
-        <div style="margin-bottom:16px">
-          <div id="bill-to-lbl" style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">To / Grahak</div>
-          <div style="font-size:16px;font-weight:700;color:#2d2416" id="bill-customer">—</div>
-          <div style="font-size:12px;color:#8a7a5a;margin-top:2px" id="bill-buyer-gstin"></div>
-        </div>
-        
-        <div id="bill-shipping"></div>
-
-        <div style="border-top:1.5px dashed #c8b99a;margin-bottom:14px"></div>
-        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px">
-          <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px">Item</div>
-          <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;text-align:center">Qty</div>
-          <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;text-align:center">Rate</div>
-          <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;text-align:right">Amt</div>
-        </div>
-        <div id="bill-items" style="margin-bottom:14px"></div>
-        <div id="bill-discount-section"></div>
-        <div style="border-top:1.5px dashed #c8b99a;margin-bottom:14px"></div>
-        <div id="bill-gst-section" style="margin-bottom:14px;font-size:12px;color:#6b5c3e"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;background:white;border-radius:10px;padding:14px 16px;border:2px solid #e8dfc8;margin-bottom:10px">
-          <span style="font-size:16px;font-weight:800;color:#2d2416;text-transform:uppercase;letter-spacing:0.5px">Total (incl. GST)</span>
-          <span style="font-size:26px;font-weight:800;color:#b8860b;font-family:'Baloo 2',cursive" id="bill-total">₹0</span>
-        </div>
-        
-        <div id="bill-payment-status" style="margin-bottom:14px;font-size:12px;color:#6b5c3e;background:white;padding:10px;border-radius:8px;border:1px solid #e8dfc8;">
-            <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Paid Amount:</span><span id="bill-paid-amt">₹0</span></div>
-            <div style="display:flex;justify-content:space-between;font-weight:700"><span>Due Amount:</span><span id="bill-due-amt">₹0</span></div>
-        </div>
-        
-        <div id="bill-qr" style="text-align:center;margin:20px 0;display:none">
-            <img id="bill-qr-img" src="" alt="Pay via UPI" style="width:100px;height:100px;border-radius:8px;border:2px solid #e8dfc8;padding:4px;background:white">
-            <div style="font-size:10px;color:#8a7a5a;margin-top:4px">Scan to Pay via UPI</div>
-        </div>
-
-        <div style="margin-top:30px;display:flex;justify-content:space-between;align-items:flex-end;">
-            <div></div>
-            <div style="text-align:center">
-                <div style="border-bottom:1.5px solid #2d2416;width:120px;margin-bottom:6px"></div>
-                <div style="font-size:11px;color:#8a7a5a;font-weight:700">Authorized Sign</div>
+    <div class="qmodal-bg" id="settings-modal">
+        <div class="qmodal">
+            <h2 class="ff-h">App Settings</h2>
+            <div class="fc" style="margin-top:20px; border-top:1px solid var(--border); padding-top:20px">
+                <p style="color:var(--red); font-weight:700; margin-bottom:10px">Danger Zone</p>
+                <button class="btn btn-red btn-full" onclick="confirmReset()">⚠️ Reset Whole Account</button>
+                <p style="font-size:11px; margin-top:8px; color:var(--muted)">This will delete all your fabrics, sales, and bills permanently.</p>
+            </div>
+            <div class="qmodal-foot">
+                <button class="btn btn-ghost" onclick="closeSettings()">Close</button>
             </div>
         </div>
-
-        <div style="border-top:1.5px dashed #c8b99a;margin:18px 0 14px"></div>
-        <div style="text-align:center">
-          <div style="font-size:16px;font-weight:800;color:#2d2416;letter-spacing:0.5px;margin-bottom:4px">THANK YOU! 🙏</div>
-          <div style="font-size:11px;color:#8a7a5a">Dhanyavaad for your business</div>
-          <div style="margin-top:12px;font-size:10px;color:#b8a888;letter-spacing:1px;text-transform:uppercase">Generated by StockSaathi · Niori</div>
-        </div>
-      </div>
-      <div style="height:18px;background:white;position:relative;overflow:hidden">
-        <svg viewBox="0 0 420 18" style="width:100%;height:18px;display:block;transform:scaleY(-1)"><path d="M0,0 Q10,18 20,0 Q30,18 40,0 Q50,18 60,0 Q70,18 80,0 Q90,18 100,0 Q110,18 120,0 Q130,18 140,0 Q150,18 160,0 Q170,18 180,0 Q190,18 200,0 Q210,18 220,0 Q230,18 240,0 Q250,18 260,0 Q270,18 280,0 Q290,18 300,0 Q310,18 320,0 Q330,18 340,0 Q350,18 360,0 Q370,18 380,0 Q390,18 400,0 Q410,18 420,0 L420,18 L0,18 Z" fill="#f5f0e8"/></svg>
-      </div>
     </div>
-    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
-      <button onclick="closeBill()" class="btn btn-ghost" style="flex:1;justify-content:center;min-width:80px">✕ Close</button>
-      <button onclick="printBill()" class="btn btn-ghost" style="flex:1;justify-content:center;min-width:80px">🖨️ Print</button>
-      <button id="wa-bill-btn" onclick="whatsappBill()" style="flex:1;justify-content:center;min-width:80px;padding:10px 14px;background:#25D366;color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">💬 Text WA</button>
-      <button id="share-bill-btn" onclick="shareBillPDF()" style="flex:1;justify-content:center;min-width:120px;padding:10px 14px;background:var(--blue);color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">📤 Share PDF</button>
-    </div>
-  </div>
-</div>
-
-<div id="login-screen">
-  <div class="login-wrap">
-    <div class="login-left">
-      <div class="login-left-ico">🧵</div>
-      <div class="login-left-t">StockSaathi</div>
-      <div class="login-left-s">Surat ke textile vyapariyon ke liye bana ek smart stock manager. Simple, fast, aur bilkul aapki bhasha mein.</div>
-      <div class="login-feat">
-        <div class="login-feat-item"><div class="login-feat-dot"></div>Meter by meter stock tracking</div>
-        <div class="login-feat-item"><div class="login-feat-dot"></div>Kam stock pe automatic alert</div>
-        <div class="login-feat-item"><div class="login-feat-dot"></div>Bikri ka poora hisaab + GST Invoice</div>
-        <div class="login-feat-item"><div class="login-feat-dot"></div>Sales Book + Purchase Book (Bahi Khata)</div>
-        <div class="login-feat-item"><div class="login-feat-dot"></div>Monthly report & profit calculator</div>
-      </div>
-    </div>
-    <div class="login-right">
-      <div class="login-right-t">Login Karo</div>
-      <div class="login-right-s">Apne Google account se seedha login karo. Bilkul free hai.</div>
-      <button class="login-google" id="login-btn" onclick="signInGoogle()">
-        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Google se Login Karo
-      </button>
-      <div class="login-note">Aapka data sirf aapke paas rehta hai.<br>Koi sharing nahi, bilkul secure.</div>
-      <div class="login-pow">POWERED BY NIORI · SURAT · v5.0</div>
-    </div>
-  </div>
 </div>
 
 <div id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
 <script>
-// ══ PWA INSTALL LOGIC ══
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault(); deferredPrompt = e;
-  document.getElementById('install-banner').style.display = 'flex';
-});
-document.getElementById('install-btn').addEventListener('click', async () => {
-  if (deferredPrompt) {
-    document.getElementById('install-banner').style.display = 'none';
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    deferredPrompt = null;
-  }
-});
-if('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW ref failed')); }); }
-
 // ══ CONFIG ══
-var EJS_SVC      = 'service_j84y5ge';
-var EJS_ALERT_TPL = 'template_8pvu8qc';
-var EJS_KEY      = 'Ux_cTro8ToCSm2LUY';
+var db, auth, user, data = { inv:[], sales:[], purchases:[], firm:{}, profiles:[] };
+var currentProfile = null;
+var obStep = 1;
 
-// ══ STATE ══
-var auth, db, user=null, inv=[], sales=[], purchases=[], asFabId=null, qsFabId=null, selCatV='', activeLedgerTab='sales';
-var appSettings = { upiId: '', staffPin: '', isStaffMode: false };
+// ══ INIT ══
+window.onload = function() {
+    firebase.initializeApp({
+        apiKey: "AIzaSyB5oBVuaur5Yl_gxfde9NFYtanLZdr6Qjs",
+        authDomain: "stock-98c39.firebaseapp.com",
+        projectId: "stock-98c39",
+        appId: "1:728990720851:web:eada0eac44cef8424cb7a6"
+    });
+    db = firebase.firestore();
+    auth = firebase.auth();
 
-var ICONS={Georgette:'🟥',Chiffon:'🔵',Silk:'✨',Cotton:'🤍',Velvet:'🖤',Satin:'💗',Net:'🕸️',Rayon:'🟤',Linen:'🟡',Other:'🧵'};
-var COLORS={Georgette:'#fdecea',Chiffon:'#e8f0fe',Silk:'#fef9e0',Cotton:'#f8f8f8',Velvet:'#f0e8f8',Satin:'#fde8f0',Net:'#e8f5f0',Rayon:'#fdecd8',Linen:'#fdf8e8',Other:'#f5efe0'};
-
-// ══ GST HELPERS ══
-function calcGST(subtotal, rate, type) {
-  var gst = subtotal * rate / 100;
-  var result = {rate:rate, subtotal:subtotal, gstAmount:gst, total:subtotal+gst};
-  if(type==='intra') { result.cgst=gst/2; result.sgst=gst/2; result.igst=0; } 
-  else { result.cgst=0; result.sgst=0; result.igst=gst; }
-  return result;
-}
-
-function gstBreakdownHTML(g, type) {
-  if(!g.rate) return '<span style="color:var(--muted)">No GST applied</span>';
-  var rows = '';
-  if(type==='intra') {
-    rows = '<div style="display:flex;justify-content:space-between;margin-bottom:2px"><span>CGST ('+g.rate/2+'%)</span><span>+'+fv(g.cgst)+'</span></div>'
-         + '<div style="display:flex;justify-content:space-between;margin-bottom:2px"><span>SGST ('+g.rate/2+'%)</span><span>+'+fv(g.sgst)+'</span></div>';
-  } else {
-    rows = '<div style="display:flex;justify-content:space-between;margin-bottom:2px"><span>IGST ('+g.rate+'%)</span><span>+'+fv(g.igst)+'</span></div>';
-  }
-  return rows + '<div style="display:flex;justify-content:space-between;font-weight:700;border-top:1px solid #b8d0f4;padding-top:4px;margin-top:2px"><span>Total GST</span><span>+'+fv(g.gstAmount)+'</span></div>';
-}
-
-function billGSTSection(g, type) {
-  if(!g.rate) return '';
-  var rows = '<div style="font-weight:700;margin-bottom:6px;font-size:12px;color:#6b5c3e;text-transform:uppercase;letter-spacing:0.5px">Tax Breakdown</div>';
-  if(type==='intra') {
-    rows += '<div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:12px"><span>Subtotal</span><span>'+fv(g.subtotal)+'</span></div>';
-    rows += '<div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:12px"><span>CGST @'+g.rate/2+'%</span><span>+'+fv(g.cgst)+'</span></div>';
-    rows += '<div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:12px"><span>SGST @'+g.rate/2+'%</span><span>+'+fv(g.sgst)+'</span></div>';
-  } else {
-    rows += '<div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:12px"><span>Subtotal</span><span>'+fv(g.subtotal)+'</span></div>';
-    rows += '<div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:12px"><span>IGST @'+g.rate+'%</span><span>+'+fv(g.igst)+'</span></div>';
-  }
-  return rows;
-}
-
-// ══ APP INIT ══
-function startApp() {
-  emailjs.init(EJS_KEY);
-  firebase.initializeApp({
-    apiKey:'AIzaSyB5oBVuaur5Yl_gxfde9NFYtanLZdr6Qjs',
-    authDomain:'stock-98c39.firebaseapp.com',
-    projectId:'stock-98c39',
-    storageBucket:'stock-98c39.firebasestorage.app',
-    messagingSenderId:'728990720851',
-    appId:'1:728990720851:web:eada0eac44cef8424cb7a6'
-  });
-  auth = firebase.auth();
-  db   = firebase.firestore();
-
-  auth.onAuthStateChanged(async function(u){
-    if(u){
-      user=u;
-      document.getElementById('login-screen').style.display='none';
-      document.getElementById('user-display-name').textContent=u.displayName;
-      var mobUser=document.getElementById('mob-user');
-      if(mobUser) mobUser.textContent='👤 '+u.displayName;
-      await loadCloud();
-      updatePartyList();
-      updateStats();
-      renderDash();
-      applyStaffMode();
-    } else {
-      user=null;
-      document.getElementById('login-screen').style.display='flex';
-    }
-  });
-}
-
-// ══ AUTH ══
-function signInGoogle(){
-  var btn=document.getElementById('login-btn');
-  if(btn){btn.disabled=true;btn.textContent='Opening Google...';}
-  var p=new firebase.auth.GoogleAuthProvider();
-  p.setCustomParameters({prompt:'select_account'});
-  auth.signInWithPopup(p).then(function(){
-      if(btn) btn.innerHTML='<svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Google se Login Karo';
-    }).catch(function(e){
-      if(btn){btn.disabled=false;btn.textContent='Google se Login Karo';}
-      if(e.code==='auth/popup-blocked') showLoginErr('Popup blocked! Please allow popups.');
-      else if(e.code==='auth/unauthorized-domain') showLoginErr('Domain not authorized in Firebase.');
-      else if(e.code!=='auth/cancelled-popup-request'&&e.code!=='auth/popup-cancelled-by-user') showLoginErr('Login error: '+e.message);
+    auth.onAuthStateChanged(u => {
+        if(u) { user = u; loadData(); }
+        else { window.location.reload(); } // Simplify for demo
     });
 }
-function showLoginErr(msg){var el=document.getElementById('login-err');if(!el){el=document.createElement('div');el.id='login-err';el.style.cssText='margin-top:10px;padding:10px 14px;background:rgba(192,57,43,0.08);border:1.5px solid rgba(192,57,43,0.25);border-radius:8px;font-size:12px;color:#c0392b;line-height:1.5';var lb=document.getElementById('login-btn');if(lb)lb.after(el);}el.textContent=msg;el.style.display='block';}
-function signOut(){if(confirm('Sign out karna hai?'))auth.signOut();}
 
-// ══ CLOUD ══
-async function save(){
-  if(!user)return;
-  try{await db.collection('users').doc(user.uid).set({inv:inv,sales:sales,purchases:purchases||[], settings:appSettings});}
-  catch(e){console.error('Save error:',e);}
-}
-async function loadCloud(){
-  if(!user)return;
-  try{
-    var doc=await db.collection('users').doc(user.uid).get();
-    if(doc.exists){var d=doc.data();inv=d.inv||[];sales=d.sales||[];purchases=d.purchases||[];appSettings=d.settings||{upiId:'',staffPin:'',isStaffMode:false};}
-    else{inv=[];sales=[];purchases=[];await save();setTimeout(showOnboarding,600);}
-  }catch(e){inv=[];sales=[];purchases=[];}
-}
-
-// ══ SETTINGS & STAFF MODE ══
-function openSettings() {
-    if(appSettings.isStaffMode) {
-        var pin = prompt("Enter PIN to access settings:");
-        if(pin !== appSettings.staffPin) { toast("❌ Wrong PIN"); return; }
-    }
-    document.getElementById('set-upi').value = appSettings.upiId || '';
-    document.getElementById('settings-modal').classList.add('on');
-}
-function closeSettings() { document.getElementById('settings-modal').classList.remove('on'); }
-function saveSettings() {
-    appSettings.upiId = document.getElementById('set-upi').value.trim();
-    appSettings.staffPin = document.getElementById('set-pin').value.trim();
-    save(); closeSettings(); toast('⚙️ Settings Saved');
-}
-function toggleStaffMode() {
-    if(!appSettings.staffPin) { toast("Please set a 4 digit PIN first!"); return; }
-    
-    if(appSettings.isStaffMode) {
-        appSettings.isStaffMode = false;
-        toast("🔓 Staff Mode OFF");
+// ══ DATA LOAD ══
+async function loadData() {
+    let doc = await db.collection('users').doc(user.uid).get();
+    if(doc.exists) {
+        data = doc.data();
+        if(!data.firm || !data.firm.name) showOnboarding();
+        else renderProfiles();
     } else {
-        appSettings.isStaffMode = true;
-        toast("🔒 Staff Mode ON");
+        showOnboarding();
     }
-    applyStaffMode();
-    save();
-    closeSettings();
-    goto('dash', document.querySelectorAll('.sb-item')[0]);
-}
-function applyStaffMode() {
-    if(appSettings.isStaffMode) document.body.classList.add('staff-mode');
-    else document.body.classList.remove('staff-mode');
-    
-    var sw = document.getElementById('dash-smart-widgets');
-    if(sw) sw.style.display = appSettings.isStaffMode ? 'none' : 'grid';
 }
 
-// ══ NEW RESET LOGIC ══
-async function handleHardReset() {
-    // Only allow if not in staff mode
-    if(appSettings.isStaffMode) {
-        toast("🔒 Turn off Staff Mode to reset the account.");
+async function saveData() {
+    await db.collection('users').doc(user.uid).set(data);
+    updateUI();
+}
+
+// ══ ONBOARDING SYSTEM ══
+function showOnboarding() {
+    document.getElementById('ob-overlay').style.display = 'flex';
+    renderObContent();
+}
+
+function renderObContent() {
+    const box = document.getElementById('ob-content');
+    const title = document.getElementById('ob-title');
+    const stepTxt = document.getElementById('ob-step-txt');
+    
+    stepTxt.innerText = `Step ${obStep} of 4`;
+    
+    if(obStep === 1) {
+        title.innerText = "Apni Firm ka Naam Batayein";
+        box.innerHTML = `
+            <div class="fg"><label class="fl">Firm Name</label><input id="ob-firm-name" placeholder="e.g. Rishi Textiles"></div>
+            <div class="fg"><label class="fl">Phone Number</label><input id="ob-firm-phone" placeholder="98765 43210"></div>
+        `;
+    } else if(obStep === 2) {
+        title.innerText = "Business Address";
+        box.innerHTML = `<div class="fg"><label class="fl">Shop/Office Address</label><textarea id="ob-firm-addr" rows="3" placeholder="G-12, Ring Road, Surat..."></textarea></div>`;
+    } else if(obStep === 3) {
+        title.innerText = "Tax Details";
+        box.innerHTML = `<div class="fg"><label class="fl">GSTIN (Optional)</label><input id="ob-firm-gst" placeholder="24XXXXX0000X0Z0"></div>`;
+    } else if(obStep === 4) {
+        title.innerText = "Set मलिक (Owner) PIN";
+        box.innerHTML = `<div class="fg"><label class="fl">Security PIN (4 digits)</label><input type="password" id="ob-owner-pin" maxlength="4" placeholder="••••" style="text-align:center;font-size:24px;letter-spacing:10px"></div>`;
+    }
+}
+
+function nextObStep() {
+    if(obStep === 1) {
+        data.firm = data.firm || {};
+        data.firm.name = document.getElementById('ob-firm-name').value;
+        data.firm.phone = document.getElementById('ob-firm-phone').value;
+        if(!data.firm.name) return alert("Please enter firm name");
+    } else if(obStep === 2) {
+        data.firm.address = document.getElementById('ob-firm-addr').value;
+    } else if(obStep === 3) {
+        data.firm.gst = document.getElementById('ob-firm-gst').value;
+    } else if(obStep === 4) {
+        let pin = document.getElementById('ob-owner-pin').value;
+        if(pin.length < 4) return alert("Set 4 digit pin");
+        data.profiles = [
+            { id:'owner', name:'Owner', role:'owner', pin: pin },
+            { id:'staff', name:'Staff', role:'staff', pin: '' }
+        ];
+        finishOnboarding();
         return;
     }
-    
-    if(confirm("🚨 DANGER: Are you absolutely sure you want to wipe your entire account? All data will be lost.")) {
-        let doubleCheck = prompt("Type 'DELETE' to confirm you want to wipe everything:");
-        if(doubleCheck === 'DELETE') {
-            try {
-                await db.collection('users').doc(user.uid).delete();
-                toast("Account wiped successfully. Reloading...");
-                setTimeout(() => location.reload(), 1500);
-            } catch(error) {
-                console.error("Error resetting account: ", error);
-                toast("Error deleting account.");
+    obStep++;
+    renderObContent();
+}
+
+async function finishOnboarding() {
+    document.getElementById('ob-overlay').style.display = 'none';
+    await saveData();
+    renderProfiles();
+}
+
+// ══ PROFILE SYSTEM ══
+function renderProfiles() {
+    document.getElementById('profile-screen').style.display = 'flex';
+    let html = data.profiles.map(p => `
+        <div class="p-card" onclick="selectProfile('${p.id}')">
+            <div class="p-img">${p.role==='owner'?'👑':'👦'}</div>
+            <div class="profile-name" style="color:white;font-family:var(--ff-h);font-size:20px">${p.name}</div>
+        </div>
+    `).join('');
+    document.getElementById('profiles-box').innerHTML = html;
+}
+
+function selectProfile(id) {
+    let p = data.profiles.find(x => x.id === id);
+    if(p.role === 'owner') {
+        let pin = prompt("Owner PIN daalein:");
+        if(pin !== p.pin) return alert("Wrong PIN");
+    }
+    currentProfile = p;
+    document.getElementById('profile-screen').style.display = 'none';
+    document.getElementById('active-p-name').innerText = p.name;
+    document.body.className = p.role + '-mode';
+    applyPermissions();
+    updateUI();
+}
+
+function applyPermissions() {
+    const locks = document.querySelectorAll('.staff-lock, .admin-lock');
+    locks.forEach(el => {
+        if(currentProfile.role === 'staff' && el.classList.contains('staff-lock')) el.style.display = 'none';
+        if(currentProfile.role !== 'owner' && el.classList.contains('admin-lock')) el.style.display = 'none';
+    });
+}
+
+function switchProfile() {
+    currentProfile = null;
+    renderProfiles();
+}
+
+// ══ RESET SYSTEM ══
+function confirmReset() {
+    if(confirm("KYA AAP SURE HAIN? Sab data delete ho jayega!")) {
+        if(confirm("SOCH LIJIYE! Wapis nahi aayega data.")) {
+            if(confirm("LAST WARNING: Sab saaf kar dein?")) {
+                performReset();
             }
-        } else {
-            toast("Reset cancelled.");
         }
     }
 }
 
-// ══ PARTY AUTO-SUGGEST ══
-function updatePartyList() {
-    var parties = new Set(), gstins = new Set();
-    sales.forEach(s => { if(s.customer) parties.add(s.customer); if(s.buyerGstin) gstins.add(s.buyerGstin); });
-    purchases.forEach(p => { if(p.party) parties.add(p.party); if(p.supplierGstin) gstins.add(p.supplierGstin); });
-    
-    document.getElementById('party-list').innerHTML = Array.from(parties).map(p => `<option value="${esc(p)}">`).join('');
-    document.getElementById('gstin-list').innerHTML = Array.from(gstins).map(g => `<option value="${esc(g)}">`).join('');
+async function performReset() {
+    data = { inv:[], sales:[], purchases:[], firm:{}, profiles:[] };
+    await saveData();
+    window.location.reload();
 }
 
-// ══ NAV ══
-var pgMap={dash:['Dashboard',''],inv:['Inventory','— All Fabrics'],sales:['Sales','— Record & History'],ledger:['Ledger','— Sales & Purchase Book'],calc:['Calculator','— Quick Calculations'],report:['Monthly Report','']};
-
-function goto(pg,el){
-  if(appSettings.isStaffMode && (pg === 'ledger' || pg === 'calc' || pg === 'report')) {
-      toast("🔒 Restricted in Staff Mode"); return;
-  }
-  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
-  document.querySelectorAll('.sb-item').forEach(function(n){n.classList.remove('active');});
-  document.getElementById('pg-'+pg).classList.add('on');
-  if(el)el.classList.add('active');
-  var ts=pgMap[pg]||[pg,''];
-  document.getElementById('pg-title').textContent=ts[0];
-  document.getElementById('pg-sub').textContent=ts[1];
-  
-  if(pg==='inv')renderInv();
-  if(pg==='sales'){fillSD();renderSalesList();}
-  if(pg==='ledger'){renderLedgerSummary();renderLedger();}
-  if(pg==='report')renderReport();
-  if(pg==='dash') { renderDash(); renderDashHighlights(); }
-}
-function toggleMobileMenu(){document.getElementById('mob-menu').classList.toggle('on');document.getElementById('mob-overlay').classList.toggle('on');}
-function closeMobileMenu(){document.getElementById('mob-menu').classList.remove('on');document.getElementById('mob-overlay').classList.remove('on');}
-function mobileGoto(pg){
-    if(appSettings.isStaffMode && (pg === 'ledger' || pg === 'calc' || pg === 'report')) {
-      toast("🔒 Restricted in Staff Mode"); return;
-    }
-    ['dash','inv','sales','ledger','calc','report'].forEach(function(p){var el=document.getElementById('mob-'+p);if(el)el.classList.toggle('active',p===pg);});
-    closeMobileMenu();goto(pg,null);
+// ══ CORE APP LOGIC ══
+function goto(pg, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+    document.getElementById('pg-' + pg).classList.add('on');
+    document.querySelectorAll('.sb-item').forEach(item => item.classList.remove('active'));
+    if(el) el.classList.add('active');
+    document.getElementById('pg-title').innerText = pg.charAt(0).toUpperCase() + pg.slice(1);
+    if(pg==='dash' || pg==='inv') renderFabrics();
 }
 
-// ══ STATS & HIGHLIGHTS ══
-function updateStats(){
-  var tot=inv.reduce(function(a,f){return a+f.meters;},0);
-  var low=inv.filter(function(f){return f.meters<f.threshold;}).length;
-  var val=inv.reduce(function(a,f){return a+f.meters*f.rate;},0);
-  document.getElementById('st-c').textContent=inv.length;
-  document.getElementById('st-m').textContent=tot.toLocaleString('en-IN')+'m';
-  document.getElementById('st-l').textContent=low;
-  document.getElementById('st-v').textContent=fv(val);
-  var b=document.getElementById('low-badge');b.textContent=low;b.classList.toggle('on',low>0);
-  var ban=document.getElementById('low-banner');
-  if(low>0){document.getElementById('low-banner-txt').textContent=inv.filter(function(f){return f.meters<f.threshold;}).map(function(f){return f.name;}).join(', ')+' — reorder karo!';ban.style.display='block';}
-  else ban.style.display='none';
+function updateUI() {
+    document.getElementById('st-c').innerText = data.inv.length;
+    let meters = data.inv.reduce((a,b) => a + parseFloat(b.meters || 0), 0);
+    document.getElementById('st-m').innerText = meters.toLocaleString() + 'm';
+    renderFabrics();
 }
 
-function renderDashHighlights() {
-    if(appSettings.isStaffMode) return;
-    
-    var thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    var recentSales = sales.filter(s => new Date(s.date) >= thirtyDaysAgo && !s.isReturned && !s.isKacha);
-    var fabSales = {};
-    recentSales.forEach(s => { fabSales[s.fabName] = (fabSales[s.fabName] || 0) + s.meters; });
-    var topSelling = Object.entries(fabSales).sort((a,b) => b[1] - a[1]).slice(0,3);
-    
-    var topHTML = topSelling.length ? topSelling.map((t,i) => `<div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border)"><span style="font-weight:600">${i+1}. ${esc(t[0])}</span><span style="color:var(--green2);font-weight:700">${t[1]}m</span></div>`).join('') : '<div class="empty-s">No sales this month yet.</div>';
-    document.getElementById('dash-top-sell').innerHTML = topHTML;
-
-    var sixtyDaysAgo = new Date(); sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
-    var recentSaleFabs = new Set(sales.filter(s => new Date(s.date) >= sixtyDaysAgo && !s.isReturned && !s.isKacha).map(s => s.fabId));
-    var deadStock = inv.filter(f => f.meters > 0 && !recentSaleFabs.has(f.id)).sort((a,b) => b.meters - a.meters).slice(0,3);
-    
-    var deadHTML = deadStock.length ? deadStock.map(f => `<div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border)"><span style="font-weight:600">${esc(f.name)}</span><span style="color:var(--red);font-weight:700">${f.meters}m left</span></div>`).join('') : '<div class="empty-s">Great! No dead stock.</div>';
-    document.getElementById('dash-dead-stock').innerHTML = deadHTML;
+function renderFabrics() {
+    let html = data.inv.map(f => `
+        <div style="background:white; padding:20px; border-radius:15px; border:1px solid var(--border); box-shadow:var(--shadow)">
+            <h4 style="font-family:var(--ff-h);font-size:18px">${f.name}</h4>
+            <p style="color:var(--muted);font-size:13px">${f.quality} | ${f.color}</p>
+            <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center">
+                <span style="font-size:24px; font-weight:800; font-family:var(--ff-h)">${f.meters}m</span>
+                <button class="btn btn-ghost" onclick="quickSell('${f.id}')">Sell</button>
+            </div>
+        </div>
+    `).join('');
+    document.getElementById('dash-grid').innerHTML = html || "<p style='color:var(--muted)'>No stock added yet.</p>";
 }
 
-function fv(v){if(v===undefined||v===null)return '₹0';v=Math.round(v);if(v>=10000000)return '₹'+(v/10000000).toFixed(1)+'Cr';if(v>=100000)return '₹'+(v/100000).toFixed(1)+'L';return '₹'+v.toLocaleString('en-IN');}
-
-// ══ FABRIC CARD ══
-function fabCardHTML(f){
-  var pct=Math.min(100,Math.round(f.meters/Math.max(f.threshold*3,1)*100));
-  var st=(f.meters<f.threshold)?'low':f.meters<f.threshold*1.5?'med':'ok';
-  var pill=st==='low'?'<span class="fab-tag" style="color:var(--red);border-color:#f4b0ac">⚠ Low Stock</span>':st==='med'?'<span class="fab-tag" style="color:var(--orange);border-color:#f4c09a">▼ Running Low</span>':'<span class="fab-tag" style="color:var(--green2);border-color:#aadec0">✓ OK</span>';
-  var bc=st==='ok'?'var(--green2)':st==='med'?'var(--orange)':'var(--red)';
-  var ic=ICONS[f.type]||'🧵', bg=COLORS[f.type]||'#f5efe0';
-  return '<div class="fab-card '+st+'">'
-    +'<div class="fab-left">'
-      +'<div class="fab-icon" style="background:'+bg+'">'+ic+'</div>'
-      +'<div>'
-        +'<div class="fab-name">'+esc(f.name)+'</div>'
-        +'<div class="fab-meta"><span class="fab-tag">'+f.type+'</span><span class="fab-tag">'+f.color+'</span><span class="fab-tag">'+esc(f.supplier)+'</span>'+pill+'</div>'
-        +'<div class="fab-bar-wrap" style="margin-top:8px"><div class="fab-bar"><div class="fab-bar-f" style="width:'+pct+'%;background:'+bc+'"></div></div></div>'
-      +'</div>'
-    +'</div>'
-    +'<div class="fab-right">'
-      +'<div class="fab-meter-box"><div class="fab-meter-num">'+f.meters.toLocaleString('en-IN')+'</div><div class="fab-meter-lbl">Meters</div></div>'
-      +'<div style="text-align:center" class="hide-staff"><div style="font-family:var(--ff-h);font-size:15px;font-weight:700;color:var(--muted2)">₹'+f.rate+'/m</div><div style="font-size:12px;color:var(--muted)">'+fv(f.meters*f.rate)+'</div></div>'
-      +'<div class="fab-actions">'
-        +'<button class="fab-btn fab-btn-add" onclick="openAddStock('+f.id+')">📥 Add</button>'
-        +'<button class="fab-btn fab-btn-sell" onclick="openQS('+f.id+')">💰 Sell</button>'
-        +'<button class="fab-btn fab-btn-del hide-staff" onclick="delFab('+f.id+')" title="Delete">🗑️</button>'
-      +'</div>'
-    +'</div>'
-  +'</div>';
+function openSettings() { document.getElementById('settings-modal').classList.add('on'); }
+function closeSettings() { document.getElementById('settings-modal').classList.remove('on'); }
+function toast(msg) { 
+    let t = document.getElementById('toast');
+    t.innerText = msg; t.style.display='block';
+    setTimeout(()=>t.style.display='none', 3000);
 }
-
-function renderDash(){
-  var el=document.getElementById('dash-grid');
-  if(!inv.length){el.innerHTML='<div class="empty"><div class="empty-ic">🧵</div><div class="empty-t">No Fabric Added</div><div class="empty-s">Add your first fabric to get started!</div><button class="btn btn-gold" onclick="openModal()" style="margin:0 auto">+ Add First Fabric</button></div>';return;}
-  el.innerHTML=inv.slice(0,7).map(fabCardHTML).join('');
-  renderDashHighlights();
+function toggleMob() { 
+    let sb = document.querySelector('.sb');
+    sb.style.display = (sb.style.display === 'flex') ? 'none' : 'flex';
 }
-function filterCat(cat,el){selCatV=cat;document.querySelectorAll('.cat-p').forEach(function(p){p.classList.remove('active');});if(el)el.classList.add('active');renderInv();}
-function renderInv(){
-  var q=(document.getElementById('inv-q')||{value:''}).value.toLowerCase();
-  var list=inv.filter(function(f){return(!selCatV||f.type===selCatV)&&(f.name.toLowerCase().includes(q)||f.type.toLowerCase().includes(q)||f.color.toLowerCase().includes(q));});
-  var el=document.getElementById('inv-grid');
-  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">No results found</div></div>';return;}
-  el.innerHTML=list.map(fabCardHTML).join('');
-}
-function delFab(id){if(!confirm('Delete this fabric?'))return;inv=inv.filter(function(f){return f.id!==id;});save();updateStats();renderDash();renderInv();toast('Fabric deleted');}
-
-// ══ MAIN MODAL (ADD NEW FABRIC) ══
-function openModal(){document.getElementById('add-modal').classList.add('on');document.getElementById('m-name').focus();}
-function closeModal(){document.getElementById('add-modal').classList.remove('on');['m-name','m-color','m-m','m-t','m-r','m-s'].forEach(function(id){document.getElementById(id).value='';});}
-function saveModal(withBill){
-  var name=document.getElementById('m-name').value.trim();
-  var m=parseFloat(document.getElementById('m-m').value)||0;
-  if(!name){toast('Fabric name required!');return;}
-  
-  var r=parseFloat(document.getElementById('m-r').value)||0;
-  var s=document.getElementById('m-s').value.trim()||'—';
-
-  var ex=inv.find(function(f){return f.name.toLowerCase()===name.toLowerCase();});
-  if(ex){
-      ex.meters+=m;
-      if(r>0) ex.rate=r;
-      toast('✓ '+m+'m added to '+name);
-  }
-  else {
-      inv.push({id:Date.now(),name:name,type:document.getElementById('m-type').value,color:document.getElementById('m-color').value.trim()||'—',meters:m,threshold:parseFloat(document.getElementById('m-t').value)||50,rate:r,supplier:s,addedAt:new Date().toISOString()});
-      toast('✓ Added!');
-  }
-
-  var purchaseData = null;
-  if(m>0) {
-      purchaseData = {id:Date.now(),party:s==='—'?'Unknown':s,supplierGstin:'',item:name,meters:m,rate:r,subtotal:m*r,gstRate:0,gstType:'intra',gstAmount:0,cgst:0,sgst:0,igst:0,total:m*r,note:'Initial stock added',date:new Date().toISOString()};
-      purchases.unshift(purchaseData);
-  }
-
-  updatePartyList(); save();updateStats();renderDash();renderInv();closeModal();
-  if(withBill && purchaseData && !appSettings.isStaffMode) setTimeout(function(){generatePurchaseBill(purchaseData);},300);
-}
-
-// ══ ADD STOCK (EXISTING FABRIC) ══
-function openAddStock(id){
-  asFabId=id;var f=inv.find(function(f){return f.id===id;});if(!f)return;
-  document.getElementById('addstock-fab-name').textContent=f.name+' — Current: '+f.meters+'m';
-  ['as-m','as-r','as-s','as-gstin'].forEach(function(i){document.getElementById(i).value='';});
-  document.getElementById('addstock-modal').classList.add('on');document.getElementById('as-m').focus();
-}
-function closeAddStock(){document.getElementById('addstock-modal').classList.remove('on');}
-function saveAddStock(withBill){
-  var m=parseFloat(document.getElementById('as-m').value);
-  if(!m||m<=0){toast('Enter meters!');return;}
-  var f=inv.find(function(f){return f.id===asFabId;});if(!f)return;
-  f.meters+=m;
-  
-  var r=parseFloat(document.getElementById('as-r').value);
-  var rateToUse = r>0 ? r : f.rate;
-  if(r>0) f.rate=r;
-  
-  var s=document.getElementById('as-s').value.trim();if(s)f.supplier=s;
-  
-  var gstin=document.getElementById('as-gstin').value.trim();
-  var purchaseData = {id:Date.now(),party:f.supplier||'Unknown',supplierGstin:gstin,item:f.name,meters:m,rate:rateToUse,subtotal:m*rateToUse,gstRate:0,gstAmount:0,gstType:'intra',cgst:0,sgst:0,igst:0,total:m*rateToUse,note:'Stock added via inventory',date:new Date().toISOString()};
-  purchases.unshift(purchaseData);
-  
-  updatePartyList(); save();updateStats();renderDash();renderInv();closeAddStock();
-  toast('✓ '+m+'m added to '+f.name+'!');
-  
-  if(withBill && !appSettings.isStaffMode) setTimeout(function(){generatePurchaseBill(purchaseData);},300);
-}
-
-// ══ QUICK SELL ══
-function openQS(id){
-  qsFabId=id;var f=inv.find(function(f){return f.id===id;});if(!f)return;
-  document.getElementById('qs-fab-name').textContent=f.name+' — Available: '+f.meters+'m';
-  
-  ['qs-m','qs-discount','qs-paid','qs-c','qs-buyer-gstin','qs-phone','qs-trans','qs-lr','qs-eway'].forEach(function(i){
-      var el = document.getElementById(i); if(el) el.value='';
-  });
-  var kachaEl = document.getElementById('qs-kacha'); if(kachaEl) kachaEl.checked = false;
-
-  document.getElementById('qs-r').value=f.rate||'';
-  document.getElementById('qs-amt').textContent='₹0';
-  document.getElementById('qs-gst-breakdown').innerHTML='';
-  document.getElementById('quicksell-modal').classList.add('on');
-  document.getElementById('qs-m').focus();
-}
-function closeQS(){document.getElementById('quicksell-modal').classList.remove('on');}
-
-function calcQSAmt(){
-  var m=parseFloat(document.getElementById('qs-m').value)||0;
-  var r=parseFloat(document.getElementById('qs-r').value)||0;
-  var rate=parseFloat(document.getElementById('qs-gst-rate').value)||0;
-  var type=document.getElementById('qs-gst-type').value;
-  var discount=parseFloat(document.getElementById('qs-discount').value)||0;
-  
-  var sub = m*r;
-  var subAfterDiscount = Math.max(0, sub - discount);
-  var g=calcGST(subAfterDiscount,rate,type);
-  
-  document.getElementById('qs-amt').textContent=fv(g.total);
-  document.getElementById('qs-gst-breakdown').innerHTML=gstBreakdownHTML(g,type);
-}
-
-function _doQSSale(withBill){
-  var m=parseFloat(document.getElementById('qs-m').value);
-  var r=parseFloat(document.getElementById('qs-r').value);
-  var cust=document.getElementById('qs-c').value.trim()||'Walk-in';
-  var f=inv.find(function(f){return f.id===qsFabId;});
-  if(!f){toast('Error!');return;}if(!m||m<=0){toast('Enter meters!');return;}
-  
-  var isKacha = document.getElementById('qs-kacha') && document.getElementById('qs-kacha').checked;
-  if(!isKacha && m>f.meters){toast('Only '+f.meters+'m available!');return;}
-  
-  var rate=r||f.rate;
-  var gstRate=parseFloat(document.getElementById('qs-gst-rate').value)||0;
-  var gstType=document.getElementById('qs-gst-type').value;
-  var discount=parseFloat(document.getElementById('qs-discount').value)||0;
-  
-  var subAfterDiscount = Math.max(0, (m*rate) - discount);
-  var g=calcGST(subAfterDiscount,gstRate,gstType);
-  
-  var invType = document.getElementById('qs-inv-type').value;
-  var payMode = document.getElementById('qs-pay-mode').value;
-  var paidInput = parseFloat(document.getElementById('qs-paid').value);
-  var paidAmt = isNaN(paidInput) ? (invType === 'Credit' ? 0 : g.total) : paidInput;
-  var dueAmt = g.total - paidAmt;
-
-  var custPhone=(document.getElementById('qs-phone')||{value:''}).value.trim().replace(/\D/g,'');
-  var buyerGstin=(document.getElementById('qs-buyer-gstin')||{value:''}).value.trim();
-  
-  var trans = document.getElementById('qs-trans') ? document.getElementById('qs-trans').value.trim() : '';
-  var lr = document.getElementById('qs-lr') ? document.getElementById('qs-lr').value.trim() : '';
-  var eway = document.getElementById('qs-eway') ? document.getElementById('qs-eway').value.trim() : '';
-  
-  var saleData={id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,customerEmail:'',customerPhone:custPhone,buyerGstin:buyerGstin,transport:trans,lr:lr,eway:eway,note:'',date:new Date().toISOString(), isKacha: isKacha};
-  
-  if(isKacha) {
-      toast('📝 Kacha Bill Generated (Stock NOT deducted)');
-      closeQS();
-      if(withBill) setTimeout(function(){generateBill(saleData);},300);
-      return;
-  }
-
-  f.meters-=m;
-  sales.unshift(saleData);
-  
-  updatePartyList(); save();updateStats();renderDash();renderInv();closeQS();
-  toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
-  
-  if(withBill && !appSettings.isStaffMode) setTimeout(function(){generateBill(saleData);},300);
-}
-function saveQS(){_doQSSale(false);}
-function saveQSAndBill(){_doQSSale(true);}
-
-// ══ SALES PAGE ══
-function fillSD(){
-  var sel=document.getElementById('s-fab');
-  sel.innerHTML=inv.length?inv.map(function(f){return '<option value="'+f.id+'" data-rate="'+f.rate+'">'+esc(f.name)+' ('+f.meters+'m)</option>';}).join(''):'<option>Add stock first</option>';
-  if(inv.length){document.getElementById('s-r').value=inv[0].rate||'';calcSaleAmt();}
-}
-function onFabChange(){var opt=document.getElementById('s-fab').options[document.getElementById('s-fab').selectedIndex];document.getElementById('s-r').value=(opt&&opt.dataset&&opt.dataset.rate)||'';calcSaleAmt();}
-function calcSaleAmt(){
-  var m=parseFloat(document.getElementById('s-m').value)||0;
-  var r=parseFloat(document.getElementById('s-r').value)||0;
-  var rate=parseFloat(document.getElementById('s-gst-rate').value)||0;
-  var type=document.getElementById('s-gst-type').value;
-  var discount=parseFloat(document.getElementById('s-discount').value)||0;
-  
-  var sub = m*r;
-  var subAfterDiscount = Math.max(0, sub - discount);
-  var g=calcGST(subAfterDiscount,rate,type);
-  
-  document.getElementById('s-subtotal').textContent=fv(sub) + (discount>0?' (Disc: -₹'+discount+')':'');
-  document.getElementById('s-amt').textContent=fv(g.total);
-  document.getElementById('s-gst-breakdown').innerHTML=gstBreakdownHTML(g,type);
-}
-
-function _doSale(withBill){
-  var id=parseInt(document.getElementById('s-fab').value);
-  var m=parseFloat(document.getElementById('s-m').value);
-  var r=parseFloat(document.getElementById('s-r').value);
-  var cust=document.getElementById('s-c').value.trim()||'Walk-in';
-  var note=document.getElementById('s-n').value.trim();
-  var f=inv.find(function(f){return f.id===id;});
-  if(!f){toast('Select a fabric!');return;}if(!m||m<=0){toast('Enter meters!');return;}
-  
-  var isKacha = document.getElementById('s-kacha') && document.getElementById('s-kacha').checked;
-  if(!isKacha && m>f.meters){toast('Only '+f.meters+'m available!');return;}
-  
-  var rate=r||f.rate;
-  var gstRate=parseFloat(document.getElementById('s-gst-rate').value)||0;
-  var gstType=document.getElementById('s-gst-type').value;
-  var discount=parseFloat(document.getElementById('s-discount').value)||0;
-  var buyerGstin=document.getElementById('s-buyer-gstin').value.trim();
-  
-  var subAfterDiscount = Math.max(0, (m*rate) - discount);
-  var g=calcGST(subAfterDiscount,gstRate,gstType);
-  
-  var invType = document.getElementById('s-inv-type').value;
-  var payMode = document.getElementById('s-pay-mode').value;
-  var paidInput = parseFloat(document.getElementById('s-paid').value);
-  var paidAmt = isNaN(paidInput) ? (invType === 'Credit' ? 0 : g.total) : paidInput;
-  var dueAmt = g.total - paidAmt;
-
-  var custPhone=(document.getElementById('s-phone')||{value:''}).value.trim().replace(/\D/g,'');
-  var trans = document.getElementById('s-trans') ? document.getElementById('s-trans').value.trim() : '';
-  var lr = document.getElementById('s-lr') ? document.getElementById('s-lr').value.trim() : '';
-  var eway = document.getElementById('s-eway') ? document.getElementById('s-eway').value.trim() : '';
-
-  var saleData={id:Date.now(),fabId:id,fabName:f.name,meters:m,rate:rate,subtotal:subAfterDiscount,discount:discount,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:dueAmt,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,customer:cust,buyerGstin:buyerGstin,customerPhone:custPhone,customerEmail:'',transport:trans,lr:lr,eway:eway,note:note,date:new Date().toISOString(), isKacha: isKacha};
-  
-  if(isKacha) {
-      toast('📝 Kacha Bill Generated (Stock NOT deducted)');
-      if(withBill) setTimeout(function(){generateBill(saleData);},300);
-      return;
-  }
-
-  f.meters-=m;
-  sales.unshift(saleData);
-  updatePartyList(); save();updateStats();renderSalesList();fillSD();
-  toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
-  
-  ['s-m','s-c','s-n','s-buyer-gstin','s-discount','s-paid','s-trans','s-lr','s-eway','s-phone'].forEach(function(i){
-      var el = document.getElementById(i); if(el) el.value='';
-  });
-  var skEl = document.getElementById('s-kacha'); if(skEl) skEl.checked=false;
-  
-  document.getElementById('s-amt').textContent='₹0';
-  document.getElementById('s-subtotal').textContent='₹0';
-  document.getElementById('s-gst-breakdown').innerHTML='';
-  
-  if(f.meters<f.threshold){
-    emailjs.send(EJS_SVC, EJS_ALERT_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(e){console.log('Low stock alert err:',e);});
-  }
-  if(withBill && !appSettings.isStaffMode) setTimeout(function(){generateBill(saleData);},300);
-}
-function recSale(){_doSale(false);}
-function recSaleAndBill(){_doSale(true);}
-
-function renderSalesList(){
-  var el=document.getElementById('sales-list');
-  if(!el)return;
-  if(!sales.length){el.innerHTML='<div class="empty" style="padding:30px"><div class="empty-ic">📋</div><div class="empty-t">No Sales Yet</div></div>';return;}
-  el.innerHTML=sales.slice(0,10).map(function(s){
-    if(s.isKacha) return '';
-    var gstTag=s.gstRate?'<span style="font-size:11px;background:var(--blue-light);color:var(--blue);border-radius:5px;padding:1px 7px;font-weight:600">GST '+s.gstRate+'%</span>':'';
-    var returnTag=s.isReturned?'<span style="color:var(--red);font-size:10px;font-weight:700">RETURNED</span>':'';
-    return '<div style="background:var(--white);border:2px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow)">'
-      +'<div><div style="font-family:var(--ff-h);font-size:14px;font-weight:700">'+esc(s.fabName)+' '+returnTag+'</div>'
-      +'<div style="font-size:12px;color:var(--muted)">'+s.meters+'m · '+esc(s.customer)+' · '+new Date(s.date).toLocaleDateString('en-IN')+' '+gstTag+'</div></div>'
-      +'<div style="font-family:var(--ff-h);font-size:18px;font-weight:700;color:var(--green2)" class="hide-staff">'+fv(s.total)+'</div>'
-    +'</div>';
-  }).join('');
-}
-
-// ══ LEDGER & RETURNS ══
-function switchLedger(tab){
-  activeLedgerTab=tab;
-  document.getElementById('tab-sales').classList.toggle('active',tab==='sales');
-  document.getElementById('tab-purchases').classList.toggle('active',tab==='purchases');
-  document.getElementById('tab-udhaar').classList.toggle('active',tab==='udhaar');
-  renderLedger();
-}
-
-function renderLedgerSummary(){
-  var totalSales=sales.filter(s=>!s.isReturned && !s.isKacha).reduce(function(a,s){return a+s.total;},0);
-  var totalPurchases=purchases.filter(p=>!p.isReturned).reduce(function(a,p){return a+p.total;},0);
-  var net=totalSales-totalPurchases;
-  document.getElementById('ls-total-sales').textContent=fv(totalSales);
-  document.getElementById('ls-sales-count').textContent=sales.filter(s=>!s.isReturned && !s.isKacha).length+' entries';
-  document.getElementById('ls-total-purchases').textContent=fv(totalPurchases);
-  document.getElementById('ls-purchases-count').textContent=purchases.filter(p=>!p.isReturned).length+' entries';
-  var netEl=document.getElementById('ls-net-profit');
-  netEl.textContent=fv(Math.abs(net));
-  netEl.style.color=net>=0?'var(--green2)':'var(--red)';
-}
-
-function returnLedgerItem(id, isSale) {
-    if(appSettings.isStaffMode) { toast("🔒 Only Owner can process returns"); return; }
-    if(!confirm("Maal Wapsi: Return this item and put stock back?")) return;
-    
-    if(isSale) {
-        var s = sales.find(x => x.id === id);
-        if(!s || s.isKacha) return;
-        var f = inv.find(x => x.id === s.fabId || x.name === s.fabName);
-        if(f) { f.meters += s.meters; } 
-        s.isReturned = true;
-        s.dueAmt = 0; 
-    } else {
-        var p = purchases.find(x => x.id === id);
-        if(!p) return;
-        var f = inv.find(x => x.name === p.item);
-        if(f) { f.meters -= p.meters; } 
-        p.isReturned = true;
-    }
-    save(); updateStats(); renderLedgerSummary(); renderLedger(); toast("↩️ Marked as Returned");
-}
-
-function settleDue(customer) {
-    if(!confirm(`Mark all dues settled for ${customer}?`)) return;
-    sales.forEach(s => { if(s.customer === customer) s.dueAmt = 0; });
-    save(); renderLedger(); toast(`✅ Dues settled for ${customer}`);
-}
-
-function exportCSV() {
-    var csv = "Type,Date,Party,Item,Meters,Rate,Total,GST,Due Amount,Returned\n";
-    sales.forEach(s => {
-        if(!s.isKacha) csv += `"Sale","${s.date.split('T')[0]}","${s.customer||''}","${s.fabName}",${s.meters},${s.rate},${s.total},${s.gstAmount},${s.dueAmt||0},${s.isReturned?'Yes':'No'}\n`;
-    });
-    purchases.forEach(p => {
-        csv += `"Purchase","${p.date.split('T')[0]}","${p.party||''}","${p.item}",${p.meters},${p.rate},${p.total},${p.gstAmount},0,${p.isReturned?'Yes':'No'}\n`;
-    });
-    var blob = new Blob([csv], {type: 'text/csv'});
-    var url = window.URL.createObjectURL(blob);
-    var a = document.createElement('a'); a.href = url; a.download = 'StockSaathi_Ledger.csv'; a.click();
-}
-
-function renderLedger(){
-  var q=(document.getElementById('ledger-q')||{value:''}).value.toLowerCase();
-  var el=document.getElementById('ledger-grid');
-  if(!el)return;
-  
-  if(activeLedgerTab === 'udhaar') {
-      var dues = {};
-      sales.filter(s => !s.isReturned && !s.isKacha && s.dueAmt > 0 && (s.customer||'').toLowerCase().includes(q)).forEach(s => {
-          if(!dues[s.customer]) dues[s.customer] = { totalDue: 0, count: 0, phone: s.customerPhone || '' };
-          dues[s.customer].totalDue += s.dueAmt;
-          dues[s.customer].count++;
-          if(!dues[s.customer].phone && s.customerPhone) dues[s.customer].phone = s.customerPhone;
-      });
-      var html = '';
-      for(var cust in dues) {
-          var contactHtml = dues[cust].phone ? `<a href="tel:${dues[cust].phone}" class="btn btn-ghost" style="padding:6px;font-size:14px;border-color:var(--border2)" title="Call">📞</a> <a href="https://wa.me/91${dues[cust].phone}?text=${encodeURIComponent('Jai Jinendra ' + esc(cust) + ', aapka pichla ₹' + Math.round(dues[cust].totalDue) + ' baaki hai. Kripya payment karwa dijiye.')}" target="_blank" class="btn btn-ghost" style="padding:6px;font-size:14px;border-color:#25D366;color:#25D366" title="WhatsApp Reminder">💬</a>` : '';
-          
-          html += `<div class="udhaar-card">
-              <div>
-                <div style="font-family:var(--ff-h);font-size:18px;font-weight:700;color:var(--text)">${esc(cust)}</div>
-                <div style="font-size:12px;color:var(--muted)">Pending across ${dues[cust].count} bills</div>
-                <div style="margin-top:6px;display:flex;gap:6px">${contactHtml}</div>
-              </div>
-              <div style="text-align:right">
-                <div style="font-family:var(--ff-h);font-size:22px;font-weight:800;color:var(--orange)">${fv(dues[cust].totalDue)}</div>
-                <button class="btn btn-ghost hide-print" style="padding:6px 12px;font-size:12px;margin-top:4px" onclick="settleDue('${esc(cust)}')">✅ Settle</button>
-              </div>
-          </div>`;
-      }
-      el.innerHTML = html || '<div class="empty"><div class="empty-ic">🎉</div><div class="empty-t">No Pending Dues</div></div>';
-      return;
-  }
-  
-  var list=activeLedgerTab==='sales'?sales:purchases;
-  var filtered=list.filter(function(e){
-    if(activeLedgerTab==='sales' && e.isKacha) return false;
-    return (e.fabName||e.item||'').toLowerCase().includes(q)||(e.customer||e.party||'').toLowerCase().includes(q)||String(e.total).includes(q);
-  });
-  if(!filtered.length){
-    el.innerHTML='<div class="empty"><div class="empty-ic">'+(activeLedgerTab==='sales'?'💰':'📥')+'</div><div class="empty-t">No records found</div><div class="empty-s">'+(activeLedgerTab==='sales'?'Record a sale to see it here':'Record a purchase to see it here')+'</div></div>';
-    return;
-  }
-  el.innerHTML=filtered.map(function(e){
-    var isSale=activeLedgerTab==='sales';
-    var party=isSale?(e.customer||'Walk-in'):(e.party||'Unknown');
-    var item=isSale?e.fabName:(e.item||'—');
-    var qty=e.meters?e.meters+'m':'—';
-    var rate=e.rate?'₹'+e.rate+'/m':'—';
-    var d=new Date(e.date);
-    var dateStr=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-    var gstInfo='';
-    if(e.gstRate>0) gstInfo='<span style="font-size:10px;background:var(--blue-light);color:var(--blue);border-radius:5px;padding:1px 7px;font-weight:600;margin-left:4px">GST '+e.gstRate+'%</span>';
-    var gstin=isSale?(e.buyerGstin||''):(e.supplierGstin||'');
-    var gstinTag=gstin?'<span style="font-size:10px;color:var(--muted);margin-left:4px">GSTIN: '+esc(gstin)+'</span>':'';
-    
-    var returnBtn = '';
-    if(!appSettings.isStaffMode) {
-        returnBtn = e.isReturned ? `<span class="pill pill-r" style="margin-left:10px">RETURNED</span>` : `<button onclick="returnLedgerItem(${e.id}, ${isSale})" class="btn btn-ghost hide-print" style="padding:4px 8px;font-size:11px;margin-left:10px" title="Mark Return">↩️ Return</button>`;
-    } else if(e.isReturned) {
-        returnBtn = `<span class="pill pill-r" style="margin-left:10px">RETURNED</span>`;
-    }
-    
-    return `<div class="ledger-entry ${isSale?'sale-entry':'purchase-entry'} ${e.isReturned?'returned':''}">
-      <div class="le-icon ${isSale?'sale':'purchase'}">${isSale?'💰':'📥'}</div>
-      <div>
-        <div class="le-name">${esc(item)} ${returnBtn}</div>
-        <div class="le-meta">${esc(party)} · ${qty} · ${rate}${gstInfo}${gstinTag}</div>
-        ${e.note?`<div style="font-size:11px;color:var(--muted);margin-top:2px;font-style:italic">${esc(e.note)}</div>`:''}
-        ${e.dueAmt>0 && !e.isReturned ? `<div style="font-size:11px;color:var(--orange);margin-top:2px;font-weight:600">Due: ${fv(e.dueAmt)}</div>`:''}
-      </div>
-      <div class="le-date">${dateStr}</div>
-      <div class="le-amount ${isSale?'sale':'purchase'}">${e.isReturned?`<del>${fv(e.total)}</del>`:fv(e.total)}</div>
-    </div>`;
-  }).join('');
-}
-
-// ══ PURCHASE MODAL ══
-function openPurchaseModal(){
-  ['pur-party','pur-gstin','pur-item','pur-meters','pur-rate','pur-note'].forEach(function(i){document.getElementById(i).value='';});
-  document.getElementById('pur-total').textContent='₹0';
-  document.getElementById('pur-gst-breakdown').innerHTML='';
-  document.getElementById('purchase-modal').classList.add('on');
-  document.getElementById('pur-party').focus();
-}
-function closePurchaseModal(){document.getElementById('purchase-modal').classList.remove('on');}
-function calcPurAmt(){
-  var m=parseFloat(document.getElementById('pur-meters').value)||0;
-  var r=parseFloat(document.getElementById('pur-rate').value)||0;
-  var rate=parseFloat(document.getElementById('pur-gst-rate').value)||0;
-  var type=document.getElementById('pur-gst-type').value;
-  var g=calcGST(m*r,rate,type);
-  document.getElementById('pur-total').textContent=fv(g.total);
-  document.getElementById('pur-gst-breakdown').innerHTML=gstBreakdownHTML(g,type);
-}
-function savePurchase(withBill){
-  var party=document.getElementById('pur-party').value.trim();
-  var item=document.getElementById('pur-item').value.trim();
-  var m=parseFloat(document.getElementById('pur-meters').value);
-  var r=parseFloat(document.getElementById('pur-rate').value);
-  if(!party){toast('Party naam daalo!');return;}
-  if(!item){toast('Kapde ka naam daalo!');return;}
-  if(!m||m<=0){toast('Meter daalo!');return;}
-  if(!r||r<=0){toast('Rate daalo!');return;}
-  var gstRate=parseFloat(document.getElementById('pur-gst-rate').value)||0;
-  var gstType=document.getElementById('pur-gst-type').value;
-  var g=calcGST(m*r,gstRate,gstType);
-  var purchaseData = {id:Date.now(),party:party,supplierGstin:document.getElementById('pur-gstin').value.trim(),item:item,meters:m,rate:r,subtotal:g.subtotal,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,note:document.getElementById('pur-note').value.trim(),date:new Date().toISOString()};
-  purchases.unshift(purchaseData);
-  
-  updatePartyList(); save();renderLedgerSummary();renderLedger();closePurchaseModal();
-  toast('✓ Purchase recorded — '+fv(g.total));
-  if(withBill) setTimeout(function(){generatePurchaseBill(purchaseData);},300);
-}
-
-// ══ CALCULATORS ══
-function c1(){document.getElementById('c1-r').textContent=fv((parseFloat(document.getElementById('c1m').value)||0)*(parseFloat(document.getElementById('c1r').value)||0));}
-function c2(){
-  var b=parseFloat(document.getElementById('c2b').value)||0,s=parseFloat(document.getElementById('c2s').value)||0,m=parseFloat(document.getElementById('c2m').value)||0,pm=s-b,tot=pm*m;
-  var pe=document.getElementById('c2-pm'),te=document.getElementById('c2-r');
-  pe.textContent=(pm>=0?'+':'')+fv(pm);te.textContent=(tot>=0?'+':'')+fv(tot);
-  pe.style.color=te.style.color=pm>=0?'var(--green2)':'var(--red)';
-}
-function c3(){
-  var p=parseFloat(document.getElementById('c3g').value)||5;
-  var type=document.getElementById('c3type').value;
-  var a=parseFloat(document.getElementById('c3a').value)||0;
-  var g=calcGST(a,p,type);
-  document.getElementById('c3-g').textContent=fv(g.gstAmount);
-  document.getElementById('c3-t').textContent=fv(g.total);
-  var bd=document.getElementById('c3-breakdown');
-  if(a>0){
-    bd.style.display='block';
-    bd.innerHTML=gstBreakdownHTML(g,type);
-  } else {
-    bd.style.display='none';
-  }
-}
-
-// ══ REPORT ══
-function renderReport(){
-  var now=new Date();
-  document.getElementById('rpt-month').textContent=now.toLocaleString('en-IN',{month:'long',year:'numeric'});
-  var ms=sales.filter(function(s){var d=new Date(s.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()&&!s.isReturned&&!s.isKacha;});
-  var sa=ms.reduce(function(a,s){return a+s.total;},0),sm=ms.reduce(function(a,s){return a+s.meters;},0);
-  var iv=inv.reduce(function(a,f){return a+f.meters*f.rate;},0),lc=inv.filter(function(f){return f.meters<f.threshold;}).length;
-  document.getElementById('rpt-stats').innerHTML=[
-    ['Sales Amount',fv(sa),'gold'],['Meters Sold',sm+'m',''],['Stock Value',fv(iv),''],['Low Stock',lc,lc>0?'red':'']
-  ].map(function(x){return '<div style="background:var(--white);border:2px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow)"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:6px">'+x[0]+'</div><div style="font-family:var(--ff-h);font-size:28px;font-weight:800;color:'+(x[2]==='gold'?'var(--gold)':x[2]==='red'?'var(--red)':'var(--text)')+'">'+x[1]+'</div></div>';}).join('');
-  var mx=Math.max.apply(null,inv.map(function(f){return f.meters;}).concat([1]));
-  document.getElementById('rpt-stock').innerHTML=inv.length?inv.map(function(f){return '<div class="bar-row"><div class="bar-lbl" title="'+esc(f.name)+'">'+esc(f.name)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(f.meters/mx*100)+'%"></div></div><div class="bar-val">'+f.meters+'m</div></div>';}).join(''):'<div style="color:var(--muted);font-size:12px">No data</div>';
-  var sf={};ms.forEach(function(s){sf[s.fabName]=(sf[s.fabName]||0)+s.meters;});
-  var mxs=Math.max.apply(null,Object.values(sf).concat([1]));
-  document.getElementById('rpt-sales').innerHTML=Object.keys(sf).length?Object.entries(sf).map(function(e){return '<div class="bar-row"><div class="bar-lbl">'+esc(e[0])+'</div><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(e[1]/mxs*100)+'%;background:var(--green2)"></div></div><div class="bar-val">'+e[1]+'m</div></div>';}).join(''):'<div style="color:var(--muted);font-size:12px">No sales this month</div>';
-  document.getElementById('rpt-body').innerHTML=inv.length?inv.map(function(f){
-    var sold=ms.filter(function(s){return s.fabId===f.id;}).reduce(function(a,s){return a+s.meters;},0);
-    var status=f.meters<f.threshold?'<span class="pill pill-r">LOW</span>':'<span class="pill pill-g">OK</span>';
-    return '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px;padding:14px 20px;border-bottom:1.5px solid var(--border);align-items:center;gap:8px">'
-      +'<div><div style="font-weight:700;font-size:14px">'+esc(f.name)+'</div><div style="font-size:12px;color:var(--muted)">'+f.type+'</div></div>'
-      +'<div style="color:var(--muted2)">'+(f.meters+sold)+'m</div>'
-      +'<div style="color:var(--green2)">'+sold+'m</div>'
-      +'<div style="font-weight:700">'+f.meters+'m</div>'
-      +'<div style="color:var(--gold)">'+fv(f.meters*f.rate)+'</div>'
-      +'<div>'+status+'</div>'
-    +'</div>';
-  }).join(''):'<div style="padding:20px;color:var(--muted);text-align:center">No data</div>';
-}
-
-// ══ ONBOARDING ══
-var obStep=1;
-var OB_STEPS=[
-  {title:'Welcome to StockSaathi! 🎉',sub:'2 minute mein apna stock manager ready',feats:[['📦','Stock Track Karo','Meter by meter hisaab'],['💰','Bikri Record Karo','Customer ka naam aur raqam'],['⚠️','Auto Alert','Jab stock kam ho, alert aayega'],['📒','Bahi Khata','Sales + Purchase Book']]},
-  {title:'Bill Kaise Banayein? 🧾',sub:'StockSaathi pe bill banana bahut aasaan hai',feats:[['1️⃣','Click Sell','Kapda select karein aur "Sell" dabayein'],['2️⃣','Enter Details','Meters aur Customer ka naam likhein'],['3️⃣','Kacha ya Pakka?','Estimate ke liye "Kacha Bill" tick karein'],['4️⃣','Generate Bill','WhatsApp par PDF bhejein!']]},
-  {title:'All Set! Lets Begin 🚀',sub:'StockSaathi is ready',feats:[['📥','Add Stock','Inventory mein fabric daalo'],['💰','Sell + Bill','Quick sell with GST invoice'],['📒','Bahi Khata','Full ledger — sales aur purchases'],['📊','Reports','Monthly summary']]},
-];
-function showOnboarding(){obStep=1;renderOB();document.getElementById('onboarding').classList.add('on');}
-function renderOB(){
-  var s=OB_STEPS[obStep-1];
-  document.getElementById('ob-title').textContent=s.title;
-  document.getElementById('ob-sub').textContent=s.sub;
-  document.getElementById('ob-body').innerHTML='<div class="ob-features">'+s.feats.map(function(f){return '<div class="ob-feat"><div class="ob-feat-ic">'+f[0]+'</div><div><div class="ob-feat-t">'+f[1]+'</div><div class="ob-feat-s">'+f[2]+'</div></div></div>';}).join('')+'</div>';
-  document.getElementById('ob-counter').textContent='Step '+obStep+' / 3';
-  document.getElementById('ob-next').textContent=obStep===3?'Lets Go! ✓':'Next →';
-  [1,2,3].forEach(function(i){var el=document.getElementById('ob-s'+i);if(el)el.className='ob-step'+(i<obStep?' done':i===obStep?' active':'');});
-}
-function obNext(){if(obStep<3){obStep++;renderOB();}else{closeOB();setTimeout(function(){openModal();},400);}}
-function skipOnboarding(){closeOB();}
-function closeOB(){document.getElementById('onboarding').classList.remove('on');}
-
-// ══ BILL GENERATION ══
-var lastSale=null;
-function generateBill(saleData){
-  lastSale=saleData;
-  var billNo='BILL-'+Date.now().toString().slice(-6);
-  var dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-  var shopName=user&&user.displayName?user.displayName:'Firm Name';
-
-  if(saleData.isKacha) {
-      document.getElementById('bill-type-lbl').textContent = 'ESTIMATE / KACHA BILL';
-      document.getElementById('bill-watermark').style.display = 'block';
-  } else {
-      document.getElementById('bill-type-lbl').textContent = 'TAX INVOICE / BILL';
-      document.getElementById('bill-watermark').style.display = 'none';
-  }
-  
-  document.getElementById('bill-to-lbl').textContent = 'To / Grahak';
-  document.getElementById('bill-no').textContent=billNo;
-  document.getElementById('bill-date').textContent=dateStr;
-  document.getElementById('bill-customer').textContent=saleData.customer||'Walk-in';
-  document.getElementById('bill-shop-name').textContent=shopName;
-  var shopGstinEl=document.getElementById('bill-shop-gstin');
-  if(shopGstinEl) shopGstinEl.textContent='GSTIN: 24XXXXX0000X0Z0';
-  var buyerGstinEl=document.getElementById('bill-buyer-gstin');
-  if(buyerGstinEl) buyerGstinEl.textContent=saleData.buyerGstin?'GSTIN: '+saleData.buyerGstin:'';
-
-  document.getElementById('bill-inv-type').textContent = saleData.invType || 'Cash';
-  document.getElementById('bill-pay-mode').textContent = saleData.payMode || 'Cash';
-
-  var shipEl = document.getElementById('bill-shipping');
-  if(saleData.transport || saleData.eway || saleData.lr) {
-      var sHtml = '<div style="margin-top:14px;padding:10px;border:1.5px solid #e8dfc8;border-radius:8px;font-size:11px;color:#6b5c3e;background:white">';
-      sHtml += '<div style="font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px">Dispatch Details</div>';
-      if(saleData.transport) sHtml += '<div style="display:flex;justify-content:space-between"><span>Transport:</span> <b>'+esc(saleData.transport)+'</b></div>';
-      if(saleData.lr) sHtml += '<div style="display:flex;justify-content:space-between"><span>LR/Bilty No:</span> <b>'+esc(saleData.lr)+'</b></div>';
-      if(saleData.eway) sHtml += '<div style="display:flex;justify-content:space-between"><span>E-Way Bill:</span> <b>'+esc(saleData.eway)+'</b></div>';
-      sHtml += '</div>';
-      shipEl.innerHTML = sHtml;
-  } else {
-      shipEl.innerHTML = '';
-  }
-
-  var baseAmt = (saleData.meters * saleData.rate);
-  document.getElementById('bill-items').innerHTML=
-    '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:10px 0">'
-    +'<div style="font-size:14px;font-weight:600;color:#2d2416">'+esc(saleData.fabName)+'</div>'
-    +'<div style="font-size:14px;color:#2d2416;text-align:center">'+saleData.meters+'m</div>'
-    +'<div style="font-size:14px;color:#2d2416;text-align:center">₹'+saleData.rate+'</div>'
-    +'<div style="font-size:14px;font-weight:700;color:#2d2416;text-align:right">₹'+Math.round(baseAmt).toLocaleString('en-IN')+'</div>'
-    +'</div>';
-
-  if(saleData.discount > 0) {
-      document.getElementById('bill-discount-section').innerHTML = '<div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:12px;color:#c0392b;width:100%"><span>Discount</span><span>-₹' + saleData.discount + '</span></div>';
-  } else {
-      document.getElementById('bill-discount-section').innerHTML = '';
-  }
-
-  var gstSec=document.getElementById('bill-gst-section');
-  if(gstSec){
-    if(saleData.gstRate>0 && !saleData.isKacha){
-      var g={rate:saleData.gstRate,subtotal:saleData.subtotal||saleData.total,gstAmount:saleData.gstAmount||0,cgst:saleData.cgst||0,sgst:saleData.sgst||0,igst:saleData.igst||0};
-      gstSec.innerHTML=billGSTSection(g,saleData.gstType||'intra');
-    } else {
-      gstSec.innerHTML='';
-    }
-  }
-  document.getElementById('bill-total').textContent='₹'+Math.round(saleData.total).toLocaleString('en-IN');
-  
-  document.getElementById('bill-paid-amt').textContent = '₹' + Math.round(saleData.paidAmt||0).toLocaleString('en-IN');
-  document.getElementById('bill-due-amt').textContent = '₹' + Math.round(saleData.dueAmt||0).toLocaleString('en-IN');
-
-  var qrBox = document.getElementById('bill-qr');
-  if(appSettings.upiId) {
-      var qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${appSettings.upiId}&pn=${encodeURIComponent(shopName)}&am=${Math.round(saleData.dueAmt > 0 ? saleData.dueAmt : saleData.total)}&cu=INR`;
-      document.getElementById('bill-qr-img').src = qrUrl;
-      qrBox.style.display = 'block';
-  } else {
-      qrBox.style.display = 'none';
-  }
-
-  document.getElementById('bill-modal').classList.add('on');
-}
-
-function generatePurchaseBill(p) {
-  lastSale = null;
-  var billNo='PUR-'+Date.now().toString().slice(-6);
-  var dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-  var shopName=user&&user.displayName?user.displayName:'Firm Name';
-
-  document.getElementById('bill-watermark').style.display = 'none';
-  document.getElementById('bill-type-lbl').textContent = 'PURCHASE RECEIPT';
-  document.getElementById('bill-to-lbl').textContent = 'From / Supplier';
-  document.getElementById('bill-no').textContent=billNo;
-  document.getElementById('bill-date').textContent=dateStr;
-  document.getElementById('bill-customer').textContent=p.party||'Unknown';
-  document.getElementById('bill-shop-name').textContent=shopName;
-
-  var shopGstinEl=document.getElementById('bill-shop-gstin');
-  if(shopGstinEl) shopGstinEl.textContent='';
-  var buyerGstinEl=document.getElementById('bill-buyer-gstin');
-  if(buyerGstinEl) buyerGstinEl.textContent=p.supplierGstin?'GSTIN: '+p.supplierGstin:'';
-
-  document.getElementById('bill-inv-type').textContent = '-';
-  document.getElementById('bill-pay-mode').textContent = '-';
-  document.getElementById('bill-shipping').innerHTML = ''; // Hide shipping on purchase receipt
-
-  var baseAmt = (p.meters * p.rate);
-  document.getElementById('bill-items').innerHTML=
-    '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:10px 0">'
-    +'<div style="font-size:14px;font-weight:600;color:#2d2416">'+esc(p.item)+'</div>'
-    +'<div style="font-size:14px;color:#2d2416;text-align:center">'+p.meters+'m</div>'
-    +'<div style="font-size:14px;color:#2d2416;text-align:center">₹'+p.rate+'</div>'
-    +'<div style="font-size:14px;font-weight:700;color:#2d2416;text-align:right">₹'+Math.round(baseAmt).toLocaleString('en-IN')+'</div>'
-    +'</div>';
-
-  document.getElementById('bill-discount-section').innerHTML = '';
-
-  var gstSec=document.getElementById('bill-gst-section');
-  if(gstSec){
-    if(p.gstRate>0){
-      var g={rate:p.gstRate,subtotal:p.subtotal||p.total,gstAmount:p.gstAmount||0,cgst:p.cgst||0,sgst:p.sgst||0,igst:p.igst||0};
-      gstSec.innerHTML=billGSTSection(g,p.gstType||'intra');
-    } else {
-      gstSec.innerHTML='';
-    }
-  }
-  document.getElementById('bill-total').textContent='₹'+Math.round(p.total).toLocaleString('en-IN');
-
-  document.getElementById('bill-paid-amt').textContent = '₹' + Math.round(p.total).toLocaleString('en-IN');
-  document.getElementById('bill-due-amt').textContent = '₹0';
-  document.getElementById('bill-qr').style.display = 'none';
-
-  document.getElementById('bill-modal').classList.add('on');
-}
-
-function closeBill(){document.getElementById('bill-modal').classList.remove('on');}
-function printBill(){
-  var billContent=document.getElementById('bill-preview').innerHTML;
-  var win=window.open('','_blank','width=500,height=700');
-  win.document.write('<html><head><title>Bill - StockSaathi</title><link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&display=swap" rel="stylesheet"><style>body{margin:20px;font-family:sans-serif;background:white}*{box-sizing:border-box}</style></head><body>'+billContent+'</body></html>');
-  win.document.close();
-  setTimeout(function(){win.print();},800);
-}
-function whatsappBill(){
-  if(!lastSale)return;
-  var shopName=user&&user.displayName?user.displayName+" ka Shop":'Textile Shop';
-  var date=new Date().toLocaleDateString('en-IN');
-  
-  var title = lastSale.isKacha ? '_StockSaathi Estimate_' : '_StockSaathi Receipt_';
-  var msg='*'+shopName+'*\n'+title+'\n\n*Date:* '+date+'\n*Customer:* '+(lastSale.customer||'Walk-in')+'\n\n---\n*'+lastSale.fabName+'*\n'+lastSale.meters+'m x Rs.'+lastSale.rate+'/m\n';
-  if(lastSale.gstRate>0 && !lastSale.isKacha){
-    msg+='Subtotal: Rs.'+Math.round(lastSale.subtotal).toLocaleString('en-IN')+'\n';
-    if(lastSale.gstType==='intra') msg+='CGST/SGST @'+lastSale.gstRate+'%: +Rs.'+Math.round(lastSale.gstAmount).toLocaleString('en-IN')+'\n';
-    else msg+='IGST @'+lastSale.gstRate+'%: +Rs.'+Math.round(lastSale.gstAmount).toLocaleString('en-IN')+'\n';
-  }
-  msg+='---\n*TOTAL: Rs.'+Math.round(lastSale.total).toLocaleString('en-IN')+'*\n\nThank you! 🙏\n_StockSaathi by Niori_';
-  var phone=lastSale.customerPhone;
-  var url=phone?'https://wa.me/91'+phone+'?text='+encodeURIComponent(msg):'https://wa.me/?text='+encodeURIComponent(msg);
-  window.open(url,'_blank');
-}
-
-function shareBillPDF(){
-  var shareBtn = document.getElementById('share-bill-btn');
-  if(shareBtn) { shareBtn.disabled = true; shareBtn.textContent = 'Generating PDF...'; }
-  
-  var element = document.getElementById('bill-preview');
-  var opt = {
-    margin:       0.1,
-    filename:     (lastSale && lastSale.isKacha ? 'Estimate_' : 'Invoice_')+(lastSale ? (lastSale.customer||'Customer') : 'Purchase')+'.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2 },
-    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-  };
-
-  html2pdf().set(opt).from(element).outputPdf('blob').then(function(pdfBlob) {
-      if(shareBtn) { shareBtn.disabled = false; shareBtn.textContent = '📤 Share PDF'; }
-      
-      var file = new File([pdfBlob], opt.filename, { type: "application/pdf" });
-      
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          navigator.share({
-              title: lastSale && lastSale.isKacha ? 'Estimate' : 'Invoice',
-              text: 'Please find the document attached.',
-              files: [file]
-          }).then(function() {
-              toast('Share dialog opened!');
-          }).catch(function(e) {
-              console.log('Share failed:', e);
-              downloadFallback(pdfBlob, opt.filename);
-          });
-      } else {
-          toast('Sharing not supported on this browser. Downloading instead.');
-          downloadFallback(pdfBlob, opt.filename);
-      }
-  });
-}
-
-function downloadFallback(blob, filename) {
-    var url = window.URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-}
-
-// ══ UTILS ══
-function esc(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._tid);t._tid=setTimeout(function(){t.style.display='none';},3500);}
-
-window.onload=function(){startApp();};
 </script>
+
 </body>
 </html>
