@@ -686,18 +686,26 @@ body.staff-mode .hide-staff { display: none !important; }
         </div>
     </div>
 
-    <div class="fc" style="padding:16px;margin-bottom:0">
-        <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:var(--red)">🔒 Staff Mode (Hide Profits/Bahi)</div>
+    <div class="fc" style="padding:16px;margin-bottom:12px">
+        <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:var(--text)">🔒 Staff Mode</div>
         <div class="fg">
             <label class="fl">Set/Change Staff PIN</label>
             <input id="set-pin" type="password" placeholder="Enter 4 digit PIN" />
         </div>
-        <button class="btn btn-ghost" style="width:100%;justify-content:center;color:var(--red);border-color:#f4c0ba;background:var(--red-light)" onclick="toggleStaffMode()">
+        <button class="btn btn-ghost" style="width:100%;justify-content:center;color:var(--text);border-color:var(--border)" onclick="toggleStaffMode()">
             Toggle Staff Mode ON/OFF
         </button>
     </div>
 
-    <div class="qmodal-foot">
+    <div class="fc" style="padding:16px;margin-bottom:0;background:var(--red-light);border-color:#f4c0ba">
+        <div style="font-size:14px;font-weight:700;margin-bottom:5px;color:var(--red)">⚠️ Danger Zone</div>
+        <div style="font-size:11px;color:var(--red);margin-bottom:12px;opacity:0.8">This will permanently delete all your fabrics, sales, and ledger data.</div>
+        <button class="btn" style="width:100%;justify-content:center;background:var(--red);color:white;border:none" onclick="handleHardReset()">
+            Hard Reset Account
+        </button>
+    </div>
+
+    <div class="qmodal-foot" style="margin-top:20px">
       <button class="btn btn-ghost" onclick="closeSettings()">Cancel</button>
       <button class="btn btn-gold" onclick="saveSettings()">✅ Save Settings</button>
     </div>
@@ -1167,7 +1175,6 @@ function openSettings() {
         if(pin !== appSettings.staffPin) { toast("❌ Wrong PIN"); return; }
     }
     document.getElementById('set-upi').value = appSettings.upiId || '';
-    document.getElementById('set-pin').value = appSettings.staffPin || '';
     document.getElementById('settings-modal').classList.add('on');
 }
 function closeSettings() { document.getElementById('settings-modal').classList.remove('on'); }
@@ -1197,6 +1204,31 @@ function applyStaffMode() {
     
     var sw = document.getElementById('dash-smart-widgets');
     if(sw) sw.style.display = appSettings.isStaffMode ? 'none' : 'grid';
+}
+
+// ══ NEW RESET LOGIC ══
+async function handleHardReset() {
+    // Only allow if not in staff mode
+    if(appSettings.isStaffMode) {
+        toast("🔒 Turn off Staff Mode to reset the account.");
+        return;
+    }
+    
+    if(confirm("🚨 DANGER: Are you absolutely sure you want to wipe your entire account? All data will be lost.")) {
+        let doubleCheck = prompt("Type 'DELETE' to confirm you want to wipe everything:");
+        if(doubleCheck === 'DELETE') {
+            try {
+                await db.collection('users').doc(user.uid).delete();
+                toast("Account wiped successfully. Reloading...");
+                setTimeout(() => location.reload(), 1500);
+            } catch(error) {
+                console.error("Error resetting account: ", error);
+                toast("Error deleting account.");
+            }
+        } else {
+            toast("Reset cancelled.");
+        }
+    }
 }
 
 // ══ PARTY AUTO-SUGGEST ══
@@ -1801,7 +1833,7 @@ function renderReport(){
 var obStep=1;
 var OB_STEPS=[
   {title:'Welcome to StockSaathi! 🎉',sub:'2 minute mein apna stock manager ready',feats:[['📦','Stock Track Karo','Meter by meter hisaab'],['💰','Bikri Record Karo','Customer ka naam aur raqam'],['⚠️','Auto Alert','Jab stock kam ho, alert aayega'],['📒','Bahi Khata','Sales + Purchase Book']]},
-  {title:'GST Ready System 🧾',sub:'Intra/Inter state GST — bilkul sahi',feats:[['5%','Fabric / <₹1000','Standard textile GST rate'],['12%','Garments >₹1000','Higher GST bracket'],['🔵','CGST + SGST','Gujarat ke andar — split equally'],['🔴','IGST','Dusre states ke liye']]},
+  {title:'Bill Kaise Banayein? 🧾',sub:'StockSaathi pe bill banana bahut aasaan hai',feats:[['1️⃣','Click Sell','Kapda select karein aur "Sell" dabayein'],['2️⃣','Enter Details','Meters aur Customer ka naam likhein'],['3️⃣','Kacha ya Pakka?','Estimate ke liye "Kacha Bill" tick karein'],['4️⃣','Generate Bill','WhatsApp par PDF bhejein!']]},
   {title:'All Set! Lets Begin 🚀',sub:'StockSaathi is ready',feats:[['📥','Add Stock','Inventory mein fabric daalo'],['💰','Sell + Bill','Quick sell with GST invoice'],['📒','Bahi Khata','Full ledger — sales aur purchases'],['📊','Reports','Monthly summary']]},
 ];
 function showOnboarding(){obStep=1;renderOB();document.getElementById('onboarding').classList.add('on');}
