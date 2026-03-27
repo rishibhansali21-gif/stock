@@ -6,74 +6,134 @@
 <title>StockSaathi — Premium Textile ERP</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a1a1a">
 <style>
+/* 🎨 PREMIUM SURAT THEME */
 :root{
   --bg:#f8f6f2; --white:#ffffff; --panel:#1a1a1a;
   --border:#dcd5c5; --border-focus:#b8860b;
-  --text:#1c1917; --muted:#78716c;
-  --gold:#b8860b; --gold-dark:#8c6708; --gold-light:#fefce8;
-  --red:#b91c1c; --green:#1a6b3a; --green2:#22873f;
+  --text:#1c1917; --muted:#78716c; --muted2:#57534e;
+  --gold:#b8860b; --gold-dark:#8c6708; --gold-light:#fefce8; --gold-btn:#b8860b;
+  --red:#b91c1c; --red-light:#fef2f2;
+  --green:#15803d; --green-light:#f0fdf4;
+  --orange:#c2410c; --orange-light:#fff7ed;
+  --blue:#1d4ed8; --blue-light:#eff6ff;
   --ff-h:'Baloo 2',cursive; --ff-b:'Noto Sans',sans-serif;
+  --shadow:0 4px 15px rgba(0,0,0,0.05);
+  --shadow-md:0 10px 30px rgba(0,0,0,0.1);
+  --r:10px; --r2:16px;
 }
 
-*{margin:0;padding:0;box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-body{background:var(--bg);color:var(--text);font-family:var(--ff-b);display:flex;height:100dvh;overflow:hidden;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-b);display:flex;height:100dvh;overflow:hidden;font-size:15px}
 
-/* ══ SIDEBAR ══ */
-.sb{width:260px;background:var(--panel);color:white;display:flex;flex-direction:column;flex-shrink:0;z-index:100}
+/* 🏢 SIDEBAR */
+.sb{width:260px;background:var(--panel);color:white;display:flex;flex-direction:column;flex-shrink:0;z-index:100;box-shadow:2px 0 15px rgba(0,0,0,0.1)}
 .sb-top{padding:30px 20px;border-bottom:1px solid #333}
 .logo-wrap{display:flex;align-items:center;gap:12px}
-.logo-icon{width:45px;height:45px;background:var(--gold);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:var(--panel);box-shadow:0 0 15px rgba(184,134,11,0.3)}
-.logo-text{font-family:var(--ff-h);font-size:24px;color:var(--gold);line-height:1}
-.sb-nav{flex:1;padding:20px 10px;overflow-y:auto;}
+.logo-icon{width:45px;height:45px;background:var(--gold);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:var(--panel);box-shadow:0 0 15px rgba(184,134,11,0.4)}
+.logo-text{font-family:var(--ff-h);font-size:24px;color:var(--gold);line-height:1;font-weight:700}
+.sb-nav{flex:1;padding:20px 10px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .nav-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;cursor:pointer;color:#a8a29e;margin-bottom:4px;font-weight:600;font-size:14px;transition:0.2s}
 .nav-item:hover{background:#262626;color:white}
 .nav-item.active{background:var(--gold);color:var(--panel)}
-.sb-sec{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:15px 16px 5px}
+.sb-sec{font-size:10px;font-weight:800;color:#78716c;letter-spacing:1px;text-transform:uppercase;padding:15px 16px 5px}
+.sb-foot{padding:15px 20px;border-top:1px solid #333;display:flex;justify-content:space-between;align-items:center}
 
-/* ══ MAIN ══ */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
-.topbar{height:65px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 25px;flex-shrink:0;z-index:90}
+/* 📱 MAIN CONTENT */
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.topbar{height:65px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 25px;flex-shrink:0;z-index:90;box-shadow:var(--shadow)}
 .content{flex:1;overflow-y:auto;padding:25px;-webkit-overflow-scrolling:touch}
 .page{display:none;flex-direction:column;height:100%}
 .page.on{display:flex}
+.sh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
+.sh-title{font-family:var(--ff-h);font-size:24px;font-weight:700;color:var(--text)}
+.sh-sub{font-size:12px;color:var(--muted);margin-top:2px}
 
-/* ══ MODALS ══ */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
-.modal{background:white;width:100%;max-width:500px;border-radius:24px;padding:30px;max-height:90dvh;overflow-y:auto;position:relative;box-shadow:0 20px 40px rgba(0,0,0,0.2)}
+/* 💳 CARDS & GRIDS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border);background:var(--white);flex-shrink:0}
+.stat{padding:20px 25px;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:700;margin-bottom:6px}
+.stat-v{font-family:var(--ff-h);font-size:28px;font-weight:800;line-height:1}
+.stat-h{font-size:11px;color:var(--muted);margin-top:4px}
+.fc{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);padding:22px;margin-bottom:18px;box-shadow:var(--shadow)}
+.fc-title{font-family:var(--ff-h);font-size:18px;font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 
-/* ══ INPUTS ══ */
+/* 🧵 FABRIC CARDS */
+.fab-grid{display:flex;flex-direction:column;gap:12px}
+.fab-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);padding:15px 20px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;transition:0.2s;box-shadow:var(--shadow)}
+.fab-card:hover{border-color:var(--gold);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.fab-card.low{border-left:4px solid var(--red)}
+.fab-card.med{border-left:4px solid var(--orange)}
+.fab-card.ok{border-left:4px solid var(--green)}
+.fab-icon{width:45px;height:45px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.fab-name{font-family:var(--ff-h);font-size:17px;font-weight:700;margin-bottom:3px}
+.fab-tag{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;color:var(--muted2)}
+.pill{display:inline-flex;align-items:center;font-size:10px;font-weight:800;padding:3px 8px;border-radius:15px;letter-spacing:0.5px}
+
+/* 🎬 NETFLIX PROFILES */
+#profile-screen{position:fixed;inset:0;z-index:10000;background:var(--panel);display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px;overflow-y:auto}
+.profile-grid{display:flex;gap:30px;flex-wrap:wrap;justify-content:center;margin-top:30px;max-width:800px}
+.p-card{background:#262626;border-radius:24px;padding:40px 30px;width:170px;text-align:center;cursor:pointer;border:3px solid transparent;transition:0.3s;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+.p-card:hover{border-color:var(--gold);transform:translateY(-8px)}
+.p-avatar{width:75px;height:75px;background:var(--gold);border-radius:50%;margin:0 auto 15px;display:flex;align-items:center;justify-content:center;font-size:35px}
+
+/* 🏗️ SETUP SCREEN */
+#setup-screen{position:fixed;inset:0;z-index:11000;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;padding:20px}
+.setup-box{background:var(--white);width:100%;max-width:480px;border-radius:24px;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.4);animation:pop 0.3s ease}
+@keyframes pop{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* 🔘 INPUTS & BUTTONS */
+.btn{padding:12px 24px;border-radius:10px;border:none;font-family:var(--ff-h);font-size:15px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:0.2s}
+.btn-gold{background:var(--gold);color:white;box-shadow:0 4px 10px rgba(184,134,11,0.2)}
+.btn-gold:hover{background:var(--gold-dark);transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--muted2)}
+.btn-ghost:hover{border-color:var(--muted);color:var(--text)}
+.btn-full{width:100%}
+.btn-small{padding:6px 12px;font-size:12px}
 .fg{margin-bottom:15px}
-.fl{display:block;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
-input,select,textarea{width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--ff-b);font-size:14px;outline:none}
-input:focus{border-color:var(--gold)}
+.fl{display:block;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;margin-bottom:6px;letter-spacing:0.5px}
+input,select,textarea{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--ff-b);font-size:14px;outline:none;background:var(--white);color:var(--text);transition:0.2s}
+input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,134,11,0.1)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-/* ══ PROFILES ══ */
-#profile-screen{position:fixed;inset:0;z-index:10000;background:var(--panel);display:none;align-items:center;justify-content:center;flex-direction:column}
-.p-card{background:#262626;border-radius:24px;padding:35px 25px;width:170px;text-align:center;cursor:pointer;transition:0.3s;border:2px solid transparent}
-.p-card:hover{border-color:var(--gold);transform:translateY(-5px)}
-.p-avatar{width:70px;height:70px;background:var(--gold);border-radius:50%;margin:0 auto 15px;display:flex;align-items:center;justify-content:center;font-size:35px}
+/* 📒 LEDGER & TABS */
+.ledger-tabs{display:flex;background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px}
+.ledger-tab{flex:1;padding:12px;font-family:var(--ff-h);font-weight:700;cursor:pointer;text-align:center;color:var(--muted);border:none;background:transparent;transition:0.2s}
+.ledger-tab.active{background:var(--gold-light);color:var(--gold-dark)}
+.ledger-entry{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:15px 20px;margin-bottom:10px;display:grid;grid-template-columns:auto 1fr auto auto;gap:15px;align-items:center;box-shadow:var(--shadow)}
+.ledger-entry.sale-entry{border-left:4px solid var(--green)}
+.ledger-entry.purchase-entry{border-left:4px solid var(--blue)}
+.udhaar-card{background:var(--white);border:1px solid var(--orange-light);border-left:4px solid var(--orange);border-radius:12px;padding:20px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow)}
 
-/* ══ SETUP ══ */
-#setup-screen{position:fixed;inset:0;z-index:11000;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;padding:20px}
-.setup-box{background:white;width:100%;max-width:450px;border-radius:28px;overflow:hidden}
+/* 🛠️ MODALS */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+.modal{background:var(--white);width:100%;max-width:500px;border-radius:24px;padding:30px;max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 20px 40px rgba(0,0,0,0.2)}
+.watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45deg);font-size:70px;font-weight:900;color:rgba(0,0,0,0.04);white-space:nowrap;pointer-events:none;z-index:0;display:none}
 
-/* ══ CARDS ══ */
-.stat-card{background:white;padding:20px;border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow)}
-.fab-card{background:white;border:1px solid var(--border);border-radius:16px;padding:15px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
-
-/* ══ WATERMARK ══ */
-.watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45deg);font-size:60px;font-weight:900;color:rgba(0,0,0,0.05);white-space:nowrap;pointer-events:none;z-index:0;display:none}
-
-/* ══ ROLES ══ */
+/* 🔒 ROLES & MOBILE */
 body.staff-mode .hide-staff, body.manager-mode .hide-manager { display: none !important; }
+.hamburger{display:none;background:none;border:1px solid var(--border);border-radius:8px;font-size:20px;padding:5px 10px;cursor:pointer;color:var(--text)}
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300}
+
+@media print{
+  .sb,.topbar,.modal-bg,#toast,#login-screen,#profile-screen,.hide-print{display:none!important}
+  body{background:white;color:black;display:block;height:auto;overflow:visible}
+  .main,.page,.content{overflow:visible;height:auto;padding:0}
+}
 
 @media(max-width:768px){
   .sb{display:none}
-  .hamburger{display:block !important}
+  .hamburger{display:block}
   .topbar{padding:0 15px}
   .content{padding:15px}
+  .stats{grid-template-columns:1fr 1fr}
+  .stat{padding:15px;border-bottom:1px solid var(--border)}
+  .stat:nth-child(even){border-right:none}
+  .ledger-entry{grid-template-columns:1fr;gap:8px}
+  .modal{padding:20px}
 }
 </style>
 </head>
@@ -83,221 +143,524 @@ body.staff-mode .hide-staff, body.manager-mode .hide-manager { display: none !im
 <datalist id="party-list"></datalist>
 
 <div id="profile-screen">
-    <div class="logo-wrap" style="margin-bottom:30px">
+    <div class="logo-wrap" style="margin-bottom:20px">
         <div class="logo-icon">SS</div>
-        <div class="logo-text" style="color:white;font-size:32px">StockSaathi</div>
+        <div class="logo-text" style="color:white;font-size:35px">StockSaathi</div>
     </div>
-    <p style="color:var(--muted);margin-bottom:30px">Kaun chala raha hai?</p>
-    <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center" id="p-container"></div>
+    <p style="color:var(--muted);margin-bottom:20px;font-size:16px">Who is using the Dukaan?</p>
+    <div class="profile-grid" id="p-container"></div>
+    <button class="btn btn-ghost hide-print" style="margin-top:40px;color:var(--muted);border-color:#333" onclick="signOut()">Sign Out of Device</button>
 </div>
 
 <div id="setup-screen">
     <div class="setup-box">
-        <div style="background:var(--gold);padding:25px;text-align:center;color:var(--panel)">
-            <h2 style="font-family:var(--ff-h)">Shop Setup</h2>
-            <p id="setup-step-txt" style="font-size:11px;font-weight:900;margin-top:4px">STEP 1 OF 4</p>
+        <div style="background:var(--gold);padding:30px;text-align:center;color:var(--panel)">
+            <h2 style="font-family:var(--ff-h);font-size:28px;line-height:1">Shop Setup</h2>
+            <p id="setup-step-txt" style="font-size:12px;font-weight:900;margin-top:8px;letter-spacing:1px">STEP 1 OF 4</p>
         </div>
-        <div id="setup-content" style="padding:25px"></div>
-        <div style="padding:0 25px 25px">
-            <button class="btn" style="width:100%;background:var(--panel);color:white;padding:12px;border-radius:10px;font-weight:700" onclick="nextSetupStep()">Next Step →</button>
+        <div id="setup-content" style="padding:30px"></div>
+        <div style="padding:0 30px 30px">
+            <button class="btn btn-full" style="background:var(--panel);color:var(--white)" onclick="nextSetupStep()">Continue →</button>
         </div>
     </div>
 </div>
 
-<div class="sb">
+<div class="mob-overlay" id="mob-overlay" onclick="toggleMob()"></div>
+
+<div class="sb" id="sidebar">
     <div class="sb-top">
         <div class="logo-wrap">
             <div class="logo-icon">SS</div>
-            <div><div class="logo-text">StockSaathi</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">SURAT PRO v7.0</div></div>
+            <div>
+                <div class="logo-text">StockSaathi</div>
+                <div style="font-size:9px;color:var(--muted);letter-spacing:1.5px">SURAT PRO v7.0</div>
+            </div>
         </div>
     </div>
     <div class="sb-nav">
         <div class="sb-sec">Main</div>
         <div class="nav-item active" onclick="goto('dash',this)">🏠 Dashboard</div>
         <div class="nav-item" onclick="goto('inv',this)">📦 Inventory</div>
-        <div class="sb-sec staff-lock">Account</div>
-        <div class="nav-item staff-lock" onclick="goto('sales',this)">💰 Sales & Billing</div>
-        <div class="nav-item hide-staff" onclick="goto('udhaar',this)">📒 Udhaar Khata</div>
-        <div class="sb-sec admin-lock">Admin</div>
-        <div class="nav-item admin-lock" onclick="goto('master',this)">📁 Master Data</div>
-        <div class="nav-item admin-lock" onclick="goto('profiles',this)">👥 Profiles</div>
+        <div class="sb-sec">Transactions</div>
+        <div class="nav-item" onclick="goto('sales',this)">💰 Sales & Billing</div>
+        <div class="nav-item hide-staff" onclick="goto('ledger',this)">📒 Full Ledger</div>
+        <div class="nav-item hide-staff" onclick="goto('udhaar',this)">⏳ Udhaar Khata</div>
+        <div class="nav-item hide-staff" onclick="goto('calc',this)">🧮 Calculator</div>
+        <div class="sb-sec hide-staff">Admin</div>
+        <div class="nav-item hide-staff" onclick="goto('report',this)">📊 Monthly Report</div>
+        <div class="nav-item hide-staff hide-manager" onclick="goto('master',this)">📁 Master Data</div>
+        <div class="nav-item hide-staff hide-manager" onclick="goto('profiles',this)">👥 Manage Profiles</div>
     </div>
     <div class="sb-foot">
         <div style="flex:1">
-            <b id="active-p-name" style="color:var(--gold);font-size:14px">User</b><br>
-            <span style="font-size:10px;cursor:pointer;text-decoration:underline;color:var(--muted)" onclick="switchProfile()">Switch Profile</span>
+            <div style="font-size:10px;color:var(--muted)">ACTIVE PROFILE</div>
+            <b id="active-p-name" style="color:var(--gold);font-size:16px">User</b><br>
+            <span style="font-size:11px;cursor:pointer;text-decoration:underline;color:var(--muted)" onclick="switchProfile()">Switch User</span>
         </div>
-        <button class="btn hide-staff hide-manager" style="padding:8px;background:transparent;color:var(--muted)" onclick="openSettings()">⚙️</button>
+        <button class="btn btn-ghost hide-staff hide-manager" style="padding:10px;border-color:#333;color:var(--muted)" onclick="openModal('modal-settings')">⚙️</button>
     </div>
 </div>
 
 <div class="main">
     <div class="topbar">
-        <button class="btn hamburger" style="display:none;background:none;font-size:20px" onclick="toggleMob()">☰</button>
-        <h2 id="pg-title" style="font-family:var(--ff-h)">Dashboard</h2>
-        <div style="margin-left:auto" id="top-btn-box">
-            <button class="btn" style="background:var(--gold);color:white;font-size:13px" onclick="openModal('modal-add')">+ Add Fabric</button>
+        <button class="hamburger" onclick="toggleMob()">☰</button>
+        <div>
+            <h2 id="pg-title" style="font-family:var(--ff-h);line-height:1">Dashboard</h2>
+            <div id="pg-sub" style="font-size:12px;color:var(--muted)">Overview of your shop</div>
+        </div>
+        <div style="margin-left:auto">
+            <button class="btn btn-gold" onclick="openAddFabricModal()">+ Add Fabric</button>
         </div>
     </div>
 
     <div id="pg-dash" class="page on">
+        <div class="stats hide-staff">
+            <div class="stat"><div class="stat-l">Total Fabrics</div><div class="stat-v" id="st-c">0</div></div>
+            <div class="stat"><div class="stat-l">Total Meters</div><div class="stat-v" id="st-m">0</div></div>
+            <div class="stat"><div class="stat-l">Low Stock</div><div class="stat-v" style="color:var(--red)" id="st-l">0</div></div>
+            <div class="stat"><div class="stat-l">Stock Value</div><div class="stat-v" style="color:var(--gold)" id="st-v">₹0</div></div>
+        </div>
         <div class="content">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:15px;margin-bottom:25px">
-                <div class="stat-card">
-                    <div class="fl">Total Stock</div>
-                    <div id="stat-m" style="font-size:28px;font-weight:800">0 m</div>
-                </div>
-                <div class="stat-card hide-staff">
-                    <div class="fl">Total Udhaar</div>
-                    <div id="stat-u" style="font-size:28px;font-weight:800;color:var(--red)">₹0</div>
-                </div>
-            </div>
-            <h4 class="ff-h" style="margin-bottom:10px">Low Stock Alerts</h4>
-            <div id="dash-alerts"></div>
+            <div class="sh"><div><div class="sh-title">Quick Overview</div><div class="sh-sub">Recent stock items in your godown</div></div></div>
+            <div id="dash-grid" class="fab-grid"></div>
         </div>
     </div>
 
     <div id="pg-inv" class="page">
         <div class="content">
-            <input type="text" id="inv-search" placeholder="Search by name, color or quality..." style="margin-bottom:20px" oninput="renderInv()">
-            <div id="inv-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:15px"></div>
+            <div class="sh"><div><div class="sh-title">📦 Inventory</div><div class="sh-sub">Search and manage all fabrics</div></div></div>
+            <div class="cat-row" id="inv-cat-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px"></div>
+            <input type="text" id="inv-q" placeholder="🔍 Search fabric by name, color, or quality..." style="margin-bottom:20px;padding-left:40px" oninput="renderInv()">
+            <div id="inv-grid" class="fab-grid"></div>
+        </div>
+    </div>
+
+    <div id="pg-sales" class="page">
+        <div class="content">
+            <div class="sh"><div><div class="sh-title">💰 Sales & Billing</div><div class="sh-sub">Generate Kacha or Pakka Bills</div></div></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:25px;align-items:start">
+                
+                <div class="fc">
+                    <div class="fc-title">🛒 Create Invoice</div>
+                    <div class="fg"><label class="fl">Select Fabric</label><select id="s-fab" onchange="updateSellRate()"></select></div>
+                    <div class="g2">
+                        <div class="fg"><label class="fl">Meters Sold</label><input type="number" id="s-m" placeholder="0" min="0" oninput="calcSell()"></div>
+                        <div class="fg hide-staff"><label class="fl">Rate (₹/m)</label><input type="number" id="s-r" placeholder="0" oninput="calcSell()"></div>
+                    </div>
+                    <div class="g2 hide-staff">
+                        <div class="fg"><label class="fl">Discount (₹)</label><input type="number" id="s-discount" placeholder="0" oninput="calcSell()"></div>
+                        <div class="fg"><label class="fl">Invoice Type</label>
+                            <select id="s-inv-type"><option>Cash</option><option>Credit</option></select>
+                        </div>
+                    </div>
+                    
+                    <div class="hide-staff" style="background:var(--blue-light);padding:15px;border-radius:12px;border:1px solid #bfdbfe;margin-bottom:15px">
+                        <div style="font-size:11px;font-weight:800;color:var(--blue);margin-bottom:10px;text-transform:uppercase">GST Settings</div>
+                        <div class="g2">
+                            <div class="fg" style="margin:0"><label class="fl" style="color:var(--blue)">Rate</label>
+                                <select id="s-gst-rate" onchange="calcSell()" style="border-color:#bfdbfe"><option value="0">0%</option><option value="5" selected>5%</option><option value="12">12%</option></select>
+                            </div>
+                            <div class="fg" style="margin:0"><label class="fl" style="color:var(--blue)">Type</label>
+                                <select id="s-gst-type" onchange="calcSell()" style="border-color:#bfdbfe"><option value="intra">CGST+SGST</option><option value="inter">IGST</option></select>
+                            </div>
+                        </div>
+                        <div id="s-gst-breakdown" style="font-size:12px;color:var(--blue);margin-top:10px"></div>
+                    </div>
+
+                    <div class="hide-staff" style="display:flex;justify-content:space-between;align-items:center;background:var(--bg);padding:15px;border-radius:10px;border:1px solid var(--border);margin-bottom:15px">
+                        <span style="font-weight:800;text-transform:uppercase;font-size:12px">Total Payable</span>
+                        <span id="s-amt" style="font-family:var(--ff-h);font-size:24px;font-weight:800;color:var(--gold)">₹0</span>
+                    </div>
+
+                    <div class="fg"><label class="fl">Customer / Party Name</label><input id="s-c" list="party-list" placeholder="e.g. Rajesh Textiles"></div>
+                    
+                    <div class="g2 hide-staff">
+                        <div class="fg"><label class="fl">WhatsApp Number</label><input type="tel" id="s-phone" placeholder="9876543210"></div>
+                        <div class="fg"><label class="fl">Paid Amount (₹)</label><input type="number" id="s-paid" placeholder="Leave empty for full"></div>
+                    </div>
+
+                    <div class="hide-staff" style="background:var(--gold-light);padding:15px;border-radius:12px;border:1px solid #fde047;margin-bottom:15px;cursor:pointer">
+                        <label style="display:flex;align-items:center;gap:10px;font-weight:700;color:var(--gold-dark);cursor:pointer">
+                            <input type="checkbox" id="s-kacha" style="width:20px;height:20px;accent-color:var(--gold)"> 
+                            📝 Make Kacha Bill (Estimate)
+                        </label>
+                        <div style="font-size:11px;color:var(--muted);margin-left:30px;margin-top:4px">Stock will NOT be deducted. Will not show in Ledger.</div>
+                    </div>
+
+                    <div class="hide-staff" style="background:var(--bg);padding:15px;border-radius:12px;border:1px solid var(--border);margin-bottom:15px">
+                        <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:10px;text-transform:uppercase">🚚 Dispatch Details (Optional)</div>
+                        <div class="g2" style="margin-bottom:10px">
+                            <input id="s-trans" placeholder="Transport Name">
+                            <input id="s-lr" placeholder="LR / Bilty No.">
+                        </div>
+                        <input id="s-eway" placeholder="12-Digit E-Way Bill No.">
+                    </div>
+
+                    <div style="display:flex;gap:10px">
+                        <button class="btn btn-ghost" style="flex:1" onclick="processSale(false)">✅ Record Only</button>
+                        <button class="btn btn-gold hide-staff" style="flex:2" onclick="processSale(true)">🧾 Generate Bill & PDF</button>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="fc-title">📋 Recent Sales</div>
+                    <div id="sales-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pg-ledger" class="page">
+        <div class="content">
+            <div class="sh">
+                <div><div class="sh-title">📒 Full Ledger</div><div class="sh-sub">Combined Sales and Purchase Book</div></div>
+                <div style="display:flex;gap:10px">
+                    <button class="btn btn-ghost" onclick="exportCSV()">📥 Export Excel</button>
+                    <button class="btn btn-gold hide-manager" onclick="openModal('modal-pur')">+ Record Purchase</button>
+                </div>
+            </div>
+            
+            <div class="stats" style="border:1px solid var(--border);border-radius:16px;margin-bottom:20px;overflow:hidden">
+                <div class="stat"><div class="stat-l">Total Sales</div><div class="stat-v" style="color:var(--green)" id="ls-s">₹0</div></div>
+                <div class="stat"><div class="stat-l">Total Purchases</div><div class="stat-v" style="color:var(--blue)" id="ls-p">₹0</div></div>
+                <div class="stat"><div class="stat-l">Est. Net Profit</div><div class="stat-v" id="ls-n">₹0</div></div>
+            </div>
+
+            <div class="ledger-tabs">
+                <button class="ledger-tab active" id="tab-sales" onclick="switchLedger('sales')">💰 Sales Book</button>
+                <button class="ledger-tab" id="tab-purchases" onclick="switchLedger('purchases')">📥 Purchase Book</button>
+            </div>
+            
+            <input type="text" id="ledger-q" placeholder="🔍 Search party, fabric, or amount..." style="margin-bottom:20px;padding-left:40px" oninput="renderLedger()">
+            <div id="ledger-grid"></div>
         </div>
     </div>
 
     <div id="pg-udhaar" class="page">
         <div class="content">
+            <div class="sh"><div><div class="sh-title">⏳ Udhaar Khata</div><div class="sh-sub">Party-wise pending payments and reminders</div></div></div>
+            <input type="text" id="udhaar-q" placeholder="🔍 Search Party Name..." style="margin-bottom:20px;padding-left:40px" oninput="renderUdhaar()">
             <div id="udhaar-list"></div>
+        </div>
+    </div>
+
+    <div id="pg-calc" class="page">
+        <div class="content">
+            <div class="sh"><div><div class="sh-title">🧮 Quick Calculator</div><div class="sh-sub">Hisaab lagane ke liye</div></div></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:20px">
+                <div class="fc">
+                    <div class="fc-title">💰 Total Cost Calc</div>
+                    <div class="fg"><label class="fl">Meters</label><input type="number" id="c1m" oninput="c1()"></div>
+                    <div class="fg"><label class="fl">Rate (₹/m)</label><input type="number" id="c1r" oninput="c1()"></div>
+                    <div style="background:var(--bg);padding:15px;border-radius:10px;display:flex;justify-content:space-between">
+                        <b>Total:</b> <span id="c1-r" style="color:var(--gold);font-weight:800;font-size:20px">₹0</span>
+                    </div>
+                </div>
+                <div class="fc">
+                    <div class="fc-title">📈 Profit Calc</div>
+                    <div class="g2">
+                        <div class="fg"><label class="fl">Buy Rate</label><input type="number" id="c2b" oninput="c2()"></div>
+                        <div class="fg"><label class="fl">Sell Rate</label><input type="number" id="c2s" oninput="c2()"></div>
+                    </div>
+                    <div class="fg"><label class="fl">Meters Sold</label><input type="number" id="c2m" oninput="c2()"></div>
+                    <div style="background:var(--bg);padding:15px;border-radius:10px;display:flex;justify-content:space-between">
+                        <b>Total Profit:</b> <span id="c2-r" style="color:var(--green);font-weight:800;font-size:20px">₹0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pg-report" class="page">
+        <div class="content">
+            <div class="sh">
+                <div><div class="sh-title">📊 Monthly Report</div><div class="sh-sub" id="rpt-month">Loading...</div></div>
+                <button class="btn btn-ghost hide-print" onclick="window.print()">🖨️ Print Report</button>
+            </div>
+            <div id="rpt-stats" class="stats" style="border:1px solid var(--border);border-radius:16px;margin-bottom:25px;overflow:hidden"></div>
+            
+            <div class="fc" style="padding:0;overflow:hidden">
+                <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px;padding:15px 20px;background:var(--bg);border-bottom:1px solid var(--border);font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase">
+                    <div>Fabric</div><div>Opening</div><div>Sold</div><div>Balance</div><div>Value</div><div>Status</div>
+                </div>
+                <div id="rpt-body" style="max-height:500px;overflow-y:auto"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pg-profiles" class="page">
+        <div class="content">
+            <div class="sh">
+                <div><div class="sh-title">👥 Manage Profiles</div><div class="sh-sub">Control who accesses your Dukaan</div></div>
+                <button class="btn btn-gold" onclick="openEditProfileModal()">+ Add User</button>
+            </div>
+            <div id="profiles-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:20px;"></div>
         </div>
     </div>
 
     <div id="pg-master" class="page">
         <div class="content">
+            <div class="sh"><div><div class="sh-title">📁 Master Data</div><div class="sh-sub">Manage Dropdown Lists (Qualities & Colors)</div></div></div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:20px">
-                <div class="stat-card">
-                    <div style="display:flex;justify-content:space-between;margin-bottom:15px">
-                        <b class="ff-h">Qualities</b>
-                        <button onclick="addMaster('qualities')">Add</button>
-                    </div>
-                    <div id="list-qualities" class="md-list"></div>
+                <div class="fc">
+                    <div class="fc-title">Categories / Qualities <button class="btn btn-ghost btn-small" onclick="addMaster('qualities')">+ Add</button></div>
+                    <div id="list-qualities" style="max-height:300px;overflow-y:auto"></div>
                 </div>
-                <div class="stat-card">
-                    <div style="display:flex;justify-content:space-between;margin-bottom:15px">
-                        <b class="ff-h">Colors</b>
-                        <button onclick="addMaster('colors')">Add</button>
-                    </div>
-                    <div id="list-colors" class="md-list"></div>
+                <div class="fc">
+                    <div class="fc-title">Textile Colors <button class="btn btn-ghost btn-small" onclick="addMaster('colors')">+ Add</button></div>
+                    <div id="list-colors" style="max-height:300px;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-bg" id="modal-add">
-        <div class="modal">
-            <h2 class="ff-h">Add New Fabric</h2><br>
-            <div class="fg"><label class="fl">Item Name</label><input id="f-name" placeholder="e.g. Silk Georgette"></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                <div class="fg"><label class="fl">Quality</label><select id="f-qual"></select></div>
-                <div class="fg"><label class="fl">Color</label><input id="f-color" list="color-list"></div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                <div class="fg"><label class="fl">Meters</label><input type="number" id="f-meters"></div>
-                <div class="fg"><label class="fl">Rate (₹/m)</label><input type="number" id="f-rate"></div>
-            </div>
-            <div class="fg"><label class="fl">Supplier</label><input id="f-supp" list="party-list"></div>
-            <div style="display:flex;gap:10px;margin-top:10px">
-                <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-add')">Cancel</button>
-                <button class="btn btn-gold" style="flex:1" onclick="saveFabric()">Save Fabric</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-bg" id="modal-sell">
-        <div class="modal">
-            <h2 class="ff-h">Generate Bill</h2><br>
-            <div class="fg"><label class="fl">Fabric</label><select id="s-fab" onchange="updateSellRate()"></select></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                <div class="fg"><label class="fl">Meters</label><input type="number" id="s-m" oninput="calcSell()"></div>
-                <div class="fg"><label class="fl">Rate</label><input type="number" id="s-r" oninput="calcSell()"></div>
-            </div>
-            <div class="fg"><label class="fl">Party Name</label><input id="s-party" list="party-list"></div>
-            <div class="fg"><label class="fl">WhatsApp Number</label><input type="number" id="s-phone"></div>
-            
-            <div style="background:var(--gold-light);padding:15px;border-radius:12px;margin-bottom:15px">
-                <label style="display:flex;align-items:center;gap:10px;font-weight:700">
-                    <input type="checkbox" id="s-kacha" style="width:18px;height:18px"> Kacha Bill (No Stock Deduction)
-                </label>
-            </div>
-            
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                <div class="fg"><label class="fl">Paid Amt</label><input type="number" id="s-paid" oninput="calcSell()"></div>
-                <div class="fg"><label class="fl">Total Bill</label><div id="s-total" style="font-weight:800;font-size:20px">₹0</div></div>
-            </div>
-            
-            <button class="btn btn-gold" style="width:100%" onclick="processSale()">Confirm & WhatsApp Bill</button>
-        </div>
-    </div>
-
-    <div class="modal-bg" id="modal-settings">
-        <div class="modal" style="max-width:400px">
-            <h2 class="ff-h">Owner Settings</h2><br>
-            <div class="fg"><label class="fl">Your UPI ID</label><input id="set-upi"></div>
-            <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:20px">
-                <h4 style="color:var(--red)">Reset Everything</h4>
-                <p style="font-size:11px;color:var(--muted);margin:5px 0 15px">Warning: This will delete all fabrics and bills.</p>
-                <button class="btn" style="background:#fee2e2;color:var(--red);width:100%" onclick="hardReset()">Hard Reset Account</button>
-            </div>
-            <div style="margin-top:20px;text-align:right">
-                <button class="btn btn-ghost" onclick="closeModal('modal-settings')">Close</button>
-                <button class="btn btn-gold" onclick="saveSettings()">Save</button>
-            </div>
-        </div>
-    </div>
-
-    <div style="display:none">
-        <div id="bill-template" style="padding:40px;width:600px;font-family:sans-serif;color:#000">
-            <h1 id="b-f-name" style="text-align:center;margin-bottom:5px">Firm Name</h1>
-            <p id="b-f-addr" style="text-align:center;font-size:12px">Address</p>
-            <p id="b-f-gst" style="text-align:center;font-size:12px">GST: </p>
-            <hr style="margin:20px 0">
-            <div style="display:flex;justify-content:space-between">
-                <div><b>To:</b> <span id="b-p-name">Party</span></div>
-                <div><b>Date:</b> <span id="b-date"></span></div>
-            </div>
-            <table style="width:100%;margin-top:30px;border-collapse:collapse">
-                <tr style="background:#eee">
-                    <th style="padding:10px;text-align:left">Item</th>
-                    <th style="padding:10px">Qty</th>
-                    <th style="padding:10px">Rate</th>
-                    <th style="padding:10px;text-align:right">Total</th>
-                </tr>
-                <tr>
-                    <td id="b-item" style="padding:15px;border-bottom:1px solid #ddd">Fabric Name</td>
-                    <td id="b-qty" style="padding:15px;text-align:center;border-bottom:1px solid #ddd">0</td>
-                    <td id="b-rate" style="padding:15px;text-align:center;border-bottom:1px solid #ddd">0</td>
-                    <td id="b-total" style="padding:15px;text-align:right;border-bottom:1px solid #ddd">0</td>
-                </tr>
-            </table>
-            <div style="margin-top:30px;text-align:right">
-                <h3>Final Total: ₹<span id="b-final">0</span></h3>
-                <p>Paid: ₹<span id="b-paid">0</span> | Balance: ₹<span id="b-bal">0</span></p>
             </div>
         </div>
     </div>
 </div>
 
-<div id="toast" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--panel);color:white;padding:12px 25px;border-radius:12px;display:none;z-index:999999"></div>
+<div class="modal-bg" id="modal-settings">
+    <div class="modal" style="max-width:400px">
+        <h2 class="ff-h" style="margin-bottom:20px">⚙️ Global Settings</h2>
+        <div class="fg"><label class="fl">Business UPI ID (For QR on Bills)</label><input id="set-upi" placeholder="9876543210@paytm"></div>
+        <hr style="border:none;border-top:1px dashed var(--border);margin:25px 0">
+        <div style="background:#fef2f2;border:1px solid #fecaca;padding:20px;border-radius:12px">
+            <h4 style="color:var(--red);margin-bottom:5px">Danger Zone</h4>
+            <p style="font-size:11px;color:var(--muted);margin-bottom:15px">Wipe entire account. Cannot be undone.</p>
+            <button class="btn btn-full" style="background:white;color:var(--red);border:1px solid var(--red)" onclick="handleHardReset()">⚠️ Hard Reset Everything</button>
+        </div>
+        <div style="margin-top:25px;display:flex;gap:10px">
+            <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-settings')">Cancel</button>
+            <button class="btn btn-gold" style="flex:1" onclick="saveSettings()">Save</button>
+        </div>
+    </div>
+</div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<div class="modal-bg" id="modal-add">
+    <div class="modal">
+        <h2 class="ff-h" style="margin-bottom:20px">📥 Add New Fabric</h2>
+        <div class="fg"><label class="fl">Fabric Name *</label><input id="m-name" placeholder="e.g. Premium Banarasi"></div>
+        <div class="g2">
+            <div class="fg"><label class="fl">Quality *</label><select id="m-type"></select></div>
+            <div class="fg"><label class="fl">Color</label><input id="m-color" list="color-list" placeholder="e.g. Maroon"></div>
+        </div>
+        <div class="g2">
+            <div class="fg"><label class="fl">Meters Added *</label><input type="number" id="m-m" placeholder="0"></div>
+            <div class="fg"><label class="fl">Low Stock Alert At</label><input type="number" id="m-t" placeholder="50"></div>
+        </div>
+        <div class="g2 hide-staff">
+            <div class="fg"><label class="fl">Cost Rate (₹/m)</label><input type="number" id="m-r" placeholder="0"></div>
+            <div class="fg"><label class="fl">Supplier</label><input id="m-s" list="party-list" placeholder="e.g. Rajan Mills"></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:20px">
+            <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-add')">Cancel</button>
+            <button class="btn btn-gold" style="flex:2" onclick="saveFabric()">Save Fabric</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-bg" id="modal-addstock">
+    <div class="modal" style="max-width:400px">
+        <h2 class="ff-h" style="margin-bottom:5px">📥 Add Stock</h2>
+        <p id="as-name" style="font-size:13px;color:var(--gold);font-weight:700;margin-bottom:20px">Fabric Name</p>
+        <div class="fg"><label class="fl">New Meters Added</label><input type="number" id="as-m" placeholder="0"></div>
+        <div class="fg hide-staff"><label class="fl">Supplier Name (Optional)</label><input id="as-s" list="party-list"></div>
+        <div style="display:flex;gap:10px;margin-top:20px">
+            <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-addstock')">Cancel</button>
+            <button class="btn btn-gold" style="flex:1" onclick="saveAddStock()">Update Stock</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-bg" id="modal-quicksell">
+    <div class="modal">
+        <h2 class="ff-h" style="margin-bottom:5px">💰 Quick Sell</h2>
+        <p id="qs-name" style="font-size:13px;color:var(--gold);font-weight:700;margin-bottom:20px">Fabric Name</p>
+        
+        <div class="g2">
+            <div class="fg"><label class="fl">Meters Sold</label><input type="number" id="qs-m" oninput="calcQS()"></div>
+            <div class="fg hide-staff"><label class="fl">Rate (₹/m)</label><input type="number" id="qs-r" oninput="calcQS()"></div>
+        </div>
+        
+        <div class="g2 hide-staff">
+            <div class="fg"><label class="fl">Discount (₹)</label><input type="number" id="qs-d" placeholder="0" oninput="calcQS()"></div>
+            <div class="fg"><label class="fl">GST Rate</label>
+                <select id="qs-g" onchange="calcQS()"><option value="0">0%</option><option value="5" selected>5%</option><option value="12">12%</option></select>
+            </div>
+        </div>
+
+        <div class="hide-staff" style="display:flex;justify-content:space-between;align-items:center;background:var(--bg);padding:15px;border-radius:10px;border:1px solid var(--border);margin-bottom:15px">
+            <span style="font-weight:800;font-size:12px">Total Payable</span>
+            <span id="qs-total" style="font-family:var(--ff-h);font-size:24px;font-weight:800;color:var(--gold)">₹0</span>
+        </div>
+
+        <div class="fg"><label class="fl">Party Name</label><input id="qs-c" list="party-list"></div>
+        
+        <div class="hide-staff" style="background:var(--gold-light);padding:15px;border-radius:12px;border:1px solid #fde047;margin-bottom:15px;cursor:pointer">
+            <label style="display:flex;align-items:center;gap:10px;font-weight:700;color:var(--gold-dark);cursor:pointer">
+                <input type="checkbox" id="qs-kacha" style="width:20px;height:20px;accent-color:var(--gold)"> 📝 Make Kacha Bill (Estimate)
+            </label>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:20px">
+            <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-quicksell')">Cancel</button>
+            <button class="btn btn-gold hide-staff" style="flex:2" onclick="saveQuickSell(true)">Generate Bill</button>
+            <button class="btn btn-gold" id="qs-only-btn" style="flex:2" onclick="saveQuickSell(false)">Record Sale</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-bg" id="modal-pur">
+    <div class="modal">
+        <h2 class="ff-h" style="margin-bottom:20px">📥 Record Purchase</h2>
+        <div class="fg"><label class="fl">Supplier / Party Name *</label><input id="p-party" list="party-list"></div>
+        <div class="fg"><label class="fl">Item / Fabric Name *</label><input id="p-item"></div>
+        <div class="g2">
+            <div class="fg"><label class="fl">Meters *</label><input type="number" id="p-m" oninput="calcPur()"></div>
+            <div class="fg"><label class="fl">Rate (₹/m) *</label><input type="number" id="p-r" oninput="calcPur()"></div>
+        </div>
+        <div class="g2">
+            <div class="fg"><label class="fl">GST Rate</label>
+                <select id="p-gst" onchange="calcPur()"><option value="0">0%</option><option value="5" selected>5%</option><option value="12">12%</option></select>
+            </div>
+            <div class="fg"><label class="fl">Total Amount</label><div id="p-total" style="font-family:var(--ff-h);font-size:20px;font-weight:800;color:var(--blue);padding-top:10px">₹0</div></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:20px">
+            <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-pur')">Cancel</button>
+            <button class="btn btn-gold" style="flex:2;background:var(--blue)" onclick="savePurchase()">Record Purchase</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-bg" id="modal-profile">
+    <div class="modal" style="max-width:400px">
+        <h2 class="ff-h" id="ep-title" style="margin-bottom:20px">Add Profile</h2>
+        <input type="hidden" id="ep-id">
+        <div class="fg"><label class="fl">Name *</label><input id="ep-name" placeholder="e.g. Suresh"></div>
+        <div class="fg"><label class="fl">Role *</label>
+            <select id="ep-role">
+                <option value="owner">👑 Owner (Full Admin)</option>
+                <option value="manager">💼 Manager (View All, No Delete)</option>
+                <option value="staff" selected>👦 Staff (Billing Only)</option>
+            </select>
+        </div>
+        <div class="fg">
+            <label class="fl">4-Digit PIN (Optional)</label>
+            <input type="password" id="ep-pin" maxlength="4" style="letter-spacing:5px;font-family:monospace" placeholder="Leave empty for open access">
+        </div>
+        <div style="display:flex;gap:10px;margin-top:25px">
+            <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-profile')">Cancel</button>
+            <button class="btn btn-gold" style="flex:1" onclick="saveProfile()">Save</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-bg" id="modal-pin" style="z-index:10500">
+    <div class="modal" style="width:320px;text-align:center">
+        <div style="font-size:40px;margin-bottom:10px">🔒</div>
+        <h2 class="ff-h">Enter PIN</h2>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:20px">Protected Profile</p>
+        <input type="password" id="pin-input" maxlength="4" style="text-align:center;font-size:24px;letter-spacing:10px;margin-bottom:20px" placeholder="••••">
+        <div style="display:flex;gap:10px">
+            <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-pin')">Cancel</button>
+            <button class="btn btn-gold" style="flex:1" onclick="verifyPin()">Unlock</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-bg" id="modal-bill">
+    <div class="modal" style="max-width:550px;padding:0;overflow:hidden;background:var(--bg)">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:15px 25px;background:white;border-bottom:1px solid var(--border)">
+            <h2 class="ff-h" style="margin:0">Invoice Preview</h2>
+            <button style="background:none;border:none;font-size:20px;cursor:pointer" onclick="closeModal('modal-bill')">✕</button>
+        </div>
+        
+        <div style="padding:25px;max-height:65dvh;overflow-y:auto;position:relative">
+            <div id="bill-template" style="background:white;padding:30px;color:black;font-family:sans-serif;position:relative;border:1px solid var(--border);box-shadow:var(--shadow-md)">
+                <div id="bill-watermark" class="watermark">ESTIMATE</div>
+                <div style="text-align:center;border-bottom:2px solid #000;padding-bottom:15px;margin-bottom:20px">
+                    <h1 id="b-firm" style="margin:0;font-size:28px;text-transform:uppercase">Firm Name</h1>
+                    <div id="b-addr" style="font-size:12px;margin-top:5px;color:#444">Address goes here</div>
+                    <div id="b-gst" style="font-size:12px;margin-top:2px;font-weight:bold">GSTIN: </div>
+                </div>
+                
+                <div style="display:flex;justify-content:space-between;margin-bottom:20px;font-size:14px">
+                    <div>
+                        <div style="font-size:10px;color:#666;text-transform:uppercase;font-weight:bold">Billed To:</div>
+                        <div id="b-party" style="font-size:16px;font-weight:bold">Party Name</div>
+                        <div id="b-party-gst" style="font-size:12px"></div>
+                    </div>
+                    <div style="text-align:right">
+                        <div><b>Invoice No:</b> <span id="b-no"></span></div>
+                        <div><b>Date:</b> <span id="b-date"></span></div>
+                        <div><b>Type:</b> <span id="b-type"></span></div>
+                    </div>
+                </div>
+
+                <div id="b-dispatch" style="margin-bottom:20px;font-size:12px;border:1px solid #ccc;padding:10px;display:none">
+                    <b>Dispatch Details:</b><br>
+                    <span id="b-trans"></span> | <span id="b-lr"></span> | <span id="b-eway"></span>
+                </div>
+
+                <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px">
+                    <tr style="background:#f5f5f5;border-bottom:2px solid #000">
+                        <th style="padding:10px;text-align:left">Description of Goods</th>
+                        <th style="padding:10px;text-align:center">Qty (Meters)</th>
+                        <th style="padding:10px;text-align:center">Rate</th>
+                        <th style="padding:10px;text-align:right">Amount</th>
+                    </tr>
+                    <tr style="border-bottom:1px solid #ccc">
+                        <td id="b-item" style="padding:15px 10px;font-weight:bold">Item</td>
+                        <td id="b-qty" style="padding:15px 10px;text-align:center">0</td>
+                        <td id="b-rate" style="padding:15px 10px;text-align:center">0</td>
+                        <td id="b-amt" style="padding:15px 10px;text-align:right">0</td>
+                    </tr>
+                </table>
+
+                <div style="display:flex;justify-content:flex-end;margin-bottom:20px;font-size:14px">
+                    <div style="width:250px">
+                        <div id="b-disc-row" style="display:flex;justify-content:space-between;padding:5px 0;color:red;display:none">
+                            <span>Discount:</span><span id="b-disc">-0</span>
+                        </div>
+                        <div id="b-tax-box" style="border-top:1px solid #ccc;border-bottom:1px solid #ccc;padding:10px 0;margin:10px 0">
+                            </div>
+                        <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:20px;font-weight:900">
+                            <span>Total Payable:</span><span id="b-final">₹0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:40px">
+                    <div id="b-qr-box" style="display:none;text-align:center">
+                        <img id="b-qr" src="" style="width:100px;height:100px;border:1px solid #ccc;padding:5px"><br>
+                        <span style="font-size:10px">Scan to Pay via UPI</span>
+                    </div>
+                    <div style="text-align:center">
+                        <div style="width:150px;border-bottom:1px solid #000;margin-bottom:5px"></div>
+                        <span style="font-size:12px;font-weight:bold">Authorized Signatory</span>
+                    </div>
+                </div>
+                <div style="text-align:center;margin-top:30px;font-size:10px;color:#888;text-transform:uppercase">Generated by StockSaathi</div>
+            </div>
+        </div>
+        
+        <div style="padding:20px;background:white;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-ghost" style="flex:1" onclick="printBill()">🖨️ Print</button>
+            <button class="btn" style="flex:1;background:#25D366;color:white" onclick="waBill()">💬 WhatsApp Text</button>
+            <button class="btn btn-gold" style="flex:2" onclick="shareBillPDF()" id="share-pdf-btn">📤 Share PDF</button>
+        </div>
+    </div>
+</div>
 
 <script>
-// ══ APP STATE ══
-var db, auth, user, data = { inv:[], sales:[], firm:{}, profiles:[], master:{colors:[], qualities:[]} };
+// ══ CORE STATE & INIT ══
+var db, auth, user, data = { inv:[], sales:[], purchases:[], firm:{}, profiles:[], master:{colors:[], qualities:[]} };
 var currentProfile = null;
 var setupStep = 1;
+var activeLedgerTab = 'sales';
+var pendingProfile = null;
+var lastSaleData = null; // Used for PDF generation
 
-// ══ INITIALIZATION ══
+// Master Defaults
+const defaultColors = ["Red", "Pink", "Rani Pink", "Maroon", "Wine", "Navy Blue", "Royal Blue", "Sky Blue", "Bottle Green", "Mint Green", "Olive", "Yellow", "Mustard", "Orange", "Peach", "Black", "White", "Off White", "Cream", "Beige", "Gold", "Silver", "Grey", "Purple", "Lavender", "Magenta", "Turquoise", "Teal", "Brown", "Coffee", "Rust", "Coral", "Fuchsia", "Sea Green"];
+const defaultQualities = ["Georgette", "Cotton", "Silk", "Chiffon", "Velvet", "Satin", "Net", "Rayon", "Linen", "Organza", "Crepe", "Jacquard", "Banarasi", "Other"];
+
 window.onload = function() {
     firebase.initializeApp({
         apiKey: "AIzaSyB5oBVuaur5Yl_gxfde9NFYtanLZdr6Qjs",
@@ -307,36 +670,77 @@ window.onload = function() {
     });
     db = firebase.firestore();
     auth = firebase.auth();
+    
+    // Offline capability
+    db.enablePersistence().catch(err => console.log("Offline mode error", err));
 
-    auth.onAuthStateChanged(u => {
-        if(u) { user = u; loadData(); }
-        else { showGoogleLogin(); }
+    auth.onAuthStateChanged(async u => {
+        if(u) { 
+            user = u; 
+            await loadData(); 
+        } else { 
+            showGoogleLogin(); 
+        }
     });
 };
 
 function showGoogleLogin() {
-    document.body.innerHTML = `<div style="height:100vh;display:flex;align-items:center;justify-content:center;background:var(--panel);flex-direction:column;gap:20px">
-        <h1 style="color:var(--gold);font-family:var(--ff-h)">StockSaathi</h1>
-        <button class="btn btn-gold" onclick="auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())">Sign in with Google</button>
+    document.body.innerHTML = `<div style="height:100dvh;display:flex;align-items:center;justify-content:center;background:var(--panel);flex-direction:column;gap:20px;text-align:center">
+        <div class="logo-icon" style="width:80px;height:80px;font-size:40px;margin-bottom:10px">SS</div>
+        <h1 style="color:var(--gold);font-family:var(--ff-h);font-size:40px;line-height:1">StockSaathi</h1>
+        <p style="color:var(--muted);margin-bottom:20px">Surat's Premium Textile ERP</p>
+        <button class="btn btn-gold" style="padding:15px 30px;font-size:18px" onclick="auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())">Sign in with Google</button>
     </div>`;
 }
 
-// ══ DATA HANDLING ══
+// ══ DATA SYNC ══
 async function loadData() {
-    let doc = await db.collection('users').doc(user.uid).get();
-    if(doc.exists) {
-        data = doc.data();
-        if(!data.firm || !data.firm.name) startSetup();
-        else renderProfiles();
-    } else { startSetup(); }
+    try {
+        let doc = await db.collection('users').doc(user.uid).get();
+        if(doc.exists) {
+            data = doc.data();
+            // Fallbacks for older accounts
+            if(!data.inv) data.inv = [];
+            if(!data.sales) data.sales = [];
+            if(!data.purchases) data.purchases = [];
+            if(!data.master) data.master = { colors: defaultColors, qualities: defaultQualities };
+            
+            if(!data.firm || !data.firm.name) { startSetup(); } 
+            else { initApp(); }
+        } else {
+            // New user setup
+            data = { inv:[], sales:[], purchases:[], firm:{}, profiles:[], master:{ colors: defaultColors, qualities: defaultQualities }, settings:{upi:''} };
+            startSetup();
+        }
+    } catch(e) { console.error(e); alert("Network Error. Check connection."); }
 }
 
-async function sync() { 
-    await db.collection('users').doc(user.uid).set(data); 
-    updateUI(); 
+async function sync() { await db.collection('users').doc(user.uid).set(data); refreshUI(); }
+
+function initApp() {
+    populateDatalists();
+    
+    // Realtime Listener for Sessions
+    db.collection('users').doc(user.uid).onSnapshot((doc) => {
+        if(doc.exists && currentProfile) {
+            let d = doc.data();
+            let p = d.profiles.find(x => x.id === currentProfile.id);
+            if(p && p.activeSession && p.activeSession !== window.currentSessionId) {
+                alert("🔒 Logged out: Profile opened on another device!");
+                switchProfile();
+            }
+        }
+    });
+
+    let savedP = sessionStorage.getItem('ss_p_id');
+    if(savedP) {
+        let p = data.profiles.find(x => x.id === savedP);
+        if(p) { finishProfileLogin(p); return; }
+    }
+    renderProfiles();
 }
 
-// ══ ONBOARDING SETUP ══
+// ══ ONBOARDING WALKTHROUGH ══
 function startSetup() {
     document.getElementById('setup-screen').style.display = 'flex';
     setupStep = 1; renderSetup();
@@ -346,234 +750,693 @@ function renderSetup() {
     const box = document.getElementById('setup-content');
     const txt = document.getElementById('setup-step-txt');
     txt.innerText = `STEP ${setupStep} OF 4`;
-    if(setupStep === 1) box.innerHTML = `<div class="fg"><label class="fl">Firm Name</label><input id="s-fn" placeholder="e.g. Rishi Textiles"></div><div class="fg"><label class="fl">Phone</label><input id="s-ph" placeholder="WhatsApp Number"></div>`;
-    if(setupStep === 2) box.innerHTML = `<div class="fg"><label class="fl">Shop Address</label><textarea id="s-ad" rows="3" placeholder="Full address for bills"></textarea></div>`;
-    if(setupStep === 3) box.innerHTML = `<div class="fg"><label class="fl">GSTIN (Optional)</label><input id="s-gst" placeholder="e.g. 24XXXXX0000X0Z0"></div>`;
-    if(setupStep === 4) box.innerHTML = `<div class="fg"><label class="fl">Malik PIN</label><input type="password" id="s-pin" maxlength="4" style="text-align:center;font-size:24px;letter-spacing:10px" placeholder="••••"></div>`;
+    
+    if(setupStep === 1) box.innerHTML = `<div class="fg"><label class="fl">Firm Name *</label><input id="su-fn" placeholder="e.g. Rishi Textiles"></div><div class="fg"><label class="fl">WhatsApp Number</label><input type="tel" id="su-ph" placeholder="Optional"></div>`;
+    if(setupStep === 2) box.innerHTML = `<div class="fg"><label class="fl">Shop Address (For Bills)</label><textarea id="su-ad" rows="3" placeholder="Full address..."></textarea></div>`;
+    if(setupStep === 3) box.innerHTML = `<div class="fg"><label class="fl">GSTIN (Optional)</label><input id="su-gst" placeholder="e.g. 24XXXXX0000X0Z0"></div>`;
+    if(setupStep === 4) box.innerHTML = `<div class="fg"><label class="fl">Owner PIN</label><p style="font-size:12px;color:var(--muted);margin-bottom:10px">Secure your Malik profile</p><input type="password" id="su-pin" maxlength="4" style="text-align:center;font-size:24px;letter-spacing:10px;border-color:var(--gold)" placeholder="••••"></div>`;
 }
 
 async function nextSetupStep() {
     if(setupStep === 1) {
-        data.firm = { name: document.getElementById('s-fn').value, phone: document.getElementById('s-ph').value };
-        if(!data.firm.name) return alert("Firm Name required!");
-    } else if(setupStep === 2) data.firm.address = document.getElementById('s-ad').value;
-    else if(setupStep === 3) data.firm.gst = document.getElementById('s-gst').value;
-    else if(setupStep === 4) {
-        let pin = document.getElementById('s-pin').value;
-        if(pin.length < 4) return alert("Set 4-digit PIN");
+        data.firm = { name: document.getElementById('su-fn').value.trim(), phone: document.getElementById('su-ph').value.trim() };
+        if(!data.firm.name) return toast("Firm Name is required!");
+    } else if(setupStep === 2) {
+        data.firm.address = document.getElementById('su-ad').value.trim();
+    } else if(setupStep === 3) {
+        data.firm.gst = document.getElementById('su-gst').value.trim();
+    } else if(setupStep === 4) {
+        let pin = document.getElementById('su-pin').value;
         data.profiles = [
-            { id:'p1', name:'Malik', role:'owner', pin: pin, activeSession:'' },
-            { id:'p2', name:'Manager', role:'manager', pin: '', activeSession:'' },
-            { id:'p3', name:'Staff', role:'staff', pin: '', activeSession:'' }
+            { id: 'm', name: 'Malik', role: 'owner', pin: pin, activeSession: '' },
+            { id: 's', name: 'Staff', role: 'staff', pin: '', activeSession: '' }
         ];
-        data.master = { colors: ["Red", "Pink", "Maroon", "Navy Blue", "Bottle Green", "Black", "White"], qualities: ["Georgette", "Cotton", "Silk"] };
-        document.getElementById('setup-screen').style.display='none';
-        await sync(); renderProfiles(); return;
+        document.getElementById('setup-screen').style.display = 'none';
+        await sync(); initApp(); return;
     }
     setupStep++; renderSetup();
 }
 
-// ══ PROFILE SYSTEM ══
+// ══ NETFLIX PROFILES ══
 function renderProfiles() {
     document.getElementById('profile-screen').style.display = 'flex';
-    document.getElementById('p-container').innerHTML = data.profiles.map(p => `
-        <div class="p-card" onclick="selectProfile('${p.id}')">
-            <div class="p-avatar">${p.role==='owner'?'👑':(p.role==='manager'?'💼':'👦')}</div>
-            <div style="color:white;font-weight:700">${p.name}</div>
-        </div>`).join('');
+    document.getElementById('p-container').innerHTML = data.profiles.map(p => {
+        let avatar = p.role === 'owner' ? '👑' : (p.role === 'manager' ? '💼' : '👦');
+        let lock = p.pin ? '🔒 ' : '';
+        return `<div class="p-card" onclick="reqProfile('${p.id}')">
+            <div class="p-avatar" style="${p.role!=='owner'?'background:#333':''}">${avatar}</div>
+            <div style="color:white;font-weight:700;font-family:var(--ff-h);font-size:20px">${p.name}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:5px">${lock}${p.role.toUpperCase()}</div>
+        </div>`;
+    }).join('');
 }
 
-async function selectProfile(id) {
+function reqProfile(id) {
     let p = data.profiles.find(x => x.id === id);
-    if(p.role === 'owner' && p.pin) {
-        let entry = prompt("Enter Malik PIN:");
-        if(entry !== p.pin) return alert("Wrong PIN");
+    if(p.pin) {
+        pendingProfile = p;
+        document.getElementById('pin-input').value = '';
+        openModal('modal-pin');
+        setTimeout(() => document.getElementById('pin-input').focus(), 100);
+    } else {
+        finishProfileLogin(p);
     }
+}
+
+function verifyPin() {
+    if(document.getElementById('pin-input').value === pendingProfile.pin) {
+        closeModal('modal-pin'); finishProfileLogin(pendingProfile);
+    } else {
+        toast("❌ Incorrect PIN"); document.getElementById('pin-input').value = '';
+    }
+}
+
+async function finishProfileLogin(p) {
     currentProfile = p;
-    window.currentSessionId = Date.now().toString(36);
+    sessionStorage.setItem('ss_p_id', p.id);
+    
+    window.currentSessionId = Date.now().toString(36) + Math.random().toString(36).substr(2);
     p.activeSession = window.currentSessionId;
+    await sync();
     
     document.getElementById('profile-screen').style.display = 'none';
     document.getElementById('active-p-name').innerText = p.name;
-    document.body.className = p.role + '-mode';
     
-    await sync();
-    setupSessionListener();
-}
-
-function setupSessionListener() {
-    db.collection('users').doc(user.uid).onSnapshot(doc => {
-        let d = doc.data();
-        let myP = d.profiles.find(x => x.id === currentProfile.id);
-        if(myP.activeSession && myP.activeSession !== window.currentSessionId) {
-            alert("🔒 Logged out: Profile opened on another device!");
-            location.reload();
-        }
-    });
-}
-
-// ══ APP LOGIC ══
-function updateUI() {
-    let m = data.inv.reduce((a,b) => a + parseFloat(b.meters || 0), 0);
-    document.getElementById('stat-m').innerText = m.toLocaleString() + ' m';
-    let u = data.sales.reduce((a,b) => a + (b.dueAmt || 0), 0);
-    document.getElementById('stat-u').innerText = '₹' + u.toLocaleString();
-    renderInv();
-    populateMasterLists();
-}
-
-function renderInv() {
-    const q = document.getElementById('inv-search').value.toLowerCase();
-    const grid = document.getElementById('inv-grid');
-    grid.innerHTML = data.inv.filter(f => f.name.toLowerCase().includes(q) || f.color.toLowerCase().includes(q)).map(f => `
-        <div class="fab-card">
-            <div>
-                <b>${f.name}</b><br>
-                <small>${f.quality} | ${f.color}</small>
-            </div>
-            <div style="text-align:right">
-                <div style="font-weight:800">${f.meters}m</div>
-                <button class="btn" style="padding:4px 8px;font-size:10px;margin-top:5px" onclick="openSell('${f.id}')">Sell</button>
-            </div>
-        </div>`).join('');
-}
-
-function populateMasterLists() {
-    document.getElementById('f-qual').innerHTML = data.master.qualities.map(q => `<option>${q}</option>`).join('');
-    document.getElementById('color-list').innerHTML = data.master.colors.map(c => `<option value="${c}">`).join('');
+    document.body.classList.remove('staff-mode', 'manager-mode');
+    if(p.role !== 'owner') document.body.classList.add(p.role + '-mode');
     
-    let parties = new Set();
-    data.sales.forEach(s => parties.add(s.customer));
-    document.getElementById('party-list').innerHTML = Array.from(parties).map(p => `<option value="${p}">`).join('');
-    
-    // Manage Master Data Page
-    document.getElementById('list-qualities').innerHTML = data.master.qualities.map((q,i) => `<div>${q} <span onclick="delMaster('qualities',${i})">✕</span></div>`).join('');
-    document.getElementById('list-colors').innerHTML = data.master.colors.map((c,i) => `<div>${c} <span onclick="delMaster('colors',${i})">✕</span></div>`).join('');
+    goto('dash', document.querySelector('.nav-item')); // Go to dash
 }
 
-function openSell(id) {
-    let f = data.inv.find(x => x.id === id);
-    document.getElementById('s-fab').innerHTML = `<option value="${f.id}">${f.name}</option>`;
-    document.getElementById('s-r').value = f.rate;
-    openModal('modal-sell');
+function switchProfile() {
+    sessionStorage.removeItem('ss_p_id');
+    currentProfile = null;
+    location.reload();
 }
 
-function updateSellRate() {
-    let id = document.getElementById('s-fab').value;
-    let f = data.inv.find(x => x.id === id);
-    document.getElementById('s-r').value = f.rate;
-}
-
-function calcSell() {
-    let m = document.getElementById('s-m').value || 0;
-    let r = document.getElementById('s-r').value || 0;
-    document.getElementById('s-total').innerText = '₹' + (m * r);
-}
-
-async function processSale() {
-    let m = parseFloat(document.getElementById('s-m').value);
-    let r = parseFloat(document.getElementById('s-r').value);
-    let id = document.getElementById('s-fab').value;
-    let name = document.getElementById('s-party').value;
-    let phone = document.getElementById('s-phone').value;
-    let isKacha = document.getElementById('s-kacha').checked;
-    let paid = parseFloat(document.getElementById('s-paid').value) || 0;
-    
-    let total = m * r;
-    let f = data.inv.find(x => x.id === id);
-    
-    if(!isKacha) f.meters -= m;
-    
-    let sale = {
-        id: Date.now(),
-        customer: name,
-        customerPhone: phone,
-        meters: m,
-        rate: r,
-        total: total,
-        paidAmt: paid,
-        dueAmt: total - paid,
-        isKacha: isKacha,
-        fabName: f.name,
-        date: new Date().toISOString()
-    };
-    
-    data.sales.push(sale);
-    await sync();
-    closeModal('modal-sell');
-    generatePDF(sale);
-}
-
-function generatePDF(s) {
-    document.getElementById('b-f-name').innerText = data.firm.name;
-    document.getElementById('b-f-addr').innerText = data.firm.address;
-    document.getElementById('b-f-gst').innerText = "GST: " + (data.firm.gst || "N/A");
-    document.getElementById('b-p-name').innerText = s.customer;
-    document.getElementById('b-date').innerText = new Date(s.date).toLocaleDateString();
-    document.getElementById('b-item').innerText = s.fabName;
-    document.getElementById('b-qty').innerText = s.meters + "m";
-    document.getElementById('b-rate').innerText = "₹" + s.rate;
-    document.getElementById('b-total').innerText = "₹" + s.total;
-    document.getElementById('b-final').innerText = s.total;
-    document.getElementById('b-paid').innerText = s.paidAmt;
-    document.getElementById('b-bal').innerText = s.dueAmt;
-    
-    let wm = document.getElementById('bill-watermark');
-    wm.style.display = s.isKacha ? 'block' : 'none';
-
-    const element = document.getElementById('bill-template');
-    element.parentElement.style.display = 'block';
-    
-    html2pdf().from(element).save('Bill_'+s.customer+'.pdf').then(() => {
-        element.parentElement.style.display = 'none';
-        let msg = `Jai Jinendra ${s.customer}, please find attached your bill for Rs.${s.total}. Balance: Rs.${s.dueAmt}. - ${data.firm.name}`;
-        window.open(`https://wa.me/91${s.phone}?text=${encodeURIComponent(msg)}`);
-    });
-}
-
-// ══ UI NAV ══
+// ══ UI HELPERS ══
 function goto(pg, el) {
+    if(currentProfile && currentProfile.role !== 'owner' && (pg==='master'||pg==='profiles')) return toast("🔒 Owner Access Required");
+    if(currentProfile && currentProfile.role === 'staff' && (pg==='ledger'||pg==='udhaar'||pg==='calc'||pg==='report')) return toast("🔒 Access Denied");
+    
     document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
     document.getElementById('pg-' + pg).classList.add('on');
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     if(el) el.classList.add('active');
-    document.getElementById('pg-title').innerText = pg.charAt(0).toUpperCase() + pg.slice(1);
+    
+    if(pg === 'dash') refreshUI();
+    if(pg === 'inv') renderInv();
+    if(pg === 'sales') { populateDatalists(); document.getElementById('s-fab').innerHTML = data.inv.map(f => `<option value="${f.id}">${f.name} (${f.meters}m)</option>`).join(''); calcSell(); renderSalesList(); }
+    if(pg === 'ledger') { renderLedger(); renderLedgerSummary(); }
     if(pg === 'udhaar') renderUdhaar();
+    if(pg === 'master') renderMaster();
+    if(pg === 'profiles') renderAdminProfiles();
+    if(pg === 'report') renderReport();
+    
+    if(window.innerWidth <= 768) closeModal('mob-overlay'); // close mob menu
 }
 
-function renderUdhaar() {
-    let dues = {};
-    data.sales.forEach(s => {
-        if(s.dueAmt > 0) {
-            if(!dues[s.customer]) dues[s.customer] = { total: 0, phone: s.customerPhone };
-            dues[s.customer].total += s.dueAmt;
-        }
+function toggleMob() {
+    let sb = document.querySelector('.sb');
+    let ov = document.getElementById('mob-overlay');
+    if(sb.style.display === 'flex') { sb.style.display = 'none'; ov.style.display = 'none'; } 
+    else { sb.style.display = 'flex'; sb.style.position = 'fixed'; sb.style.height = '100dvh'; ov.style.display = 'block'; }
+}
+
+function fv(v) { return v ? v.toLocaleString('en-IN') : '0'; }
+function esc(t) { return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+function toast(m) { let t=document.getElementById('toast'); t.innerText=m; t.style.display='block'; setTimeout(()=>t.style.display='none',3000); }
+
+// ══ MASTER DATA (DATALISTS) ══
+function populateDatalists() {
+    document.getElementById('color-list').innerHTML = data.master.colors.map(c => `<option value="${esc(c)}">`).join('');
+    
+    let parties = new Set();
+    data.sales.forEach(s => { if(s.customer) parties.add(s.customer); });
+    data.purchases.forEach(p => { if(p.party) parties.add(p.party); });
+    document.getElementById('party-list').innerHTML = Array.from(parties).map(p => `<option value="${esc(p)}">`).join('');
+}
+
+// ══ INVENTORY & DASHBOARD ══
+function refreshUI() {
+    let m = data.inv.reduce((a,b) => a + parseFloat(b.meters || 0), 0);
+    let v = data.inv.reduce((a,b) => a + (parseFloat(b.meters||0) * parseFloat(b.rate||0)), 0);
+    document.getElementById('st-c').innerText = data.inv.length;
+    document.getElementById('st-m').innerText = m.toLocaleString() + ' m';
+    document.getElementById('st-v').innerText = '₹' + v.toLocaleString();
+    
+    let low = data.inv.filter(f => f.meters < (f.threshold || 50));
+    document.getElementById('st-l').innerText = low.length;
+    
+    let alHtml = low.map(f => `<div style="background:var(--red-light);color:var(--red);padding:10px 15px;border-radius:10px;margin-bottom:8px;font-size:13px;font-weight:700;border:1px solid #fca5a5">⚠️ ${f.name} is running low (${f.meters}m left)</div>`).join('');
+    document.getElementById('dash-alerts').innerHTML = alHtml || '<p style="color:var(--muted);font-size:13px">All stock levels are good!</p>';
+
+    document.getElementById('dash-grid').innerHTML = data.inv.slice(0,5).map(generateFabCard).join('') || '<p style="color:var(--muted)">No fabrics added yet.</p>';
+}
+
+function renderInv() {
+    let q = document.getElementById('inv-q').value.toLowerCase();
+    let list = data.inv.filter(f => (!window.catFilter || f.quality === window.catFilter) && (f.name.toLowerCase().includes(q) || f.color.toLowerCase().includes(q)));
+    
+    // Render Cat Filters
+    let cats = `<button class="pill ${!window.catFilter?'active':''}" style="font-size:13px;padding:8px 16px;border:1px solid var(--border);background:${!window.catFilter?'var(--gold-light)':'white'};color:${!window.catFilter?'var(--gold)':'var(--muted)'}" onclick="window.catFilter='';renderInv()">All</button>`;
+    data.master.qualities.slice(0,8).forEach(c => {
+        cats += `<button class="pill ${window.catFilter===c?'active':''}" style="font-size:13px;padding:8px 16px;border:1px solid var(--border);background:${window.catFilter===c?'var(--gold-light)':'white'};color:${window.catFilter===c?'var(--gold)':'var(--muted)'}" onclick="window.catFilter='${esc(c)}';renderInv()">${esc(c)}</button>`;
     });
-    document.getElementById('udhaar-list').innerHTML = Object.keys(dues).map(name => `
-        <div class="fab-card">
-            <div><b>${name}</b><br><span style="color:var(--red);font-weight:800">₹${dues[name].total}</span></div>
-            <a href="https://wa.me/91${dues[name].phone}" class="btn" style="background:#25D366;color:white;padding:8px">Remind</a>
-        </div>`).join('') || "No dues found.";
+    document.getElementById('inv-cat-filters').innerHTML = cats;
+    
+    document.getElementById('inv-grid').innerHTML = list.map(generateFabCard).join('') || '<p>No results.</p>';
 }
 
-// ══ SETTINGS ══
-function openSettings() { openModal('modal-settings'); }
-async function hardReset() {
-    if(confirm("DANGER! Delete everything?")) {
-        await db.collection('users').doc(user.uid).delete();
-        location.reload();
+function generateFabCard(f) {
+    let st = f.meters < f.threshold ? 'low' : (f.meters < f.threshold*1.5 ? 'med' : 'ok');
+    return `<div class="fab-card ${st}">
+        <div>
+            <div class="fab-name">${esc(f.name)}</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px">${esc(f.quality)} · ${esc(f.color)}</div>
+            <div style="display:flex;gap:5px">
+                <span class="pill" style="background:var(--bg);border:1px solid var(--border);color:var(--muted2)">₹${f.rate||0}/m</span>
+                ${st==='low'?'<span class="pill" style="background:var(--red-light);color:var(--red)">LOW</span>':''}
+            </div>
+        </div>
+        <div style="text-align:right">
+            <div style="font-family:var(--ff-h);font-size:26px;font-weight:800;color:var(--text);line-height:1">${f.meters}<span style="font-size:14px;color:var(--muted)">m</span></div>
+            <div style="display:flex;gap:5px;margin-top:10px;justify-content:flex-end">
+                <button class="btn btn-small" style="background:var(--green-light);color:var(--green)" onclick="openAddStock('${f.id}')">Add</button>
+                <button class="btn btn-small" style="background:var(--orange-light);color:var(--orange)" onclick="openQS('${f.id}')">Sell</button>
+                <button class="btn btn-small hide-staff hide-manager" style="background:var(--red-light);color:var(--red)" onclick="delFab('${f.id}')">✕</button>
+            </div>
+        </div>
+    </div>`;
+}
+
+function openAddFabricModal() {
+    document.getElementById('m-type').innerHTML = data.master.qualities.map(q => `<option>${q}</option>`).join('');
+    ['m-name','m-color','m-m','m-t','m-r','m-s'].forEach(id => document.getElementById(id).value='');
+    openModal('modal-add');
+}
+
+async function saveFabric() {
+    let n = document.getElementById('m-name').value.trim();
+    let m = parseFloat(document.getElementById('m-m').value) || 0;
+    if(!n) return toast("Name required");
+    
+    let f = {
+        id: 'f_'+Date.now(), name: n, quality: document.getElementById('m-type').value,
+        color: document.getElementById('m-color').value.trim(), meters: m,
+        threshold: parseFloat(document.getElementById('m-t').value) || 50,
+        rate: parseFloat(document.getElementById('m-r').value) || 0,
+        supplier: document.getElementById('m-s').value.trim(), date: new Date().toISOString()
+    };
+    data.inv.unshift(f);
+    
+    if(m > 0 && f.supplier) {
+        data.purchases.unshift({ id: 'p_'+Date.now(), party: f.supplier, item: f.name, meters: m, rate: f.rate, total: m*f.rate, date: new Date().toISOString(), note: 'Initial stock' });
+    }
+    
+    await sync(); closeModal('modal-add'); toast("Fabric Added!");
+}
+
+function openAddStock(id) {
+    let f = data.inv.find(x => x.id === id);
+    document.getElementById('as-name').innerText = f.name + ` (${f.meters}m available)`;
+    document.getElementById('as-m').value = ''; document.getElementById('as-s').value = f.supplier || '';
+    window.tempFabId = id; openModal('modal-addstock');
+}
+
+async function saveAddStock() {
+    let m = parseFloat(document.getElementById('as-m').value);
+    if(!m || m<=0) return toast("Enter valid meters");
+    let f = data.inv.find(x => x.id === window.tempFabId);
+    f.meters += m;
+    let s = document.getElementById('as-s').value.trim();
+    if(s) f.supplier = s;
+    
+    data.purchases.unshift({ id: 'p_'+Date.now(), party: f.supplier||'Unknown', item: f.name, meters: m, rate: f.rate||0, total: m*(f.rate||0), date: new Date().toISOString(), note: 'Stock updated' });
+    
+    await sync(); closeModal('modal-addstock'); toast(`${m}m added to ${f.name}`);
+}
+
+async function delFab(id) {
+    if(!confirm("Delete this fabric completely?")) return;
+    data.inv = data.inv.filter(x => x.id !== id);
+    await sync(); toast("Deleted.");
+}
+
+// ══ SALES LOGIC (FULL & QUICK) ══
+function openQS(id) {
+    let f = data.inv.find(x => x.id === id);
+    document.getElementById('qs-name').innerText = f.name + ` (${f.meters}m available)`;
+    window.tempFabId = id;
+    ['qs-m','qs-discount','qs-paid','qs-c','qs-buyer-gstin','qs-phone','qs-trans','qs-lr','qs-eway'].forEach(i => { let el=document.getElementById(i); if(el) el.value=''; });
+    document.getElementById('qs-r').value = f.rate || '';
+    document.getElementById('qs-kacha').checked = false;
+    calcQS(); openModal('modal-quicksell');
+}
+
+function calcQS() {
+    let m = parseFloat(document.getElementById('qs-m').value) || 0;
+    let r = parseFloat(document.getElementById('qs-r').value) || 0;
+    let d = parseFloat(document.getElementById('qs-d')?.value) || 0;
+    let gstRate = parseFloat(document.getElementById('qs-g')?.value) || 0;
+    let gstType = document.getElementById('qs-t')?.value || 'intra';
+    
+    let sub = Math.max(0, (m * r) - d);
+    let gstAmt = sub * (gstRate/100);
+    let total = sub + gstAmt;
+    
+    document.getElementById('qs-total').innerText = '₹' + Math.round(total).toLocaleString('en-IN');
+}
+
+function calcSell() {
+    let m = parseFloat(document.getElementById('s-m').value) || 0;
+    let r = parseFloat(document.getElementById('s-r').value) || 0;
+    let d = parseFloat(document.getElementById('s-discount').value) || 0;
+    let gstRate = parseFloat(document.getElementById('s-gst-rate').value) || 0;
+    let gstType = document.getElementById('s-gst-type').value;
+    
+    let sub = Math.max(0, (m * r) - d);
+    let g = calcGST(sub, gstRate, gstType);
+    
+    document.getElementById('s-amt').innerText = '₹' + Math.round(g.total).toLocaleString('en-IN');
+    document.getElementById('s-gst-breakdown').innerHTML = gstBreakdownHTML(g, gstType);
+}
+
+async function processSale(isFullPageAndBill) {
+    // Determine which form triggered this
+    let isQS = document.getElementById('modal-quicksell').style.display === 'flex';
+    let prefix = isQS ? 'qs-' : 's-';
+    
+    let id = isQS ? window.tempFabId : document.getElementById('s-fab').value;
+    let f = data.inv.find(x => x.id === id);
+    if(!f) return toast("Select a fabric");
+    
+    let m = parseFloat(document.getElementById(prefix+'m').value);
+    if(!m || m<=0) return toast("Enter valid meters");
+    
+    let isKacha = document.getElementById(prefix+'kacha') && document.getElementById(prefix+'kacha').checked;
+    if(!isKacha && m > f.meters) return toast(`Only ${f.meters}m left in stock!`);
+    
+    let r = parseFloat(document.getElementById(prefix+'r').value) || f.rate;
+    let d = parseFloat(document.getElementById(prefix+'discount')?.value || document.getElementById('qs-d')?.value) || 0;
+    let gstRate = parseFloat(document.getElementById(prefix+'gst-rate')?.value || document.getElementById('qs-g')?.value) || 0;
+    let gstType = document.getElementById(prefix+'gst-type')?.value || 'intra';
+    
+    let sub = Math.max(0, (m*r)-d);
+    let g = calcGST(sub, gstRate, gstType);
+    
+    let invType = document.getElementById(prefix+'inv-type')?.value || 'Cash';
+    let payMode = document.getElementById(prefix+'pay-mode')?.value || 'Cash';
+    let paidInput = parseFloat(document.getElementById(prefix+'paid')?.value);
+    let paid = isNaN(paidInput) ? (invType === 'Credit' ? 0 : Math.round(g.total)) : paidInput;
+    let due = Math.round(g.total) - paid;
+
+    let cust = document.getElementById(prefix+'c').value.trim() || 'Walk-in';
+    let phone = document.getElementById(prefix+'phone')?.value.trim();
+    let gstin = document.getElementById(prefix+'buyer-gstin')?.value.trim();
+    
+    let trans = document.getElementById(prefix+'trans')?.value.trim() || '';
+    let lr = document.getElementById(prefix+'lr')?.value.trim() || '';
+    let eway = document.getElementById(prefix+'eway')?.value.trim() || '';
+
+    let sale = {
+        id: 's_'+Date.now(), fabId: f.id, fabName: f.name, customer: cust, customerPhone: phone, buyerGstin: gstin,
+        meters: m, rate: r, discount: d, subtotal: sub, gstRate: gstRate, gstType: gstType, gstAmount: g.gstAmount, total: Math.round(g.total),
+        invType: invType, payMode: payMode, paidAmt: paid, dueAmt: due, isKacha: isKacha,
+        transport: trans, lr: lr, eway: eway, date: new Date().toISOString()
+    };
+
+    if(!isKacha) f.meters -= m;
+    data.sales.unshift(sale);
+    
+    await sync();
+    if(isQS) closeModal('modal-quicksell');
+    else {
+        ['s-m','s-c','s-discount','s-paid','s-buyer-gstin','s-phone','s-trans','s-lr','s-eway'].forEach(i=>{let el=document.getElementById(i); if(el)el.value=''});
+        let sk = document.getElementById('s-kacha'); if(sk) sk.checked=false;
+        document.getElementById('s-amt').innerText = '₹0';
+        document.getElementById('s-gst-breakdown').innerHTML = '';
+        renderSalesList();
+    }
+    toast(`✓ Sold ${m}m ${f.name}`);
+    
+    // Always generate bill if called with true (from either modal or main page)
+    if(isFullPageAndBill || (isQS && arguments[0] === true)) {
+        generateBillPDF(sale);
     }
 }
 
-// ══ HELPERS ══
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-function switchProfile() { sessionStorage.removeItem('stocksaathi_profile_id'); location.reload(); }
-function toggleMob() { 
-    let s = document.querySelector('.sb'); 
-    s.style.display = (s.style.display === 'flex' ? 'none' : 'flex'); 
+function renderSalesList() {
+    let el = document.getElementById('sales-list');
+    if(!el) return;
+    let list = data.sales.filter(s => !s.isKacha).slice(0,10);
+    el.innerHTML = list.map(s => `
+        <div class="fc" style="padding:15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
+            <div>
+                <b style="font-size:14px">${esc(s.fabName)} ${s.isReturned?'<span style="color:red;font-size:10px">(RETURNED)</span>':''}</b>
+                <div style="font-size:12px;color:var(--muted)">${s.meters}m · ${esc(s.customer)}</div>
+            </div>
+            <b style="color:var(--green)">₹${fv(s.total)}</b>
+        </div>
+    `).join('') || '<p style="color:var(--muted);font-size:13px">No sales yet.</p>';
 }
-function toast(m) { let t=document.getElementById('toast'); t.innerText=m; t.style.display='block'; setTimeout(()=>t.style.display='none',3000); }
+
+// ══ BILL PDF ENGINE ══
+function generateBillPDF(s) {
+    lastSaleData = s;
+    document.getElementById('b-f-name').innerText = data.firm.name;
+    document.getElementById('b-f-addr').innerText = data.firm.address || '';
+    document.getElementById('b-f-gst').innerText = data.firm.gst ? "GSTIN: " + data.firm.gst : '';
+    
+    document.getElementById('b-party').innerText = s.customer;
+    document.getElementById('b-party-gst').innerText = s.buyerGstin ? "GSTIN: " + s.buyerGstin : '';
+    document.getElementById('b-no').innerText = "INV-" + s.id.split('_')[1].slice(-6);
+    document.getElementById('b-date').innerText = new Date(s.date).toLocaleDateString('en-IN');
+    document.getElementById('b-type').innerText = s.invType + " / " + s.payMode;
+
+    let ship = document.getElementById('b-dispatch');
+    if(s.transport || s.lr || s.eway) {
+        ship.style.display = 'block';
+        document.getElementById('b-trans').innerText = s.transport || 'N/A';
+        document.getElementById('b-lr').innerText = "LR: " + (s.lr || 'N/A');
+        document.getElementById('b-eway').innerText = "E-Way: " + (s.eway || 'N/A');
+    } else { ship.style.display = 'none'; }
+
+    document.getElementById('b-item').innerText = s.fabName;
+    document.getElementById('b-qty').innerText = s.meters;
+    document.getElementById('b-rate').innerText = s.rate;
+    document.getElementById('b-amt').innerText = (s.meters * s.rate).toFixed(2);
+
+    let discRow = document.getElementById('b-disc-row');
+    if(s.discount > 0) { discRow.style.display='flex'; document.getElementById('b-disc').innerText = "-"+s.discount; }
+    else { discRow.style.display='none'; }
+
+    let taxBox = document.getElementById('b-tax-box');
+    if(s.gstRate > 0 && !s.isKacha) {
+        taxBox.innerHTML = billGSTSection({rate:s.gstRate, subtotal:s.subtotal, gstAmount:s.gstAmount, cgst:s.cgst, sgst:s.sgst, igst:s.igst}, s.gstType);
+        taxBox.style.display = 'block';
+    } else { taxBox.style.display = 'none'; }
+
+    document.getElementById('b-final').innerText = s.total;
+    document.getElementById('b-paid').innerText = s.paidAmt;
+    document.getElementById('b-bal').innerText = s.dueAmt;
+
+    let qrBox = document.getElementById('b-qr-box');
+    if(data.settings.upi && s.dueAmt > 0) {
+        document.getElementById('b-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${data.settings.upi}&pn=${encodeURIComponent(data.firm.name)}&am=${s.dueAmt}&cu=INR`;
+        qrBox.style.display = 'block';
+    } else { qrBox.style.display = 'none'; }
+
+    document.getElementById('bill-watermark').style.display = s.isKacha ? 'block' : 'none';
+    
+    openModal('modal-bill');
+}
+
+function closeBill() { closeModal('modal-bill'); }
+
+function printBill() {
+    let content = document.getElementById('bill-template').outerHTML;
+    let win = window.open('','_blank','width=800,height=900');
+    win.document.write('<html><head><title>Print Bill</title></head><body style="margin:0;display:flex;justify-content:center">' + content + '<script>setTimeout(()=>window.print(),500);<\/script></body></html>');
+    win.document.close();
+}
+
+function waBill() {
+    if(!lastSaleData) return;
+    let s = lastSaleData;
+    let msg = `*${data.firm.name}*\n${s.isKacha?'Estimate':'Invoice'}\n\n*To:* ${s.customer}\n*Item:* ${s.fabName} (${s.meters}m x ₹${s.rate})\n\n*Total:* ₹${s.total}\n*Due:* ₹${s.dueAmt}\n\nThank you!`;
+    window.open(`https://wa.me/91${s.customerPhone||''}?text=${encodeURIComponent(msg)}`);
+}
+
+function shareBillPDF() {
+    let btn = document.getElementById('share-pdf-btn');
+    btn.innerText = "Generating..."; btn.disabled = true;
+    
+    let el = document.getElementById('bill-template');
+    el.parentElement.style.display = 'block'; // Ensure visible to html2pdf
+    
+    let opt = {
+        margin: 0.2,
+        filename: (lastSaleData.isKacha?'Estimate_':'Invoice_') + lastSaleData.customer + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(el).outputPdf('blob').then(blob => {
+        el.parentElement.style.display = 'none';
+        btn.innerText = "📤 Share PDF"; btn.disabled = false;
+        
+        let file = new File([blob], opt.filename, { type: "application/pdf" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            navigator.share({ title: 'Invoice', text: 'Here is your invoice.', files: [file] });
+        } else {
+            let a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = opt.filename;
+            a.click();
+            toast("Downloaded to device");
+        }
+    });
+}
+
+// ══ LEDGER ══
+function switchLedger(tab) {
+    activeLedgerTab = tab;
+    document.getElementById('tab-sales').classList.toggle('active', tab==='sales');
+    document.getElementById('tab-purchases').classList.toggle('active', tab==='purchases');
+    renderLedger();
+}
+
+function renderLedgerSummary() {
+    let ts = data.sales.filter(s => !s.isKacha && !s.isReturned).reduce((a,b) => a+b.total, 0);
+    let tp = data.purchases.filter(p => !p.isReturned).reduce((a,b) => a+b.total, 0);
+    document.getElementById('ls-s').innerText = '₹' + fv(ts);
+    document.getElementById('ls-p').innerText = '₹' + fv(tp);
+    document.getElementById('ls-n').innerText = '₹' + fv(ts-tp);
+}
+
+function renderLedger() {
+    let q = document.getElementById('ledger-q').value.toLowerCase();
+    let list = activeLedgerTab === 'sales' ? data.sales.filter(s => !s.isKacha) : data.purchases;
+    
+    list = list.filter(e => (e.fabName||e.item||'').toLowerCase().includes(q) || (e.customer||e.party||'').toLowerCase().includes(q));
+    
+    let html = list.map(e => {
+        let isSale = activeLedgerTab === 'sales';
+        let party = isSale ? e.customer : e.party;
+        let item = isSale ? e.fabName : e.item;
+        let d = new Date(e.date).toLocaleDateString('en-IN');
+        let retBtn = '';
+        if(currentProfile && currentProfile.role === 'owner') {
+            retBtn = e.isReturned ? `<span class="pill" style="background:var(--red-light);color:var(--red)">RETURNED</span>` : `<button class="btn btn-ghost btn-small" onclick="processReturn('${e.id}', ${isSale})">↩️ Return</button>`;
+        } else if (e.isReturned) {
+            retBtn = `<span class="pill" style="background:var(--red-light);color:var(--red)">RETURNED</span>`;
+        }
+
+        return `<div class="ledger-entry ${isSale?'sale-entry':'purchase-entry'}">
+            <div style="font-size:24px">${isSale?'💰':'📥'}</div>
+            <div>
+                <div style="font-family:var(--ff-h);font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px">${esc(item)} ${retBtn}</div>
+                <div style="font-size:12px;color:var(--muted)">${esc(party)} · ${e.meters}m @ ₹${e.rate}/m</div>
+            </div>
+            <div style="font-size:12px;color:var(--muted);text-align:right">${d}</div>
+            <div style="font-family:var(--ff-h);font-size:20px;font-weight:800;color:var(--${isSale?'green':'blue'});text-align:right">${e.isReturned?`<del>₹${fv(e.total)}</del>`:`₹${fv(e.total)}`}</div>
+        </div>`;
+    }).join('');
+    
+    document.getElementById('ledger-grid').innerHTML = html || "<p style='color:var(--muted)'>No records found.</p>";
+}
+
+async function processReturn(id, isSale) {
+    if(!confirm("Return this item? Stock will be adjusted.")) return;
+    let obj = isSale ? data.sales.find(x => x.id === id) : data.purchases.find(x => x.id === id);
+    let f = data.inv.find(x => x.name === (obj.fabName || obj.item));
+    
+    if(f) {
+        if(isSale) f.meters += obj.meters;
+        else f.meters -= obj.meters;
+    }
+    
+    obj.isReturned = true;
+    if(isSale) obj.dueAmt = 0; // Clear dues if returned
+    
+    await sync(); renderLedger(); renderLedgerSummary(); toast("Item Returned!");
+}
+
+function exportCSV() {
+    let csv = "Type,Date,Party,Item,Meters,Rate,Total,Returned\n";
+    data.sales.forEach(s => { if(!s.isKacha) csv += `"Sale","${s.date.split('T')[0]}","${s.customer}","${s.fabName}",${s.meters},${s.rate},${s.total},${s.isReturned?'Yes':'No'}\n`; });
+    data.purchases.forEach(p => { csv += `"Purchase","${p.date.split('T')[0]}","${p.party}","${p.item}",${p.meters},${p.rate},${p.total},${p.isReturned?'Yes':'No'}\n`; });
+    
+    let a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+    a.download = 'StockSaathi_Ledger.csv'; a.click();
+}
+
+// ══ UDHAAR SYSTEM ══
+function renderUdhaar() {
+    let q = document.getElementById('udhaar-q').value.toLowerCase();
+    let dues = {};
+    data.sales.filter(s => !s.isKacha && !s.isReturned && s.dueAmt > 0).forEach(s => {
+        if(!dues[s.customer]) dues[s.customer] = { total: 0, count: 0, phone: s.customerPhone };
+        dues[s.customer].total += s.dueAmt;
+        dues[s.customer].count++;
+    });
+
+    let html = '';
+    for(let name in dues) {
+        if(q && !name.toLowerCase().includes(q)) continue;
+        let d = dues[name];
+        let msg = `Jai Jinendra ${name}, aapka pichla ₹${d.total} baaki hai. Kripya payment karwa dijiye. - ${data.firm.name}`;
+        
+        html += `<div class="udhaar-card">
+            <div>
+                <div style="font-family:var(--ff-h);font-size:20px;font-weight:800">${esc(name)}</div>
+                <div style="font-size:12px;color:var(--muted)">Pending across ${d.count} bills</div>
+                <div style="margin-top:10px;display:flex;gap:10px">
+                    ${d.phone ? `<a href="tel:${d.phone}" class="btn btn-ghost btn-small">📞 Call</a>` : ''}
+                    <a href="https://wa.me/91${d.phone}?text=${encodeURIComponent(msg)}" target="_blank" class="btn btn-small" style="background:#25D366;color:white;border:none">💬 WhatsApp Reminder</a>
+                </div>
+            </div>
+            <div style="text-align:right">
+                <div style="font-family:var(--ff-h);font-size:28px;font-weight:800;color:var(--orange)">₹${fv(d.total)}</div>
+                <button class="btn btn-ghost btn-small hide-print" style="margin-top:10px;border-color:var(--gold);color:var(--gold)" onclick="settleDue('${esc(name)}')">✅ Mark Settled</button>
+            </div>
+        </div>`;
+    }
+    document.getElementById('udhaar-list').innerHTML = html || "<div class='fc'><h3 style='color:var(--green);text-align:center'>🎉 Sab settled hai! Koi udhaar nahi.</h3></div>";
+}
+
+async function settleDue(name) {
+    if(!confirm(`Mark ALL dues for ${name} as paid?`)) return;
+    data.sales.forEach(s => { if(s.customer === name) s.dueAmt = 0; });
+    await sync(); renderUdhaar(); toast(`Dues cleared for ${name}`);
+}
+
+// ══ PURCHASE MODAL ══
+function calcPur() {
+    let m = parseFloat(document.getElementById('p-m').value) || 0;
+    let r = parseFloat(document.getElementById('p-r').value) || 0;
+    let gst = parseFloat(document.getElementById('p-gst').value) || 0;
+    let total = (m * r) * (1 + (gst/100));
+    document.getElementById('p-total').innerText = '₹' + Math.round(total).toLocaleString('en-IN');
+}
+
+async function savePurchase() {
+    let p = document.getElementById('p-party').value.trim();
+    let i = document.getElementById('p-item').value.trim();
+    let m = parseFloat(document.getElementById('p-m').value);
+    let r = parseFloat(document.getElementById('p-r').value);
+    if(!p || !i || !m || !r) return toast("Fill all mandatory fields!");
+    
+    let gst = parseFloat(document.getElementById('p-gst').value) || 0;
+    let total = (m * r) * (1 + (gst/100));
+
+    data.purchases.unshift({ id: 'p_'+Date.now(), party: p, item: i, meters: m, rate: r, gstRate: gst, total: Math.round(total), date: new Date().toISOString() });
+    await sync(); closeModal('modal-pur'); renderLedger(); renderLedgerSummary(); toast("Purchase saved!");
+}
+
+// ══ ADMIN: PROFILES ══
+function renderAdminProfiles() {
+    document.getElementById('profiles-grid').innerHTML = data.profiles.map(p => `
+        <div class="fc" style="display:flex;align-items:center;gap:15px;padding:20px">
+            <div style="font-size:35px">${p.role==='owner'?'👑':(p.role==='manager'?'💼':'👦')}</div>
+            <div style="flex:1">
+                <div style="font-family:var(--ff-h);font-size:20px;font-weight:700">${esc(p.name)}</div>
+                <div style="font-size:12px;color:var(--muted)">${p.role.toUpperCase()} ${p.pin ? '🔒' : '🔓'}</div>
+            </div>
+            <button class="btn btn-ghost btn-small" onclick="openEditProfile('${p.id}')">✏️</button>
+            ${data.profiles.filter(x=>x.role==='owner').length > 1 || p.role !== 'owner' ? `<button class="btn btn-ghost btn-small" style="color:var(--red);border-color:var(--red-light)" onclick="delProfile('${p.id}')">🗑️</button>` : ''}
+        </div>
+    `).join('');
+}
+
+function openEditProfileModal() { document.getElementById('ep-id').value=''; document.getElementById('ep-name').value=''; document.getElementById('ep-pin').value=''; openModal('modal-profile'); }
+function openEditProfile(id) {
+    let p = data.profiles.find(x => x.id === id);
+    document.getElementById('ep-id').value = p.id;
+    document.getElementById('ep-name').value = p.name;
+    document.getElementById('ep-role').value = p.role;
+    document.getElementById('ep-pin').value = p.pin;
+    openModal('modal-profile');
+}
+
+async function saveProfile() {
+    let id = document.getElementById('ep-id').value;
+    let n = document.getElementById('ep-name').value.trim();
+    if(!n) return toast("Name required");
+    
+    let pObj = { id: id || 'p_'+Date.now(), name: n, role: document.getElementById('ep-role').value, pin: document.getElementById('ep-pin').value, activeSession: '' };
+    
+    if(id) { let idx = data.profiles.findIndex(x => x.id === id); data.profiles[idx] = pObj; }
+    else { data.profiles.push(pObj); }
+    
+    await sync(); closeModal('modal-profile'); renderAdminProfiles(); toast("Profile saved");
+}
+
+async function delProfile(id) {
+    if(!confirm("Delete this user?")) return;
+    data.profiles = data.profiles.filter(x => x.id !== id);
+    await sync(); renderAdminProfiles(); toast("Deleted");
+}
+
+// ══ ADMIN: MASTER DATA ══
+function renderMaster() {
+    document.getElementById('list-qualities').innerHTML = data.master.qualities.map((q,i) => `<div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid var(--border)"><span>${q}</span><span style="color:var(--red);cursor:pointer;font-weight:bold" onclick="delMaster('qualities',${i})">✕</span></div>`).join('');
+    document.getElementById('list-colors').innerHTML = data.master.colors.map((c,i) => `<div style="display:flex;justify-content:space-between;padding:10px;border:1px solid var(--border);border-radius:8px"><span>${c}</span><span style="color:var(--red);cursor:pointer;font-weight:bold" onclick="delMaster('colors',${i})">✕</span></div>`).join('');
+}
+async function addMaster(type) {
+    let v = prompt(`Add new ${type}:`);
+    if(v && v.trim()) { data.master[type].push(v.trim()); await sync(); renderMaster(); }
+}
+async function delMaster(type, idx) {
+    if(confirm("Delete this item?")) { data.master[type].splice(idx, 1); await sync(); renderMaster(); }
+}
+
+// ══ CALCULATORS ══
+function c1(){ document.getElementById('c1-r').innerText = fv((parseFloat(document.getElementById('c1m').value)||0) * (parseFloat(document.getElementById('c1r').value)||0)); }
+function c2(){
+    let pm = (parseFloat(document.getElementById('c2s').value)||0) - (parseFloat(document.getElementById('c2b').value)||0);
+    document.getElementById('c2-pm').innerText = (pm>=0?'+':'') + fv(pm);
+    document.getElementById('c2-r').innerText = (pm>=0?'+':'') + fv(pm * (parseFloat(document.getElementById('c2m').value)||0));
+}
+
+// ══ REPORT ══
+function renderReport() {
+    let now = new Date();
+    document.getElementById('rpt-month').innerText = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+    
+    let mSales = data.sales.filter(s => new Date(s.date).getMonth() === now.getMonth() && !s.isKacha && !s.isReturned);
+    let sAmt = mSales.reduce((a,b)=>a+b.total, 0), sMtrs = mSales.reduce((a,b)=>a+b.meters, 0);
+    
+    document.getElementById('rpt-stats').innerHTML = `
+        <div class="stat"><div class="stat-l">Monthly Sales</div><div class="stat-v" style="color:var(--gold)">₹${fv(sAmt)}</div></div>
+        <div class="stat"><div class="stat-l">Meters Sold</div><div class="stat-v">${fv(sMtrs)}m</div></div>
+    `;
+    
+    document.getElementById('rpt-body').innerHTML = data.inv.map(f => {
+        let sold = mSales.filter(s => s.fabId === f.id).reduce((a,b)=>a+b.meters,0);
+        let st = f.meters < f.threshold ? '<span style="color:var(--red);font-weight:800">LOW</span>' : '<span style="color:var(--green);font-weight:800">OK</span>';
+        return `<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px;padding:15px 20px;border-bottom:1px solid var(--border);align-items:center">
+            <div><b>${f.name}</b></div>
+            <div>${f.meters + sold}m</div>
+            <div style="color:var(--gold);font-weight:700">${sold}m</div>
+            <div style="font-weight:800">${f.meters}m</div>
+            <div>₹${fv(f.meters * f.rate)}</div>
+            <div>${st}</div>
+        </div>`;
+    }).join('');
+}
+
+// ══ SETTINGS ══
+async function saveSettings() {
+    data.settings = data.settings || {};
+    data.settings.upi = document.getElementById('set-upi').value.trim();
+    await sync(); closeModal('modal-settings'); toast("Settings Saved!");
+}
 </script>
 </body>
 </html>
