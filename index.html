@@ -44,17 +44,16 @@
   --r2:16px;
 }
 
-html,body{height:100%}
-body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:15px;display:flex;overflow:hidden}
+html,body{height:100dvh;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:15px;display:flex;}
 
 /* ══ SIDEBAR ══ */
-.sb{width:240px;flex-shrink:0;background:var(--white);border-right:2px solid var(--border);display:flex;flex-direction:column;box-shadow:2px 0 12px rgba(45,36,22,0.06);}
+.sb{width:240px;flex-shrink:0;background:var(--white);border-right:2px solid var(--border);display:flex;flex-direction:column;box-shadow:2px 0 12px rgba(45,36,22,0.06);z-index:100;}
 .sb-top{padding:22px 20px 18px;border-bottom:2px solid var(--border);background:linear-gradient(135deg,#2d2416 0%,#4a3820 100%);}
 .sb-logo{display:flex;align-items:center;gap:12px}
 .sb-ico{width:42px;height:42px;background:linear-gradient(135deg,var(--gold2),var(--gold));border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--ff-h);font-size:20px;font-weight:800;color:#2d2416;}
 .sb-name{font-family:var(--ff-h);font-size:20px;font-weight:700;color:#faf7f0}
 .sb-tag{font-size:11px;color:#b8a888;margin-top:3px;padding-left:54px}
-.sb-nav{padding:16px 12px;flex:1;overflow-y:auto}
+.sb-nav{padding:16px 12px;flex:1;overflow-y:auto;-webkit-overflow-scrolling: touch;}
 .sb-sec{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:14px 8px 6px}
 .sb-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;cursor:pointer;color:var(--muted2);font-size:14px;font-weight:500;transition:all 0.15s;margin-bottom:2px;}
 .sb-item:hover{background:#f5efe0;color:var(--text)}
@@ -65,8 +64,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:15
 .sb-foot{padding:16px 16px;border-top:2px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
 
 /* ══ MAIN ══ */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.topbar{height:60px;background:var(--white);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:14px;box-shadow:0 2px 8px rgba(45,36,22,0.06);flex-shrink:0;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.topbar{height:60px;background:var(--white);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:14px;box-shadow:0 2px 8px rgba(45,36,22,0.06);flex-shrink:0;z-index:90;}
 .tb-title{font-family:var(--ff-h);font-size:20px;font-weight:700;color:var(--text)}
 .tb-sub{font-size:12px;color:var(--muted)}
 .tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
@@ -74,7 +73,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:15
 .add-btn:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(184,134,11,0.4)}
 
 /* ══ PAGES ══ */
-.page{display:none;flex:1;flex-direction:column;overflow:hidden}
+.page{display:none;flex:1;flex-direction:column;overflow:hidden;}
 .page.on{display:flex}
 
 /* ══ STATS ══ */
@@ -89,7 +88,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:15
 .stat-h{font-size:11px;color:var(--muted);margin-top:4px}
 
 /* ══ CONTENT ══ */
-.content{flex:1;overflow-y:auto;padding:28px}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:28px;position:relative;}
 .content::-webkit-scrollbar{width:5px}
 .content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 .sh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
@@ -161,11 +160,12 @@ select option{background:var(--white)}
 .btn-green{background:var(--green);color:var(--white)}
 .btn-green:hover{background:var(--green2);transform:translateY(-1px)}
 .btn-full{width:100%;justify-content:center}
+.btn-small{padding:6px 12px;font-size:12px;}
 .res-box{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:10px;display:flex;justify-content:space-between;align-items:center}
 .res-l{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
 .res-v{font-family:var(--ff-h);font-size:24px;font-weight:800;color:var(--gold)}
 
-/* ══ LEDGER ══ */
+/* ══ LEDGER (Sales/Purchase Book) ══ */
 .ledger-tabs{display:flex;gap:0;border:2px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;background:var(--white)}
 .ledger-tab{flex:1;padding:12px 20px;font-family:var(--ff-h);font-size:14px;font-weight:700;cursor:pointer;text-align:center;color:var(--muted2);border:none;background:transparent;transition:all 0.15s}
 .ledger-tab.active{background:var(--gold-light);color:var(--gold)}
@@ -211,11 +211,16 @@ select option{background:var(--white)}
 .bar-fill{height:100%;border-radius:4px;background:var(--gold2);transition:width 0.4s}
 .bar-val{font-size:12px;color:var(--muted2);width:55px;text-align:right;font-weight:600}
 
+/* ══ MASTER DATA ══ */
+.md-list { background:var(--white); border:2px solid var(--border); border-radius:12px; max-height:250px; overflow-y:auto; padding:8px; }
+.md-item { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-bottom:1px solid var(--border); font-size:14px; font-weight:600;}
+.md-item:last-child { border-bottom:none; }
+
 /* ══ MODALS ══ */
 .qmodal-bg{position:fixed;inset:0;background:rgba(45,36,22,0.5);z-index:600;display:none;align-items:center;justify-content:center}
 .qmodal-bg.on{display:flex;animation:fadeIn 0.15s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.qmodal{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);width:420px;max-width:95vw;max-height:90vh;overflow-y:auto;padding:28px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
+.qmodal{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);width:420px;max-width:95vw;max-height:85dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:28px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
 @keyframes popIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
 .qmodal-title{font-family:var(--ff-h);font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px}
 .qmodal-fab{font-size:13px;color:var(--muted);margin-bottom:20px;font-weight:600}
@@ -223,7 +228,7 @@ select option{background:var(--white)}
 
 .modal-bg{position:fixed;inset:0;background:rgba(45,36,22,0.5);z-index:500;display:none;align-items:center;justify-content:center}
 .modal-bg.on{display:flex}
-.modal{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);width:500px;max-width:95vw;max-height:92vh;overflow-y:auto;padding:30px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
+.modal{background:var(--white);border:2px solid var(--border);border-radius:var(--r2);width:500px;max-width:95vw;max-height:85dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:30px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
 .modal-title{font-family:var(--ff-h);font-size:22px;font-weight:800;margin-bottom:4px}
 .modal-sub{font-size:13px;color:var(--muted);margin-bottom:22px}
 .modal-foot{display:flex;gap:10px;margin-top:22px;justify-content:flex-end}
@@ -231,7 +236,7 @@ select option{background:var(--white)}
 /* ══ ONBOARDING ══ */
 #onboarding{position:fixed;inset:0;background:rgba(45,36,22,0.6);z-index:800;display:none;align-items:center;justify-content:center}
 #onboarding.on{display:flex;animation:fadeIn 0.3s ease}
-.ob-card{background:var(--white);border-radius:24px;width:520px;max-width:95vw;max-height:90vh;overflow:hidden;box-shadow:0 40px 80px rgba(45,36,22,0.25)}
+.ob-card{background:var(--white);border-radius:24px;width:520px;max-width:95vw;max-height:85dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 40px 80px rgba(45,36,22,0.25)}
 .ob-top{background:linear-gradient(135deg,#2d2416,#4a3820);padding:32px 36px 28px}
 .ob-step-row{display:flex;gap:8px;margin-bottom:20px}
 .ob-step{height:4px;flex:1;background:rgba(255,255,255,0.2);border-radius:2px;transition:background 0.3s}
@@ -254,8 +259,8 @@ select option{background:var(--white)}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
 /* ══ LOGIN ══ */
-#login-screen{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#2d2416 0%,#4a3820 40%,#6b5030 100%);display:flex;align-items:center;justify-content:center;}
-.login-wrap{display:grid;grid-template-columns:1fr 1fr;max-width:900px;width:95%;gap:0;border-radius:24px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,0.4)}
+#login-screen{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#2d2416 0%,#4a3820 40%,#6b5030 100%);display:flex;align-items:center;justify-content:center;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.login-wrap{display:grid;grid-template-columns:1fr 1fr;max-width:900px;width:95%;gap:0;border-radius:24px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,0.4);margin:auto;}
 .login-left{background:linear-gradient(160deg,#c8973a,#8b6020);padding:50px 40px;display:flex;flex-direction:column;justify-content:center}
 .login-left-ico{font-size:50px;margin-bottom:20px}
 .login-left-t{font-family:var(--ff-h);font-size:34px;font-weight:800;color:#faf7f0;line-height:1.2;margin-bottom:12px}
@@ -270,21 +275,21 @@ select option{background:var(--white)}
 .login-google:hover{border-color:var(--gold2);background:var(--gold-light);transform:translateY(-1px);box-shadow:var(--shadow-md)}
 
 /* ══ PROFILES ══ */
-#profile-screen {position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#2d2416 0%,#4a3820 40%,#6b5030 100%);display:none;align-items:center;justify-content:center;flex-direction:column}
-.profile-cards { display:flex; gap:20px; margin-top:30px; flex-wrap:wrap; justify-content:center; }
-.profile-card { background:var(--white); border:3px solid transparent; border-radius:24px; padding:35px 20px; text-align:center; cursor:pointer; transition:all 0.2s; width:180px; box-shadow:0 10px 30px rgba(0,0,0,0.2); position:relative; }
+#profile-screen {position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#2d2416 0%,#4a3820 40%,#6b5030 100%);display:none;align-items:center;justify-content:center;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px;}
+.profile-cards { display:flex; gap:20px; margin-top:30px; flex-wrap:wrap; justify-content:center; max-width:800px;}
+.profile-card { background:var(--white); border:3px solid transparent; border-radius:24px; padding:35px 20px; text-align:center; cursor:pointer; transition:all 0.2s; width:160px; box-shadow:0 10px 30px rgba(0,0,0,0.2); position:relative; }
 .profile-card:hover { transform:translateY(-5px); box-shadow:0 15px 40px rgba(0,0,0,0.3); border-color:var(--gold2); }
 .profile-avatar { width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:40px; }
-.profile-name { font-family:var(--ff-h); font-size:20px; font-weight:800; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.profile-name { font-family:var(--ff-h); font-size:18px; font-weight:800; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-/* ══ ROLES CSS ══ */
+/* ROLES CSS */
 body.staff-mode .hide-staff { display: none !important; }
 body.manager-mode .hide-manager { display: none !important; }
 
 /* ══ INSTALL BANNER ══ */
 #install-banner { position:fixed; bottom:0; left:0; width:100%; background:var(--gold); color:white; padding:12px 20px; display:none; justify-content:space-between; align-items:center; z-index:10000; box-shadow:0 -4px 10px rgba(0,0,0,0.1); }
 
-/* ══ MOBILE ══ */
+/* ══ MOBILE CSS (PERFECTED SCROLL) ══ */
 .hamburger{display:none;background:none;border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:18px;cursor:pointer;width:36px;height:36px;align-items:center;justify-content:center;flex-shrink:0;}
 .mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;backdrop-filter:blur(2px);}
 .mob-overlay.on{display:block}
@@ -294,25 +299,21 @@ body.manager-mode .hide-manager { display: none !important; }
 
 @media print{
   .sb,.topbar,.modal-bg,.qmodal-bg,#toast,#login-screen,#profile-screen,.fab-actions,.search-big,.cat-row,.hide-print,#install-banner{display:none!important}
-  body{background:white;color:black;overflow:visible;display:block}
-  .main,.page,.content{overflow:visible;height:auto}
+  body{background:white;color:black;overflow:visible;display:block;height:auto;}
+  .main,.page,.content{overflow:visible;height:auto;}
   .watermark{display:block !important; position:absolute; top:40%; left:50%; transform:translate(-50%,-50%) rotate(-45deg); font-size:60px; color:rgba(0,0,0,0.08); font-weight:800; white-space:nowrap; pointer-events:none; z-index:0;}
 }
 
 @media(max-width:768px){
-  body{flex-direction:column;overflow:auto}
-  html,body{height:auto}
-  .main{height:auto;overflow:visible}
-  .page{overflow:visible;height:auto}
-  .page.on{display:flex;flex-direction:column}
   .sb{display:none !important}
   .hamburger{display:flex !important}
   .topbar{padding:0 14px;height:52px;gap:10px}
-  .tb-title{font-size:15px}
+  .tb-title{font-size:16px}
   .tb-sub{display:none}
   .add-btn{font-size:12px;padding:8px 12px}
-  .stats{grid-template-columns:1fr 1fr}
-  .stat{padding:12px 14px}
+  .stats{grid-template-columns:1fr 1fr; border-bottom:none;}
+  .stat{padding:12px 14px; border-bottom:1px solid var(--border);}
+  .stat:nth-child(even){border-right:none;}
   .stat-v{font-size:22px}
   .content{padding:14px}
   .fab-card{grid-template-columns:1fr;gap:10px}
@@ -321,12 +322,13 @@ body.manager-mode .hide-manager { display: none !important; }
   .calc-grid{grid-template-columns:1fr}
   .rpt-grid{grid-template-columns:1fr}
   .rpt-stats{grid-template-columns:1fr 1fr}
-  .modal,.qmodal{width:95vw;padding:20px}
-  .g2{grid-template-columns:1fr;gap:0}
+  .modal,.qmodal{width:95vw;padding:20px;max-height:85dvh;}
+  .g2, .g3{grid-template-columns:1fr;gap:0}
   .ledger-summary{grid-template-columns:1fr 1fr}
   .login-wrap{grid-template-columns:1fr}
   .login-left{display:none}
   .login-right{padding:36px 28px}
+  #sales-list .ledger-entry { flex-direction:column; align-items:flex-start; }
 }
 </style>
 </head>
@@ -334,6 +336,7 @@ body.manager-mode .hide-manager { display: none !important; }
 
 <datalist id="party-list"></datalist>
 <datalist id="gstin-list"></datalist>
+<datalist id="color-list"></datalist>
 
 <div id="install-banner">
     <div style="display:flex;align-items:center;gap:10px">
@@ -366,12 +369,13 @@ body.manager-mode .hide-manager { display: none !important; }
     
     <div class="sb-sec hide-staff">Admin</div>
     <div class="sb-item hide-staff" onclick="goto('report',this)"><span class="sb-ic">📊</span>Monthly Report</div>
+    <div class="sb-item hide-staff hide-manager" onclick="goto('master',this)"><span class="sb-ic">📁</span>Master Data</div>
     <div class="sb-item hide-staff hide-manager" onclick="goto('profiles',this)"><span class="sb-ic">👥</span>Manage Profiles</div>
   </nav>
   <div class="sb-foot" id="sb-foot">
     <div>
-        <strong id="user-display-name">User</strong><br>
-        <span style="cursor:pointer;color:var(--muted);font-weight:600" onclick="switchProfileBtn()">🔄 Switch Profile</span>
+        <strong id="user-display-name" style="font-size:13px">User</strong><br>
+        <span style="cursor:pointer;color:var(--muted);font-weight:600;font-size:12px" onclick="switchProfileBtn()">🔄 Switch Profile</span>
     </div>
     <div style="cursor:pointer;font-size:20px;padding:5px" class="hide-staff hide-manager" onclick="openSettings()" title="Settings">⚙️</div>
   </div>
@@ -408,12 +412,13 @@ body.manager-mode .hide-manager { display: none !important; }
       <div class="mob-item hide-staff" id="mob-calc" onclick="mobileGoto('calc')">🧮 Calculator</div>
       <div class="mob-sec hide-staff">Admin</div>
       <div class="mob-item hide-staff" id="mob-report" onclick="mobileGoto('report')">📊 Monthly Report</div>
+      <div class="mob-item hide-staff hide-manager" id="mob-master" onclick="mobileGoto('master')">📁 Master Data</div>
       <div class="mob-item hide-staff hide-manager" id="mob-profiles" onclick="mobileGoto('profiles')">👥 Manage Profiles</div>
     </div>
     <div class="mob-menu-foot">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div id="mob-user" style="font-size:13px;font-weight:600;color:var(--text);padding:8px 10px;background:var(--bg);border-radius:8px;border:1.5px solid var(--border)"></div>
-        <button onclick="openSettings(); closeMobileMenu()" class="hide-staff hide-manager" style="background:none;border:none;font-size:22px;cursor:pointer">⚙️</button>
+        <div id="mob-user" style="font-size:13px;font-weight:600;color:var(--text);padding:8px 10px;background:var(--bg);border-radius:8px;border:1.5px solid var(--border);flex:1;overflow:hidden;text-overflow:ellipsis"></div>
+        <button onclick="openSettings(); closeMobileMenu()" class="hide-staff hide-manager" style="background:none;border:none;font-size:22px;cursor:pointer;margin-left:10px">⚙️</button>
       </div>
       <button onclick="switchProfileBtn(); closeMobileMenu()" style="width:100%;padding:12px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--ff-h);font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px">🔄 Switch Profile</button>
       <button onclick="signOut()" style="width:100%;padding:12px;background:rgba(192,57,43,0.08);border:1.5px solid rgba(192,57,43,0.25);border-radius:10px;color:var(--red);font-family:var(--ff-h);font-size:14px;font-weight:700;cursor:pointer;">🚪 Sign Out</button>
@@ -451,17 +456,8 @@ body.manager-mode .hide-manager { display: none !important; }
         <div><div class="sh-title">📦 Inventory</div><div class="sh-sub">Sabhi kapdon ka stock</div></div>
         <button class="btn btn-gold" onclick="openModal()">+ Naya Kapda</button>
       </div>
-      <div class="cat-row">
+      <div class="cat-row" id="inv-cat-filters">
         <button class="cat-p active" onclick="filterCat('',this)">🧵 Sab</button>
-        <button class="cat-p" onclick="filterCat('Georgette',this)">Georgette</button>
-        <button class="cat-p" onclick="filterCat('Chiffon',this)">Chiffon</button>
-        <button class="cat-p" onclick="filterCat('Silk',this)">Silk</button>
-        <button class="cat-p" onclick="filterCat('Cotton',this)">Cotton</button>
-        <button class="cat-p" onclick="filterCat('Velvet',this)">Velvet</button>
-        <button class="cat-p" onclick="filterCat('Satin',this)">Satin</button>
-        <button class="cat-p" onclick="filterCat('Net',this)">Net</button>
-        <button class="cat-p" onclick="filterCat('Linen',this)">Linen</button>
-        <button class="cat-p" onclick="filterCat('Rayon',this)">Rayon</button>
       </div>
       <div class="search-big">
         <div class="search-wrap">
@@ -476,7 +472,7 @@ body.manager-mode .hide-manager { display: none !important; }
   <div class="page" id="pg-sales">
     <div class="content">
       <div class="sh"><div><div class="sh-title">💰 Sales</div><div class="sh-sub">Record a sale</div></div></div>
-      <div style="display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:20px;align-items:start">
         <div class="fc">
           <div class="fc-title">🛒 New Sale</div>
           <div class="fg"><label class="fl">Kapda <span class="fl-hindi">चुनो</span></label><select id="s-fab" onchange="onFabChange()"></select></div>
@@ -599,7 +595,7 @@ body.manager-mode .hide-manager { display: none !important; }
         </div>
       </div>
 
-      <div class="ledger-tabs">
+      <div class="ledger-tabs" style="flex-wrap:wrap">
         <button class="ledger-tab active" id="tab-sales" onclick="switchLedger('sales')">💰 Sales Book</button>
         <button class="ledger-tab" id="tab-purchases" onclick="switchLedger('purchases')">📥 Purchase Book</button>
         <button class="ledger-tab" id="tab-udhaar" onclick="switchLedger('udhaar')" style="color:var(--orange)">⏳ Udhaar Khata</button>
@@ -671,16 +667,18 @@ body.manager-mode .hide-manager { display: none !important; }
         <div class="rpt-card"><div class="rpt-card-t">📦 Stock Kitna Bacha</div><div id="rpt-stock"></div></div>
         <div class="rpt-card"><div class="rpt-card-t">💰 Is Mahine Ki Bikri</div><div id="rpt-sales"></div></div>
       </div>
-      <div style="background:var(--white);border:2px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--shadow)">
-        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px;padding:14px 20px;border-bottom:2px solid var(--border);background:var(--bg)">
-          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Kapda</div>
-          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Shuruaat</div>
-          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Becha</div>
-          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Bacha</div>
-          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Kimat</div>
-          <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Haal</div>
+      <div style="background:var(--white);border:2px solid var(--border);border-radius:var(--r2);overflow-x:auto;box-shadow:var(--shadow)">
+        <div style="min-width:600px">
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px;padding:14px 20px;border-bottom:2px solid var(--border);background:var(--bg)">
+            <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Kapda</div>
+            <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Shuruaat</div>
+            <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Becha</div>
+            <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Bacha</div>
+            <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Kimat</div>
+            <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px">Haal</div>
+          </div>
+          <div id="rpt-body"></div>
         </div>
-        <div id="rpt-body"></div>
       </div>
     </div>
   </div>
@@ -692,6 +690,41 @@ body.manager-mode .hide-manager { display: none !important; }
         <button class="btn btn-gold hide-print" onclick="openEditProfileModal()">+ Add New Profile</button>
       </div>
       <div id="profiles-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:16px;"></div>
+    </div>
+  </div>
+
+  <div class="page" id="pg-master">
+    <div class="content">
+      <div class="sh">
+        <div><div class="sh-title">📁 Master Data</div><div class="sh-sub">Manage your custom lists for Dropdowns</div></div>
+      </div>
+      
+      <div class="g2">
+        <div class="fc" style="padding:18px">
+          <div style="font-family:var(--ff-h);font-size:18px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+             Categories (Qualities)
+             <button class="btn btn-gold btn-small" onclick="addQuality()">+ Add</button>
+          </div>
+          <div class="md-list" id="md-qualities"></div>
+        </div>
+
+        <div class="fc" style="padding:18px">
+          <div style="font-family:var(--ff-h);font-size:18px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+             Colors (Rang)
+             <button class="btn btn-gold btn-small" onclick="addColor()">+ Add</button>
+          </div>
+          <div class="md-list" id="md-colors"></div>
+        </div>
+      </div>
+      
+      <div class="fc" style="padding:18px">
+        <div style="font-family:var(--ff-h);font-size:18px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+             Saved Parties (Customers/Suppliers)
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Parties are automatically added here when you record a Sale or Purchase.</div>
+        <div class="md-list" id="md-parties"></div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -916,14 +949,11 @@ body.manager-mode .hide-manager { display: none !important; }
     <div class="modal-sub">Inventory mein naya kapda add karo</div>
     <div class="fg"><label class="fl">Kapde Ka Naam *</label><input id="m-name" placeholder="e.g. Lal Banarasi Georgette"/></div>
     <div class="g2">
-      <div class="fg"><label class="fl">Category *</label>
+      <div class="fg"><label class="fl">Category / Quality *</label>
         <select id="m-type">
-          <option>Georgette</option><option>Chiffon</option><option>Silk</option>
-          <option>Cotton</option><option>Velvet</option><option>Satin</option>
-          <option>Net</option><option>Rayon</option><option>Linen</option><option>Other</option>
-        </select>
+          </select>
       </div>
-      <div class="fg"><label class="fl">Rang <span class="fl-hindi">color</span></label><input id="m-color" placeholder="e.g. Lal, Neela"/></div>
+      <div class="fg"><label class="fl">Rang <span class="fl-hindi">color</span></label><input id="m-color" list="color-list" placeholder="e.g. Rani Pink, Maroon"/></div>
     </div>
     <div class="g2">
       <div class="fg"><label class="fl">Meter *</label><input id="m-m" type="number" placeholder="0" min="0"/></div>
@@ -967,85 +997,86 @@ body.manager-mode .hide-manager { display: none !important; }
 </div>
 
 <div class="qmodal-bg" id="bill-modal">
-  <div class="qmodal" style="width:500px;max-width:95vw">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+  <div class="qmodal" style="width:500px;max-width:95vw;padding:0;overflow:hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:var(--white);border-bottom:1px solid var(--border)">
       <div class="qmodal-title" style="margin-bottom:0">Bill / Receipt</div>
       <button onclick="closeBill()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer">✕</button>
     </div>
-    <div id="bill-preview" style="background:white;color:#1a1815;font-family:'Baloo 2',cursive;max-width:440px;margin:0 auto;position:relative">
-      <div id="bill-watermark" class="watermark" style="display:none">ESTIMATE</div>
-      <div style="height:18px;background:white;position:relative;overflow:hidden">
-        <svg viewBox="0 0 420 18" style="width:100%;height:18px;display:block"><path d="M0,0 Q10,18 20,0 Q30,18 40,0 Q50,18 60,0 Q70,18 80,0 Q90,18 100,0 Q110,18 120,0 Q130,18 140,0 Q150,18 160,0 Q170,18 180,0 Q190,18 200,0 Q210,18 220,0 Q230,18 240,0 Q250,18 260,0 Q270,18 280,0 Q290,18 300,0 Q310,18 320,0 Q330,18 340,0 Q350,18 360,0 Q370,18 380,0 Q390,18 400,0 Q410,18 420,0 L420,18 L0,18 Z" fill="#f5f0e8"/></svg>
-      </div>
-      <div style="background:#f5f0e8;padding:24px 28px;position:relative;z-index:1">
-        <div style="text-align:center;border-bottom:1.5px dashed #c8b99a;padding-bottom:18px;margin-bottom:18px">
-          <div style="font-size:22px;font-weight:800;color:#2d2416;letter-spacing:-0.5px" id="bill-shop-name">Firm Name</div>
-          <div id="bill-shop-gstin" style="font-size:11px;color:#8a7a5a;margin-top:2px"></div>
-          <div id="bill-type-lbl" style="font-size:11px;color:#8a7a5a;margin-top:4px;letter-spacing:1px;text-transform:uppercase">BILL</div>
-          <div style="margin-top:10px;display:flex;justify-content:space-between;font-size:12px;color:#6b5c3e">
-            <span><b>Bill No:</b> <span id="bill-no">—</span></span>
-            <span><b>Date:</b> <span id="bill-date">—</span></span>
+    <div style="max-height:70dvh;overflow-y:auto;padding:20px;background:var(--bg)">
+        <div id="bill-preview" style="background:white;color:#1a1815;font-family:'Baloo 2',cursive;max-width:440px;margin:0 auto;position:relative">
+          <div id="bill-watermark" class="watermark" style="display:none">ESTIMATE</div>
+          <div style="height:18px;background:white;position:relative;overflow:hidden">
+            <svg viewBox="0 0 420 18" style="width:100%;height:18px;display:block"><path d="M0,0 Q10,18 20,0 Q30,18 40,0 Q50,18 60,0 Q70,18 80,0 Q90,18 100,0 Q110,18 120,0 Q130,18 140,0 Q150,18 160,0 Q170,18 180,0 Q190,18 200,0 Q210,18 220,0 Q230,18 240,0 Q250,18 260,0 Q270,18 280,0 Q290,18 300,0 Q310,18 320,0 Q330,18 340,0 Q350,18 360,0 Q370,18 380,0 Q390,18 400,0 Q410,18 420,0 L420,18 L0,18 Z" fill="#f5f0e8"/></svg>
           </div>
-          <div style="margin-top:4px;display:flex;justify-content:space-between;font-size:12px;color:#6b5c3e">
-            <span><b>Pay Mode:</b> <span id="bill-pay-mode">—</span></span>
-            <span><b>Inv Type:</b> <span id="bill-inv-type">—</span></span>
-          </div>
-        </div>
-        <div style="margin-bottom:16px">
-          <div id="bill-to-lbl" style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">To / Grahak</div>
-          <div style="font-size:16px;font-weight:700;color:#2d2416" id="bill-customer">—</div>
-          <div style="font-size:12px;color:#8a7a5a;margin-top:2px" id="bill-buyer-gstin"></div>
-        </div>
-        
-        <div id="bill-shipping"></div>
-
-        <div style="border-top:1.5px dashed #c8b99a;margin-bottom:14px"></div>
-        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px">
-          <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px">Item</div>
-          <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;text-align:center">Qty</div>
-          <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;text-align:center">Rate</div>
-          <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;text-align:right">Amt</div>
-        </div>
-        <div id="bill-items" style="margin-bottom:14px"></div>
-        <div id="bill-discount-section"></div>
-        <div style="border-top:1.5px dashed #c8b99a;margin-bottom:14px"></div>
-        <div id="bill-gst-section" style="margin-bottom:14px;font-size:12px;color:#6b5c3e"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;background:white;border-radius:10px;padding:14px 16px;border:2px solid #e8dfc8;margin-bottom:10px">
-          <span style="font-size:16px;font-weight:800;color:#2d2416;text-transform:uppercase;letter-spacing:0.5px">Total (incl. GST)</span>
-          <span style="font-size:26px;font-weight:800;color:#b8860b;font-family:'Baloo 2',cursive" id="bill-total">₹0</span>
-        </div>
-        
-        <div id="bill-payment-status" style="margin-bottom:14px;font-size:12px;color:#6b5c3e;background:white;padding:10px;border-radius:8px;border:1px solid #e8dfc8;">
-            <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Paid Amount:</span><span id="bill-paid-amt">₹0</span></div>
-            <div style="display:flex;justify-content:space-between;font-weight:700"><span>Due Amount:</span><span id="bill-due-amt">₹0</span></div>
-        </div>
-        
-        <div id="bill-qr" style="text-align:center;margin:20px 0;display:none">
-            <img id="bill-qr-img" src="" alt="Pay via UPI" style="width:100px;height:100px;border-radius:8px;border:2px solid #e8dfc8;padding:4px;background:white">
-            <div style="font-size:10px;color:#8a7a5a;margin-top:4px">Scan to Pay via UPI</div>
-        </div>
-
-        <div style="margin-top:30px;display:flex;justify-content:space-between;align-items:flex-end;">
-            <div></div>
-            <div style="text-align:center">
-                <div style="border-bottom:1.5px solid #2d2416;width:120px;margin-bottom:6px"></div>
-                <div style="font-size:11px;color:#8a7a5a;font-weight:700">Authorized Sign</div>
+          <div style="background:#f5f0e8;padding:24px 28px;position:relative;z-index:1">
+            <div style="text-align:center;border-bottom:1.5px dashed #c8b99a;padding-bottom:18px;margin-bottom:18px">
+              <div style="font-size:22px;font-weight:800;color:#2d2416;letter-spacing:-0.5px" id="bill-shop-name">Firm Name</div>
+              <div id="bill-shop-gstin" style="font-size:11px;color:#8a7a5a;margin-top:2px"></div>
+              <div id="bill-type-lbl" style="font-size:11px;color:#8a7a5a;margin-top:4px;letter-spacing:1px;text-transform:uppercase">BILL</div>
+              <div style="margin-top:10px;display:flex;justify-content:space-between;font-size:12px;color:#6b5c3e">
+                <span><b>Bill No:</b> <span id="bill-no">—</span></span>
+                <span><b>Date:</b> <span id="bill-date">—</span></span>
+              </div>
+              <div style="margin-top:4px;display:flex;justify-content:space-between;font-size:12px;color:#6b5c3e">
+                <span><b>Pay Mode:</b> <span id="bill-pay-mode">—</span></span>
+                <span><b>Inv Type:</b> <span id="bill-inv-type">—</span></span>
+              </div>
             </div>
+            <div style="margin-bottom:16px">
+              <div id="bill-to-lbl" style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">To / Grahak</div>
+              <div style="font-size:16px;font-weight:700;color:#2d2416" id="bill-customer">—</div>
+              <div style="font-size:12px;color:#8a7a5a;margin-top:2px" id="bill-buyer-gstin"></div>
+            </div>
+            
+            <div id="bill-shipping"></div>
+    
+            <div style="border-top:1.5px dashed #c8b99a;margin-bottom:14px"></div>
+            <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px">
+              <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px">Item</div>
+              <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;text-align:center">Qty</div>
+              <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;text-align:center">Rate</div>
+              <div style="font-size:10px;font-weight:700;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;text-align:right">Amt</div>
+            </div>
+            <div id="bill-items" style="margin-bottom:14px"></div>
+            <div id="bill-discount-section"></div>
+            <div style="border-top:1.5px dashed #c8b99a;margin-bottom:14px"></div>
+            <div id="bill-gst-section" style="margin-bottom:14px;font-size:12px;color:#6b5c3e"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;background:white;border-radius:10px;padding:14px 16px;border:2px solid #e8dfc8;margin-bottom:10px">
+              <span style="font-size:16px;font-weight:800;color:#2d2416;text-transform:uppercase;letter-spacing:0.5px">Total (incl. GST)</span>
+              <span style="font-size:26px;font-weight:800;color:#b8860b;font-family:'Baloo 2',cursive" id="bill-total">₹0</span>
+            </div>
+            
+            <div id="bill-payment-status" style="margin-bottom:14px;font-size:12px;color:#6b5c3e;background:white;padding:10px;border-radius:8px;border:1px solid #e8dfc8;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Paid Amount:</span><span id="bill-paid-amt">₹0</span></div>
+                <div style="display:flex;justify-content:space-between;font-weight:700"><span>Due Amount:</span><span id="bill-due-amt">₹0</span></div>
+            </div>
+            
+            <div id="bill-qr" style="text-align:center;margin:20px 0;display:none">
+                <img id="bill-qr-img" src="" alt="Pay via UPI" style="width:100px;height:100px;border-radius:8px;border:2px solid #e8dfc8;padding:4px;background:white">
+                <div style="font-size:10px;color:#8a7a5a;margin-top:4px">Scan to Pay via UPI</div>
+            </div>
+    
+            <div style="margin-top:30px;display:flex;justify-content:space-between;align-items:flex-end;">
+                <div></div>
+                <div style="text-align:center">
+                    <div style="border-bottom:1.5px solid #2d2416;width:120px;margin-bottom:6px"></div>
+                    <div style="font-size:11px;color:#8a7a5a;font-weight:700">Authorized Sign</div>
+                </div>
+            </div>
+    
+            <div style="border-top:1.5px dashed #c8b99a;margin:18px 0 14px"></div>
+            <div style="text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#2d2416;letter-spacing:0.5px;margin-bottom:4px">THANK YOU! 🙏</div>
+              <div style="font-size:11px;color:#8a7a5a">Dhanyavaad for your business</div>
+              <div style="margin-top:12px;font-size:10px;color:#b8a888;letter-spacing:1px;text-transform:uppercase">Generated by StockSaathi · Niori</div>
+            </div>
+          </div>
+          <div style="height:18px;background:white;position:relative;overflow:hidden">
+            <svg viewBox="0 0 420 18" style="width:100%;height:18px;display:block;transform:scaleY(-1)"><path d="M0,0 Q10,18 20,0 Q30,18 40,0 Q50,18 60,0 Q70,18 80,0 Q90,18 100,0 Q110,18 120,0 Q130,18 140,0 Q150,18 160,0 Q170,18 180,0 Q190,18 200,0 Q210,18 220,0 Q230,18 240,0 Q250,18 260,0 Q270,18 280,0 Q290,18 300,0 Q310,18 320,0 Q330,18 340,0 Q350,18 360,0 Q370,18 380,0 Q390,18 400,0 Q410,18 420,0 L420,18 L0,18 Z" fill="#f5f0e8"/></svg>
+          </div>
         </div>
-
-        <div style="border-top:1.5px dashed #c8b99a;margin:18px 0 14px"></div>
-        <div style="text-align:center">
-          <div style="font-size:16px;font-weight:800;color:#2d2416;letter-spacing:0.5px;margin-bottom:4px">THANK YOU! 🙏</div>
-          <div style="font-size:11px;color:#8a7a5a">Dhanyavaad for your business</div>
-          <div style="margin-top:12px;font-size:10px;color:#b8a888;letter-spacing:1px;text-transform:uppercase">Generated by StockSaathi · Niori</div>
-        </div>
-      </div>
-      <div style="height:18px;background:white;position:relative;overflow:hidden">
-        <svg viewBox="0 0 420 18" style="width:100%;height:18px;display:block;transform:scaleY(-1)"><path d="M0,0 Q10,18 20,0 Q30,18 40,0 Q50,18 60,0 Q70,18 80,0 Q90,18 100,0 Q110,18 120,0 Q130,18 140,0 Q150,18 160,0 Q170,18 180,0 Q190,18 200,0 Q210,18 220,0 Q230,18 240,0 Q250,18 260,0 Q270,18 280,0 Q290,18 300,0 Q310,18 320,0 Q330,18 340,0 Q350,18 360,0 Q370,18 380,0 Q390,18 400,0 Q410,18 420,0 L420,18 L0,18 Z" fill="#f5f0e8"/></svg>
-      </div>
     </div>
-    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
-      <button onclick="closeBill()" class="btn btn-ghost" style="flex:1;justify-content:center;min-width:80px">✕ Close</button>
+    <div style="display:flex;gap:8px;padding:16px 20px;background:var(--white);border-top:1px solid var(--border);flex-wrap:wrap">
       <button onclick="printBill()" class="btn btn-ghost" style="flex:1;justify-content:center;min-width:80px">🖨️ Print</button>
       <button id="wa-bill-btn" onclick="whatsappBill()" style="flex:1;justify-content:center;min-width:80px;padding:10px 14px;background:#25D366;color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">💬 Text WA</button>
       <button id="share-bill-btn" onclick="shareBillPDF()" style="flex:1;justify-content:center;min-width:120px;padding:10px 14px;background:var(--blue);color:white;border:none;border-radius:9px;font-family:var(--ff-h);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">📤 Share PDF</button>
@@ -1080,6 +1111,13 @@ body.manager-mode .hide-manager { display: none !important; }
   </div>
 </div>
 
+<div id="profile-screen">
+  <div style="font-family:var(--ff-h);font-size:32px;font-weight:800;color:#faf7f0;text-align:center">Who is using this?</div>
+  <div style="color:#b8a888;margin-bottom:10px;text-align:center">Select your profile to continue</div>
+  <div class="profile-cards" id="profile-cards-container">
+     </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -1110,8 +1148,12 @@ var EJS_KEY      = 'Ux_cTro8ToCSm2LUY';
 
 // ══ STATE ══
 var auth, db, user=null, inv=[], sales=[], purchases=[], asFabId=null, qsFabId=null, selCatV='', activeLedgerTab='sales';
-var appSettings = { upiId: '', profiles: [] };
+var appSettings = { upiId: '', profiles: [], lists: {} };
 var currentProfile = null;
+
+// ══ MASTER DATA DEFAULTS ══
+var defaultColors = ["Red", "Maroon", "Crimson", "Navy Blue", "Royal Blue", "Sky Blue", "Baby Pink", "Rani Pink", "Magenta", "Peach", "Mustard", "Lemon Yellow", "Bottle Green", "Olive Green", "Mint Green", "Black", "White", "Off White", "Cream", "Beige", "Gold", "Silver", "Grey", "Charcoal", "Turquoise", "Teal", "Lavender", "Purple", "Violet", "Wine", "Rust", "Copper", "Coral", "Orange", "Brown", "Chocolate", "Coffee", "Fuchsia", "Plum", "Sea Green", "Neon Green", "Ruby", "Emerald", "Sapphire", "Indigo", "Ivory", "Khaki", "Lilac", "Mauve", "Ochre", "Tangerine", "Tomato"];
+var defaultQualities = ["Georgette", "Chiffon", "Silk", "Cotton", "Velvet", "Satin", "Net", "Rayon", "Linen", "Organza", "Crepe", "Jacquard", "Brocade", "Banarasi", "Other"];
 
 var ICONS={Georgette:'🟥',Chiffon:'🔵',Silk:'✨',Cotton:'🤍',Velvet:'🖤',Satin:'💗',Net:'🕸️',Rayon:'🟤',Linen:'🟡',Other:'🧵'};
 var COLORS={Georgette:'#fdecea',Chiffon:'#e8f0fe',Silk:'#fef9e0',Cotton:'#f8f8f8',Velvet:'#f0e8f8',Satin:'#fde8f0',Net:'#e8f5f0',Rayon:'#fdecd8',Linen:'#fdf8e8',Other:'#f5efe0'};
@@ -1173,6 +1215,7 @@ function startApp() {
       document.getElementById('login-screen').style.display='none';
       await loadCloud();
       updatePartyList();
+      populateDropdowns();
       
       // Start Realtime Listener for Sessions and Data
       db.collection('users').doc(user.uid).onSnapshot((doc) => {
@@ -1189,6 +1232,11 @@ function startApp() {
                       }
                   }
                   if(document.getElementById('pg-profiles').classList.contains('on')) renderProfilesPage();
+              }
+              if(d.settings && d.settings.lists) {
+                  appSettings.lists = d.settings.lists;
+                  populateDropdowns();
+                  if(document.getElementById('pg-master').classList.contains('on')) renderMasterData();
               }
           }
       });
@@ -1247,10 +1295,15 @@ async function loadCloud(){
                 {id: 'p_staff', name: 'Staff', role: 'staff', pin: ''}
             ];
         }
+        appSettings.lists = appSettings.lists || { qualities: defaultQualities, colors: defaultColors };
     }
     else {
         inv=[]; sales=[]; purchases=[]; 
-        appSettings = { upiId: '', profiles: [{id: 'p_owner', name: 'Owner', role: 'owner', pin: ''}, {id: 'p_staff', name: 'Staff', role: 'staff', pin: ''}] };
+        appSettings = { 
+            upiId: '', 
+            profiles: [{id: 'p_owner', name: 'Owner', role: 'owner', pin: ''}, {id: 'p_staff', name: 'Staff', role: 'staff', pin: ''}],
+            lists: { qualities: defaultQualities, colors: defaultColors }
+        };
         await save(); setTimeout(showOnboarding,600);
     }
   }catch(e){inv=[];sales=[];purchases=[];}
@@ -1336,6 +1389,86 @@ function completeLogin(profile) {
     
     document.getElementById('profile-screen').style.display = 'none';
     updateStats(); renderDash(); goto('dash', document.querySelectorAll('.sb-item')[0]);
+}
+
+// ══ ADMIN: MASTER DATA ══
+function populateDropdowns() {
+    if(!appSettings.lists) return;
+    
+    var qSelect = document.getElementById('m-type');
+    if(qSelect && appSettings.lists.qualities) {
+        qSelect.innerHTML = appSettings.lists.qualities.map(q => `<option value="${esc(q)}">${esc(q)}</option>`).join('');
+    }
+    
+    var cList = document.getElementById('color-list');
+    if(cList && appSettings.lists.colors) {
+        cList.innerHTML = appSettings.lists.colors.map(c => `<option value="${esc(c)}">`).join('');
+    }
+    
+    var invFilters = document.getElementById('inv-cat-filters');
+    if(invFilters && appSettings.lists.qualities) {
+        var html = `<button class="cat-p active" onclick="filterCat('',this)">🧵 Sab</button>`;
+        html += appSettings.lists.qualities.slice(0, 12).map(q => `<button class="cat-p" onclick="filterCat('${esc(q)}',this)">${esc(q)}</button>`).join('');
+        invFilters.innerHTML = html;
+    }
+}
+
+function renderMasterData() {
+    // Qualities
+    var qHtml = appSettings.lists.qualities.map((q, idx) => `
+        <div class="md-item">
+            <span>${esc(q)}</span>
+            <button class="btn btn-ghost btn-small" style="color:var(--red);border-color:#f4c0ba" onclick="deleteQuality(${idx})">🗑️</button>
+        </div>
+    `).join('');
+    document.getElementById('md-qualities').innerHTML = qHtml || '<div style="color:var(--muted);font-size:12px;padding:10px">No qualities added</div>';
+
+    // Colors
+    var cHtml = appSettings.lists.colors.map((c, idx) => `
+        <div class="md-item">
+            <span>${esc(c)}</span>
+            <button class="btn btn-ghost btn-small" style="color:var(--red);border-color:#f4c0ba" onclick="deleteColor(${idx})">🗑️</button>
+        </div>
+    `).join('');
+    document.getElementById('md-colors').innerHTML = cHtml || '<div style="color:var(--muted);font-size:12px;padding:10px">No colors added</div>';
+    
+    // Saved Parties
+    var parties = new Set();
+    sales.forEach(s => { if(s.customer) parties.add(s.customer); });
+    purchases.forEach(p => { if(p.party) parties.add(p.party); });
+    var pHtml = Array.from(parties).map(p => `
+        <div class="md-item">
+            <span>${esc(p)}</span>
+        </div>
+    `).join('');
+    document.getElementById('md-parties').innerHTML = pHtml || '<div style="color:var(--muted);font-size:12px;padding:10px">No parties saved yet. Record a sale to see them here.</div>';
+}
+
+function addQuality() {
+    var q = prompt("Enter new Category/Quality name:");
+    if(q && q.trim()) {
+        appSettings.lists.qualities.push(q.trim());
+        save(); populateDropdowns(); renderMasterData(); toast("Added!");
+    }
+}
+function deleteQuality(idx) {
+    if(confirm("Delete this category?")) {
+        appSettings.lists.qualities.splice(idx, 1);
+        save(); populateDropdowns(); renderMasterData();
+    }
+}
+function addColor() {
+    var c = prompt("Enter new Color name:");
+    if(c && c.trim()) {
+        appSettings.lists.colors.push(c.trim());
+        save(); populateDropdowns(); renderMasterData(); toast("Added!");
+    }
+}
+function deleteColor(idx) {
+    if(confirm("Delete this color?")) {
+        appSettings.lists.colors.splice(idx, 1);
+        save(); populateDropdowns(); renderMasterData();
+    }
 }
 
 // ══ ADMIN: MANAGE PROFILES ══
@@ -1433,10 +1566,10 @@ function updatePartyList() {
 }
 
 // ══ NAV ══
-var pgMap={dash:['Dashboard',''],inv:['Inventory','— All Fabrics'],sales:['Sales','— Record & History'],ledger:['Ledger','— Sales & Purchase Book'],calc:['Calculator','— Quick Calculations'],report:['Monthly Report',''],profiles:['Manage Profiles','Add or remove users']};
+var pgMap={dash:['Dashboard',''],inv:['Inventory','— All Fabrics'],sales:['Sales','— Record & History'],ledger:['Ledger','— Sales & Purchase Book'],calc:['Calculator','— Quick Calculations'],report:['Monthly Report',''],profiles:['Manage Profiles','Add or remove users'],master:['Master Data','Manage qualities and colors']};
 
 function goto(pg,el){
-  if(currentProfile && (currentProfile.role === 'staff' || currentProfile.role === 'manager') && pg === 'profiles') {
+  if(currentProfile && (currentProfile.role === 'staff' || currentProfile.role === 'manager') && (pg === 'profiles' || pg === 'master')) {
       toast("🔒 Owner Access Required"); return;
   }
   if(currentProfile && currentProfile.role === 'staff' && (pg === 'ledger' || pg === 'calc' || pg === 'report')) {
@@ -1455,18 +1588,19 @@ function goto(pg,el){
   if(pg==='ledger'){renderLedgerSummary();renderLedger();}
   if(pg==='report')renderReport();
   if(pg==='profiles')renderProfilesPage();
+  if(pg==='master')renderMasterData();
   if(pg==='dash') { renderDash(); renderDashHighlights(); }
 }
 function toggleMobileMenu(){document.getElementById('mob-menu').classList.toggle('on');document.getElementById('mob-overlay').classList.toggle('on');}
 function closeMobileMenu(){document.getElementById('mob-menu').classList.remove('on');document.getElementById('mob-overlay').classList.remove('on');}
 function mobileGoto(pg){
-    if(currentProfile && (currentProfile.role === 'staff' || currentProfile.role === 'manager') && pg === 'profiles') {
+    if(currentProfile && (currentProfile.role === 'staff' || currentProfile.role === 'manager') && (pg === 'profiles' || pg === 'master')) {
       toast("🔒 Owner Access Required"); return;
     }
     if(currentProfile && currentProfile.role === 'staff' && (pg === 'ledger' || pg === 'calc' || pg === 'report')) {
       toast("🔒 Restricted Access"); return;
     }
-    ['dash','inv','sales','ledger','calc','report','profiles'].forEach(function(p){var el=document.getElementById('mob-'+p);if(el)el.classList.toggle('active',p===pg);});
+    ['dash','inv','sales','ledger','calc','report','profiles','master'].forEach(function(p){var el=document.getElementById('mob-'+p);if(el)el.classList.toggle('active',p===pg);});
     closeMobileMenu();goto(pg,null);
 }
 
@@ -1615,7 +1749,7 @@ function saveAddStock(withBill){
   updatePartyList(); save();updateStats();renderDash();renderInv();closeAddStock();
   toast('✓ '+m+'m added to '+f.name+'!');
   
-  if(withBill && currentProfile && currentProfile.role === 'owner') setTimeout(function(){generatePurchaseBill(purchaseData);},300);
+  if(withBill && !appSettings.isStaffMode) setTimeout(function(){generatePurchaseBill(purchaseData);},300);
 }
 
 // ══ QUICK SELL ══
@@ -1697,7 +1831,7 @@ function _doQSSale(withBill){
   updatePartyList(); save();updateStats();renderDash();renderInv();closeQS();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
   
-  if(withBill) setTimeout(function(){generateBill(saleData);},300);
+  if(withBill && !appSettings.isStaffMode) setTimeout(function(){generateBill(saleData);},300);
 }
 function saveQS(){_doQSSale(false);}
 function saveQSAndBill(){_doQSSale(true);}
@@ -1782,7 +1916,7 @@ function _doSale(withBill){
   if(f.meters<f.threshold){
     emailjs.send(EJS_SVC, EJS_ALERT_TPL,{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Shop Owner'}).catch(function(e){console.log('Low stock alert err:',e);});
   }
-  if(withBill) setTimeout(function(){generateBill(saleData);},300);
+  if(withBill && !appSettings.isStaffMode) setTimeout(function(){generateBill(saleData);},300);
 }
 function recSale(){_doSale(false);}
 function recSaleAndBill(){_doSale(true);}
@@ -2036,8 +2170,8 @@ function renderReport(){
 var obStep=1;
 var OB_STEPS=[
   {title:'Welcome to StockSaathi! 🎉',sub:'2 minute mein apna stock manager ready',feats:[['📦','Stock Track Karo','Meter by meter hisaab'],['💰','Bikri Record Karo','Customer ka naam aur raqam'],['⚠️','Auto Alert','Jab stock kam ho, alert aayega'],['📒','Bahi Khata','Sales + Purchase Book']]},
-  {title:'GST Ready System 🧾',sub:'Intra/Inter state GST — bilkul sahi',feats:[['5%','Fabric / <₹1000','Standard textile GST rate'],['12%','Garments >₹1000','Higher GST bracket'],['🔵','CGST + SGST','Gujarat ke andar — split equally'],['🔴','IGST','Dusre states ke liye']]},
-  {title:'All Set! Lets Begin 🚀',sub:'StockSaathi is ready',feats:[['📥','Add Stock','Inventory mein fabric daalo'],['💰','Sell + Bill','Quick sell with GST invoice'],['📒','Bahi Khata','Full ledger — sales aur purchases'],['📊','Reports','Monthly summary']]},
+  {title:'Bill Kaise Banayein? 🧾',sub:'StockSaathi pe bill banana bahut aasaan hai',feats:[['1️⃣','Click Sell','Kapda select karein aur "Sell" dabayein'],['2️⃣','Enter Details','Meters aur Customer ka naam likhein'],['3️⃣','Kacha ya Pakka?','Estimate ke liye "Kacha Bill" tick karein'],['4️⃣','Generate Bill','WhatsApp par PDF bhejein!']]},
+  {title:'All Set! Lets Begin 🚀',sub:'StockSaathi is ready',feats:[['📥','Add Stock','Inventory mein fabric daalo'],['👥','Add Profiles','Admin tab mein Staff ko add karein'],['📁','Master Data','Add custom colors & parties'],['📊','Reports','Monthly summary']]},
 ];
 function showOnboarding(){obStep=1;renderOB();document.getElementById('onboarding').classList.add('on');}
 function renderOB(){
@@ -2157,7 +2291,7 @@ function generatePurchaseBill(p) {
 
   document.getElementById('bill-inv-type').textContent = '-';
   document.getElementById('bill-pay-mode').textContent = '-';
-  document.getElementById('bill-shipping').innerHTML = ''; 
+  document.getElementById('bill-shipping').innerHTML = ''; // Hide shipping on purchase receipt
 
   var baseAmt = (p.meters * p.rate);
   document.getElementById('bill-items').innerHTML=
