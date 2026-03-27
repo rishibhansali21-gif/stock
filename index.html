@@ -4,134 +4,696 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>StockSaathi — Premium Textile ERP</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1a1a1a">
 
     <style>
-        /* ══ PREMIUM SURAT THEME ══ */
+        /* ==========================================================================
+           PREMIUM SURAT THEME VARIABLES
+           ========================================================================== */
         :root {
-            --bg: #f8f6f2; --white: #ffffff; --panel: #1a1a1a;
-            --border: #dcd5c5; --border-focus: #b8860b;
-            --text: #1c1917; --muted: #78716c; --muted2: #57534e;
-            --gold: #b8860b; --gold-dark: #8c6708; --gold-light: #fefce8;
-            --red: #b91c1c; --red-light: #fef2f2;
-            --green: #15803d; --green-light: #f0fdf4;
-            --orange: #c2410c; --orange-light: #fff7ed;
-            --blue: #1d4ed8; --blue-light: #eff6ff;
-            --ff-h: 'Baloo 2', cursive; --ff-b: 'Noto Sans', sans-serif;
+            --bg: #f8f6f2; 
+            --white: #ffffff; 
+            --panel: #1a1a1a;
+            
+            --border: #dcd5c5; 
+            --border-focus: #b8860b;
+            
+            --text: #1c1917; 
+            --muted: #78716c; 
+            --muted2: #57534e;
+            
+            --gold: #b8860b; 
+            --gold-dark: #8c6708; 
+            --gold-light: #fefce8; 
+            --gold-btn: #b8860b;
+            
+            --red: #b91c1c; 
+            --red-light: #fef2f2;
+            
+            --green: #15803d; 
+            --green-light: #f0fdf4;
+            
+            --orange: #c2410c; 
+            --orange-light: #fff7ed;
+            
+            --blue: #1d4ed8; 
+            --blue-light: #eff6ff;
+            
+            --ff-h: 'Baloo 2', cursive; 
+            --ff-b: 'Noto Sans', sans-serif;
+            
             --shadow: 0 4px 15px rgba(0,0,0,0.05);
             --shadow-md: 0 10px 30px rgba(0,0,0,0.1);
-            --r: 10px; --r2: 16px;
+            
+            --r: 10px; 
+            --r2: 16px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); font-family: var(--ff-b); display: flex; height: 100dvh; overflow: hidden; font-size: 15px; }
+        /* ==========================================================================
+           BASE RESET
+           ========================================================================== */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+        }
 
-        /* ══ SIDEBAR ══ */
-        .sb { width: 260px; background: var(--panel); color: white; display: flex; flex-direction: column; flex-shrink: 0; z-index: 100; box-shadow: 2px 0 15px rgba(0,0,0,0.1); }
-        .sb-top { padding: 30px 20px; border-bottom: 1px solid #333; }
-        .logo-wrap { display: flex; align-items: center; gap: 12px; }
-        .logo-icon { width: 45px; height: 45px; background: var(--gold); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; color: var(--panel); box-shadow: 0 0 15px rgba(184,134,11,0.4); }
-        .logo-text { font-family: var(--ff-h); font-size: 24px; color: var(--gold); line-height: 1; font-weight: 700; }
-        .sb-nav { flex: 1; padding: 20px 10px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; cursor: pointer; color: #a8a29e; margin-bottom: 4px; font-weight: 600; font-size: 14px; transition: 0.2s; }
-        .nav-item:hover { background: #262626; color: white; }
-        .nav-item.active { background: var(--gold); color: var(--panel); }
-        .sb-sec { font-size: 10px; font-weight: 800; color: #78716c; letter-spacing: 1px; text-transform: uppercase; padding: 15px 16px 5px; }
-        .sb-foot { padding: 15px 20px; border-top: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: var(--ff-b); 
+            display: flex; 
+            height: 100dvh; 
+            overflow: hidden; 
+            font-size: 15px; 
+        }
 
-        /* ══ MAIN CONTENT ══ */
-        .main { flex: 1; overflow: hidden; display: flex; flex-direction: column; position: relative; }
-        .topbar { height: 65px; background: var(--white); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 25px; flex-shrink: 0; z-index: 90; box-shadow: var(--shadow); }
-        .content { flex: 1; overflow-y: auto; padding: 25px; -webkit-overflow-scrolling: touch; }
-        .page { display: none; flex-direction: column; height: 100%; }
-        .page.on { display: flex; }
-        .sh { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
-        .sh-title { font-family: var(--ff-h); font-size: 24px; font-weight: 700; color: var(--text); }
-        .sh-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+        /* ==========================================================================
+           SIDEBAR
+           ========================================================================== */
+        .sb { 
+            width: 260px; 
+            background: var(--panel); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            flex-shrink: 0; 
+            z-index: 100; 
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1); 
+        }
 
-        /* ══ CARDS & GRIDS ══ */
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--border); background: var(--white); flex-shrink: 0; }
-        .stat { padding: 20px 25px; border-right: 1px solid var(--border); }
-        .stat:last-child { border-right: none; }
-        .stat-l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; margin-bottom: 6px; }
-        .stat-v { font-family: var(--ff-h); font-size: 28px; font-weight: 800; line-height: 1; }
-        .fc { background: var(--white); border: 1px solid var(--border); border-radius: var(--r2); padding: 22px; margin-bottom: 18px; box-shadow: var(--shadow); }
-        .fc-title { font-family: var(--ff-h); font-size: 18px; font-weight: 700; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .sb-top { 
+            padding: 30px 20px; 
+            border-bottom: 1px solid #333; 
+        }
 
-        /* ══ FABRIC CARDS ══ */
-        .fab-grid { display: flex; flex-direction: column; gap: 12px; }
-        .fab-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r2); padding: 15px 20px; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; transition: 0.2s; box-shadow: var(--shadow); }
-        .fab-card:hover { border-color: var(--gold); box-shadow: var(--shadow-md); transform: translateY(-2px); }
-        .fab-card.low { border-left: 4px solid var(--red); }
-        .fab-card.med { border-left: 4px solid var(--orange); }
-        .fab-card.ok { border-left: 4px solid var(--green); }
-        .fab-name { font-family: var(--ff-h); font-size: 17px; font-weight: 700; margin-bottom: 3px; }
-        .pill { display: inline-flex; align-items: center; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 15px; letter-spacing: 0.5px; }
+        .logo-wrap { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+        }
 
-        /* ══ NETFLIX PROFILES ══ */
-        #profile-screen { position: fixed; inset: 0; z-index: 10000; background: var(--panel); display: none; align-items: center; justify-content: center; flex-direction: column; padding: 20px; overflow-y: auto; }
-        .profile-grid { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; margin-top: 30px; max-width: 800px; }
-        .p-card { background: #262626; border-radius: 24px; padding: 40px 30px; width: 170px; text-align: center; cursor: pointer; border: 3px solid transparent; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .p-card:hover { border-color: var(--gold); transform: translateY(-8px); }
-        .p-avatar { width: 75px; height: 75px; background: var(--gold); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 35px; }
+        .logo-icon { 
+            width: 45px; 
+            height: 45px; 
+            background: var(--gold); 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 24px; 
+            font-weight: 800; 
+            color: var(--panel); 
+            box-shadow: 0 0 15px rgba(184,134,11,0.4); 
+        }
 
-        /* ══ SETUP SCREEN ══ */
-        #setup-screen { position: fixed; inset: 0; z-index: 11000; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; padding: 20px; }
-        .setup-box { background: var(--white); width: 100%; max-width: 480px; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); animation: pop 0.3s ease; }
-        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .logo-text { 
+            font-family: var(--ff-h); 
+            font-size: 24px; 
+            color: var(--gold); 
+            line-height: 1; 
+            font-weight: 700; 
+        }
 
-        /* ══ INPUTS & BUTTONS ══ */
-        .btn { padding: 12px 24px; border-radius: 10px; border: none; font-family: var(--ff-h); font-size: 15px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-        .btn-gold { background: var(--gold); color: white; box-shadow: 0 4px 10px rgba(184,134,11,0.2); }
-        .btn-gold:hover { background: var(--gold-dark); transform: translateY(-1px); }
-        .btn-ghost { background: transparent; border: 1.5px solid var(--border); color: var(--muted2); }
-        .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
-        .btn-full { width: 100%; }
-        .btn-small { padding: 6px 12px; font-size: 12px; }
-        .fg { margin-bottom: 15px; }
-        .fl { display: block; font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
-        input, select, textarea { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-family: var(--ff-b); font-size: 14px; outline: none; background: var(--white); color: var(--text); transition: 0.2s; }
-        input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,134,11,0.1); }
-        .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .sb-nav { 
+            flex: 1; 
+            padding: 20px 10px; 
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch; 
+        }
 
-        /* ══ LEDGER & TABS ══ */
-        .ledger-tabs { display: flex; background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
-        .ledger-tab { flex: 1; padding: 12px; font-family: var(--ff-h); font-weight: 700; cursor: pointer; text-align: center; color: var(--muted); border: none; background: transparent; transition: 0.2s; }
-        .ledger-tab.active { background: var(--gold-light); color: var(--gold-dark); }
-        .ledger-entry { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 15px 20px; margin-bottom: 10px; display: grid; grid-template-columns: auto 1fr auto auto; gap: 15px; align-items: center; box-shadow: var(--shadow); }
-        .ledger-entry.sale-entry { border-left: 4px solid var(--green); }
-        .ledger-entry.purchase-entry { border-left: 4px solid var(--blue); }
-        .udhaar-card { background: var(--white); border: 1px solid var(--orange-light); border-left: 4px solid var(--orange); border-radius: 12px; padding: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); }
+        .nav-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            padding: 12px 16px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            color: #a8a29e; 
+            margin-bottom: 4px; 
+            font-weight: 600; 
+            font-size: 14px; 
+            transition: 0.2s; 
+        }
 
-        /* ══ MODALS ══ */
-        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(3px); }
-        .modal { background: var(--white); width: 100%; max-width: 500px; border-radius: 24px; padding: 30px; max-height: 90dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) rotate(-45deg); font-size: 70px; font-weight: 900; color: rgba(0,0,0,0.04); white-space: nowrap; pointer-events: none; z-index: 0; display: none; }
+        .nav-item:hover { 
+            background: #262626; 
+            color: white; 
+        }
 
-        /* ══ ROLES & MOBILE ══ */
-        body.staff-mode .hide-staff, body.manager-mode .hide-manager { display: none !important; }
-        .hamburger { display: none; background: none; border: 1px solid var(--border); border-radius: 8px; font-size: 20px; padding: 5px 10px; cursor: pointer; color: var(--text); }
-        .mob-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 300; }
+        .nav-item.active { 
+            background: var(--gold); 
+            color: var(--panel); 
+        }
+
+        .sb-sec { 
+            font-size: 10px; 
+            font-weight: 800; 
+            color: #78716c; 
+            letter-spacing: 1px; 
+            text-transform: uppercase; 
+            padding: 15px 16px 5px; 
+        }
+
+        .sb-foot { 
+            padding: 15px 20px; 
+            border-top: 1px solid #333; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+
+        /* ==========================================================================
+           MAIN CONTENT AREA
+           ========================================================================== */
+        .main { 
+            flex: 1; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative; 
+        }
+
+        .topbar { 
+            height: 65px; 
+            background: var(--white); 
+            border-bottom: 1px solid var(--border); 
+            display: flex; 
+            align-items: center; 
+            padding: 0 25px; 
+            flex-shrink: 0; 
+            z-index: 90; 
+            box-shadow: var(--shadow); 
+        }
+
+        .content { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 25px; 
+            -webkit-overflow-scrolling: touch; 
+        }
+
+        .page { 
+            display: none; 
+            flex-direction: column; 
+            height: 100%; 
+        }
+
+        .page.on { 
+            display: flex; 
+        }
+
+        .sh { 
+            display: flex; 
+            align-items: flex-start; 
+            justify-content: space-between; 
+            margin-bottom: 24px; 
+        }
+
+        .sh-title { 
+            font-family: var(--ff-h); 
+            font-size: 24px; 
+            font-weight: 700; 
+            color: var(--text); 
+        }
+
+        .sh-sub { 
+            font-size: 12px; 
+            color: var(--muted); 
+            margin-top: 2px; 
+        }
+
+        /* ==========================================================================
+           CARDS & STATISTICS
+           ========================================================================== */
+        .stats { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            border-bottom: 1px solid var(--border); 
+            background: var(--white); 
+            flex-shrink: 0; 
+        }
+
+        .stat { 
+            padding: 20px 25px; 
+            border-right: 1px solid var(--border); 
+        }
+
+        .stat:last-child { 
+            border-right: none; 
+        }
+
+        .stat-l { 
+            font-size: 11px; 
+            color: var(--muted); 
+            text-transform: uppercase; 
+            letter-spacing: 0.8px; 
+            font-weight: 700; 
+            margin-bottom: 6px; 
+        }
+
+        .stat-v { 
+            font-family: var(--ff-h); 
+            font-size: 28px; 
+            font-weight: 800; 
+            line-height: 1; 
+        }
+
+        .fc { 
+            background: var(--white); 
+            border: 1px solid var(--border); 
+            border-radius: var(--r2); 
+            padding: 22px; 
+            margin-bottom: 18px; 
+            box-shadow: var(--shadow); 
+        }
+
+        .fc-title { 
+            font-family: var(--ff-h); 
+            font-size: 18px; 
+            font-weight: 700; 
+            margin-bottom: 16px; 
+            padding-bottom: 12px; 
+            border-bottom: 1px solid var(--border); 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+        }
+
+        /* ==========================================================================
+           FABRIC CARDS
+           ========================================================================== */
+        .fab-grid { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+        }
+
+        .fab-card { 
+            background: var(--white); 
+            border: 1px solid var(--border); 
+            border-radius: var(--r2); 
+            padding: 15px 20px; 
+            display: grid; 
+            grid-template-columns: 1fr auto; 
+            gap: 16px; 
+            align-items: center; 
+            transition: 0.2s; 
+            box-shadow: var(--shadow); 
+        }
+
+        .fab-card:hover { 
+            border-color: var(--gold); 
+            box-shadow: var(--shadow-md); 
+            transform: translateY(-2px); 
+        }
+
+        .fab-card.low { 
+            border-left: 4px solid var(--red); 
+        }
+
+        .fab-card.med { 
+            border-left: 4px solid var(--orange); 
+        }
+
+        .fab-card.ok { 
+            border-left: 4px solid var(--green); 
+        }
+
+        .fab-name { 
+            font-family: var(--ff-h); 
+            font-size: 17px; 
+            font-weight: 700; 
+            margin-bottom: 3px; 
+        }
+
+        .pill { 
+            display: inline-flex; 
+            align-items: center; 
+            font-size: 10px; 
+            font-weight: 800; 
+            padding: 3px 8px; 
+            border-radius: 15px; 
+            letter-spacing: 0.5px; 
+        }
+
+        /* ==========================================================================
+           NETFLIX STYLE PROFILES
+           ========================================================================== */
+        #profile-screen { 
+            position: fixed; 
+            inset: 0; 
+            z-index: 10000; 
+            background: var(--panel); 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            flex-direction: column; 
+            padding: 20px; 
+            overflow-y: auto; 
+        }
+
+        .profile-grid { 
+            display: flex; 
+            gap: 30px; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            margin-top: 30px; 
+            max-width: 800px; 
+        }
+
+        .p-card { 
+            background: #262626; 
+            border-radius: 24px; 
+            padding: 40px 30px; 
+            width: 170px; 
+            text-align: center; 
+            cursor: pointer; 
+            border: 3px solid transparent; 
+            transition: 0.3s; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+        }
+
+        .p-card:hover { 
+            border-color: var(--gold); 
+            transform: translateY(-8px); 
+        }
+
+        .p-avatar { 
+            width: 75px; 
+            height: 75px; 
+            background: var(--gold); 
+            border-radius: 50%; 
+            margin: 0 auto 15px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 35px; 
+        }
+
+        /* ==========================================================================
+           SETUP SCREEN
+           ========================================================================== */
+        #setup-screen { 
+            position: fixed; 
+            inset: 0; 
+            z-index: 11000; 
+            background: rgba(0,0,0,0.9); 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+        }
+
+        .setup-box { 
+            background: var(--white); 
+            width: 100%; 
+            max-width: 480px; 
+            border-radius: 24px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+            animation: pop 0.3s ease; 
+        }
+
+        @keyframes pop { 
+            from { transform: scale(0.9); opacity: 0; } 
+            to { transform: scale(1); opacity: 1; } 
+        }
+
+        /* ==========================================================================
+           BUTTONS & INPUTS
+           ========================================================================== */
+        .btn { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            border: none; 
+            font-family: var(--ff-h); 
+            font-size: 15px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            transition: 0.2s; 
+        }
+
+        .btn-gold { 
+            background: var(--gold); 
+            color: white; 
+            box-shadow: 0 4px 10px rgba(184,134,11,0.2); 
+        }
+
+        .btn-gold:hover { 
+            background: var(--gold-dark); 
+            transform: translateY(-1px); 
+        }
+
+        .btn-ghost { 
+            background: transparent; 
+            border: 1.5px solid var(--border); 
+            color: var(--muted2); 
+        }
+
+        .btn-ghost:hover { 
+            border-color: var(--muted); 
+            color: var(--text); 
+        }
+
+        .btn-full { 
+            width: 100%; 
+        }
+
+        .btn-small { 
+            padding: 6px 12px; 
+            font-size: 12px; 
+        }
+        
+        .fg { 
+            margin-bottom: 15px; 
+        }
+        
+        .fl { 
+            display: block; 
+            font-size: 11px; 
+            font-weight: 800; 
+            color: var(--muted); 
+            text-transform: uppercase; 
+            margin-bottom: 6px; 
+            letter-spacing: 0.5px; 
+        }
+
+        input, select, textarea { 
+            width: 100%; 
+            padding: 12px 16px; 
+            border: 1.5px solid var(--border); 
+            border-radius: 10px; 
+            font-family: var(--ff-b); 
+            font-size: 14px; 
+            outline: none; 
+            background: var(--white); 
+            color: var(--text); 
+            transition: 0.2s; 
+        }
+
+        input:focus, select:focus { 
+            border-color: var(--gold); 
+            box-shadow: 0 0 0 3px rgba(184,134,11,0.1); 
+        }
+
+        .g2 { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+        }
+
+        /* ==========================================================================
+           LEDGER & TABS
+           ========================================================================== */
+        .ledger-tabs { 
+            display: flex; 
+            background: var(--white); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            overflow: hidden; 
+            margin-bottom: 20px; 
+        }
+
+        .ledger-tab { 
+            flex: 1; 
+            padding: 12px; 
+            font-family: var(--ff-h); 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-align: center; 
+            color: var(--muted); 
+            border: none; 
+            background: transparent; 
+            transition: 0.2s; 
+        }
+
+        .ledger-tab.active { 
+            background: var(--gold-light); 
+            color: var(--gold-dark); 
+        }
+
+        .ledger-entry { 
+            background: var(--white); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 15px 20px; 
+            margin-bottom: 10px; 
+            display: grid; 
+            grid-template-columns: auto 1fr auto auto; 
+            gap: 15px; 
+            align-items: center; 
+            box-shadow: var(--shadow); 
+        }
+
+        .ledger-entry.sale-entry { 
+            border-left: 4px solid var(--green); 
+        }
+
+        .ledger-entry.purchase-entry { 
+            border-left: 4px solid var(--blue); 
+        }
+
+        .udhaar-card { 
+            background: var(--white); 
+            border: 1px solid var(--orange-light); 
+            border-left: 4px solid var(--orange); 
+            border-radius: 12px; 
+            padding: 20px; 
+            margin-bottom: 12px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: var(--shadow); 
+        }
+
+        /* ==========================================================================
+           MODALS
+           ========================================================================== */
+        .modal-bg { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.6); 
+            z-index: 1000; 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+            backdrop-filter: blur(3px); 
+        }
+
+        .modal { 
+            background: var(--white); 
+            width: 100%; 
+            max-width: 500px; 
+            border-radius: 24px; 
+            padding: 30px; 
+            max-height: 90dvh; 
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
+        }
+
+        .watermark { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%,-50%) rotate(-45deg); 
+            font-size: 70px; 
+            font-weight: 900; 
+            color: rgba(0,0,0,0.04); 
+            white-space: nowrap; 
+            pointer-events: none; 
+            z-index: 0; 
+            display: none; 
+        }
+
+        /* ==========================================================================
+           ROLES & MOBILE
+           ========================================================================== */
+        body.staff-mode .hide-staff, 
+        body.manager-mode .hide-manager { 
+            display: none !important; 
+        }
+
+        .hamburger { 
+            display: none; 
+            background: none; 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            font-size: 20px; 
+            padding: 5px 10px; 
+            cursor: pointer; 
+            color: var(--text); 
+        }
+
+        .mob-overlay { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.5); 
+            z-index: 300; 
+        }
 
         @media print {
-            .sb, .topbar, .modal-bg, #toast, #login-screen, #profile-screen, .hide-print { display: none !important; }
-            body { background: white; color: black; display: block; height: auto; overflow: visible; }
-            .main, .page, .content { overflow: visible; height: auto; padding: 0; }
+            .sb, .topbar, .modal-bg, #toast, #login-screen, #profile-screen, .hide-print { 
+                display: none !important; 
+            }
+            body { 
+                background: white; 
+                color: black; 
+                display: block; 
+                height: auto; 
+                overflow: visible; 
+            }
+            .main, .page, .content { 
+                overflow: visible; 
+                height: auto; 
+                padding: 0; 
+            }
         }
 
         @media(max-width: 768px) {
-            .sb { display: none; }
-            .hamburger { display: block; }
-            .topbar { padding: 0 15px; }
-            .content { padding: 15px; }
-            .stats { grid-template-columns: 1fr 1fr; }
-            .stat { padding: 15px; border-bottom: 1px solid var(--border); }
-            .stat:nth-child(even) { border-right: none; }
-            .ledger-entry { grid-template-columns: 1fr; gap: 8px; }
-            .modal { padding: 20px; }
+            .sb { 
+                display: none; 
+            }
+            .hamburger { 
+                display: block; 
+            }
+            .topbar { 
+                padding: 0 15px; 
+            }
+            .content { 
+                padding: 15px; 
+            }
+            .stats { 
+                grid-template-columns: 1fr 1fr; 
+            }
+            .stat { 
+                padding: 15px; 
+                border-bottom: 1px solid var(--border); 
+            }
+            .stat:nth-child(even) { 
+                border-right: none; 
+            }
+            .ledger-entry { 
+                grid-template-columns: 1fr; 
+                gap: 8px; 
+            }
+            .modal { 
+                padding: 20px; 
+            }
         }
     </style>
 </head>
@@ -145,8 +707,12 @@
         <div class="logo-icon">SS</div>
         <div class="logo-text" style="color:white;font-size:35px">StockSaathi</div>
     </div>
+    
     <p style="color:var(--muted);margin-bottom:20px;font-size:16px">Who is using the Dukaan?</p>
-    <div class="profile-grid" id="p-container"></div>
+    
+    <div class="profile-grid" id="p-container">
+        </div>
+    
     <button class="btn btn-ghost hide-print" style="margin-top:40px;color:var(--muted);border-color:#333" onclick="signOut()">Sign Out of Device</button>
 </div>
 
@@ -156,7 +722,8 @@
             <h2 style="font-family:var(--ff-h);font-size:28px;line-height:1">Shop Setup</h2>
             <p id="setup-step-txt" style="font-size:12px;font-weight:900;margin-top:8px;letter-spacing:1px">STEP 1 OF 4</p>
         </div>
-        <div id="setup-content" style="padding:30px"></div>
+        <div id="setup-content" style="padding:30px">
+            </div>
         <div style="padding:0 30px 30px">
             <button class="btn btn-full" style="background:var(--panel);color:var(--white)" onclick="nextSetupStep()">Continue →</button>
         </div>
@@ -175,6 +742,7 @@
             </div>
         </div>
     </div>
+    
     <div class="sb-nav">
         <div class="sb-sec">Main</div>
         <div class="nav-item active" onclick="goto('dash',this)">🏠 Dashboard</div>
@@ -191,6 +759,7 @@
         <div class="nav-item hide-staff hide-manager" onclick="goto('master',this)">📁 Master Data</div>
         <div class="nav-item hide-staff hide-manager" onclick="goto('profiles',this)">👥 Manage Profiles</div>
     </div>
+    
     <div class="sb-foot">
         <div style="flex:1">
             <div style="font-size:10px;color:var(--muted)">ACTIVE PROFILE</div>
@@ -202,6 +771,7 @@
 </div>
 
 <div class="main">
+    
     <div class="topbar">
         <button class="hamburger" onclick="toggleMob()">☰</button>
         <div>
@@ -215,14 +785,29 @@
 
     <div id="pg-dash" class="page on">
         <div class="stats hide-staff">
-            <div class="stat"><div class="stat-l">Total Fabrics</div><div class="stat-v" id="st-c">0</div></div>
-            <div class="stat"><div class="stat-l">Total Meters</div><div class="stat-v" id="st-m">0</div></div>
-            <div class="stat"><div class="stat-l">Low Stock</div><div class="stat-v" style="color:var(--red)" id="st-l">0</div></div>
-            <div class="stat"><div class="stat-l">Stock Value</div><div class="stat-v" style="color:var(--gold)" id="st-v">₹0</div></div>
+            <div class="stat">
+                <div class="stat-l">Total Fabrics</div>
+                <div class="stat-v" id="st-c">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-l">Total Meters</div>
+                <div class="stat-v" id="st-m">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-l">Low Stock</div>
+                <div class="stat-v" style="color:var(--red)" id="st-l">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-l">Stock Value</div>
+                <div class="stat-v" style="color:var(--gold)" id="st-v">₹0</div>
+            </div>
         </div>
         <div class="content">
             <div class="sh">
-                <div><div class="sh-title">Quick Overview</div><div class="sh-sub">Recent stock items in your godown</div></div>
+                <div>
+                    <div class="sh-title">Quick Overview</div>
+                    <div class="sh-sub">Recent stock items in your godown</div>
+                </div>
             </div>
             <div id="dash-grid" class="fab-grid"></div>
         </div>
@@ -230,7 +815,12 @@
 
     <div id="pg-inv" class="page">
         <div class="content">
-            <div class="sh"><div><div class="sh-title">📦 Inventory</div><div class="sh-sub">Search and manage all fabrics</div></div></div>
+            <div class="sh">
+                <div>
+                    <div class="sh-title">📦 Inventory</div>
+                    <div class="sh-sub">Search and manage all fabrics</div>
+                </div>
+            </div>
             <div class="cat-row" id="inv-cat-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px"></div>
             <input type="text" id="inv-q" placeholder="🔍 Search fabric by name, color, or quality..." style="margin-bottom:20px;padding-left:40px" oninput="renderInv()">
             <div id="inv-grid" class="fab-grid"></div>
@@ -239,33 +829,65 @@
 
     <div id="pg-sales" class="page">
         <div class="content">
-            <div class="sh"><div><div class="sh-title">💰 Sales & Billing</div><div class="sh-sub">Generate Kacha or Pakka Bills</div></div></div>
+            <div class="sh">
+                <div>
+                    <div class="sh-title">💰 Sales & Billing</div>
+                    <div class="sh-sub">Generate Kacha or Pakka Bills</div>
+                </div>
+            </div>
             
             <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:25px;align-items:start">
+                
                 <div class="fc">
                     <div class="fc-title">🛒 Create Invoice</div>
-                    <div class="fg"><label class="fl">Select Fabric</label><select id="s-fab" onchange="updateSellRate()"></select></div>
+                    
+                    <div class="fg">
+                        <label class="fl">Select Fabric</label>
+                        <select id="s-fab" onchange="updateSellRate()"></select>
+                    </div>
                     
                     <div class="g2">
-                        <div class="fg"><label class="fl">Meters Sold</label><input type="number" id="s-m" placeholder="0" min="0" oninput="calcSell()"></div>
-                        <div class="fg hide-staff"><label class="fl">Rate (₹/m)</label><input type="number" id="s-r" placeholder="0" oninput="calcSell()"></div>
+                        <div class="fg">
+                            <label class="fl">Meters Sold</label>
+                            <input type="number" id="s-m" placeholder="0" min="0" oninput="calcSell()">
+                        </div>
+                        <div class="fg hide-staff">
+                            <label class="fl">Rate (₹/m)</label>
+                            <input type="number" id="s-r" placeholder="0" oninput="calcSell()">
+                        </div>
                     </div>
                     
                     <div class="g2 hide-staff">
-                        <div class="fg"><label class="fl">Discount (₹)</label><input type="number" id="s-discount" placeholder="0" oninput="calcSell()"></div>
-                        <div class="fg"><label class="fl">Invoice Type</label>
-                            <select id="s-inv-type"><option>Cash</option><option>Credit</option></select>
+                        <div class="fg">
+                            <label class="fl">Discount (₹)</label>
+                            <input type="number" id="s-discount" placeholder="0" oninput="calcSell()">
+                        </div>
+                        <div class="fg">
+                            <label class="fl">Invoice Type</label>
+                            <select id="s-inv-type">
+                                <option>Cash</option>
+                                <option>Credit</option>
+                            </select>
                         </div>
                     </div>
                     
                     <div class="hide-staff" style="background:var(--blue-light);padding:15px;border-radius:12px;border:1px solid #bfdbfe;margin-bottom:15px">
                         <div style="font-size:11px;font-weight:800;color:var(--blue);margin-bottom:10px;text-transform:uppercase">GST Settings</div>
                         <div class="g2">
-                            <div class="fg" style="margin:0"><label class="fl" style="color:var(--blue)">Rate</label>
-                                <select id="s-gst-rate" onchange="calcSell()" style="border-color:#bfdbfe"><option value="0">0%</option><option value="5" selected>5%</option><option value="12">12%</option></select>
+                            <div class="fg" style="margin:0">
+                                <label class="fl" style="color:var(--blue)">Rate</label>
+                                <select id="s-gst-rate" onchange="calcSell()" style="border-color:#bfdbfe">
+                                    <option value="0">0%</option>
+                                    <option value="5" selected>5%</option>
+                                    <option value="12">12%</option>
+                                </select>
                             </div>
-                            <div class="fg" style="margin:0"><label class="fl" style="color:var(--blue)">Type</label>
-                                <select id="s-gst-type" onchange="calcSell()" style="border-color:#bfdbfe"><option value="intra">CGST+SGST</option><option value="inter">IGST</option></select>
+                            <div class="fg" style="margin:0">
+                                <label class="fl" style="color:var(--blue)">Type</label>
+                                <select id="s-gst-type" onchange="calcSell()" style="border-color:#bfdbfe">
+                                    <option value="intra">CGST+SGST</option>
+                                    <option value="inter">IGST</option>
+                                </select>
                             </div>
                         </div>
                         <div id="s-gst-breakdown" style="font-size:12px;color:var(--blue);margin-top:10px"></div>
@@ -276,16 +898,26 @@
                         <span id="s-amt" style="font-family:var(--ff-h);font-size:24px;font-weight:800;color:var(--gold)">₹0</span>
                     </div>
 
-                    <div class="fg"><label class="fl">Customer / Party Name</label><input id="s-c" list="party-list" placeholder="e.g. Rajesh Textiles"></div>
+                    <div class="fg">
+                        <label class="fl">Customer / Party Name</label>
+                        <input id="s-c" list="party-list" placeholder="e.g. Rajesh Textiles">
+                    </div>
                     
                     <div class="g2 hide-staff">
-                        <div class="fg"><label class="fl">WhatsApp Number</label><input type="tel" id="s-phone" placeholder="9876543210"></div>
-                        <div class="fg"><label class="fl">Paid Amount (₹)</label><input type="number" id="s-paid" placeholder="Leave empty for full"></div>
+                        <div class="fg">
+                            <label class="fl">WhatsApp Number</label>
+                            <input type="tel" id="s-phone" placeholder="9876543210">
+                        </div>
+                        <div class="fg">
+                            <label class="fl">Paid Amount (₹)</label>
+                            <input type="number" id="s-paid" placeholder="Leave empty for full">
+                        </div>
                     </div>
 
                     <div class="hide-staff" style="background:var(--gold-light);padding:15px;border-radius:12px;border:1px solid #fde047;margin-bottom:15px;cursor:pointer">
                         <label style="display:flex;align-items:center;gap:10px;font-weight:700;color:var(--gold-dark);cursor:pointer">
-                            <input type="checkbox" id="s-kacha" style="width:20px;height:20px;accent-color:var(--gold)"> 📝 Make Kacha Bill (Estimate)
+                            <input type="checkbox" id="s-kacha" style="width:20px;height:20px;accent-color:var(--gold)"> 
+                            📝 Make Kacha Bill (Estimate)
                         </label>
                         <div style="font-size:11px;color:var(--muted);margin-left:30px;margin-top:4px">Stock will NOT be deducted. Will not show in Ledger.</div>
                     </div>
@@ -316,7 +948,10 @@
     <div id="pg-ledger" class="page">
         <div class="content">
             <div class="sh">
-                <div><div class="sh-title">📒 Full Ledger</div><div class="sh-sub">Combined Sales and Purchase Book</div></div>
+                <div>
+                    <div class="sh-title">📒 Full Ledger</div>
+                    <div class="sh-sub">Combined Sales and Purchase Book</div>
+                </div>
                 <div style="display:flex;gap:10px">
                     <button class="btn btn-ghost" onclick="exportCSV()">📥 Export Excel</button>
                     <button class="btn btn-gold hide-manager" onclick="openModal('modal-pur')">+ Record Purchase</button>
@@ -324,9 +959,18 @@
             </div>
             
             <div class="stats" style="border:1px solid var(--border);border-radius:16px;margin-bottom:20px;overflow:hidden">
-                <div class="stat"><div class="stat-l">Total Sales</div><div class="stat-v" style="color:var(--green)" id="ls-s">₹0</div></div>
-                <div class="stat"><div class="stat-l">Total Purchases</div><div class="stat-v" style="color:var(--blue)" id="ls-p">₹0</div></div>
-                <div class="stat"><div class="stat-l">Est. Net Profit</div><div class="stat-v" id="ls-n">₹0</div></div>
+                <div class="stat">
+                    <div class="stat-l">Total Sales</div>
+                    <div class="stat-v" style="color:var(--green)" id="ls-s">₹0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-l">Total Purchases</div>
+                    <div class="stat-v" style="color:var(--blue)" id="ls-p">₹0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-l">Est. Net Profit</div>
+                    <div class="stat-v" id="ls-n">₹0</div>
+                </div>
             </div>
 
             <div class="ledger-tabs">
@@ -341,7 +985,12 @@
 
     <div id="pg-udhaar" class="page">
         <div class="content">
-            <div class="sh"><div><div class="sh-title">⏳ Udhaar Khata</div><div class="sh-sub">Party-wise pending payments and reminders</div></div></div>
+            <div class="sh">
+                <div>
+                    <div class="sh-title">⏳ Udhaar Khata</div>
+                    <div class="sh-sub">Party-wise pending payments and reminders</div>
+                </div>
+            </div>
             <input type="text" id="udhaar-q" placeholder="🔍 Search Party Name..." style="margin-bottom:20px;padding-left:40px" oninput="renderUdhaar()">
             <div id="udhaar-list"></div>
         </div>
@@ -349,27 +998,52 @@
 
     <div id="pg-calc" class="page">
         <div class="content">
-            <div class="sh"><div><div class="sh-title">🧮 Quick Calculator</div><div class="sh-sub">Hisaab lagane ke liye</div></div></div>
+            <div class="sh">
+                <div>
+                    <div class="sh-title">🧮 Quick Calculator</div>
+                    <div class="sh-sub">Hisaab lagane ke liye</div>
+                </div>
+            </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:20px">
+                
                 <div class="fc">
                     <div class="fc-title">💰 Total Cost Calc</div>
-                    <div class="fg"><label class="fl">Meters</label><input type="number" id="c1m" oninput="c1()"></div>
-                    <div class="fg"><label class="fl">Rate (₹/m)</label><input type="number" id="c1r" oninput="c1()"></div>
+                    <div class="fg">
+                        <label class="fl">Meters</label>
+                        <input type="number" id="c1m" oninput="c1()">
+                    </div>
+                    <div class="fg">
+                        <label class="fl">Rate (₹/m)</label>
+                        <input type="number" id="c1r" oninput="c1()">
+                    </div>
                     <div style="background:var(--bg);padding:15px;border-radius:10px;display:flex;justify-content:space-between">
-                        <b>Total:</b> <span id="c1-r" style="color:var(--gold);font-weight:800;font-size:20px">₹0</span>
+                        <b>Total:</b> 
+                        <span id="c1-r" style="color:var(--gold);font-weight:800;font-size:20px">₹0</span>
                     </div>
                 </div>
+                
                 <div class="fc">
                     <div class="fc-title">📈 Profit Calc</div>
                     <div class="g2">
-                        <div class="fg"><label class="fl">Buy Rate</label><input type="number" id="c2b" oninput="c2()"></div>
-                        <div class="fg"><label class="fl">Sell Rate</label><input type="number" id="c2s" oninput="c2()"></div>
+                        <div class="fg">
+                            <label class="fl">Buy Rate</label>
+                            <input type="number" id="c2b" oninput="c2()">
+                        </div>
+                        <div class="fg">
+                            <label class="fl">Sell Rate</label>
+                            <input type="number" id="c2s" oninput="c2()">
+                        </div>
                     </div>
-                    <div class="fg"><label class="fl">Meters Sold</label><input type="number" id="c2m" oninput="c2()"></div>
+                    <div class="fg">
+                        <label class="fl">Meters Sold</label>
+                        <input type="number" id="c2m" oninput="c2()">
+                    </div>
                     <div style="background:var(--bg);padding:15px;border-radius:10px;display:flex;justify-content:space-between">
-                        <b>Total Profit:</b> <span id="c2-r" style="color:var(--green);font-weight:800;font-size:20px">₹0</span>
+                        <b>Total Profit:</b> 
+                        <span id="c2-r" style="color:var(--green);font-weight:800;font-size:20px">₹0</span>
                     </div>
                 </div>
+                
             </div>
         </div>
     </div>
@@ -377,17 +1051,27 @@
     <div id="pg-report" class="page">
         <div class="content">
             <div class="sh">
-                <div><div class="sh-title">📊 Monthly Report</div><div class="sh-sub" id="rpt-month">Loading...</div></div>
+                <div>
+                    <div class="sh-title">📊 Monthly Report</div>
+                    <div class="sh-sub" id="rpt-month">Loading...</div>
+                </div>
                 <button class="btn btn-ghost hide-print" onclick="window.print()">🖨️ Print Report</button>
             </div>
             
-            <div id="rpt-stats" class="stats" style="border:1px solid var(--border);border-radius:16px;margin-bottom:25px;overflow:hidden"></div>
+            <div id="rpt-stats" class="stats" style="border:1px solid var(--border);border-radius:16px;margin-bottom:25px;overflow:hidden">
+                </div>
             
             <div class="fc" style="padding:0;overflow:hidden">
                 <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px;padding:15px 20px;background:var(--bg);border-bottom:1px solid var(--border);font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase">
-                    <div>Fabric</div><div>Opening</div><div>Sold</div><div>Balance</div><div>Value</div><div>Status</div>
+                    <div>Fabric</div>
+                    <div>Opening</div>
+                    <div>Sold</div>
+                    <div>Balance</div>
+                    <div>Value</div>
+                    <div>Status</div>
                 </div>
-                <div id="rpt-body" style="max-height:500px;overflow-y:auto"></div>
+                <div id="rpt-body" style="max-height:500px;overflow-y:auto">
+                    </div>
             </div>
         </div>
     </div>
@@ -395,25 +1079,43 @@
     <div id="pg-profiles" class="page">
         <div class="content">
             <div class="sh">
-                <div><div class="sh-title">👥 Manage Profiles</div><div class="sh-sub">Control who accesses your Dukaan</div></div>
+                <div>
+                    <div class="sh-title">👥 Manage Profiles</div>
+                    <div class="sh-sub">Control who accesses your Dukaan</div>
+                </div>
                 <button class="btn btn-gold" onclick="openEditProfileModal()">+ Add User</button>
             </div>
-            <div id="profiles-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:20px;"></div>
+            <div id="profiles-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:20px;">
+                </div>
         </div>
     </div>
 
     <div id="pg-master" class="page">
         <div class="content">
-            <div class="sh"><div><div class="sh-title">📁 Master Data</div><div class="sh-sub">Manage Dropdown Lists (Qualities & Colors)</div></div></div>
+            <div class="sh">
+                <div>
+                    <div class="sh-title">📁 Master Data</div>
+                    <div class="sh-sub">Manage Dropdown Lists (Qualities & Colors)</div>
+                </div>
+            </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:20px">
+                
                 <div class="fc">
-                    <div class="fc-title">Categories / Qualities <button class="btn btn-ghost btn-small" onclick="addMaster('qualities')">+ Add</button></div>
+                    <div class="fc-title">
+                        Categories / Qualities 
+                        <button class="btn btn-ghost btn-small" onclick="addMaster('qualities')">+ Add</button>
+                    </div>
                     <div id="list-qualities" style="max-height:300px;overflow-y:auto"></div>
                 </div>
+                
                 <div class="fc">
-                    <div class="fc-title">Textile Colors <button class="btn btn-ghost btn-small" onclick="addMaster('colors')">+ Add</button></div>
+                    <div class="fc-title">
+                        Textile Colors 
+                        <button class="btn btn-ghost btn-small" onclick="addMaster('colors')">+ Add</button>
+                    </div>
                     <div id="list-colors" style="max-height:300px;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -422,10 +1124,12 @@
 <div class="modal-bg" id="modal-settings">
     <div class="modal" style="max-width:400px">
         <h2 class="ff-h" style="margin-bottom:20px">⚙️ Global Settings</h2>
+        
         <div class="fg">
             <label class="fl">Business UPI ID (For QR on Bills)</label>
             <input id="set-upi" placeholder="9876543210@paytm">
         </div>
+        
         <hr style="border:none;border-top:1px dashed var(--border);margin:25px 0">
         
         <div style="background:#fef2f2;border:1px solid #fecaca;padding:20px;border-radius:12px">
@@ -444,19 +1148,45 @@
 <div class="modal-bg" id="modal-add">
     <div class="modal">
         <h2 class="ff-h" style="margin-bottom:20px">📥 Add New Fabric</h2>
-        <div class="fg"><label class="fl">Fabric Name *</label><input id="m-name" placeholder="e.g. Premium Banarasi"></div>
-        <div class="g2">
-            <div class="fg"><label class="fl">Quality *</label><select id="m-type"></select></div>
-            <div class="fg"><label class="fl">Color</label><input id="m-color" list="color-list" placeholder="e.g. Maroon"></div>
+        
+        <div class="fg">
+            <label class="fl">Fabric Name *</label>
+            <input id="m-name" placeholder="e.g. Premium Banarasi">
         </div>
+        
         <div class="g2">
-            <div class="fg"><label class="fl">Meters Added *</label><input type="number" id="m-m" placeholder="0"></div>
-            <div class="fg"><label class="fl">Low Stock Alert At</label><input type="number" id="m-t" placeholder="50"></div>
+            <div class="fg">
+                <label class="fl">Quality *</label>
+                <select id="m-type"></select>
+            </div>
+            <div class="fg">
+                <label class="fl">Color</label>
+                <input id="m-color" list="color-list" placeholder="e.g. Maroon">
+            </div>
         </div>
+        
+        <div class="g2">
+            <div class="fg">
+                <label class="fl">Meters Added *</label>
+                <input type="number" id="m-m" placeholder="0">
+            </div>
+            <div class="fg">
+                <label class="fl">Low Stock Alert At</label>
+                <input type="number" id="m-t" placeholder="50">
+            </div>
+        </div>
+        
         <div class="g2 hide-staff">
-            <div class="fg"><label class="fl">Cost Rate (₹/m)</label><input type="number" id="m-r" placeholder="0"></div>
-            <div class="fg"><label class="fl">Supplier</label><input id="m-s" list="party-list" placeholder="e.g. Rajan Mills"></div>
+            <div class="fg">
+                <label class="fl">Cost Rate (₹/m)</label>
+                <input type="number" id="m-r" placeholder="0">
+            </div>
+            <div class="fg">
+                <label class="fl">Supplier</label>
+                <input id="m-s" list="party-list" placeholder="e.g. Rajan Mills">
+            </div>
         </div>
+        
         <div style="display:flex;gap:10px;margin-top:20px">
             <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-add')">Cancel</button>
             <button class="btn btn-gold" style="flex:2" onclick="saveFabric()">Save Fabric</button>
@@ -468,8 +1198,16 @@
     <div class="modal" style="max-width:400px">
         <h2 class="ff-h" style="margin-bottom:5px">📥 Add Stock</h2>
         <p id="as-name" style="font-size:13px;color:var(--gold);font-weight:700;margin-bottom:20px">Fabric Name</p>
-        <div class="fg"><label class="fl">New Meters Added</label><input type="number" id="as-m" placeholder="0"></div>
-        <div class="fg hide-staff"><label class="fl">Supplier Name (Optional)</label><input id="as-s" list="party-list"></div>
+        
+        <div class="fg">
+            <label class="fl">New Meters Added</label>
+            <input type="number" id="as-m" placeholder="0">
+        </div>
+        <div class="fg hide-staff">
+            <label class="fl">Supplier Name (Optional)</label>
+            <input id="as-s" list="party-list">
+        </div>
+        
         <div style="display:flex;gap:10px;margin-top:20px">
             <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-addstock')">Cancel</button>
             <button class="btn btn-gold" style="flex:1" onclick="saveAddStock()">Update Stock</button>
@@ -481,26 +1219,50 @@
     <div class="modal">
         <h2 class="ff-h" style="margin-bottom:5px">💰 Quick Sell</h2>
         <p id="qs-name" style="font-size:13px;color:var(--gold);font-weight:700;margin-bottom:20px">Fabric Name</p>
+        
         <div class="g2">
-            <div class="fg"><label class="fl">Meters Sold</label><input type="number" id="qs-m" oninput="calcQS()"></div>
-            <div class="fg hide-staff"><label class="fl">Rate (₹/m)</label><input type="number" id="qs-r" oninput="calcQS()"></div>
-        </div>
-        <div class="g2 hide-staff">
-            <div class="fg"><label class="fl">Discount (₹)</label><input type="number" id="qs-d" placeholder="0" oninput="calcQS()"></div>
-            <div class="fg"><label class="fl">GST Rate</label>
-                <select id="qs-g" onchange="calcQS()"><option value="0">0%</option><option value="5" selected>5%</option><option value="12">12%</option></select>
+            <div class="fg">
+                <label class="fl">Meters Sold</label>
+                <input type="number" id="qs-m" oninput="calcQS()">
+            </div>
+            <div class="fg hide-staff">
+                <label class="fl">Rate (₹/m)</label>
+                <input type="number" id="qs-r" oninput="calcQS()">
             </div>
         </div>
+        
+        <div class="g2 hide-staff">
+            <div class="fg">
+                <label class="fl">Discount (₹)</label>
+                <input type="number" id="qs-d" placeholder="0" oninput="calcQS()">
+            </div>
+            <div class="fg">
+                <label class="fl">GST Rate</label>
+                <select id="qs-g" onchange="calcQS()">
+                    <option value="0">0%</option>
+                    <option value="5" selected>5%</option>
+                    <option value="12">12%</option>
+                </select>
+            </div>
+        </div>
+
         <div class="hide-staff" style="display:flex;justify-content:space-between;align-items:center;background:var(--bg);padding:15px;border-radius:10px;border:1px solid var(--border);margin-bottom:15px">
             <span style="font-weight:800;font-size:12px">Total Payable</span>
             <span id="qs-total" style="font-family:var(--ff-h);font-size:24px;font-weight:800;color:var(--gold)">₹0</span>
         </div>
-        <div class="fg"><label class="fl">Party Name</label><input id="qs-c" list="party-list"></div>
+
+        <div class="fg">
+            <label class="fl">Party Name</label>
+            <input id="qs-c" list="party-list">
+        </div>
+        
         <div class="hide-staff" style="background:var(--gold-light);padding:15px;border-radius:12px;border:1px solid #fde047;margin-bottom:15px;cursor:pointer">
             <label style="display:flex;align-items:center;gap:10px;font-weight:700;color:var(--gold-dark);cursor:pointer">
-                <input type="checkbox" id="qs-kacha" style="width:20px;height:20px;accent-color:var(--gold)"> 📝 Make Kacha Bill (Estimate)
+                <input type="checkbox" id="qs-kacha" style="width:20px;height:20px;accent-color:var(--gold)"> 
+                📝 Make Kacha Bill (Estimate)
             </label>
         </div>
+
         <div style="display:flex;gap:10px;margin-top:20px">
             <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-quicksell')">Cancel</button>
             <button class="btn btn-gold hide-staff" style="flex:2" onclick="saveQuickSell(true)">Generate Bill</button>
@@ -512,18 +1274,43 @@
 <div class="modal-bg" id="modal-pur">
     <div class="modal">
         <h2 class="ff-h" style="margin-bottom:20px">📥 Record Purchase</h2>
-        <div class="fg"><label class="fl">Supplier / Party Name *</label><input id="p-party" list="party-list"></div>
-        <div class="fg"><label class="fl">Item / Fabric Name *</label><input id="p-item"></div>
-        <div class="g2">
-            <div class="fg"><label class="fl">Meters *</label><input type="number" id="p-m" oninput="calcPur()"></div>
-            <div class="fg"><label class="fl">Rate (₹/m) *</label><input type="number" id="p-r" oninput="calcPur()"></div>
+        
+        <div class="fg">
+            <label class="fl">Supplier / Party Name *</label>
+            <input id="p-party" list="party-list">
         </div>
+        
+        <div class="fg">
+            <label class="fl">Item / Fabric Name *</label>
+            <input id="p-item">
+        </div>
+        
         <div class="g2">
-            <div class="fg"><label class="fl">GST Rate</label>
-                <select id="p-gst" onchange="calcPur()"><option value="0">0%</option><option value="5" selected>5%</option><option value="12">12%</option></select>
+            <div class="fg">
+                <label class="fl">Meters *</label>
+                <input type="number" id="p-m" oninput="calcPur()">
             </div>
-            <div class="fg"><label class="fl">Total Amount</label><div id="p-total" style="font-family:var(--ff-h);font-size:20px;font-weight:800;color:var(--blue);padding-top:10px">₹0</div></div>
+            <div class="fg">
+                <label class="fl">Rate (₹/m) *</label>
+                <input type="number" id="p-r" oninput="calcPur()">
+            </div>
         </div>
+        
+        <div class="g2">
+            <div class="fg">
+                <label class="fl">GST Rate</label>
+                <select id="p-gst" onchange="calcPur()">
+                    <option value="0">0%</option>
+                    <option value="5" selected>5%</option>
+                    <option value="12">12%</option>
+                </select>
+            </div>
+            <div class="fg">
+                <label class="fl">Total Amount</label>
+                <div id="p-total" style="font-family:var(--ff-h);font-size:20px;font-weight:800;color:var(--blue);padding-top:10px">₹0</div>
+            </div>
+        </div>
+        
         <div style="display:flex;gap:10px;margin-top:20px">
             <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-pur')">Cancel</button>
             <button class="btn btn-gold" style="flex:2;background:var(--blue)" onclick="savePurchase()">Record Purchase</button>
@@ -535,11 +1322,22 @@
     <div class="modal" style="max-width:400px">
         <h2 class="ff-h" id="ep-title" style="margin-bottom:20px">Add Profile</h2>
         <input type="hidden" id="ep-id">
-        <div class="fg"><label class="fl">Name *</label><input id="ep-name" placeholder="e.g. Suresh"></div>
-        <div class="fg"><label class="fl">Role *</label>
-            <select id="ep-role"><option value="owner">👑 Owner (Full Admin)</option><option value="manager">💼 Manager (View All, No Delete)</option><option value="staff" selected>👦 Staff (Billing Only)</option></select>
+        <div class="fg">
+            <label class="fl">Name *</label>
+            <input id="ep-name" placeholder="e.g. Suresh">
         </div>
-        <div class="fg"><label class="fl">4-Digit PIN (Optional)</label><input type="password" id="ep-pin" maxlength="4" style="letter-spacing:5px;font-family:monospace" placeholder="Leave empty for open access"></div>
+        <div class="fg">
+            <label class="fl">Role *</label>
+            <select id="ep-role">
+                <option value="owner">👑 Owner (Full Admin)</option>
+                <option value="manager">💼 Manager (View All, No Delete)</option>
+                <option value="staff" selected>👦 Staff (Billing Only)</option>
+            </select>
+        </div>
+        <div class="fg">
+            <label class="fl">4-Digit PIN (Optional)</label>
+            <input type="password" id="ep-pin" maxlength="4" style="letter-spacing:5px;font-family:monospace" placeholder="Leave empty for open access">
+        </div>
         <div style="display:flex;gap:10px;margin-top:25px">
             <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-profile')">Cancel</button>
             <button class="btn btn-gold" style="flex:1" onclick="saveProfile()">Save</button>
@@ -562,18 +1360,22 @@
 
 <div class="modal-bg" id="modal-bill">
     <div class="modal" style="max-width:550px;padding:0;overflow:hidden;background:var(--bg)">
+        
         <div style="display:flex;justify-content:space-between;align-items:center;padding:15px 25px;background:white;border-bottom:1px solid var(--border)">
             <h2 class="ff-h" style="margin:0">Invoice Preview</h2>
             <button style="background:none;border:none;font-size:20px;cursor:pointer" onclick="closeBill()">✕</button>
         </div>
+        
         <div style="padding:25px;max-height:65dvh;overflow-y:auto;position:relative">
             <div id="bill-template" style="background:white;padding:30px;color:black;font-family:sans-serif;position:relative;border:1px solid var(--border);box-shadow:var(--shadow-md)">
                 <div id="bill-watermark" class="watermark">ESTIMATE</div>
+                
                 <div style="text-align:center;border-bottom:2px solid #000;padding-bottom:15px;margin-bottom:20px">
                     <h1 id="b-firm" style="margin:0;font-size:28px;text-transform:uppercase">Firm Name</h1>
                     <div id="b-addr" style="font-size:12px;margin-top:5px;color:#444">Address goes here</div>
                     <div id="b-gst" style="font-size:12px;margin-top:2px;font-weight:bold">GSTIN: </div>
                 </div>
+                
                 <div style="display:flex;justify-content:space-between;margin-bottom:20px;font-size:14px">
                     <div>
                         <div style="font-size:10px;color:#666;text-transform:uppercase;font-weight:bold">Billed To:</div>
@@ -586,31 +1388,57 @@
                         <div><b>Type:</b> <span id="b-type"></span></div>
                     </div>
                 </div>
+
                 <div id="b-dispatch" style="margin-bottom:20px;font-size:12px;border:1px solid #ccc;padding:10px;display:none">
-                    <b>Dispatch Details:</b><br><span id="b-trans"></span> | <span id="b-lr"></span> | <span id="b-eway"></span>
+                    <b>Dispatch Details:</b><br>
+                    <span id="b-trans"></span> | <span id="b-lr"></span> | <span id="b-eway"></span>
                 </div>
+
                 <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px">
                     <tr style="background:#f5f5f5;border-bottom:2px solid #000">
-                        <th style="padding:10px;text-align:left">Description of Goods</th><th style="padding:10px;text-align:center">Qty (Meters)</th><th style="padding:10px;text-align:center">Rate</th><th style="padding:10px;text-align:right">Amount</th>
+                        <th style="padding:10px;text-align:left">Description of Goods</th>
+                        <th style="padding:10px;text-align:center">Qty (Meters)</th>
+                        <th style="padding:10px;text-align:center">Rate</th>
+                        <th style="padding:10px;text-align:right">Amount</th>
                     </tr>
                     <tr style="border-bottom:1px solid #ccc">
-                        <td id="b-item" style="padding:15px 10px;font-weight:bold">Item</td><td id="b-qty" style="padding:15px 10px;text-align:center">0</td><td id="b-rate" style="padding:15px 10px;text-align:center">0</td><td id="b-amt" style="padding:15px 10px;text-align:right">0</td>
+                        <td id="b-item" style="padding:15px 10px;font-weight:bold">Item</td>
+                        <td id="b-qty" style="padding:15px 10px;text-align:center">0</td>
+                        <td id="b-rate" style="padding:15px 10px;text-align:center">0</td>
+                        <td id="b-amt" style="padding:15px 10px;text-align:right">0</td>
                     </tr>
                 </table>
+
                 <div style="display:flex;justify-content:flex-end;margin-bottom:20px;font-size:14px">
                     <div style="width:250px">
-                        <div id="b-disc-row" style="display:flex;justify-content:space-between;padding:5px 0;color:red;display:none"><span>Discount:</span><span id="b-disc">-0</span></div>
-                        <div id="b-tax-box" style="border-top:1px solid #ccc;border-bottom:1px solid #ccc;padding:10px 0;margin:10px 0"></div>
-                        <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:20px;font-weight:900"><span>Total Payable:</span><span id="b-final">₹0</span></div>
+                        <div id="b-disc-row" style="display:flex;justify-content:space-between;padding:5px 0;color:red;display:none">
+                            <span>Discount:</span><span id="b-disc">-0</span>
+                        </div>
+                        <div id="b-tax-box" style="border-top:1px solid #ccc;border-bottom:1px solid #ccc;padding:10px 0;margin:10px 0">
+                            </div>
+                        <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:20px;font-weight:900">
+                            <span>Total Payable:</span><span id="b-final">₹0</span>
+                        </div>
                     </div>
                 </div>
+
                 <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:40px">
-                    <div id="b-qr-box" style="display:none;text-align:center"><img id="b-qr" src="" style="width:100px;height:100px;border:1px solid #ccc;padding:5px"><br><span style="font-size:10px">Scan to Pay via UPI</span></div>
-                    <div style="text-align:center"><div style="width:150px;border-bottom:1px solid #000;margin-bottom:5px"></div><span style="font-size:12px;font-weight:bold">Authorized Signatory</span></div>
+                    <div id="b-qr-box" style="display:none;text-align:center">
+                        <img id="b-qr" src="" style="width:100px;height:100px;border:1px solid #ccc;padding:5px"><br>
+                        <span style="font-size:10px">Scan to Pay via UPI</span>
+                    </div>
+                    <div style="text-align:center">
+                        <div style="width:150px;border-bottom:1px solid #000;margin-bottom:5px"></div>
+                        <span style="font-size:12px;font-weight:bold">Authorized Signatory</span>
+                    </div>
                 </div>
-                <div style="text-align:center;margin-top:30px;font-size:10px;color:#888;text-transform:uppercase">Generated by StockSaathi</div>
+                
+                <div style="text-align:center;margin-top:30px;font-size:10px;color:#888;text-transform:uppercase">
+                    Generated by StockSaathi
+                </div>
             </div>
         </div>
+        
         <div style="padding:20px;background:white;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap">
             <button class="btn btn-ghost" style="flex:1" onclick="printBill()">🖨️ Print</button>
             <button class="btn" style="flex:1;background:#25D366;color:white" onclick="waBill()">💬 WhatsApp Text</button>
@@ -627,7 +1455,9 @@
 
 <script>
 // ══ CORE STATE & INIT ══
-var db, auth, user;
+var db;
+var auth;
+var user;
 var data = { 
     inv: [], 
     sales: [], 
@@ -670,12 +1500,32 @@ window.onload = function() {
 
 function showGoogleLogin() {
     document.body.innerHTML = `
-    <div style="height:100dvh;display:flex;align-items:center;justify-content:center;background:var(--panel);flex-direction:column;gap:20px;text-align:center">
+    <div style="height:100dvh;display:flex;align-items:center;justify-content:center;background:var(--panel);flex-direction:column;gap:20px;text-align:center;padding:20px">
         <div class="logo-icon" style="width:80px;height:80px;font-size:40px;margin-bottom:10px">SS</div>
         <h1 style="color:var(--gold);font-family:var(--ff-h);font-size:40px;line-height:1">StockSaathi</h1>
         <p style="color:var(--muted);margin-bottom:20px">Surat's Premium Textile ERP</p>
-        <button class="btn btn-gold" style="padding:15px 30px;font-size:18px" onclick="auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())">Sign in with Google</button>
+        <button class="btn btn-gold" style="padding:15px 30px;font-size:18px;width:100%;max-width:300px" onclick="signInGoogle()">Sign in with Google</button>
+        <div id="login-err" style="display:none;margin-top:10px;padding:15px;background:rgba(255,0,0,0.1);color:#ff6b6b;border-radius:10px;font-size:13px;max-width:400px;line-height:1.5"></div>
     </div>`;
+}
+
+function signInGoogle() {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    
+    // Using redirect for mobile devices to prevent popup blockers, and popup for desktop
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        auth.signInWithRedirect(provider);
+    } else {
+        auth.signInWithPopup(provider).catch(function(error) {
+            console.error("Login Error: ", error);
+            var errBox = document.getElementById('login-err');
+            if(errBox) {
+                errBox.style.display = 'block';
+                errBox.innerHTML = "<b>Login Failed!</b><br><br>" + error.message + "<br><br><i>Note: Make sure popups are allowed, and your github.io link is added to Authorized Domains in your Firebase Console.</i>";
+            }
+        });
+    }
 }
 
 // ══ DATA SYNC ══
@@ -684,10 +1534,18 @@ async function loadData() {
         let doc = await db.collection('users').doc(user.uid).get();
         if(doc.exists) {
             data = doc.data();
+            
+            // Safety checks for older accounts
             if(!data.inv) data.inv = []; 
             if(!data.sales) data.sales = []; 
             if(!data.purchases) data.purchases = [];
             if(!data.master) data.master = { colors: defaultColors, qualities: defaultQualities };
+            if(!data.profiles || data.profiles.length === 0) {
+                data.profiles = [
+                    { id: 'm', name: 'Malik', role: 'owner', pin: '', activeSession: '' }, 
+                    { id: 's', name: 'Staff', role: 'staff', pin: '', activeSession: '' }
+                ];
+            }
             
             if(!data.firm || !data.firm.name) { 
                 startSetup(); 
@@ -695,6 +1553,7 @@ async function loadData() {
                 initApp(); 
             }
         } else {
+            // Completely new account initialization
             data = { 
                 inv: [], 
                 sales: [], 
@@ -708,7 +1567,7 @@ async function loadData() {
         }
     } catch(e) { 
         console.error(e); 
-        alert("Network Error. Check connection."); 
+        alert("Network Error while loading data. Please check your connection."); 
     }
 }
 
@@ -720,7 +1579,7 @@ async function sync() {
 function initApp() {
     populateDatalists();
     
-    // Concurrency / Session kicking
+    // Concurrency / Session kicking listener
     db.collection('users').doc(user.uid).onSnapshot((doc) => {
         if(doc.exists && currentProfile) {
             let d = doc.data();
@@ -857,6 +1716,7 @@ function verifyPin() {
 async function finishProfileLogin(p) {
     currentProfile = p; 
     sessionStorage.setItem('ss_p_id', p.id);
+    
     window.currentSessionId = Date.now().toString(36) + Math.random().toString(36).substr(2);
     p.activeSession = window.currentSessionId;
     await sync();
@@ -885,6 +1745,7 @@ function signOut() {
 
 // ══ UI HELPERS ══
 function goto(pg, el) {
+    // Role Guards
     if(currentProfile && currentProfile.role !== 'owner' && (pg === 'master' || pg === 'profiles')) {
         return toast("🔒 Owner Access Required");
     }
@@ -892,11 +1753,15 @@ function goto(pg, el) {
         return toast("🔒 Access Denied");
     }
     
+    // Switch Pages
     document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
     document.getElementById('pg-' + pg).classList.add('on');
+    
+    // Update active nav state
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     if(el) el.classList.add('active');
     
+    // Page specific initialization
     if(pg === 'dash') refreshUI();
     if(pg === 'inv') renderInv();
     if(pg === 'sales') { 
@@ -911,6 +1776,7 @@ function goto(pg, el) {
     if(pg === 'profiles') renderAdminProfiles();
     if(pg === 'report') renderReport();
     
+    // Close mobile overlay if open
     if(window.innerWidth <= 768) closeModal('mob-overlay'); 
 }
 
