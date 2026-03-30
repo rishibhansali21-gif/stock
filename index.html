@@ -6,7 +6,6 @@
 <title>StockSaathi — Kapda Stock Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -14,7 +13,6 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithPhoneNumber, Re
 
 // ── FIREBASE CONFIG ── Replace with your own config
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -34,7 +32,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
@@ -455,7 +452,6 @@ body.manager-mode .hide-manager{display:none !important}
 <datalist id="dl-gstin"></datalist>
 <datalist id="dl-color"></datalist>
 
-<!-- ═══════════════════════════════════════════════════════ SIDEBAR -->
 <div class="sb">
   <div class="sb-top">
     <div class="sb-logo">
@@ -492,7 +488,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ MAIN -->
 <div class="main">
   <div class="topbar">
     <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">☰</button>
@@ -505,7 +500,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- Mobile Menu -->
   <div class="mob-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
   <div class="mob-menu" id="mob-menu">
     <div class="mob-menu-head">
@@ -538,7 +532,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ════ PAGE: DASHBOARD ════ -->
   <div class="page on" id="pg-dash">
     <div class="stats">
       <div class="stat"><div class="stat-l">Total Fabrics</div><div class="stat-v" id="st-c" style="color:var(--indigo2)">0</div><div class="stat-h">types</div></div>
@@ -559,7 +552,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ════ PAGE: INVENTORY ════ -->
   <div class="page" id="pg-inv">
     <div class="content">
       <div class="sh">
@@ -579,7 +571,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ════ PAGE: SALES ════ -->
   <div class="page" id="pg-sales">
     <div class="content">
       <div class="sh"><div><div class="sh-title">💰 Sales</div><div class="sh-sub">Record a new sale</div></div></div>
@@ -650,7 +641,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ════ PAGE: LEDGER ════ -->
   <div class="page" id="pg-ledger">
     <div class="content">
       <div class="sh">
@@ -680,7 +670,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ════ PAGE: PAYMENTS & CHEQUES (NEW) ════ -->
   <div class="page" id="pg-payments">
     <div class="pay-stats">
       <div class="pay-stat"><div class="pay-stat-l">Total Payments</div><div class="pay-stat-v" id="pay-st-total" style="color:var(--violet)">₹0</div></div>
@@ -711,7 +700,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ════ PAGE: CALCULATOR ════ -->
   <div class="page" id="pg-calc">
     <div class="content">
       <div class="sh"><div><div class="sh-title">🧮 Calculator</div><div class="sh-sub">Quick calculations</div></div></div>
@@ -758,7 +746,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ════ PAGE: REPORT ════ -->
   <div class="page" id="pg-report">
     <div class="content">
       <div class="sh">
@@ -786,7 +773,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ════ PAGE: PROFILES ════ -->
   <div class="page" id="pg-profiles">
     <div class="content">
       <div class="sh">
@@ -797,7 +783,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ════ PAGE: MASTER DATA ════ -->
   <div class="page" id="pg-master">
     <div class="content">
       <div class="sh"><div><div class="sh-title">📁 Master Data</div><div class="sh-sub">Custom lists for dropdowns</div></div></div>
@@ -820,12 +805,7 @@ body.manager-mode .hide-manager{display:none !important}
       </div>
     </div>
   </div>
-</div><!-- /.main -->
-
-<!-- ═══════════════════════════════════════════════════════ MODALS -->
-
-<!-- Add Stock -->
-<div class="qmodal-bg" id="addstock-modal">
+</div><div class="qmodal-bg" id="addstock-modal">
   <div class="qmodal">
     <div class="qmodal-title">📥 Add Stock</div>
     <div class="qmodal-sub" id="addstock-fab-name">—</div>
@@ -841,7 +821,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- Quick Sell -->
 <div class="qmodal-bg" id="quicksell-modal">
   <div class="qmodal" style="width:460px">
     <div class="qmodal-title">💰 Quick Sell</div>
@@ -896,7 +875,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- Purchase -->
 <div class="qmodal-bg" id="purchase-modal">
   <div class="qmodal" style="width:460px">
     <div class="qmodal-title">📥 Record Purchase</div>
@@ -935,7 +913,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- Add Fabric -->
 <div class="modal-bg" id="add-modal">
   <div class="modal">
     <div class="modal-title">🧵 Add New Fabric</div>
@@ -961,26 +938,50 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- Settings -->
 <div class="qmodal-bg" id="settings-modal">
-  <div class="qmodal">
+  <div class="qmodal" style="width:520px">
     <div class="qmodal-title">⚙️ Settings</div>
-    <div class="qmodal-sub">App preferences</div>
-    <div class="fg"><label class="fl">Shop / Firm Name</label><input id="set-firm" placeholder="e.g. Rishi Textiles"/></div>
-    <div class="fg"><label class="fl">Shop GSTIN</label><input id="set-gstin" placeholder="24XXXXX0000X0Z0"/></div>
-    <div class="fg"><label class="fl">UPI ID</label><input id="set-upi" placeholder="9876543210@paytm"/></div>
-    <div class="fg"><label class="fl">Bank Name</label><input id="set-bank" placeholder="e.g. SBI, HDFC"/></div>
-    <div class="fg"><label class="fl">Account Name</label><input id="set-acc-name" placeholder="Account holder name"/></div>
-    <div class="fg"><label class="fl">Account Number</label><input id="set-acc-no" placeholder="XXXXXXXXXXXX"/></div>
-    <div class="fg"><label class="fl">IFSC Code</label><input id="set-ifsc" placeholder="e.g. SBIN0001234"/></div>
-    <div class="qmodal-foot">
-      <button class="btn btn-ghost" onclick="closeSettings()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveSettings()">✅ Save</button>
+    <div class="qmodal-sub">App preferences and account management</div>
+    
+    <div class="fc" style="padding:16px">
+      <div class="fc-title">🏢 Shop & Bank Details</div>
+      <div class="g2">
+        <div class="fg"><label class="fl">Shop / Firm Name</label><input id="set-firm" placeholder="e.g. Rishi Textiles"/></div>
+        <div class="fg"><label class="fl">Shop GSTIN</label><input id="set-gstin" placeholder="24XXXXX0000X0Z0"/></div>
+      </div>
+      <div class="fg"><label class="fl">UPI ID</label><input id="set-upi" placeholder="9876543210@paytm"/></div>
+      <div class="g2">
+        <div class="fg"><label class="fl">Bank Name</label><input id="set-bank" placeholder="e.g. SBI, HDFC"/></div>
+        <div class="fg"><label class="fl">Account Name</label><input id="set-acc-name" placeholder="Account holder name"/></div>
+      </div>
+      <div class="g2">
+        <div class="fg"><label class="fl">Account Number</label><input id="set-acc-no" placeholder="XXXXXXXXXXXX"/></div>
+        <div class="fg"><label class="fl">IFSC Code</label><input id="set-ifsc" placeholder="e.g. SBIN0001234"/></div>
+      </div>
+      <div style="text-align:right">
+        <button class="btn btn-primary" onclick="saveSettings()">✅ Save Details</button>
+      </div>
+    </div>
+
+    <div class="fc" style="padding:16px">
+      <div class="fc-title">👤 Account</div>
+      <button class="btn btn-ghost btn-full" onclick="closeSettings(); signOut()">🚪 Sign Out</button>
+    </div>
+
+    <div class="fc" style="padding:16px; border-color: rgba(240,82,100,0.3); background: var(--rose-dim); margin-bottom: 0;">
+      <div class="fc-title" style="color: var(--rose); border-bottom-color: rgba(240,82,100,0.2)">⚠️ Danger Zone</div>
+      <div style="font-size:12px; color:var(--text2); margin-bottom:14px; line-height:1.5;">
+        This will permanently delete all your fabrics, sales, purchases, payments, master data, and profiles. <strong>This action cannot be undone.</strong>
+      </div>
+      <button class="btn btn-rose btn-full" onclick="hardResetApp()">💥 Hard Reset All Data</button>
+    </div>
+
+    <div class="qmodal-foot" style="margin-top: 16px;">
+      <button class="btn btn-ghost" onclick="closeSettings()">Close</button>
     </div>
   </div>
 </div>
 
-<!-- PIN -->
 <div class="qmodal-bg" id="pin-modal" style="z-index:10000">
   <div class="qmodal" style="width:300px;text-align:center">
     <div style="font-size:36px;margin-bottom:8px">🔒</div>
@@ -994,7 +995,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- Edit Profile -->
 <div class="qmodal-bg" id="edit-profile-modal" style="z-index:10000">
   <div class="qmodal" style="width:400px">
     <div class="qmodal-title" id="ep-title">Add Profile</div>
@@ -1018,7 +1018,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- NEW: Payment / Cheque Generator Modal -->
 <div class="qmodal-bg" id="new-payment-modal">
   <div class="qmodal" style="width:500px">
     <div class="qmodal-title" id="npm-title">💰 New Payment Receipt</div>
@@ -1026,7 +1025,6 @@ body.manager-mode .hide-manager{display:none !important}
     <input type="hidden" id="npm-type" value="receipt">
     <div class="fg"><label class="fl">Pay To / Party *</label><input id="npm-party" list="dl-party" placeholder="e.g. Rajan Textiles"/></div>
     
-    <!-- Cheque specific fields -->
     <div id="npm-cheque-fields" style="display:none">
       <div class="g2">
         <div class="fg"><label class="fl">Bank Name *</label><input id="npm-bank" placeholder="e.g. State Bank of India"/></div>
@@ -1039,7 +1037,6 @@ body.manager-mode .hide-manager{display:none !important}
       <div class="fg"><label class="fl">Account Name</label><input id="npm-acc-name" placeholder="Account holder name"/></div>
     </div>
 
-    <!-- Receipt specific fields -->
     <div id="npm-receipt-fields">
       <div class="g2">
         <div class="fg"><label class="fl">Payment Mode *</label>
@@ -1066,7 +1063,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- Document Viewer Modal (Historical + Live) -->
 <div class="qmodal-bg" id="doc-modal">
   <div class="qmodal" style="width:580px;max-width:96vw;padding:0;overflow:hidden">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border)">
@@ -1081,7 +1077,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- Onboarding -->
 <div id="onboarding">
   <div class="ob-card">
     <div class="ob-top">
@@ -1104,7 +1099,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- Profile Screen -->
 <div id="profile-screen">
   <div style="text-align:center">
     <div style="font-size:48px;margin-bottom:12px">🧵</div>
@@ -1117,7 +1111,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- Login Screen -->
 <div id="login-screen">
   <div class="login-wrap">
     <div class="login-left">
@@ -1162,7 +1155,6 @@ body.manager-mode .hide-manager{display:none !important}
 
 <div id="toast"></div>
 
-<!-- ═══════════════════════════════════════════════════════ JAVASCRIPT -->
 <script>
 // ══════════════════════════════════════════════════
 // GLOBAL STATE
@@ -1358,6 +1350,52 @@ function openSettings() {
   document.getElementById('settings-modal').classList.add('on');
 }
 function closeSettings() { document.getElementById('settings-modal').classList.remove('on'); }
+
+// ══════════════════════════════════════════════════
+// HARD RESET
+// ══════════════════════════════════════════════════
+async function hardResetApp() {
+  const confirmText = prompt('WARNING: This will delete ALL your data permanently. Type "RESET" to confirm:');
+  if (confirmText !== 'RESET') {
+    toast('Hard reset cancelled.');
+    return;
+  }
+
+  // Handle Demo/Local Storage mode
+  if (DB === 'LOCAL') {
+    localStorage.clear();
+    location.reload();
+    return;
+  }
+
+  // Handle Firebase mode
+  try {
+    toast('Erasing data... please wait', 4000);
+    
+    // Delete all collections
+    const collectionsToClear = ['fabrics', 'sales', 'purchases', 'payments', 'profiles'];
+    for (const col of collectionsToClear) {
+      const snap = await FB.getDocs(colRef(col));
+      const deletions = snap.docs.map(doc => FB.deleteDoc(doc.ref));
+      await Promise.all(deletions);
+    }
+    
+    // Delete config documents
+    await FB.deleteDoc(FB.doc(DB, `${userPath()}/config/settings`));
+    await FB.deleteDoc(FB.doc(DB, `${userPath()}/config/master`));
+
+    toast('App reset successfully. Signing out...', 2000);
+    setTimeout(() => {
+      closeSettings();
+      signOut();
+      location.reload(); // Force a clean slate
+    }, 2000);
+    
+  } catch (error) {
+    toast('Error resetting app: ' + error.message, 4000);
+    console.error("Reset Error: ", error);
+  }
+}
 
 // ══════════════════════════════════════════════════
 // MASTER DATA
@@ -1994,7 +2032,7 @@ function openNewPaymentModal(type) {
   const isReceipt = type==='receipt';
   document.getElementById('npm-type').value = type;
   document.getElementById('npm-title').textContent = isReceipt ? '💰 New Payment Receipt' : '🏦 New Cheque Draft';
-  document.getElementById('npm-sub').textContent = isReceipt ? 'Generate and save a payment receipt' : 'Generate and save a cheque draft';
+  document.getElementById('npm-sub').textContent = isReceipt ? 'Generate and save a payment document' : 'Generate and save a cheque draft';
   document.getElementById('npm-cheque-fields').style.display = isReceipt ? 'none' : 'block';
   document.getElementById('npm-receipt-fields').style.display = isReceipt ? 'block' : 'none';
   document.getElementById('npm-party').value='';
