@@ -109,7 +109,6 @@ input::placeholder{color:var(--text3)}
 .fl{display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px}
 .fl-h{font-size:11px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 
 /* ── FABRIC CARDS ── */
 .fab-grid{display:flex;flex-direction:column;gap:8px}
@@ -315,67 +314,13 @@ body.manager-mode .hide-manager{display:none !important}
 #pin-modal{z-index:10000}
 #edit-profile-modal{z-index:10000}
 
-/* ── BILL MODAL ── */
-#bill-modal .qmodal{width:520px;max-width:96vw;padding:0;overflow:hidden}
-
-/* ── DOC BILL STYLES (light themed for print) ── */
-.doc-paper{background:#fff;color:#1a1a1a;font-family:'Plus Jakarta Sans',sans-serif;max-width:460px;margin:0 auto;padding:0}
-.doc-header{background:linear-gradient(135deg,#0d1125,#1a2060);padding:24px 28px;color:#fff}
-.doc-header-firm{font-size:20px;font-weight:800;margin-bottom:3px;letter-spacing:-0.5px}
-.doc-header-sub{font-size:10px;opacity:0.65;letter-spacing:1px;text-transform:uppercase}
-.doc-header-type{display:inline-block;margin-top:12px;padding:3px 12px;background:rgba(255,255,255,0.15);border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
-.doc-meta{display:flex;justify-content:space-between;padding:14px 24px;border-bottom:1px solid #e5e7eb;background:#f8f9fc}
-.doc-meta-item label{font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;display:block;margin-bottom:2px}
-.doc-meta-item span{font-size:12px;font-weight:700;color:#1a1a1a}
-.doc-party{padding:14px 24px;border-bottom:1px solid #e5e7eb}
-.doc-party label{font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;display:block;margin-bottom:3px}
-.doc-party-name{font-size:15px;font-weight:800;color:#1a1a1a}
-.doc-party-sub{font-size:11px;color:#6b7280;margin-top:2px}
-.doc-items{padding:14px 24px}
-.doc-items-hdr{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding-bottom:8px;border-bottom:1px solid #e5e7eb;margin-bottom:8px}
-.doc-items-hdr span{font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.8px;font-weight:700}
-.doc-items-hdr span:not(:first-child){text-align:right}
-.doc-item-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;margin-bottom:6px;align-items:start}
-.doc-item-row span{font-size:13px;font-weight:600;color:#1a1a1a}
-.doc-item-row span:not(:first-child){text-align:right;font-family:'DM Mono',monospace}
-.doc-item-name{font-size:13px;font-weight:700;color:#1a1a1a}
-.doc-item-sub{font-size:10px;color:#9ca3af;margin-top:1px}
-.doc-totals{padding:12px 24px;background:#f8f9fc;border-top:1px solid #e5e7eb}
-.doc-total-row{display:flex;justify-content:space-between;font-size:12px;color:#6b7280;margin-bottom:4px}
-.doc-total-main{display:flex;justify-content:space-between;padding:10px 0;border-top:2px solid #1a2060;margin-top:6px}
-.doc-total-main span:first-child{font-size:14px;font-weight:800;color:#1a1a1a}
-.doc-total-main span:last-child{font-size:20px;font-weight:800;color:#1a2060;font-family:'DM Mono',monospace}
-.doc-footer{padding:16px 24px;text-align:center;border-top:1px solid #e5e7eb}
-.doc-footer-msg{font-size:14px;font-weight:800;color:#1a1a1a;margin-bottom:3px}
-.doc-footer-sub{font-size:10px;color:#9ca3af}
-.doc-stamp{display:inline-block;margin-top:12px;padding:4px 14px;border:2px solid #e5e7eb;border-radius:20px;font-size:9px;font-weight:700;color:#9ca3af;letter-spacing:1.5px;text-transform:uppercase}
-
-/* ── CHALLAN STYLES ── */
-.challan-header{background:linear-gradient(135deg,#0f2a1a,#1a4a2e);padding:20px 24px;color:#fff}
-.challan-header-firm{font-size:18px;font-weight:800;letter-spacing:-0.3px}
-.challan-header-type{margin-top:8px;padding:2px 10px;background:rgba(255,255,255,0.15);border-radius:20px;display:inline-block;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
-.challan-border{padding:14px 24px;border-bottom:2px dashed #d1d5db}
-.challan-box{border:2px solid #1a1a1a;border-radius:4px;padding:10px 14px;margin-bottom:12px}
-.challan-box-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:6px}
-.challan-sign-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:20px 24px;margin-top:4px}
-.challan-sign-box{border-top:2px solid #1a1a1a;padding-top:8px;text-align:center;font-size:10px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.8px}
-
-/* ── PAYMENT RECEIPT / CHEQUE ── */
-.cheque-paper{background:#fff8e8;border:3px double #c8973a;border-radius:8px;padding:20px 24px;font-family:'Plus Jakarta Sans',sans-serif;position:relative;overflow:hidden}
-.cheque-paper::before{content:'CANCELLED';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:60px;font-weight:900;color:rgba(192,57,43,0.06);letter-spacing:10px;pointer-events:none;white-space:nowrap}
-.cheque-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
-.cheque-bank{font-size:13px;font-weight:800;color:#2d2416}
-.cheque-no{font-size:11px;color:#8a7a5a;font-family:'DM Mono',monospace}
-.cheque-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;border-bottom:1px dashed #c8973a;padding-bottom:10px}
-.cheque-row label{font-size:10px;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;width:80px;flex-shrink:0}
-.cheque-row .val{font-size:14px;font-weight:700;color:#2d2416;flex:1;border-bottom:1px solid #c8973a;padding-bottom:2px}
-.cheque-amount-box{background:#fff0d8;border:2px solid #c8973a;border-radius:6px;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;margin:10px 0}
-.cheque-amount-words{font-size:13px;font-style:italic;color:#6b5c3e;font-weight:600}
-.cheque-amount-num{font-size:22px;font-weight:800;color:#c8973a;font-family:'DM Mono',monospace}
-.cheque-sign-row{display:flex;justify-content:space-between;align-items:flex-end;margin-top:16px;padding-top:12px;border-top:1px dashed #c8973a}
-.cheque-sign-box{text-align:center}
-.cheque-sign-line{width:120px;border-top:1.5px solid #2d2416;margin-bottom:4px}
-.cheque-sign-label{font-size:9px;color:#8a7a5a;font-weight:700;text-transform:uppercase;letter-spacing:0.8px}
+/* ── DOCUMENT SUITE MODAL ── */
+#doc-modal .qmodal { width:540px; max-width:96vw; padding:0; overflow:hidden; }
+.doc-tab-bar { display:flex; border-bottom:1px solid var(--border); background:var(--bg3); }
+.doc-tab-btn { flex:1; padding:12px 8px; font-family:var(--ff); font-size:12px; font-weight:700; cursor:pointer; border:none; background:transparent; color:var(--text3); transition:all 0.15s; border-bottom:2px solid transparent; }
+.doc-tab-btn.active { color:var(--indigo2); border-bottom-color:var(--indigo); background:var(--indigo-dim); }
+.doc-scroll { max-height:60vh; overflow-y:auto; padding:16px; background:var(--bg); }
+.doc-actions-bar { display:flex; gap:7px; padding:14px 16px; border-top:1px solid var(--border); flex-wrap:wrap; background:var(--bg2); }
 
 /* Print */
 @media print{
@@ -412,12 +357,10 @@ body.manager-mode .hide-manager{display:none !important}
 </head>
 <body>
 
-<!-- AUTO-SUGGEST DATALISTS -->
 <datalist id="dl-party"></datalist>
 <datalist id="dl-gstin"></datalist>
 <datalist id="dl-color"></datalist>
 
-<!-- SIDEBAR -->
 <div class="sb">
   <div class="sb-top">
     <div class="sb-logo">
@@ -453,7 +396,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
   <div class="topbar">
     <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">☰</button>
@@ -466,7 +408,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- Mobile menu -->
   <div class="mob-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
   <div class="mob-menu" id="mob-menu">
     <div class="mob-menu-head">
@@ -498,7 +439,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ══ DASHBOARD ══ -->
   <div class="page on" id="pg-dash">
     <div class="stats">
       <div class="stat"><div class="stat-l">Total Fabrics</div><div class="stat-v" id="st-c" style="color:var(--indigo2)">0</div><div class="stat-h">types</div></div>
@@ -519,7 +459,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ══ INVENTORY ══ -->
   <div class="page" id="pg-inv">
     <div class="content">
       <div class="sh">
@@ -539,7 +478,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ══ SALES ══ -->
   <div class="page" id="pg-sales">
     <div class="content">
       <div class="sh"><div><div class="sh-title">💰 Sales</div><div class="sh-sub">Record a new sale</div></div></div>
@@ -610,7 +548,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ══ LEDGER ══ -->
   <div class="page" id="pg-ledger">
     <div class="content">
       <div class="sh">
@@ -640,7 +577,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ══ CALCULATOR ══ -->
   <div class="page" id="pg-calc">
     <div class="content">
       <div class="sh"><div><div class="sh-title">🧮 Calculator</div><div class="sh-sub">Quick calculations</div></div></div>
@@ -687,7 +623,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ══ REPORT ══ -->
   <div class="page" id="pg-report">
     <div class="content">
       <div class="sh">
@@ -715,7 +650,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ══ PROFILES ══ -->
   <div class="page" id="pg-profiles">
     <div class="content">
       <div class="sh">
@@ -726,7 +660,6 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-  <!-- ══ MASTER DATA ══ -->
   <div class="page" id="pg-master">
     <div class="content">
       <div class="sh"><div><div class="sh-title">📁 Master Data</div><div class="sh-sub">Custom lists for dropdowns</div></div></div>
@@ -749,10 +682,7 @@ body.manager-mode .hide-manager{display:none !important}
       </div>
     </div>
   </div>
-</div><!-- /main -->
-
-<!-- ══ ADD STOCK MODAL ══ -->
-<div class="qmodal-bg" id="addstock-modal">
+</div><div class="qmodal-bg" id="addstock-modal">
   <div class="qmodal">
     <div class="qmodal-title">📥 Add Stock</div>
     <div class="qmodal-sub" id="addstock-fab-name">—</div>
@@ -768,7 +698,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- ══ QUICK SELL MODAL ══ -->
 <div class="qmodal-bg" id="quicksell-modal">
   <div class="qmodal" style="width:460px">
     <div class="qmodal-title">💰 Quick Sell</div>
@@ -826,7 +755,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- ══ PURCHASE MODAL ══ -->
 <div class="qmodal-bg" id="purchase-modal">
   <div class="qmodal" style="width:460px">
     <div class="qmodal-title">📥 Record Purchase</div>
@@ -867,7 +795,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- ══ ADD FABRIC MODAL ══ -->
 <div class="modal-bg" id="add-modal">
   <div class="modal">
     <div class="modal-title">🧵 Add New Fabric</div>
@@ -893,7 +820,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- ══ SETTINGS MODAL ══ -->
 <div class="qmodal-bg" id="settings-modal">
   <div class="qmodal">
     <div class="qmodal-title">⚙️ Settings</div>
@@ -912,8 +838,7 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- ══ PIN MODAL ══ -->
-<div class="qmodal-bg" id="pin-modal" style="z-index:10000">
+<div class="qmodal-bg" id="pin-modal">
   <div class="qmodal" style="width:300px;text-align:center">
     <div style="font-size:36px;margin-bottom:8px">🔒</div>
     <div class="qmodal-title">Enter PIN</div>
@@ -926,8 +851,7 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- ══ EDIT PROFILE MODAL ══ -->
-<div class="qmodal-bg" id="edit-profile-modal" style="z-index:10000">
+<div class="qmodal-bg" id="edit-profile-modal">
   <div class="qmodal" style="width:400px">
     <div class="qmodal-title" id="ep-title">Add Profile</div>
     <div class="qmodal-sub">Manage team access</div>
@@ -950,7 +874,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- ══ ONBOARDING ══ -->
 <div id="onboarding">
   <div class="ob-card">
     <div class="ob-top">
@@ -973,26 +896,20 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- ══ DOCUMENT VIEWER MODAL (Bill / Challan / Receipt / Cheque) ══ -->
 <div class="qmodal-bg" id="doc-modal">
-  <div class="qmodal" style="width:520px;max-width:96vw;padding:0;overflow:hidden">
+  <div class="qmodal" style="width:540px;max-width:96vw;padding:0;overflow:hidden">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border)">
       <div id="doc-modal-title" class="qmodal-title" style="margin-bottom:0;font-size:16px">Document</div>
       <button onclick="closeDocModal()" style="background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer">✕</button>
     </div>
-
-    <!-- Tab bar for different doc types -->
     <div id="doc-tab-bar" style="display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--bg3)"></div>
-
     <div style="max-height:62vh;overflow-y:auto;padding:18px;background:var(--bg)">
       <div id="doc-preview"></div>
     </div>
-
-    <div style="display:flex;gap:7px;padding:14px 18px;border-top:1px solid var(--border);flex-wrap:wrap;background:var(--bg2)" id="doc-actions"></div>
+    <div style="display:flex;gap:7px;padding:14px 18px;border-top:1px solid var(--border);flex-wrap:wrap;background:var(--bg2)" id="doc-actions-bar"></div>
   </div>
 </div>
 
-<!-- ══ PAYMENT RECEIPT MODAL ══ -->
 <div class="qmodal-bg" id="payment-receipt-modal">
   <div class="qmodal" style="width:440px">
     <div class="qmodal-title">💳 Payment Receipt / Cheque</div>
@@ -1023,7 +940,7 @@ body.manager-mode .hide-manager{display:none !important}
       <div class="fg"><label class="fl">Amount (₹)</label><input id="pr-amount" type="number" placeholder="0" oninput="updatePRWords()"/></div>
       <div class="fg"><label class="fl">Purpose</label><input id="pr-purpose" placeholder="e.g. Fabric purchase Jan"/></div>
     </div>
-    <div id="pr-amount-words" style="font-size:12px;color:var(--text3);margin-bottom:8px;font-style:italic;min-height:18px"></div>
+    <div id="pr-words" style="font-size:12px;color:var(--text3);margin-bottom:8px;font-style:italic;min-height:18px"></div>
     <div class="qmodal-foot">
       <button class="btn btn-ghost" onclick="document.getElementById('payment-receipt-modal').classList.remove('on')">Cancel</button>
       <button class="btn btn-primary" onclick="generatePaymentDoc()">Generate →</button>
@@ -1031,7 +948,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- ══ LOGIN ══ -->
 <div id="login-screen">
   <div class="login-wrap">
     <div class="login-left">
@@ -1050,7 +966,6 @@ body.manager-mode .hide-manager{display:none !important}
       <div class="login-right-t">Sign In</div>
       <div class="login-right-s">Login with Google or your mobile number</div>
 
-      <!-- Google Login -->
       <button class="login-google" id="login-btn" onclick="signInGoogle()">
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         Continue with Google
@@ -1058,7 +973,6 @@ body.manager-mode .hide-manager{display:none !important}
 
       <div class="login-divider">or</div>
 
-      <!-- Phone Login -->
       <div class="login-phone-wrap" id="phone-section">
         <label style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;display:block;margin-bottom:6px">Mobile Number</label>
         <div class="phone-row">
@@ -1082,7 +996,6 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<!-- ══ PROFILE SELECT ══ -->
 <div id="profile-screen">
   <div style="text-align:center">
     <div style="font-size:28px;font-weight:800;color:var(--text);letter-spacing:-0.8px">Who's using this?</div>
@@ -1095,7 +1008,6 @@ body.manager-mode .hide-manager{display:none !important}
 </div>
 
 <div id="toast"></div>
-<!-- reCAPTCHA container for phone auth -->
 <div id="recaptcha-verifier-container"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -1542,7 +1454,7 @@ function _doSaveModal(){
 function saveModal(){_doSaveModal();}
 function saveModalAndReceipt(){
   var result=_doSaveModal();
-  if(result&&result.purch)setTimeout(function(){showPurchaseReceiptDoc(result.purch,result.fab);},300);
+  if(result&&result.purch)setTimeout(function(){openDocAfterStock(result.purch,result.fab.name);},300);
 }
 
 // ══ ADD STOCK MODAL ══
@@ -1573,7 +1485,7 @@ function _doSaveAddStock(){
   return {purch:purchData,fab:f};
 }
 function saveAddStock(){_doSaveAddStock();}
-function saveAddStockAndReceipt(){var r=_doSaveAddStock();if(r)setTimeout(function(){showPurchaseReceiptDoc(r.purch,r.fab);},300);}
+function saveAddStockAndReceipt(){var r=_doSaveAddStock();if(r)setTimeout(function(){openDocAfterStock(r.purch,r.fab.name);},300);}
 
 // ══ QS MODAL ══
 function openQS(id){
@@ -1618,13 +1530,13 @@ function _doQSSale(withBill){
   var bgst=(document.getElementById('qs-buyer-gstin')||{value:''}).value.trim();
   var paidAmt=invType==='Credit'?0:g.total;
   var saleData={id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:r,discount:disc,subtotal:g.subtotal,gstRate:rate,gstType:type,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,invType:invType,payMode:'Cash',paidAmt:paidAmt,dueAmt:g.total-paidAmt,customer:cust,customerPhone:phone,buyerGstin:bgst,note:'',date:new Date().toISOString(),isKacha:isKacha};
-  if(isKacha){closeQS();toast('📝 Kacha Bill — stock not deducted');if(withBill)setTimeout(function(){openDocModal(saleData,'sale');},300);return;}
+  if(isKacha){closeQS();toast('📝 Kacha Bill — stock not deducted');if(withBill)setTimeout(function(){openDocAfterSale(saleData);},300);return;}
   f.meters-=m;
   sales.unshift(saleData);
   updatePartyList();save();updateStats();renderDash();renderInv();closeQS();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
   if(f.meters<f.threshold)sendLowStockAlert(f);
-  if(withBill)setTimeout(function(){openDocModal(saleData,'sale');},300);
+  if(withBill)setTimeout(function(){openDocAfterSale(saleData);},300);
 }
 function saveQS(){_doQSSale(false);}
 function saveQSAndBill(){_doQSSale(true);}
@@ -1672,7 +1584,7 @@ function _doSale(withBill){
   var bgst=document.getElementById('s-buyer-gstin').value.trim();
   var phone=(document.getElementById('s-phone')||{value:''}).value.trim().replace(/\D/g,'');
   var saleData={id:Date.now(),fabId:id,fabName:f.name,meters:m,rate:rate,discount:disc,subtotal:g.subtotal,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:g.total-paidAmt,customer:cust,buyerGstin:bgst,customerPhone:phone,note:note,date:new Date().toISOString(),isKacha:isKacha};
-  if(isKacha){toast('📝 Kacha Bill');if(withBill)setTimeout(function(){openDocModal(saleData,'sale');},300);return;}
+  if(isKacha){toast('📝 Kacha Bill');if(withBill)setTimeout(function(){openDocAfterSale(saleData);},300);return;}
   f.meters-=m;sales.unshift(saleData);
   updatePartyList();save();updateStats();renderSalesList();fillSD();
   toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
@@ -1682,7 +1594,7 @@ function _doSale(withBill){
   document.getElementById('s-subtotal').textContent='₹0';
   document.getElementById('s-gst-breakdown').innerHTML='';
   if(f.meters<f.threshold)sendLowStockAlert(f);
-  if(withBill)setTimeout(function(){openDocModal(saleData,'sale');},300);
+  if(withBill)setTimeout(function(){openDocAfterSale(saleData);},300);
 }
 function recSale(){_doSale(false);}
 function recSaleAndBill(){_doSale(true);}
@@ -1745,8 +1657,12 @@ function renderLedger(){
     var qty=e.meters?e.meters+'m':'—';
     var dateStr=new Date(e.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
     var gTag=e.gstRate>0?'<span style="font-size:10px;background:var(--blue-dim);color:var(--blue);border-radius:4px;padding:1px 6px;font-weight:700;margin-left:3px">GST '+e.gstRate+'%</span>':'';
+    
+    // Updated Document Actions
+    var docBtns = '<button onclick="openLedgerDoc('+e.id+','+isSale+')" class="btn btn-ghost" style="padding:4px 8px;font-size:11px;margin-left:6px">📄 Docs</button>';
+    
     var retBtn=(currentProfile&&currentProfile.role==='owner')?(e.isReturned?'<span class="pill pill-r" style="margin-left:6px">RETURNED</span>':'<button onclick="returnItem('+e.id+','+isSale+')" class="btn btn-ghost btn-sm" style="margin-left:6px">↩️</button>'):(e.isReturned?'<span class="pill pill-r">RETURNED</span>':'');
-    return '<div class="ledger-entry '+(isSale?'sale-entry':'purchase-entry')+(e.isReturned?' returned':'')+'"><div class="le-icon '+(isSale?'sale':'purchase')+'">'+(isSale?'💰':'📥')+'</div><div><div class="le-name">'+esc(item)+retBtn+'</div><div class="le-meta">'+esc(party)+' · '+qty+(e.rate?' · ₹'+e.rate+'/m':'')+gTag+'</div>'+(e.note?'<div style="font-size:10px;color:var(--text3);margin-top:1px;font-style:italic">'+esc(e.note)+'</div>':'')+(e.dueAmt>0&&!e.isReturned?'<div style="font-size:10px;color:var(--amber);margin-top:2px">Due: '+fv(e.dueAmt)+'</div>':'')+'</div><div class="le-date">'+dateStr+'</div><div class="le-amount '+(isSale?'sale':'purchase')+'">'+(e.isReturned?'<del>'+fv(e.total)+'</del>':fv(e.total))+'</div></div>';
+    return '<div class="ledger-entry '+(isSale?'sale-entry':'purchase-entry')+(e.isReturned?' returned':'')+'"><div class="le-icon '+(isSale?'sale':'purchase')+'">'+(isSale?'💰':'📥')+'</div><div><div class="le-name">'+esc(item)+retBtn+docBtns+'</div><div class="le-meta">'+esc(party)+' · '+qty+(e.rate?' · ₹'+e.rate+'/m':'')+gTag+'</div>'+(e.note?'<div style="font-size:10px;color:var(--text3);margin-top:1px;font-style:italic">'+esc(e.note)+'</div>':'')+(e.dueAmt>0&&!e.isReturned?'<div style="font-size:10px;color:var(--amber);margin-top:2px">Due: '+fv(e.dueAmt)+'</div>':'')+'</div><div class="le-date">'+dateStr+'</div><div class="le-amount '+(isSale?'sale':'purchase')+'">'+(e.isReturned?'<del>'+fv(e.total)+'</del>':fv(e.total))+'</div></div>';
   }).join('');
 }
 function returnItem(id,isSale){
@@ -1800,7 +1716,7 @@ function _doSavePurchase(){
   return pData;
 }
 function savePurchase(){_doSavePurchase();}
-function savePurchaseAndReceipt(){var p=_doSavePurchase();if(p)setTimeout(function(){showPurchaseReceiptDoc(p,null);},300);}
+function savePurchaseAndReceipt(){var p=_doSavePurchase();if(p)setTimeout(function(){openDocAfterStock(p, p.item);},300);}
 
 // ══ CALCS ══
 function c1(){document.getElementById('c1-r').textContent=fv((parseFloat(document.getElementById('c1m').value)||0)*(parseFloat(document.getElementById('c1r').value)||0));}
@@ -1846,508 +1762,27 @@ function obNext(){if(obStep<3){obStep++;renderOB();}else{closeOB();setTimeout(op
 function skipOB(){closeOB();}
 function closeOB(){document.getElementById('onboarding').classList.remove('on');}
 
-// ══════════════════════════════════════════
-// DOCUMENT GENERATION SYSTEM
-// Sales Invoice, Purchase Receipt, Delivery Challan
-// ══════════════════════════════════════════
-
-var currentDocData=null,currentDocType=null;
-
-function openDocModal(saleData,docType){
-  lastSale=saleData;
-  currentDocData=saleData;
-  currentDocType=docType;
-
-  document.getElementById('doc-modal').classList.add('on');
-
-  // Show tabs
-  var tabs=[
-    {id:'invoice',label:'🧾 Invoice'},
-    {id:'challan',label:'🚚 Challan'},
-    {id:'payreceipt',label:'💳 Receipt'}
-  ];
-  document.getElementById('doc-tab-bar').innerHTML=tabs.map(function(t,i){
-    return '<button style="flex:1;padding:10px 14px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:'+(i===0?'var(--indigo-dim)':'transparent')+';color:'+(i===0?'var(--indigo2)':'var(--text3)')+';border-radius:0;transition:all 0.15s;font-family:var(--ff)" id="doctab-'+t.id+'" onclick="switchDocTab(\''+t.id+'\',this)">'+t.label+'</button>';
-  }).join('');
-
-  renderDocTab('invoice');
-  renderDocActions('invoice');
-  document.getElementById('doc-modal-title').textContent='Sale Documents';
-}
-
-function showPurchaseReceiptDoc(purchData,fabData){
-  currentDocData={type:'purchase',purch:purchData,fab:fabData};
-  currentDocType='purchase';
-
-  document.getElementById('doc-modal').classList.add('on');
-
-  var tabs=[
-    {id:'purreceipt',label:'📃 Purchase Receipt'},
-    {id:'challan',label:'🚚 Delivery Challan'}
-  ];
-  document.getElementById('doc-tab-bar').innerHTML=tabs.map(function(t,i){
-    return '<button style="flex:1;padding:10px 14px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:'+(i===0?'var(--emerald-dim)':'transparent')+';color:'+(i===0?'var(--emerald)':'var(--text3)')+';border-radius:0;transition:all 0.15s;font-family:var(--ff)" id="doctab-'+t.id+'" onclick="switchDocTab(\''+t.id+'\',this)">'+t.label+'</button>';
-  }).join('');
-
-  renderPurchaseReceiptHTML();
-  renderDocActions('purreceipt');
-  document.getElementById('doc-modal-title').textContent='Purchase Documents';
-}
-
-function switchDocTab(tabId,btn){
-  document.querySelectorAll('#doc-tab-bar button').forEach(function(b){
-    b.style.background='transparent';b.style.color='var(--text3)';
-  });
-  btn.style.background='var(--indigo-dim)';btn.style.color='var(--indigo2)';
-
-  if(tabId==='invoice')renderSaleInvoiceHTML();
-  else if(tabId==='challan')renderChallanHTML();
-  else if(tabId==='payreceipt')renderPayReceiptHTML();
-  else if(tabId==='purreceipt')renderPurchaseReceiptHTML();
-  renderDocActions(tabId);
-}
-function renderDocActions(tabId){
-  var actions=document.getElementById('doc-actions');
-  actions.innerHTML='<button onclick="printDoc()" class="btn btn-ghost" style="flex:1;justify-content:center;min-width:70px">🖨️ Print</button>'
-    +'<button onclick="shareDocWA(\''+tabId+'\')" style="flex:1;justify-content:center;min-width:90px;padding:9px 12px;background:#25D366;color:white;border:none;border-radius:var(--r);font-family:var(--ff);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px">💬 WhatsApp</button>'
-    +'<button onclick="shareDocPDF(\''+tabId+'\')" style="flex:1;justify-content:center;min-width:90px;padding:9px 12px;background:var(--indigo);color:white;border:none;border-radius:var(--r);font-family:var(--ff);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px">📤 PDF</button>';
-}
-
-function closeDocModal(){document.getElementById('doc-modal').classList.remove('on');}
-function printDoc(){
-  var content=document.getElementById('doc-preview').innerHTML;
-  var win=window.open('','_blank','width=520,height=750');
-  win.document.write('<html><head><title>Document</title><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"><style>body{margin:20px;font-family:sans-serif;background:white}*{box-sizing:border-box}
-/* ══ DOCUMENT SUITE ══ */
-.doc-modal-inner{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r3);width:540px;max-width:96vw;padding:0;overflow:hidden;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
-.doc-tab-bar{display:flex;border-bottom:1px solid var(--border);background:var(--bg3)}
-.doc-tab-btn{flex:1;padding:10px 8px;font-family:var(--ff);font-size:12px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--text2);transition:all 0.15s;border-bottom:2px solid transparent}
-.doc-tab-btn.active{color:var(--indigo2);border-bottom-color:var(--indigo);background:var(--indigo-dim)}
-.doc-scroll{max-height:60vh;overflow-y:auto;padding:16px;background:var(--bg)}
-.doc-actions-bar{display:flex;gap:7px;padding:12px 16px;border-top:1px solid var(--border);flex-wrap:wrap;background:var(--bg2)}
-
-/* ══ PAPER DOC (light for print) ══ */
-.paper{background:#fff;color:#1a1a1a;font-family:'Plus Jakarta Sans',sans-serif;max-width:460px;margin:0 auto;border-radius:4px;overflow:hidden}
-.paper-hdr{padding:20px 24px 16px;color:#fff}
-.paper-hdr-firm{font-size:18px;font-weight:800;letter-spacing:-0.3px}
-.paper-hdr-gstin{font-size:10px;opacity:0.7;margin-top:2px;letter-spacing:0.5px}
-.paper-hdr-badge{display:inline-block;margin-top:9px;padding:2px 10px;background:rgba(255,255,255,0.18);border-radius:20px;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
-.paper-meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;padding:10px 20px;background:#f8f9fc;border-bottom:1px solid #e5e7eb}
-.paper-meta-cell label{display:block;font-size:8px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:2px}
-.paper-meta-cell span{font-size:12px;font-weight:700;color:#1a1a1a}
-.paper-party{padding:11px 20px;border-bottom:1px solid #e5e7eb}
-.paper-party label{display:block;font-size:8px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:3px}
-.paper-party-name{font-size:15px;font-weight:800;color:#1a1a1a}
-.paper-party-sub{font-size:11px;color:#6b7280;margin-top:1px}
-.paper-items{padding:11px 20px}
-.paper-items-hdr{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding-bottom:6px;border-bottom:1px solid #e5e7eb;margin-bottom:6px}
-.paper-items-hdr span{font-size:8px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;font-weight:700}
-.paper-items-hdr span:not(:first-child){text-align:right}
-.paper-item-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;margin-bottom:5px}
-.paper-item-name{font-size:13px;font-weight:700;color:#1a1a1a}
-.paper-item-sub{font-size:10px;color:#9ca3af}
-.paper-item-row span{font-size:13px;font-weight:600;color:#1a1a1a;text-align:right;font-family:monospace}
-.paper-totals{padding:10px 20px;background:#f8f9fc;border-top:1px solid #e5e7eb}
-.paper-total-row{display:flex;justify-content:space-between;font-size:11px;color:#6b7280;margin-bottom:3px}
-.paper-total-main{display:flex;justify-content:space-between;padding:7px 0;border-top:2px solid #1a1a1a;margin-top:5px}
-.paper-total-main span:first-child{font-size:13px;font-weight:800;color:#1a1a1a}
-.paper-total-main span:last-child{font-size:19px;font-weight:800;color:#1a5c9e;font-family:monospace}
-.paper-footer{padding:13px 20px;text-align:center;border-top:1px solid #e5e7eb}
-.paper-footer-msg{font-size:13px;font-weight:800;color:#1a1a1a;margin-bottom:2px}
-.paper-footer-sub{font-size:10px;color:#9ca3af}
-.paper-stamp{display:inline-block;margin-top:8px;padding:2px 12px;border:1.5px solid #e5e7eb;border-radius:20px;font-size:8px;font-weight:700;color:#9ca3af;letter-spacing:2px;text-transform:uppercase}
-.challan-consign-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e5e7eb}
-.challan-consign-cell{padding:11px 20px}
-.challan-consign-cell:first-child{border-right:1px solid #e5e7eb}
-.challan-sign-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:16px 20px;border-top:1px solid #e5e7eb}
-.challan-sign-box{text-align:center}
-.challan-sign-line{border-top:1.5px solid #1a1a1a;margin-bottom:5px}
-.challan-sign-lbl{font-size:9px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.8px}
-.cheque-paper{background:#fffbf0;border:2.5px double #c8973a;border-radius:8px;padding:18px 22px;font-family:'Plus Jakarta Sans',sans-serif;position:relative;overflow:hidden;max-width:460px;margin:0 auto}
-.cheque-paper::before{content:'SAMPLE';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:70px;font-weight:900;color:rgba(200,151,58,0.06);letter-spacing:8px;pointer-events:none;white-space:nowrap}
-.cheque-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:13px}
-.cheque-bank{font-size:14px;font-weight:800;color:#2d2416}
-.cheque-no{font-size:11px;color:#8a7a5a;font-family:monospace}
-.cheque-row{display:flex;align-items:flex-end;gap:8px;margin-bottom:10px;border-bottom:1px dashed #c8973a;padding-bottom:10px}
-.cheque-row label{font-size:9px;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;width:75px;flex-shrink:0}
-.cheque-row .cv{font-size:14px;font-weight:700;color:#2d2416;flex:1;border-bottom:1px solid #c8973a;padding-bottom:1px;min-height:20px}
-.cheque-amt-box{background:#fff8e8;border:2px solid #c8973a;border-radius:6px;padding:9px 13px;display:flex;justify-content:space-between;align-items:center;margin:8px 0}
-.cheque-amt-words{font-size:12px;font-style:italic;color:#6b5c3e;font-weight:600;flex:1;padding-right:10px}
-.cheque-amt-num{font-size:19px;font-weight:800;color:#c8973a;font-family:monospace;white-space:nowrap}
-.cheque-sign-row{display:flex;justify-content:space-between;align-items:flex-end;margin-top:13px;padding-top:10px;border-top:1px dashed #c8973a}
-.cheque-sign-box{text-align:center}
-.cheque-sign-line{width:110px;border-top:1.5px solid #2d2416;margin-bottom:4px}
-.cheque-sign-lbl{font-size:9px;color:#8a7a5a;font-weight:700;text-transform:uppercase;letter-spacing:0.8px}
-</style></head><body>'+content+'
-<!-- ══ DOCUMENT SUITE MODAL ══ -->
-<div class="qmodal-bg" id="doc-modal">
-  <div class="doc-modal-inner">
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border)">
-      <div class="qmodal-title" id="doc-modal-title" style="margin-bottom:0;font-size:17px">Documents</div>
-      <button onclick="closeDocModal()" style="background:none;border:none;font-size:21px;color:var(--text3);cursor:pointer">✕</button>
-    </div>
-    <div class="doc-tab-bar" id="doc-tab-bar"></div>
-    <div class="doc-scroll"><div id="doc-preview"></div></div>
-    <div class="doc-actions-bar" id="doc-actions-bar"></div>
-  </div>
-</div>
-
-<!-- ══ PAYMENT RECEIPT / CHEQUE MODAL ══ -->
-<div class="qmodal-bg" id="payment-receipt-modal">
-  <div class="qmodal" style="width:440px">
-    <div class="qmodal-title">💳 Payment Receipt / Cheque</div>
-    <div class="qmodal-sub">Generate a payment document</div>
-    <div class="fg"><label class="fl">Document Type</label>
-      <select id="pr-type" onchange="updatePRType()">
-        <option value="receipt">💰 Payment Receipt (Cash / UPI)</option>
-        <option value="cheque">🏦 Cheque Draft</option>
-      </select>
-    </div>
-    <div class="fg"><label class="fl">Pay To / Party *</label><input id="pr-party" list="dl-party" placeholder="e.g. Rajan Textiles"/></div>
-    <div id="pr-cheque-fields">
-      <div class="fg"><label class="fl">Bank Name</label><input id="pr-bank" placeholder="e.g. State Bank of India"/></div>
-      <div class="g2">
-        <div class="fg"><label class="fl">Cheque No.</label><input id="pr-chq-no" type="number" placeholder="123456"/></div>
-        <div class="fg"><label class="fl">Date</label><input id="pr-chq-date" type="date"/></div>
-      </div>
-    </div>
-    <div id="pr-receipt-fields">
-      <div class="fg"><label class="fl">Payment Mode</label>
-        <select id="pr-mode"><option>Cash</option><option>UPI</option><option>NEFT / RTGS</option><option>Cheque</option></select>
-      </div>
-      <div class="fg"><label class="fl">Txn / Reference No. <span class="fl-h">(Optional)</span></label><input id="pr-txn" placeholder="UPI ref, txn ID..."/></div>
-    </div>
-    <div class="g2">
-      <div class="fg"><label class="fl">Amount (₹) *</label><input id="pr-amount" type="number" placeholder="0" oninput="updatePRWords()"/></div>
-      <div class="fg"><label class="fl">Purpose</label><input id="pr-purpose" placeholder="e.g. Jan fabric payment"/></div>
-    </div>
-    <div id="pr-words" style="font-size:11px;color:var(--text3);font-style:italic;margin-bottom:8px;min-height:16px"></div>
-    <div class="qmodal-foot">
-      <button class="btn btn-ghost" onclick="document.getElementById('payment-receipt-modal').classList.remove('on')">Cancel</button>
-      <button class="btn btn-primary" onclick="generatePaymentDoc()">Generate →</button>
-    </div>
-  </div>
-</div>
-
-</body></html>');
-  win.document.close();setTimeout(function(){win.print();},900);
-}
-
-// ── SALE INVOICE HTML ──
-function renderSaleInvoiceHTML(){
-  var s=currentDocData;
-  if(!s)return;
-  var shop=appSettings.firmName||(user&&user.displayName)||'Your Shop';
-  var billNo='INV-'+Date.now().toString().slice(-6);
-  var dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-  var base=s.meters*(s.rate||0);
-  var gstRows='';
-  if(s.gstRate>0){
-    if(s.gstType==='intra'){
-      gstRows='<div class="doc-total-row"><span>CGST @ '+(s.gstRate/2)+'%</span><span>+₹'+Math.round(s.cgst||0).toLocaleString('en-IN')+'</span></div>';
-      gstRows+='<div class="doc-total-row"><span>SGST @ '+(s.gstRate/2)+'%</span><span>+₹'+Math.round(s.sgst||0).toLocaleString('en-IN')+'</span></div>';
-    }else{
-      gstRows='<div class="doc-total-row"><span>IGST @ '+s.gstRate+'%</span><span>+₹'+Math.round(s.igst||0).toLocaleString('en-IN')+'</span></div>';
-    }
-  }
-  var discRow=s.discount>0?'<div class="doc-total-row" style="color:#ef4444"><span>Discount</span><span>-₹'+s.discount.toLocaleString('en-IN')+'</span></div>':'';
-  var payStatus='';
-  if(s.dueAmt>0)payStatus='<div style="margin:0 24px 14px;background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;padding:10px 14px;display:flex;justify-content:space-between;font-size:12px"><span style="font-weight:700;color:#92400e">Amount Due</span><span style="font-weight:800;color:#92400e;font-family:DM Mono,monospace">₹'+Math.round(s.dueAmt).toLocaleString('en-IN')+'</span></div>';
-  var html='<div class="doc-paper">'
-    +'<div class="doc-header"><div class="doc-header-firm">'+esc(shop)+'</div>'+(appSettings.gstin?'<div class="doc-header-sub">GSTIN: '+appSettings.gstin+'</div>':'')
-    +'<div class="doc-header-type">'+(s.isKacha?'ESTIMATE':'TAX INVOICE')+'</div></div>'
-    +'<div class="doc-meta"><div class="doc-meta-item"><label>Bill No.</label><span>'+billNo+'</span></div><div class="doc-meta-item"><label>Date</label><span>'+dateStr+'</span></div><div class="doc-meta-item"><label>Payment</label><span>'+(s.payMode||'Cash')+'</span></div><div class="doc-meta-item"><label>Type</label><span>'+(s.invType||'Cash')+'</span></div></div>'
-    +'<div class="doc-party"><label>Bill To</label><div class="doc-party-name">'+esc(s.customer||'Walk-in')+'</div>'+(s.buyerGstin?'<div class="doc-party-sub">GSTIN: '+esc(s.buyerGstin)+'</div>':'')+'</div>'
-    +'<div class="doc-items"><div class="doc-items-hdr"><span>Item</span><span>Qty</span><span>Rate</span><span>Amount</span></div>'
-    +'<div class="doc-item-row"><div><div class="doc-item-name">'+esc(s.fabName)+'</div></div><span>'+s.meters+'m</span><span>₹'+(s.rate||0)+'</span><span>₹'+Math.round(base).toLocaleString('en-IN')+'</span></div></div>'
-    +'<div class="doc-totals">'+discRow+'<div class="doc-total-row"><span>Subtotal</span><span>₹'+Math.round(s.subtotal||base).toLocaleString('en-IN')+'</span></div>'+gstRows
-    +'<div class="doc-total-main"><span>TOTAL</span><span>₹'+Math.round(s.total).toLocaleString('en-IN')+'</span></div></div>'
-    +payStatus
-    +'<div class="doc-footer"><div class="doc-footer-msg">Thank You! 🙏</div><div class="doc-footer-sub">For your business</div><div class="doc-stamp">StockSaathi</div></div>'
-    +'</div>';
-  document.getElementById('doc-preview').innerHTML=html;
-}
-
-// ── PURCHASE RECEIPT HTML ──
-function renderPurchaseReceiptHTML(){
-  var d=currentDocData;
-  var purch,fabName,partyName;
-  if(d&&d.type==='purchase'){purch=d.purch;fabName=purch.item;}
-  else{purch=lastPurchaseData;if(!purch)return;}
-  var shop=appSettings.firmName||(user&&user.displayName)||'Your Shop';
-  var rcptNo='RCPT-'+Date.now().toString().slice(-6);
-  var dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-  var gstRows='';
-  if(purch.gstRate>0){
-    if(purch.gstType==='intra'){
-      gstRows='<div class="doc-total-row"><span>CGST @ '+(purch.gstRate/2)+'%</span><span>+₹'+Math.round(purch.cgst||0).toLocaleString('en-IN')+'</span></div>';
-      gstRows+='<div class="doc-total-row"><span>SGST @ '+(purch.gstRate/2)+'%</span><span>+₹'+Math.round(purch.sgst||0).toLocaleString('en-IN')+'</span></div>';
-    }else{
-      gstRows='<div class="doc-total-row"><span>IGST @ '+purch.gstRate+'%</span><span>+₹'+Math.round(purch.igst||0).toLocaleString('en-IN')+'</span></div>';
-    }
-  }
-  var html='<div class="doc-paper">'
-    +'<div style="background:linear-gradient(135deg,#0d2e22,#1a4a2e);padding:24px 28px;color:#fff">'
-    +'<div style="font-size:20px;font-weight:800;margin-bottom:2px">'+esc(shop)+'</div>'+(appSettings.gstin?'<div style="font-size:10px;opacity:0.65;letter-spacing:1px;text-transform:uppercase">GSTIN: '+appSettings.gstin+'</div>':'')
-    +'<div style="margin-top:10px;display:inline-block;padding:2px 10px;background:rgba(255,255,255,0.15);border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase">PURCHASE RECEIPT</div></div>'
-    +'<div class="doc-meta"><div class="doc-meta-item"><label>Receipt No.</label><span>'+rcptNo+'</span></div><div class="doc-meta-item"><label>Date</label><span>'+dateStr+'</span></div></div>'
-    +'<div class="doc-party"><label>Received From (Supplier)</label><div class="doc-party-name">'+esc(purch.party||'Supplier')+'</div>'+(purch.supplierGstin?'<div class="doc-party-sub">GSTIN: '+esc(purch.supplierGstin)+'</div>':'')+'</div>'
-    +'<div class="doc-items"><div class="doc-items-hdr"><span>Item</span><span>Qty</span><span>Rate</span><span>Amount</span></div>'
-    +'<div class="doc-item-row"><div><div class="doc-item-name">'+esc(purch.item)+'</div></div><span>'+purch.meters+'m</span><span>₹'+(purch.rate||0)+'</span><span>₹'+Math.round(purch.meters*(purch.rate||0)).toLocaleString('en-IN')+'</span></div></div>'
-    +'<div class="doc-totals"><div class="doc-total-row"><span>Subtotal</span><span>₹'+Math.round(purch.subtotal||purch.meters*purch.rate).toLocaleString('en-IN')+'</span></div>'
-    +gstRows
-    +'<div class="doc-total-main"><span>TOTAL PAID</span><span>₹'+Math.round(purch.total).toLocaleString('en-IN')+'</span></div></div>'
-    +(purch.note?'<div style="padding:10px 24px;font-size:11px;color:#6b7280;font-style:italic">Ref: '+esc(purch.note)+'</div>':'')
-    +'<div class="doc-footer"><div class="doc-footer-msg">Stock Received ✓</div><div class="doc-footer-sub">Purchase acknowledged</div><div class="doc-stamp">StockSaathi</div></div>'
-    +'</div>';
-  document.getElementById('doc-preview').innerHTML=html;
-}
-
-// ── DELIVERY CHALLAN HTML ──
-function renderChallanHTML(){
-  var shop=appSettings.firmName||(user&&user.displayName)||'Your Shop';
-  var challanNo='DC-'+Date.now().toString().slice(-6);
-  var dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-  var s=currentDocData;
-  var isSale=s&&!s.type;
-  var item=isSale?s.fabName:(s&&s.purch?s.purch.item:'—');
-  var qty=isSale?s.meters:(s&&s.purch?s.purch.meters:0);
-  var toParty=isSale?(s.customer||'Customer'):(s&&s.purch?s.purch.party:'Party');
-
-  var html='<div class="doc-paper">'
-    +'<div class="challan-header"><div class="challan-header-firm">'+esc(shop)+'</div>'+(appSettings.gstin?'<div style="font-size:10px;opacity:0.7;margin-top:2px">GSTIN: '+appSettings.gstin+'</div>':'')
-    +'<div class="challan-header-type">DELIVERY CHALLAN</div></div>'
-    +'<div class="doc-meta"><div class="doc-meta-item"><label>Challan No.</label><span>'+challanNo+'</span></div><div class="doc-meta-item"><label>Date</label><span>'+dateStr+'</span></div><div class="doc-meta-item"><label>Mode</label><span>Road</span></div></div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid #e5e7eb">'
-    +'<div class="challan-border" style="border-right:1px solid #e5e7eb"><div class="challan-box-title">Consignor (From)</div><div style="font-size:13px;font-weight:700">'+esc(shop)+'</div><div style="font-size:11px;color:#6b7280;margin-top:2px">Surat, Gujarat</div></div>'
-    +'<div class="challan-border"><div class="challan-box-title">Consignee (To)</div><div style="font-size:13px;font-weight:700">'+esc(toParty)+'</div><div style="font-size:11px;color:#6b7280;margin-top:2px">&nbsp;</div></div>'
-    +'</div>'
-    +'<div class="doc-items"><div class="doc-items-hdr"><span>Description of Goods</span><span>HSN</span><span>Qty</span><span>Remarks</span></div>'
-    +'<div class="doc-item-row"><div><div class="doc-item-name">'+esc(item)+'</div><div class="doc-item-sub">Textile Fabric</div></div><span>5208</span><span>'+qty+'m</span><span>—</span></div></div>'
-    +'<div style="padding:14px 24px;border-top:1px solid #e5e7eb;background:#f8f9fc">'
-    +'<div style="display:flex;justify-content:space-between;font-size:12px;color:#6b7280;margin-bottom:4px"><span>Total Quantity:</span><span style="font-weight:700;color:#1a1a1a">'+qty+' Meters</span></div>'
-    +'<div style="font-size:11px;color:#9ca3af;margin-top:6px">This is a Delivery Challan only. Not for valuation purposes.</div>'
-    +'</div>'
-    +'<div class="challan-sign-row">'
-    +'<div class="challan-sign-box"><div class="challan-sign-line"></div>Driver / Transporter Signature</div>'
-    +'<div class="challan-sign-box"><div class="challan-sign-line"></div>Authorised Signatory</div>'
-    +'</div>'
-    +'<div style="padding:12px 24px;border-top:1px solid #e5e7eb;text-align:center"><div class="doc-stamp">StockSaathi</div></div>'
-    +'</div>';
-  document.getElementById('doc-preview').innerHTML=html;
-}
-
-// ── PAYMENT RECEIPT (for sales) ──
-function renderPayReceiptHTML(){
-  var s=currentDocData;
-  if(!s)return;
-  var shop=appSettings.firmName||(user&&user.displayName)||'Your Shop';
-  var rcptNo='PAY-'+Date.now().toString().slice(-6);
-  var dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-  var html='<div class="doc-paper">'
-    +'<div style="background:linear-gradient(135deg,#1a1060,#2d2080);padding:24px 28px;color:#fff">'
-    +'<div style="font-size:20px;font-weight:800;margin-bottom:2px">'+esc(shop)+'</div>'
-    +'<div style="margin-top:10px;display:inline-block;padding:2px 10px;background:rgba(255,255,255,0.15);border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase">PAYMENT RECEIPT</div></div>'
-    +'<div class="doc-meta"><div class="doc-meta-item"><label>Receipt No.</label><span>'+rcptNo+'</span></div><div class="doc-meta-item"><label>Date</label><span>'+dateStr+'</span></div><div class="doc-meta-item"><label>Mode</label><span>'+(s.payMode||'Cash')+'</span></div></div>'
-    +'<div class="doc-party"><label>Received From</label><div class="doc-party-name">'+esc(s.customer||'Customer')+'</div></div>'
-    +'<div style="padding:14px 24px">'
-    +'<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px 18px;margin-bottom:14px">'
-    +'<div style="font-size:11px;color:#15803d;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Amount Received</div>'
-    +'<div style="font-size:28px;font-weight:800;color:#15803d;font-family:DM Mono,monospace">₹'+Math.round(s.paidAmt||s.total).toLocaleString('en-IN')+'</div>'
-    +'</div>'
-    +'<div style="display:flex;justify-content:space-between;font-size:12px;color:#6b7280;margin-bottom:4px"><span>For Fabric:</span><span style="font-weight:700;color:#1a1a1a">'+esc(s.fabName)+'</span></div>'
-    +'<div style="display:flex;justify-content:space-between;font-size:12px;color:#6b7280;margin-bottom:4px"><span>Quantity:</span><span>'+s.meters+'m</span></div>'
-    +(s.dueAmt>0?'<div style="display:flex;justify-content:space-between;font-size:12px;margin-top:8px;padding-top:8px;border-top:1px dashed #e5e7eb"><span style="color:#dc2626;font-weight:600">Balance Due:</span><span style="color:#dc2626;font-weight:700">₹'+Math.round(s.dueAmt).toLocaleString('en-IN')+'</span></div>':'')
-    +'</div>'
-    +(appSettings.upiId?'<div style="padding:0 24px 14px;text-align:center"><img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=upi://pay?pa='+appSettings.upiId+'&pn='+encodeURIComponent(shop)+'" style="width:80px;height:80px;border-radius:6px;border:2px solid #e5e7eb"><div style="font-size:10px;color:#9ca3af;margin-top:3px">UPI: '+appSettings.upiId+'</div></div>':'')
-    +'<div class="doc-footer"><div class="doc-footer-msg">Payment Confirmed ✓</div><div class="doc-footer-sub">Thank you for your business</div><div class="doc-stamp">StockSaathi</div></div>'
-    +'</div>';
-  document.getElementById('doc-preview').innerHTML=html;
-}
-
-// ── SHARE HELPERS ──
-function shareDocWA(tabId){
-  // Build plain text message
-  var shop=appSettings.firmName||(user&&user.displayName)||'Shop';
-  var msg='*'+shop+'*\n';
-  var s=currentDocData;
-  if(tabId==='invoice'&&s&&!s.type){
-    msg+='🧾 Tax Invoice\nDate: '+new Date().toLocaleDateString('en-IN')+'\nCustomer: '+(s.customer||'Walk-in')+'\n\n'+s.fabName+' | '+s.meters+'m x ₹'+s.rate+'/m\n';
-    if(s.gstRate>0)msg+='GST @'+s.gstRate+'%: +₹'+Math.round(s.gstAmount).toLocaleString('en-IN')+'\n';
-    msg+='*TOTAL: ₹'+Math.round(s.total).toLocaleString('en-IN')+'*\n\nThank you! 🙏\n_StockSaathi_';
-    var phone=s&&s.customerPhone?s.customerPhone:'';
-    window.open((phone?'https://wa.me/91'+phone:'https://wa.me/')+'?text='+encodeURIComponent(msg),'_blank');
-  }else if(tabId==='challan'){
-    msg+='🚚 Delivery Challan\n';
-    if(s&&!s.type)msg+=s.fabName+' — '+s.meters+'m\nTo: '+(s.customer||'—');
-    else if(s&&s.purch)msg+=s.purch.item+' — '+s.purch.meters+'m\nFrom: '+(s.purch.party||'—');
-    msg+='\nDate: '+new Date().toLocaleDateString('en-IN')+'\n_StockSaathi_';
-    window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
-  }else{
-    // share PDF directly to whatsapp
-    shareDocPDFToWA();
-  }
-}
-
-function shareDocPDF(tabId){
-  var btn=event.target;
-  var origText=btn.textContent;
-  btn.disabled=true;btn.textContent='Generating...';
-  var shop=appSettings.firmName||(user&&user.displayName)||'Shop';
-  var s=currentDocData;
-  var fname=shop.replace(/\s/g,'_')+'_'+tabId+'_'+Date.now().toString().slice(-5)+'.pdf';
-  html2pdf().set({margin:0.1,filename:fname,image:{type:'jpeg',quality:0.98},html2canvas:{scale:2},jsPDF:{unit:'in',format:'a4',orientation:'portrait'}}).from(document.getElementById('doc-preview')).outputPdf('blob').then(function(blob){
-    btn.disabled=false;btn.textContent=origText;
-    var file=new File([blob],fname,{type:'application/pdf'});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
-      navigator.share({title:fname,files:[file]}).catch(function(){downloadBlob(blob,fname);});
-    }else downloadBlob(blob,fname);
-  });
-}
-
-function shareDocPDFToWA(){
-  // Generate PDF then attempt to open WhatsApp with file share
-  var shop=appSettings.firmName||(user&&user.displayName)||'Shop';
-  var fname=shop.replace(/\s/g,'_')+'_doc.pdf';
-  html2pdf().set({margin:0.1,filename:fname,image:{type:'jpeg',quality:0.98},html2canvas:{scale:2},jsPDF:{unit:'in',format:'a4',orientation:'portrait'}}).from(document.getElementById('doc-preview')).outputPdf('blob').then(function(blob){
-    var file=new File([blob],fname,{type:'application/pdf'});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
-      navigator.share({title:fname,files:[file]}).catch(function(){downloadBlob(blob,fname);toast('PDF downloaded. Share via WhatsApp manually.');});
-    }else{downloadBlob(blob,fname);toast('PDF downloaded. Share via WhatsApp manually.');}
-  });
-}
-
-function downloadBlob(blob,name){var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();URL.revokeObjectURL(url);document.body.removeChild(a);}
-
-// ══ PAYMENT RECEIPT / CHEQUE MODAL ══
-function updatePRType(){
-  var type=document.getElementById('pr-type').value;
-  document.getElementById('pr-cheque-fields').style.display=type==='cheque'?'block':'none';
-  document.getElementById('pr-receipt-fields').style.display=type==='receipt'?'block':'none';
-}
-function updatePRWords(){
-  var amt=parseFloat(document.getElementById('pr-amount').value)||0;
-  document.getElementById('pr-amount-words').textContent=amt>0?'Rupees: '+numberToWords(amt)+' Only':'';
-}
-function generatePaymentDoc(){
-  var type=document.getElementById('pr-type').value;
-  var party=document.getElementById('pr-party').value.trim();
-  var amt=parseFloat(document.getElementById('pr-amount').value)||0;
-  var purpose=document.getElementById('pr-purpose').value.trim();
-  if(!party){toast('Party name required!');return;}
-  if(!amt){toast('Amount required!');return;}
-  document.getElementById('payment-receipt-modal').classList.remove('on');
-  // Render in doc modal
-  document.getElementById('doc-modal').classList.add('on');
-  document.getElementById('doc-tab-bar').innerHTML='';
-  document.getElementById('doc-modal-title').textContent=type==='cheque'?'Cheque Draft':'Payment Receipt';
-  var shop=appSettings.firmName||(user&&user.displayName)||'Your Shop';
-  var dateStr=document.getElementById('pr-chq-date').value?new Date(document.getElementById('pr-chq-date').value).toLocaleDateString('en-IN'):new Date().toLocaleDateString('en-IN');
-  var html='';
-  if(type==='cheque'){
-    var bank=document.getElementById('pr-bank').value||appSettings.bank||'—';
-    var chqNo=document.getElementById('pr-chq-no').value||'______';
-    html='<div style="background:#fff;padding:20px;font-family:Plus Jakarta Sans,sans-serif">'
-      +'<div style="font-size:11px;color:#9ca3af;text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">CHEQUE DRAFT · '+esc(shop)+'</div>'
-      +'<div class="cheque-paper">'
-      +'<div class="cheque-header"><div><div class="cheque-bank">'+esc(bank)+'</div><div style="font-size:11px;color:#8a7a5a;margin-top:2px">'+(appSettings.ifsc?'IFSC: '+appSettings.ifsc:'')+' '+(appSettings.accNo?'A/C: '+appSettings.accNo:'')+'</div></div><div><div class="cheque-no">Cheque No. '+chqNo+'</div><div style="font-size:11px;color:#8a7a5a;margin-top:2px">Date: '+dateStr+'</div></div></div>'
-      +'<div class="cheque-row"><label>Pay To</label><div class="val">'+esc(party)+'</div></div>'
-      +'<div class="cheque-amount-box"><div class="cheque-amount-words">'+numberToWords(amt)+' Only</div><div class="cheque-amount-num">₹'+Math.round(amt).toLocaleString('en-IN')+'</div></div>'
-      +'<div class="cheque-row"><label>Purpose</label><div class="val">'+esc(purpose||'Fabric Purchase')+'</div></div>'
-      +'<div class="cheque-sign-row">'
-      +'<div class="cheque-sign-box"><div class="cheque-sign-line"></div><div class="cheque-sign-label">Receiver Signature</div></div>'
-      +'<div class="cheque-sign-box"><div class="cheque-sign-line"></div><div class="cheque-sign-label">Authorised Signatory</div></div>'
-      +'</div></div>'
-      +'<div style="font-size:10px;color:#9ca3af;text-align:center;margin-top:10px">This is a cheque draft. Not a valid banking instrument.</div>'
-      +'</div>';
-  }else{
-    var mode=document.getElementById('pr-mode').value;
-    var txn=document.getElementById('pr-txn').value.trim();
-    var rcptNo='PAY-'+Date.now().toString().slice(-6);
-    html='<div class="doc-paper">'
-      +'<div style="background:linear-gradient(135deg,#1a1060,#2d2080);padding:24px 28px;color:#fff">'
-      +'<div style="font-size:20px;font-weight:800">'+esc(shop)+'</div>'
-      +'<div style="margin-top:8px;display:inline-block;padding:2px 10px;background:rgba(255,255,255,0.15);border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase">PAYMENT RECEIPT</div></div>'
-      +'<div class="doc-meta"><div class="doc-meta-item"><label>Receipt No.</label><span>'+rcptNo+'</span></div><div class="doc-meta-item"><label>Date</label><span>'+new Date().toLocaleDateString('en-IN')+'</span></div><div class="doc-meta-item"><label>Mode</label><span>'+mode+'</span></div></div>'
-      +'<div class="doc-party"><label>Paid To</label><div class="doc-party-name">'+esc(party)+'</div></div>'
-      +'<div style="padding:14px 24px">'
-      +'<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px 18px;margin-bottom:12px">'
-      +'<div style="font-size:11px;color:#15803d;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Amount Paid</div>'
-      +'<div style="font-size:28px;font-weight:800;color:#15803d;font-family:DM Mono,monospace">₹'+Math.round(amt).toLocaleString('en-IN')+'</div>'
-      +'<div style="font-size:12px;color:#166534;margin-top:3px;font-style:italic">'+numberToWords(amt)+' Only</div>'
-      +'</div>'
-      +(purpose?'<div style="display:flex;justify-content:space-between;font-size:12px;color:#6b7280;margin-bottom:4px"><span>Purpose:</span><span style="font-weight:700;color:#1a1a1a">'+esc(purpose)+'</span></div>':'')
-      +(txn?'<div style="display:flex;justify-content:space-between;font-size:12px;color:#6b7280;margin-bottom:4px"><span>Txn Ref:</span><span style="font-family:monospace;color:#1a1a1a">'+esc(txn)+'</span></div>':'')
-      +'</div>'
-      +'<div class="challan-sign-row" style="margin:0;padding:16px 24px">'
-      +'<div class="challan-sign-box"><div class="challan-sign-line"></div>Payer Signature</div>'
-      +'<div class="challan-sign-box"><div class="challan-sign-line"></div>Receiver Signature</div>'
-      +'</div>'
-      +'<div class="doc-footer"><div class="doc-footer-msg">Payment Confirmed ✓</div><div class="doc-stamp">StockSaathi</div></div>'
-      +'</div>';
-  }
-  document.getElementById('doc-preview').innerHTML=html;
-  document.getElementById('doc-actions').innerHTML='<button onclick="printDoc()" class="btn btn-ghost" style="flex:1;justify-content:center">🖨️ Print</button>'
-    +'<button onclick="shareDocPDFToWA()" style="flex:1;justify-content:center;padding:9px 12px;background:#25D366;color:white;border:none;border-radius:var(--r);font-family:var(--ff);font-size:13px;font-weight:700;cursor:pointer">💬 WhatsApp PDF</button>'
-    +'<button onclick="shareDocPDF(\'payreceipt\')" style="flex:1;justify-content:center;padding:9px 12px;background:var(--indigo);color:white;border:none;border-radius:var(--r);font-family:var(--ff);font-size:13px;font-weight:700;cursor:pointer">📤 Save PDF</button>';
-}
-
-// ── NUMBER TO WORDS ──
-function numberToWords(num){
-  var ones=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
-  var tens=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
-  function tw(n){if(n<20)return ones[n];return tens[Math.floor(n/10)]+(n%10?' '+ones[n%10]:'');}
-  function conv(n){
-    if(n===0)return '';
-    if(n<100)return tw(n);
-    if(n<1000)return ones[Math.floor(n/100)]+' Hundred'+(n%100?' '+tw(n%100):'');
-    if(n<100000)return conv(Math.floor(n/1000))+' Thousand'+(n%1000?' '+conv(n%1000):'');
-    if(n<10000000)return conv(Math.floor(n/100000))+' Lakh'+(n%100000?' '+conv(n%100000):'');
-    return conv(Math.floor(n/10000000))+' Crore'+(n%10000000?' '+conv(n%10000000):'');
-  }
-  num=Math.round(num);
-  return num===0?'Zero':conv(num).trim();
-}
-
-// ══ UTILS ══
-function esc(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._tid);t._tid=setTimeout(function(){t.style.display='none';},3500);}
-
-// ── PAYMENT RECEIPT button in ledger ──
-// Add a button to open payment receipt maker from sidebar
-document.addEventListener('DOMContentLoaded',function(){
-  // Add a ledger footer button for payment receipts
-});
-
-// Quick access button to open payment receipt/cheque modal
-function openPaymentReceiptModal(){
-  document.getElementById('pr-type').value='receipt';
-  document.getElementById('pr-party').value='';
-  document.getElementById('pr-amount').value='';
-  document.getElementById('pr-purpose').value='';
-  document.getElementById('pr-txn').value='';
-  document.getElementById('pr-chq-date').value=new Date().toISOString().split('T')[0];
-  document.getElementById('pr-amount-words').textContent='';
-  updatePRType();
-  document.getElementById('payment-receipt-modal').classList.add('on');
-}
-
-window.onload=function(){startApp();};
-</script>
-
-<!-- Payment Receipt quick access from Ledger topbar -->
-<script>
-// Patch ledger page to add payment receipt button
-var origGoto=goto;
-
-
 // ════════════════════════════════════════
-// DOCUMENT SUITE
+// DOCUMENT SUITE 
 // ════════════════════════════════════════
 var _docData = null;
 function _dNo(p){ return p+'-'+Date.now().toString().slice(-6); }
 function _today(){ return new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
 function _shop(){ return appSettings.firmName||(user&&user.displayName)||'Your Shop'; }
+
+// Ledger helper
+function openLedgerDoc(id, isSale) {
+  if (isSale) {
+    var s = sales.find(x => x.id === id);
+    if(s) openDocAfterSale(s);
+  } else {
+    var p = purchases.find(x => x.id === id);
+    if(p) {
+       var fab = inv.find(f => f.name === p.item);
+       openDocAfterStock(p, fab ? fab.name : p.item);
+    }
+  }
+}
 
 // Called after Add Fabric / Add Stock
 function openDocAfterStock(purchData, fabName){
@@ -2357,7 +1792,7 @@ function openDocAfterStock(purchData, fabName){
     {id:'challan',   label:'🚚 Delivery Challan'}
   ],'purreceipt');
 }
-// Called after Sale (from bill flow)
+// Called after Sale
 function openDocAfterSale(saleData){
   _docData = {type:'sale', sale:saleData};
   _initDocModal('Sale Documents',[
@@ -2369,7 +1804,7 @@ function openDocAfterSale(saleData){
 function _initDocModal(title,tabs,def){
   document.getElementById('doc-modal-title').textContent=title;
   document.getElementById('doc-tab-bar').innerHTML=tabs.map(function(t,i){
-    return '<button class="doc-tab-btn'+(i===0?' active':'').'" id="doctab-'+t.id+'" onclick="switchDocTab(\''+t.id+'\')">'+t.label+'</button>';
+    return '<button class="doc-tab-btn'+(i===0?' active':'')+'" id="doctab-'+t.id+'" onclick="switchDocTab(\''+t.id+'\')">'+t.label+'</button>';
   }).join('');
   document.getElementById('doc-modal').classList.add('on');
   switchDocTab(def);
@@ -2394,7 +1829,59 @@ function _renderDocActions(tid){
 function _printDoc(){
   var c=document.getElementById('doc-preview').innerHTML;
   var w=window.open('','_blank','width=520,height=760');
-  w.document.write('<html><head><title>Document</title><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"><style>body{margin:14px;font-family:sans-serif;background:#fff}*{box-sizing:border-box}</style></head><body>'+c+'</body></html>');
+  w.document.write(`<html><head><title>Document</title><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"><style>body{margin:14px;font-family:sans-serif;background:#fff}*{box-sizing:border-box}
+  .paper{background:#fff;color:#1a1a1a;font-family:'Plus Jakarta Sans',sans-serif;max-width:460px;margin:0 auto;border-radius:4px;overflow:hidden}
+  .paper-hdr{padding:20px 24px 16px;color:#fff}
+  .paper-hdr-firm{font-size:18px;font-weight:800;letter-spacing:-0.3px}
+  .paper-hdr-gstin{font-size:10px;opacity:0.7;margin-top:2px;letter-spacing:0.5px}
+  .paper-hdr-badge{display:inline-block;margin-top:9px;padding:2px 10px;background:rgba(255,255,255,0.18);border-radius:20px;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+  .paper-meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;padding:10px 20px;background:#f8f9fc;border-bottom:1px solid #e5e7eb}
+  .paper-meta-cell label{display:block;font-size:8px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:2px}
+  .paper-meta-cell span{font-size:12px;font-weight:700;color:#1a1a1a}
+  .paper-party{padding:11px 20px;border-bottom:1px solid #e5e7eb}
+  .paper-party label{display:block;font-size:8px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:3px}
+  .paper-party-name{font-size:15px;font-weight:800;color:#1a1a1a}
+  .paper-party-sub{font-size:11px;color:#6b7280;margin-top:1px}
+  .paper-items{padding:11px 20px}
+  .paper-items-hdr{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding-bottom:6px;border-bottom:1px solid #e5e7eb;margin-bottom:6px}
+  .paper-items-hdr span{font-size:8px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;font-weight:700}
+  .paper-items-hdr span:not(:first-child){text-align:right}
+  .paper-item-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;margin-bottom:5px}
+  .paper-item-name{font-size:13px;font-weight:700;color:#1a1a1a}
+  .paper-item-sub{font-size:10px;color:#9ca3af}
+  .paper-item-row span{font-size:13px;font-weight:600;color:#1a1a1a;text-align:right;font-family:monospace}
+  .paper-totals{padding:10px 20px;background:#f8f9fc;border-top:1px solid #e5e7eb}
+  .paper-total-row{display:flex;justify-content:space-between;font-size:11px;color:#6b7280;margin-bottom:3px}
+  .paper-total-main{display:flex;justify-content:space-between;padding:7px 0;border-top:2px solid #1a1a1a;margin-top:5px}
+  .paper-total-main span:first-child{font-size:13px;font-weight:800;color:#1a1a1a}
+  .paper-total-main span:last-child{font-size:19px;font-weight:800;color:#1a5c9e;font-family:monospace}
+  .paper-footer{padding:13px 20px;text-align:center;border-top:1px solid #e5e7eb}
+  .paper-footer-msg{font-size:13px;font-weight:800;color:#1a1a1a;margin-bottom:2px}
+  .paper-footer-sub{font-size:10px;color:#9ca3af}
+  .paper-stamp{display:inline-block;margin-top:8px;padding:2px 12px;border:1.5px solid #e5e7eb;border-radius:20px;font-size:8px;font-weight:700;color:#9ca3af;letter-spacing:2px;text-transform:uppercase}
+  .challan-consign-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e5e7eb}
+  .challan-consign-cell{padding:11px 20px}
+  .challan-consign-cell:first-child{border-right:1px solid #e5e7eb}
+  .challan-sign-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:16px 20px;border-top:1px solid #e5e7eb}
+  .challan-sign-box{text-align:center}
+  .challan-sign-line{border-top:1.5px solid #1a1a1a;margin-bottom:5px}
+  .challan-sign-lbl{font-size:9px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.8px}
+  .cheque-paper{background:#fffbf0;border:2.5px double #c8973a;border-radius:8px;padding:18px 22px;font-family:'Plus Jakarta Sans',sans-serif;position:relative;overflow:hidden;max-width:460px;margin:0 auto}
+  .cheque-paper::before{content:'SAMPLE';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:70px;font-weight:900;color:rgba(200,151,58,0.06);letter-spacing:8px;pointer-events:none;white-space:nowrap}
+  .cheque-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:13px}
+  .cheque-bank{font-size:14px;font-weight:800;color:#2d2416}
+  .cheque-no{font-size:11px;color:#8a7a5a;font-family:monospace}
+  .cheque-row{display:flex;align-items:flex-end;gap:8px;margin-bottom:10px;border-bottom:1px dashed #c8973a;padding-bottom:10px}
+  .cheque-row label{font-size:9px;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;width:75px;flex-shrink:0}
+  .cheque-row .cv{font-size:14px;font-weight:700;color:#2d2416;flex:1;border-bottom:1px solid #c8973a;padding-bottom:1px;min-height:20px}
+  .cheque-amt-box{background:#fff8e8;border:2px solid #c8973a;border-radius:6px;padding:9px 13px;display:flex;justify-content:space-between;align-items:center;margin:8px 0}
+  .cheque-amt-words{font-size:12px;font-style:italic;color:#6b5c3e;font-weight:600;flex:1;padding-right:10px}
+  .cheque-amt-num{font-size:19px;font-weight:800;color:#c8973a;font-family:monospace;white-space:nowrap}
+  .cheque-sign-row{display:flex;justify-content:space-between;align-items:flex-end;margin-top:13px;padding-top:10px;border-top:1px dashed #c8973a}
+  .cheque-sign-box{text-align:center}
+  .cheque-sign-line{width:110px;border-top:1.5px solid #2d2416;margin-bottom:4px}
+  .cheque-sign-lbl{font-size:9px;color:#8a7a5a;font-weight:700;text-transform:uppercase;letter-spacing:0.8px}
+  </style></head><body>${c}</body></html>`);
   w.document.close(); setTimeout(function(){w.print();},900);
 }
 function _pdfDoc(tid){
@@ -2402,7 +1889,7 @@ function _pdfDoc(tid){
   if(btn){btn.disabled=true;btn.textContent='Generating...';}
   var shop=_shop().replace(/\s/g,'_');
   var fname=shop+'_'+tid+'_'+Date.now().toString().slice(-5)+'.pdf';
-  html2pdf().set({margin:0.1,filename:fname,image:{type:'jpeg',quality:0.98},html2canvas:{scale:2},jsPDF:{unit:'in',format:'a4',orientation:'portrait'}})
+  html2pdf().set({margin:0.1,filename:fname,image:{type:'jpeg',quality:0.98},html2canvas:{scale:2, useCORS:true},jsPDF:{unit:'in',format:'a4',orientation:'portrait'}})
     .from(document.getElementById('doc-preview')).outputPdf('blob').then(function(blob){
       if(btn){btn.disabled=false;btn.textContent='📤 PDF';}
       var file=new File([blob],fname,{type:'application/pdf'});
@@ -2419,7 +1906,8 @@ function _waDoc(tid,phone){
   }else if(tid==='challan'){
     var item=_docData.type==='sale'?_docData.sale.fabName:_docData.fabName;
     var qty=_docData.type==='sale'?_docData.sale.meters:_docData.purch.meters;
-    msg='*'+sh+' — Delivery Challan*\nDate: '+_today()+'\nItem: '+item+' | '+qty+'m\n_StockSaathi_';
+    var toParty=_docData.type==='sale'?_docData.sale.customer:_docData.purch.party;
+    msg='*'+sh+' — Delivery Challan*\nDate: '+_today()+'\nItem: '+item+' | '+qty+'m\nParty: '+(toParty||'—')+'\n_StockSaathi_';
   }else if(tid==='purreceipt'){
     var p=_docData.purch;
     msg='*'+sh+' — Purchase Receipt*\nDate: '+_today()+'\nSupplier: '+(p.party||'')+'\n'+(_docData.fabName||p.item)+' | '+(p.meters||0)+'m × ₹'+(p.rate||0)+'\n*TOTAL PAID: ₹'+Math.round(p.total||0).toLocaleString('en-IN')+'*\n_StockSaathi_';
@@ -2548,6 +2036,16 @@ function _renderPayReceiptSale(){
 }
 
 // ═══ STANDALONE PAYMENT RECEIPT / CHEQUE ═══
+// Adds a button to the ledger bar programmatically so it doesn't duplicate IDs.
+document.addEventListener('DOMContentLoaded',function(){
+  var btn=document.createElement('button');
+  btn.className='btn btn-emerald';
+  btn.textContent='💳 Payment Document';
+  btn.onclick=openPaymentReceiptModal;
+  var ledgSh=document.querySelector('#pg-ledger .sh > div:last-child');
+  if(ledgSh) ledgSh.appendChild(btn);
+});
+
 function openPaymentReceiptModal(){
   document.getElementById('pr-type').value='receipt';
   ['pr-party','pr-amount','pr-purpose','pr-txn','pr-bank','pr-chq-no'].forEach(function(i){var e=document.getElementById(i);if(e)e.value='';});
@@ -2643,6 +2141,7 @@ function _numWords(n){
   n=Math.round(n); return n===0?'Zero':c(n).trim();
 }
 
+window.onload=function(){startApp();};
 </script>
 </body>
 </html>
