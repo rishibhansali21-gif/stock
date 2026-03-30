@@ -6,6 +6,49 @@
 <title>StockSaathi — Kapda Stock Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithPhoneNumber, RecaptchaVerifier, onAuthStateChanged, signOut as fbSignOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+// ── FIREBASE CONFIG ── Replace with your own config
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Expose to global scope for non-module JS below
+window._db = db;
+window._auth = auth;
+window._firebase = { collection, doc, addDoc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp };
+window._fbSignOut = fbSignOut;
+window._googleProvider = new GoogleAuthProvider();
+window._signInWithPopup = signInWithPopup;
+window._RecaptchaVerifier = RecaptchaVerifier;
+window._signInWithPhoneNumber = signInWithPhoneNumber;
+window._onAuthStateChanged = onAuthStateChanged;
+
+// Auth state observer
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    window._currentUser = user;
+    document.getElementById('login-screen').style.display = 'none';
+    initApp();
+  } else {
+    window._currentUser = null;
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+});
+</script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -27,7 +70,6 @@
   --fm:'DM Mono',monospace;
   --sb-w:256px;
 }
-
 html{height:100%}
 body{height:100%;background:var(--bg);color:var(--text);font-family:var(--ff);font-size:14px;display:flex;overflow:hidden}
 
@@ -68,6 +110,8 @@ body{height:100%;background:var(--bg);color:var(--text);font-family:var(--ff);fo
 .btn-emerald:hover{background:rgba(34,199,142,0.15)}
 .btn-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,166,35,0.25)}
 .btn-rose{background:var(--rose-dim);color:var(--rose);border:1px solid rgba(240,82,100,0.25)}
+.btn-violet{background:var(--violet-dim);color:var(--violet);border:1px solid rgba(155,92,248,0.25)}
+.btn-violet:hover{background:rgba(155,92,248,0.15)}
 .btn-full{width:100%;justify-content:center}
 .btn-sm{padding:5px 10px;font-size:11px}
 .add-btn{padding:8px 16px;background:linear-gradient(135deg,var(--indigo),#4a5ce8);border:none;border-radius:var(--r);font-size:13px;font-weight:700;color:#fff;cursor:pointer;transition:all 0.15s;box-shadow:0 4px 12px rgba(92,110,248,0.3)}
@@ -109,6 +153,7 @@ input::placeholder{color:var(--text3)}
 .fl{display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px}
 .fl-h{font-size:11px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 
 /* ── FABRIC CARDS ── */
 .fab-grid{display:flex;flex-direction:column;gap:8px}
@@ -162,24 +207,55 @@ input::placeholder{color:var(--text3)}
 .ledger-tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:4px}
 .ledger-tab{flex:1;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;color:var(--text2);border:none;background:transparent;border-radius:var(--r);transition:all 0.15s}
 .ledger-tab.active{background:var(--indigo-dim);color:var(--indigo2)}
-.ledger-entry{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:8px;display:grid;grid-template-columns:auto 1fr auto auto;gap:12px;align-items:center}
+.ledger-entry{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:8px;display:grid;grid-template-columns:auto 1fr auto auto auto;gap:10px;align-items:center}
 .ledger-entry.sale-entry{border-left:3px solid var(--emerald)}
 .ledger-entry.purchase-entry{border-left:3px solid var(--blue)}
+.ledger-entry.payment-entry{border-left:3px solid var(--violet)}
 .ledger-entry.returned{opacity:0.5}
 .le-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .le-icon.sale{background:var(--emerald-dim)}
 .le-icon.purchase{background:var(--blue-dim)}
+.le-icon.payment{background:var(--violet-dim)}
 .le-name{font-size:14px;font-weight:700;margin-bottom:2px}
 .le-meta{font-size:11px;color:var(--text3)}
 .le-date{font-size:11px;color:var(--text3);text-align:right;min-width:75px}
 .le-amount{font-size:18px;font-weight:800;text-align:right;min-width:90px;font-family:var(--fm);letter-spacing:-0.5px}
 .le-amount.sale{color:var(--emerald)}
 .le-amount.purchase{color:var(--blue)}
+.le-amount.payment{color:var(--violet)}
+.le-doc-btn{padding:5px 9px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;background:var(--indigo-dim);color:var(--indigo2);border:1px solid rgba(92,110,248,0.2)}
+.le-doc-btn:hover{background:rgba(92,110,248,0.2)}
 .ledger-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
 .ls-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px 18px}
 .ls-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:5px}
 .ls-value{font-size:24px;font-weight:800;font-family:var(--fm);letter-spacing:-1px}
 .udhaar-card{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:var(--r2);padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+
+/* ── PAYMENTS PAGE ── */
+.pay-stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg2)}
+.pay-stat{padding:14px 18px;border-right:1px solid var(--border);position:relative}
+.pay-stat:last-child{border-right:none}
+.pay-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.pay-stat:nth-child(1)::before{background:var(--violet)}
+.pay-stat:nth-child(2)::before{background:var(--emerald)}
+.pay-stat:nth-child(3)::before{background:var(--blue)}
+.pay-stat:nth-child(4)::before{background:var(--amber)}
+.pay-stat-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:4px}
+.pay-stat-v{font-size:22px;font-weight:800;letter-spacing:-0.8px;font-family:var(--fm)}
+
+/* Payment cards */
+.pay-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:16px 18px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;transition:all 0.15s;margin-bottom:8px}
+.pay-card:hover{border-color:var(--border3);background:var(--bg3)}
+.pay-card.receipt-card{border-left:3px solid var(--emerald)}
+.pay-card.cheque-card{border-left:3px solid var(--blue)}
+.pay-card-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.pay-card-icon.receipt{background:var(--emerald-dim)}
+.pay-card-icon.cheque{background:var(--blue-dim)}
+.pay-card-info{flex:1;min-width:0}
+.pay-card-title{font-size:14px;font-weight:700;margin-bottom:2px}
+.pay-card-meta{font-size:11px;color:var(--text3)}
+.pay-card-amount{font-size:20px;font-weight:800;font-family:var(--fm);letter-spacing:-0.5px;color:var(--violet);flex-shrink:0}
+.pay-card-actions{display:flex;gap:6px;flex-shrink:0}
 
 /* ── MODALS ── */
 .qmodal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:600;display:none;align-items:center;justify-content:center}
@@ -253,6 +329,8 @@ input::placeholder{color:var(--text3)}
 .pill{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
 .pill-r{background:var(--rose-dim);color:var(--rose)}
 .pill-g{background:var(--emerald-dim);color:var(--emerald)}
+.pill-v{background:var(--violet-dim);color:var(--violet)}
+.pill-b{background:var(--blue-dim);color:var(--blue)}
 
 /* ── EMPTY ── */
 .empty{padding:50px 20px;text-align:center;color:var(--text3)}
@@ -314,13 +392,14 @@ body.manager-mode .hide-manager{display:none !important}
 #pin-modal{z-index:10000}
 #edit-profile-modal{z-index:10000}
 
-/* ── DOCUMENT SUITE MODAL ── */
-#doc-modal .qmodal { width:540px; max-width:96vw; padding:0; overflow:hidden; }
-.doc-tab-bar { display:flex; border-bottom:1px solid var(--border); background:var(--bg3); }
-.doc-tab-btn { flex:1; padding:12px 8px; font-family:var(--ff); font-size:12px; font-weight:700; cursor:pointer; border:none; background:transparent; color:var(--text3); transition:all 0.15s; border-bottom:2px solid transparent; }
-.doc-tab-btn.active { color:var(--indigo2); border-bottom-color:var(--indigo); background:var(--indigo-dim); }
-.doc-scroll { max-height:60vh; overflow-y:auto; padding:16px; background:var(--bg); }
-.doc-actions-bar { display:flex; gap:7px; padding:14px 16px; border-top:1px solid var(--border); flex-wrap:wrap; background:var(--bg2); }
+/* ── DOC PREVIEW ── */
+.doc-preview-inner{font-family:'Plus Jakarta Sans',sans-serif;color:#1a1a2e;background:#fff;padding:32px;border-radius:8px;font-size:12px;line-height:1.5;min-height:200px}
+.doc-preview-inner h2{font-size:18px;font-weight:800;margin-bottom:4px}
+.doc-preview-inner .doc-divider{border:none;border-top:1px solid #e2e8f0;margin:12px 0}
+.doc-preview-inner table{width:100%;border-collapse:collapse;font-size:11px}
+.doc-preview-inner th{background:#f8faff;padding:6px 10px;text-align:left;font-weight:700;border-bottom:2px solid #e2e8f0}
+.doc-preview-inner td{padding:6px 10px;border-bottom:1px solid #f1f5f9}
+.doc-preview-inner .amount-highlight{font-size:16px;font-weight:800;color:#4f46e5}
 
 /* Print */
 @media print{
@@ -352,6 +431,9 @@ body.manager-mode .hide-manager{display:none !important}
   .login-wrap{grid-template-columns:1fr}
   .login-left{display:none}
   .login-right{padding:32px 24px}
+  .pay-stats{grid-template-columns:1fr 1fr}
+  .ledger-entry{grid-template-columns:auto 1fr auto}
+  .le-date,.le-doc-btn{display:none}
 }
 </style>
 </head>
@@ -361,13 +443,14 @@ body.manager-mode .hide-manager{display:none !important}
 <datalist id="dl-gstin"></datalist>
 <datalist id="dl-color"></datalist>
 
+<!-- ═══════════════════════════════════════════════════════ SIDEBAR -->
 <div class="sb">
   <div class="sb-top">
     <div class="sb-logo">
       <div class="sb-ico">S</div>
       <div>
         <div class="sb-name">StockSaathi</div>
-        <div class="sb-tag">Textile Manager v6</div>
+        <div class="sb-tag">Textile Manager v7</div>
       </div>
     </div>
   </div>
@@ -378,6 +461,7 @@ body.manager-mode .hide-manager{display:none !important}
     <div class="sb-sec hide-staff">Manage</div>
     <div class="sb-item" onclick="goto('sales',this)"><span class="sb-ic">💰</span>Sales</div>
     <div class="sb-item hide-staff" onclick="goto('ledger',this)"><span class="sb-ic">📒</span>Ledger</div>
+    <div class="sb-item hide-staff" onclick="goto('payments',this)"><span class="sb-ic">💳</span>Payments &amp; Cheques</div>
     <div class="sb-item hide-staff" onclick="goto('calc',this)"><span class="sb-ic">🧮</span>Calculator</div>
     <div class="sb-sec hide-staff">Admin</div>
     <div class="sb-item hide-staff" onclick="goto('report',this)"><span class="sb-ic">📊</span>Monthly Report</div>
@@ -396,6 +480,7 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════ MAIN -->
 <div class="main">
   <div class="topbar">
     <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">☰</button>
@@ -408,6 +493,7 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
+  <!-- Mobile Menu -->
   <div class="mob-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
   <div class="mob-menu" id="mob-menu">
     <div class="mob-menu-head">
@@ -424,6 +510,7 @@ body.manager-mode .hide-manager{display:none !important}
       <div class="mob-sec hide-staff">Manage</div>
       <div class="mob-item" id="mob-sales" onclick="mobileGoto('sales')">💰 Sales</div>
       <div class="mob-item hide-staff" id="mob-ledger" onclick="mobileGoto('ledger')">📒 Ledger</div>
+      <div class="mob-item hide-staff" id="mob-payments" onclick="mobileGoto('payments')">💳 Payments & Cheques</div>
       <div class="mob-item hide-staff" id="mob-calc" onclick="mobileGoto('calc')">🧮 Calculator</div>
       <div class="mob-sec hide-staff">Admin</div>
       <div class="mob-item hide-staff" id="mob-report" onclick="mobileGoto('report')">📊 Monthly Report</div>
@@ -439,6 +526,7 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
+  <!-- ════ PAGE: DASHBOARD ════ -->
   <div class="page on" id="pg-dash">
     <div class="stats">
       <div class="stat"><div class="stat-l">Total Fabrics</div><div class="stat-v" id="st-c" style="color:var(--indigo2)">0</div><div class="stat-h">types</div></div>
@@ -459,6 +547,7 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
+  <!-- ════ PAGE: INVENTORY ════ -->
   <div class="page" id="pg-inv">
     <div class="content">
       <div class="sh">
@@ -478,6 +567,7 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
+  <!-- ════ PAGE: SALES ════ -->
   <div class="page" id="pg-sales">
     <div class="content">
       <div class="sh"><div><div class="sh-title">💰 Sales</div><div class="sh-sub">Record a new sale</div></div></div>
@@ -548,10 +638,11 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
+  <!-- ════ PAGE: LEDGER ════ -->
   <div class="page" id="pg-ledger">
     <div class="content">
       <div class="sh">
-        <div><div class="sh-title">📒 Ledger</div><div class="sh-sub">Sales & Purchase Book</div></div>
+        <div><div class="sh-title">📒 Ledger</div><div class="sh-sub">Sales &amp; Purchase Book</div></div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-ghost" onclick="exportCSV()">📥 CSV</button>
           <button class="btn btn-primary" onclick="openPurchaseModal()">+ Purchase</button>
@@ -577,6 +668,38 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
+  <!-- ════ PAGE: PAYMENTS & CHEQUES (NEW) ════ -->
+  <div class="page" id="pg-payments">
+    <div class="pay-stats">
+      <div class="pay-stat"><div class="pay-stat-l">Total Payments</div><div class="pay-stat-v" id="pay-st-total" style="color:var(--violet)">₹0</div></div>
+      <div class="pay-stat"><div class="pay-stat-l">Receipts Issued</div><div class="pay-stat-v" id="pay-st-receipts" style="color:var(--emerald)">0</div></div>
+      <div class="pay-stat"><div class="pay-stat-l">Cheques Issued</div><div class="pay-stat-v" id="pay-st-cheques" style="color:var(--blue)">0</div></div>
+      <div class="pay-stat"><div class="pay-stat-l">This Month</div><div class="pay-stat-v" id="pay-st-month" style="color:var(--amber)">₹0</div></div>
+    </div>
+    <div class="content">
+      <div class="sh">
+        <div><div class="sh-title">💳 Payments &amp; Cheques</div><div class="sh-sub">Generate &amp; track all payment documents</div></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-emerald" onclick="openNewPaymentModal('receipt')">💰 New Receipt</button>
+          <button class="btn btn-ghost" onclick="openNewPaymentModal('cheque')">🏦 New Cheque</button>
+        </div>
+      </div>
+      <div class="cat-row" id="pay-filters">
+        <button class="cat-p active" onclick="filterPayments('all',this)">All</button>
+        <button class="cat-p" onclick="filterPayments('receipt',this)">💰 Receipts</button>
+        <button class="cat-p" onclick="filterPayments('cheque',this)">🏦 Cheques</button>
+      </div>
+      <div class="search-big">
+        <div class="search-wrap">
+          <span class="search-ic">🔍</span>
+          <input id="pay-q" placeholder="Search by party, amount, purpose..." oninput="renderPayments()"/>
+        </div>
+      </div>
+      <div id="pay-grid"></div>
+    </div>
+  </div>
+
+  <!-- ════ PAGE: CALCULATOR ════ -->
   <div class="page" id="pg-calc">
     <div class="content">
       <div class="sh"><div><div class="sh-title">🧮 Calculator</div><div class="sh-sub">Quick calculations</div></div></div>
@@ -623,6 +746,7 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
+  <!-- ════ PAGE: REPORT ════ -->
   <div class="page" id="pg-report">
     <div class="content">
       <div class="sh">
@@ -650,6 +774,7 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
+  <!-- ════ PAGE: PROFILES ════ -->
   <div class="page" id="pg-profiles">
     <div class="content">
       <div class="sh">
@@ -660,6 +785,7 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
+  <!-- ════ PAGE: MASTER DATA ════ -->
   <div class="page" id="pg-master">
     <div class="content">
       <div class="sh"><div><div class="sh-title">📁 Master Data</div><div class="sh-sub">Custom lists for dropdowns</div></div></div>
@@ -677,12 +803,17 @@ body.manager-mode .hide-manager{display:none !important}
         <div style="font-size:15px;font-weight:700;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center">
           Saved Parties <button class="btn btn-primary btn-sm" onclick="addPartyManual()">+ Add Party</button>
         </div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Parties auto-added from Sales & Purchases</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Parties auto-added from Sales &amp; Purchases</div>
         <div class="md-list" id="md-parties"></div>
       </div>
     </div>
   </div>
-</div><div class="qmodal-bg" id="addstock-modal">
+</div><!-- /.main -->
+
+<!-- ═══════════════════════════════════════════════════════ MODALS -->
+
+<!-- Add Stock -->
+<div class="qmodal-bg" id="addstock-modal">
   <div class="qmodal">
     <div class="qmodal-title">📥 Add Stock</div>
     <div class="qmodal-sub" id="addstock-fab-name">—</div>
@@ -698,6 +829,7 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
+<!-- Quick Sell -->
 <div class="qmodal-bg" id="quicksell-modal">
   <div class="qmodal" style="width:460px">
     <div class="qmodal-title">💰 Quick Sell</div>
@@ -709,16 +841,13 @@ body.manager-mode .hide-manager{display:none !important}
       <div class="g2">
         <div class="fg" style="margin-bottom:0"><label class="fl" style="color:var(--blue)">Rate</label>
           <select id="qs-gst-rate" onchange="calcQSAmt()">
-            <option value="0">0% No GST</option>
-            <option value="5" selected>5% Fabric</option>
-            <option value="12">12% Garment</option>
-            <option value="18">18% Synthetic</option>
+            <option value="0">0% No GST</option><option value="5" selected>5% Fabric</option>
+            <option value="12">12% Garment</option><option value="18">18% Synthetic</option>
           </select>
         </div>
         <div class="fg" style="margin-bottom:0"><label class="fl" style="color:var(--blue)">Type</label>
           <select id="qs-gst-type" onchange="calcQSAmt()">
-            <option value="intra">Intra (CGST+SGST)</option>
-            <option value="inter">Inter (IGST)</option>
+            <option value="intra">Intra (CGST+SGST)</option><option value="inter">Inter (IGST)</option>
           </select>
         </div>
       </div>
@@ -755,6 +884,7 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
+<!-- Purchase -->
 <div class="qmodal-bg" id="purchase-modal">
   <div class="qmodal" style="width:460px">
     <div class="qmodal-title">📥 Record Purchase</div>
@@ -771,15 +901,13 @@ body.manager-mode .hide-manager{display:none !important}
       <div class="g2">
         <div class="fg" style="margin-bottom:0"><label class="fl" style="color:var(--blue)">Rate</label>
           <select id="pur-gst-rate" onchange="calcPurAmt()">
-            <option value="0">0% No GST</option>
-            <option value="5" selected>5% Fabric</option>
+            <option value="0">0% No GST</option><option value="5" selected>5% Fabric</option>
             <option value="12">12%</option><option value="18">18%</option>
           </select>
         </div>
         <div class="fg" style="margin-bottom:0"><label class="fl" style="color:var(--blue)">Type</label>
           <select id="pur-gst-type" onchange="calcPurAmt()">
-            <option value="intra">Intra (CGST+SGST)</option>
-            <option value="inter">Inter (IGST)</option>
+            <option value="intra">Intra (CGST+SGST)</option><option value="inter">Inter (IGST)</option>
           </select>
         </div>
       </div>
@@ -795,6 +923,7 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
+<!-- Add Fabric -->
 <div class="modal-bg" id="add-modal">
   <div class="modal">
     <div class="modal-title">🧵 Add New Fabric</div>
@@ -820,6 +949,7 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
+<!-- Settings -->
 <div class="qmodal-bg" id="settings-modal">
   <div class="qmodal">
     <div class="qmodal-title">⚙️ Settings</div>
@@ -838,7 +968,8 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<div class="qmodal-bg" id="pin-modal">
+<!-- PIN -->
+<div class="qmodal-bg" id="pin-modal" style="z-index:10000">
   <div class="qmodal" style="width:300px;text-align:center">
     <div style="font-size:36px;margin-bottom:8px">🔒</div>
     <div class="qmodal-title">Enter PIN</div>
@@ -851,7 +982,8 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<div class="qmodal-bg" id="edit-profile-modal">
+<!-- Edit Profile -->
+<div class="qmodal-bg" id="edit-profile-modal" style="z-index:10000">
   <div class="qmodal" style="width:400px">
     <div class="qmodal-title" id="ep-title">Add Profile</div>
     <div class="qmodal-sub">Manage team access</div>
@@ -861,7 +993,7 @@ body.manager-mode .hide-manager{display:none !important}
       <select id="ep-role">
         <option value="owner">👑 Owner — Full access</option>
         <option value="manager">💼 Manager — View all, no Admin</option>
-        <option value="staff" selected>👦 Staff — Sales & Stock only</option>
+        <option value="staff" selected>👦 Staff — Sales &amp; Stock only</option>
       </select>
     </div>
     <div class="fg"><label class="fl">4-Digit PIN <span class="fl-h">(Optional)</span></label>
@@ -874,6 +1006,70 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
+<!-- NEW: Payment / Cheque Generator Modal -->
+<div class="qmodal-bg" id="new-payment-modal">
+  <div class="qmodal" style="width:500px">
+    <div class="qmodal-title" id="npm-title">💰 New Payment Receipt</div>
+    <div class="qmodal-sub" id="npm-sub">Generate and save a payment document</div>
+    <input type="hidden" id="npm-type" value="receipt">
+    <div class="fg"><label class="fl">Pay To / Party *</label><input id="npm-party" list="dl-party" placeholder="e.g. Rajan Textiles"/></div>
+    
+    <!-- Cheque specific fields -->
+    <div id="npm-cheque-fields" style="display:none">
+      <div class="g2">
+        <div class="fg"><label class="fl">Bank Name *</label><input id="npm-bank" placeholder="e.g. State Bank of India"/></div>
+        <div class="fg"><label class="fl">Branch</label><input id="npm-branch" placeholder="e.g. Surat Main"/></div>
+      </div>
+      <div class="g2">
+        <div class="fg"><label class="fl">Cheque No. *</label><input id="npm-chq-no" type="number" placeholder="123456"/></div>
+        <div class="fg"><label class="fl">Cheque Date *</label><input id="npm-chq-date" type="date"/></div>
+      </div>
+      <div class="fg"><label class="fl">Account Name</label><input id="npm-acc-name" placeholder="Account holder name"/></div>
+    </div>
+
+    <!-- Receipt specific fields -->
+    <div id="npm-receipt-fields">
+      <div class="g2">
+        <div class="fg"><label class="fl">Payment Mode *</label>
+          <select id="npm-mode">
+            <option>Cash</option><option>UPI</option><option>NEFT/RTGS</option><option>Cheque</option><option>Bank Transfer</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Transaction / Ref No.</label><input id="npm-txn" placeholder="UPI Ref, TXN ID..."/></div>
+      </div>
+      <div class="fg"><label class="fl">Received From</label><input id="npm-from" list="dl-party" placeholder="e.g. Rajesh Bhai (if different from Pay To)"/></div>
+    </div>
+
+    <div class="g2">
+      <div class="fg"><label class="fl">Amount (₹) *</label><input id="npm-amount" type="number" placeholder="0" oninput="updateNPMWords()"/></div>
+      <div class="fg"><label class="fl">Date</label><input id="npm-date" type="date"/></div>
+    </div>
+    <div id="npm-words" style="font-size:12px;color:var(--text3);margin-bottom:4px;font-style:italic;min-height:16px"></div>
+    <div class="fg"><label class="fl">Purpose / Narration</label><input id="npm-purpose" placeholder="e.g. Fabric purchase Jan, advance payment..."/></div>
+    <div class="fg"><label class="fl">Note <span class="fl-h">(Optional)</span></label><input id="npm-note" placeholder="Any internal note..."/></div>
+    <div class="qmodal-foot">
+      <button class="btn btn-ghost" onclick="closeNewPaymentModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNewPayment()">💾 Save &amp; Generate →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Document Viewer Modal (Historical + Live) -->
+<div class="qmodal-bg" id="doc-modal">
+  <div class="qmodal" style="width:580px;max-width:96vw;padding:0;overflow:hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border)">
+      <div id="doc-modal-title" class="qmodal-title" style="margin-bottom:0;font-size:16px">Document</div>
+      <button onclick="closeDocModal()" style="background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer">✕</button>
+    </div>
+    <div id="doc-tab-bar" style="display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--bg3)"></div>
+    <div style="max-height:60vh;overflow-y:auto;padding:18px;background:var(--bg)">
+      <div id="doc-preview"></div>
+    </div>
+    <div style="display:flex;gap:7px;padding:14px 18px;border-top:1px solid var(--border);flex-wrap:wrap;background:var(--bg2)" id="doc-actions-bar"></div>
+  </div>
+</div>
+
+<!-- Onboarding -->
 <div id="onboarding">
   <div class="ob-card">
     <div class="ob-top">
@@ -896,58 +1092,20 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
 </div>
 
-<div class="qmodal-bg" id="doc-modal">
-  <div class="qmodal" style="width:540px;max-width:96vw;padding:0;overflow:hidden">
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border)">
-      <div id="doc-modal-title" class="qmodal-title" style="margin-bottom:0;font-size:16px">Document</div>
-      <button onclick="closeDocModal()" style="background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer">✕</button>
-    </div>
-    <div id="doc-tab-bar" style="display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--bg3)"></div>
-    <div style="max-height:62vh;overflow-y:auto;padding:18px;background:var(--bg)">
-      <div id="doc-preview"></div>
-    </div>
-    <div style="display:flex;gap:7px;padding:14px 18px;border-top:1px solid var(--border);flex-wrap:wrap;background:var(--bg2)" id="doc-actions-bar"></div>
+<!-- Profile Screen -->
+<div id="profile-screen">
+  <div style="text-align:center">
+    <div style="font-size:48px;margin-bottom:12px">🧵</div>
+    <div style="font-size:26px;font-weight:800;letter-spacing:-0.8px;color:var(--text)">StockSaathi</div>
+    <div style="font-size:13px;color:var(--text3);margin-top:4px">Who's working today?</div>
+  </div>
+  <div class="profile-cards" id="profile-cards-container"></div>
+  <div style="margin-top:24px">
+    <button class="btn btn-ghost" onclick="signOut()">🚪 Sign Out</button>
   </div>
 </div>
 
-<div class="qmodal-bg" id="payment-receipt-modal">
-  <div class="qmodal" style="width:440px">
-    <div class="qmodal-title">💳 Payment Receipt / Cheque</div>
-    <div class="qmodal-sub">Generate a payment document</div>
-    <div class="fg"><label class="fl">Document Type</label>
-      <select id="pr-type" onchange="updatePRType()">
-        <option value="receipt">💰 Payment Receipt (Cash/UPI)</option>
-        <option value="cheque">🏦 Cheque Draft</option>
-      </select>
-    </div>
-    <div class="fg"><label class="fl">Pay To (Party Name)</label><input id="pr-party" list="dl-party" placeholder="e.g. Rajan Textiles"/></div>
-    <div id="pr-cheque-fields">
-      <div class="fg"><label class="fl">Bank Name</label><input id="pr-bank" placeholder="e.g. State Bank of India"/></div>
-      <div class="g2">
-        <div class="fg"><label class="fl">Cheque No.</label><input id="pr-chq-no" type="number" placeholder="123456"/></div>
-        <div class="fg"><label class="fl">Date</label><input id="pr-chq-date" type="date"/></div>
-      </div>
-    </div>
-    <div id="pr-receipt-fields">
-      <div class="fg"><label class="fl">Payment Mode</label>
-        <select id="pr-mode">
-          <option>Cash</option><option>UPI</option><option>NEFT/RTGS</option><option>Cheque</option>
-        </select>
-      </div>
-      <div class="fg"><label class="fl">Transaction / Reference No.</label><input id="pr-txn" placeholder="UPI ref, txn ID..."/></div>
-    </div>
-    <div class="g2">
-      <div class="fg"><label class="fl">Amount (₹)</label><input id="pr-amount" type="number" placeholder="0" oninput="updatePRWords()"/></div>
-      <div class="fg"><label class="fl">Purpose</label><input id="pr-purpose" placeholder="e.g. Fabric purchase Jan"/></div>
-    </div>
-    <div id="pr-words" style="font-size:12px;color:var(--text3);margin-bottom:8px;font-style:italic;min-height:18px"></div>
-    <div class="qmodal-foot">
-      <button class="btn btn-ghost" onclick="document.getElementById('payment-receipt-modal').classList.remove('on')">Cancel</button>
-      <button class="btn btn-primary" onclick="generatePaymentDoc()">Generate →</button>
-    </div>
-  </div>
-</div>
-
+<!-- Login Screen -->
 <div id="login-screen">
   <div class="login-wrap">
     <div class="login-left">
@@ -957,1191 +1115,1341 @@ body.manager-mode .hide-manager{display:none !important}
       <div class="login-feat">
         <div class="login-feat-item"><div class="login-feat-dot"></div>Meter by meter stock tracking</div>
         <div class="login-feat-item"><div class="login-feat-dot"></div>GST invoices + WhatsApp billing</div>
-        <div class="login-feat-item"><div class="login-feat-dot"></div>Purchase receipts & delivery challans</div>
-        <div class="login-feat-item"><div class="login-feat-dot"></div>Payment receipts & cheque drafts</div>
+        <div class="login-feat-item"><div class="login-feat-dot"></div>Purchase receipts &amp; delivery challans</div>
+        <div class="login-feat-item"><div class="login-feat-dot"></div>💳 Payments, receipts &amp; cheque drafts</div>
+        <div class="login-feat-item"><div class="login-feat-dot"></div>📄 Historical document storage</div>
         <div class="login-feat-item"><div class="login-feat-dot"></div>Owner / Manager / Staff profiles</div>
       </div>
     </div>
     <div class="login-right">
       <div class="login-right-t">Sign In</div>
       <div class="login-right-s">Login with Google or your mobile number</div>
-
-      <button class="login-google" id="login-btn" onclick="signInGoogle()">
+      <button class="login-google" onclick="signInGoogle()">
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         Continue with Google
       </button>
-
       <div class="login-divider">or</div>
-
-      <div class="login-phone-wrap" id="phone-section">
+      <div id="phone-section">
         <label style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;display:block;margin-bottom:6px">Mobile Number</label>
         <div class="phone-row">
           <span class="phone-prefix">+91</span>
           <input id="login-phone" type="tel" placeholder="9876543210" maxlength="10" style="flex:1" onkeydown="if(event.key==='Enter')sendOTP()"/>
-          <button class="btn btn-primary" onclick="sendOTP()" id="send-otp-btn" style="padding:10px 14px;white-space:nowrap">Send OTP</button>
+          <button class="btn btn-primary" onclick="sendOTP()" style="padding:10px 14px;white-space:nowrap">Send OTP</button>
         </div>
         <div id="otp-section" style="display:none;margin-top:10px">
           <div class="otp-sent-row">
-            <input id="login-otp" type="number" placeholder="Enter 6-digit OTP" style="font-family:var(--fm);letter-spacing:4px;font-size:16px" onkeydown="if(event.key==='Enter')verifyOTP()"/>
-            <button class="btn btn-primary" onclick="verifyOTP()" id="verify-otp-btn">Verify</button>
+            <input id="login-otp" type="number" placeholder="Enter 6-digit OTP" style="font-family:var(--fm);letter-spacing:4px"/>
+            <button class="btn btn-primary" onclick="verifyOTP()">Verify</button>
           </div>
-          <div style="font-size:11px;color:var(--text3);margin-top:6px">OTP sent to +91 <span id="otp-phone-display"></span> · <span style="color:var(--indigo2);cursor:pointer" onclick="resetOTP()">Change number</span></div>
-          <div id="recaptcha-container" style="margin-top:10px"></div>
         </div>
       </div>
-
-      <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:20px;line-height:1.6">Your data stays private and secure.<br>No ads, no data sharing.</div>
-      <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border);font-size:10px;color:var(--text3);text-align:center;letter-spacing:0.5px">STOCKSAATHI · SURAT · v6.0</div>
+      <div id="recaptcha-container" style="margin-top:10px"></div>
     </div>
   </div>
 </div>
 
-<div id="profile-screen">
-  <div style="text-align:center">
-    <div style="font-size:28px;font-weight:800;color:var(--text);letter-spacing:-0.8px">Who's using this?</div>
-    <div style="color:var(--text3);margin-bottom:8px;font-size:13px">Select your profile</div>
-  </div>
-  <div class="profile-cards" id="profile-cards-container"></div>
-  <div style="margin-top:24px">
-    <button onclick="signOut()" style="padding:9px 20px;background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:var(--r);color:var(--text2);font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer">🚪 Sign Out</button>
-  </div>
-</div>
-
 <div id="toast"></div>
-<div id="recaptcha-verifier-container"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<!-- ═══════════════════════════════════════════════════════ JAVASCRIPT -->
 <script>
-// ══ CONFIG ══
-var EJS_SVC='service_j84y5ge',EJS_ALERT_TPL='template_8pvu8qc',EJS_KEY='Ux_cTro8ToCSm2LUY';
+// ══════════════════════════════════════════════════
+// GLOBAL STATE
+// ══════════════════════════════════════════════════
+let DB = null; // Firestore instance (set after Firebase module loads)
+let FB = null; // Firebase functions
+let fabrics = [];
+let sales = [];
+let purchases = [];
+let payments = []; // NEW: payments array
+let profiles = [];
+let settings = {};
+let masterData = { qualities:[], colors:[], parties:[] };
+let currentPage = 'dash';
+let currentLedgerTab = 'sales';
+let currentPayFilter = 'all';
+let currentFabFilter = '';
+let currentFabId = null; // for add-stock/quicksell
+let obStep = 1;
+let pendingProfileLogin = null;
+let _confirmPin = null;
 
-// ══ STATE ══
-var auth,db,user=null;
-var inv=[],sales=[],purchases=[];
-var asFabId=null,qsFabId=null,selCatV='',activeLedgerTab='sales';
-var appSettings={firmName:'',gstin:'',upiId:'',bank:'',accName:'',accNo:'',ifsc:'',profiles:[],lists:{}};
-var currentProfile=null,pendingProfileLogin=null;
-var lastSale=null,lastPurchaseData=null,lastAddFabData=null;
-var confirmationResult=null;
-
-var defaultColors=["Red","Maroon","Crimson","Navy Blue","Royal Blue","Sky Blue","Baby Pink","Rani Pink","Magenta","Peach","Mustard","Lemon Yellow","Bottle Green","Olive Green","Mint Green","Black","White","Off White","Cream","Beige","Gold","Silver","Grey","Charcoal","Turquoise","Teal","Lavender","Purple","Violet","Wine","Rust","Copper","Coral","Orange","Brown","Chocolate","Fuchsia","Indigo","Ivory","Khaki"];
-var defaultQualities=["Georgette","Chiffon","Silk","Cotton","Velvet","Satin","Net","Rayon","Linen","Organza","Crepe","Jacquard","Brocade","Banarasi","Other"];
-
-var ICON_MAP={georgette:'🟥',chiffon:'🔵',silk:'✨',cotton:'🤍',velvet:'🖤',satin:'💗',net:'🕸️',rayon:'🟤',linen:'🟡',organza:'🪷',crepe:'🫧',jacquard:'🌸',brocade:'👑',banarasi:'🏅',other:'🧵'};
-var BG_MAP={georgette:'rgba(240,82,100,0.1)',chiffon:'rgba(59,158,245,0.1)',silk:'rgba(245,166,35,0.1)',cotton:'rgba(168,176,200,0.1)',velvet:'rgba(155,92,248,0.1)',satin:'rgba(240,82,100,0.08)',net:'rgba(34,199,142,0.1)',rayon:'rgba(245,166,35,0.08)',linen:'rgba(245,166,35,0.12)',organza:'rgba(155,92,248,0.08)',crepe:'rgba(59,158,245,0.08)',jacquard:'rgba(240,82,100,0.12)',brocade:'rgba(245,166,35,0.15)',banarasi:'rgba(245,166,35,0.1)',other:'rgba(168,176,200,0.08)'};
-
-function getIcon(t){return ICON_MAP[(t||'').toLowerCase()]||'🧵';}
-function getBg(t){return BG_MAP[(t||'').toLowerCase()]||'rgba(168,176,200,0.08)';}
-
-// ══ GST HELPERS ══
-function calcGST(subtotal,rate,type){
-  rate=parseFloat(rate)||0;
-  var gst=subtotal*rate/100,result={rate:rate,subtotal:subtotal,gstAmount:gst,total:subtotal+gst};
-  if(type==='intra'){result.cgst=gst/2;result.sgst=gst/2;result.igst=0;}
-  else{result.cgst=0;result.sgst=0;result.igst=gst;}
-  return result;
+// Wait for Firebase to be ready
+function waitForDB(cb, tries=0) {
+  if (window._db && window._firebase) { DB = window._db; FB = window._firebase; cb(); }
+  else if (tries < 50) setTimeout(()=>waitForDB(cb, tries+1), 100);
+  else toast('Firebase not connected. Check your config.', 5000);
 }
-function gstBreakdownHTML(g,type){
-  if(!g.rate)return '<span style="color:var(--text3);font-size:11px">No GST (0%)</span>';
-  var h='';
-  if(type==='intra'){
-    h+='<div class="gst-line"><span>CGST @ '+(g.rate/2)+'%</span><span>+'+fv(g.cgst)+'</span></div>';
-    h+='<div class="gst-line"><span>SGST @ '+(g.rate/2)+'%</span><span>+'+fv(g.sgst)+'</span></div>';
-  }else{
-    h+='<div class="gst-line"><span>IGST @ '+g.rate+'%</span><span>+'+fv(g.igst)+'</span></div>';
+
+// ══════════════════════════════════════════════════
+// UTILITY
+// ══════════════════════════════════════════════════
+function fmt(n) { return '₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2}); }
+function fmtN(n) { return Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:1}); }
+function uid() { return Date.now().toString(36)+Math.random().toString(36).substr(2,5); }
+function ts() { return new Date().toISOString(); }
+function today() { return new Date().toISOString().split('T')[0]; }
+function fmtDate(iso) {
+  if(!iso) return '—';
+  const d = new Date(iso); if(isNaN(d)) return iso;
+  return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+}
+function toast(msg, dur=2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display='block';
+  clearTimeout(t._t); t._t = setTimeout(()=>t.style.display='none', dur);
+}
+function v(id){ return document.getElementById(id)?.value?.trim()||''; }
+function nv(id){ return parseFloat(document.getElementById(id)?.value)||0; }
+
+// Number to words (Indian)
+function numToWords(n) {
+  if(!n||isNaN(n)) return '';
+  const a=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+  const b=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+  function t(n){if(n<20)return a[n];if(n<100)return b[Math.floor(n/10)]+(n%10?' '+a[n%10]:'');if(n<1000)return a[Math.floor(n/100)]+' Hundred'+(n%100?' '+t(n%100):'');if(n<100000)return t(Math.floor(n/1000))+' Thousand'+(n%1000?' '+t(n%1000):'');if(n<10000000)return t(Math.floor(n/100000))+' Lakh'+(n%100000?' '+t(n%100000):'');return t(Math.floor(n/10000000))+' Crore'+(n%10000000?' '+t(n%10000000):'');}
+  const parts=String(Math.round(n)).split('.');
+  let w=t(parseInt(parts[0]))||'Zero';
+  if(parts[1]) w+=' and '+t(parseInt(parts[1]))+' Paise';
+  return w+' Only';
+}
+
+// GST breakdown HTML
+function gstBreakdownHTML(base, rate, type) {
+  if(!rate||!base) return '';
+  const gst = base*rate/100;
+  if(type==='inter') {
+    return `<div class="gst-line"><span>IGST @${rate}%</span><span>${fmt(gst)}</span></div>`;
   }
-  h+='<div class="gst-total-line"><span>Total GST</span><span>+'+fv(g.gstAmount)+'</span></div>';
-  return h;
+  const half = gst/2;
+  return `<div class="gst-line"><span>CGST @${rate/2}%</span><span>${fmt(half)}</span></div>
+          <div class="gst-line"><span>SGST @${rate/2}%</span><span>${fmt(half)}</span></div>`;
 }
 
-// ══ FIREBASE ══
-function startApp(){
-  emailjs.init(EJS_KEY);
-  firebase.initializeApp({
-    apiKey:'AIzaSyB5oBVuaur5Yl_gxfde9NFYtanLZdr6Qjs',
-    authDomain:'stock-98c39.firebaseapp.com',
-    projectId:'stock-98c39',
-    storageBucket:'stock-98c39.firebasestorage.app',
-    messagingSenderId:'728990720851',
-    appId:'1:728990720851:web:eada0eac44cef8424cb7a6'
-  });
-  auth=firebase.auth();
-  db=firebase.firestore();
-  db.enablePersistence().catch(function(){});
-  auth.onAuthStateChanged(async function(u){
-    if(u){
-      user=u;
-      document.getElementById('login-screen').style.display='none';
-      await loadCloud();
-      updatePartyList();
-      populateDropdowns();
-      db.collection('users').doc(user.uid).onSnapshot(function(doc){
-        if(doc.exists){var d=doc.data();if(d.settings){if(d.settings.profiles)appSettings.profiles=d.settings.profiles;if(d.settings.lists){appSettings.lists=d.settings.lists;populateDropdowns();}}}
-      });
-      var savedId=sessionStorage.getItem('ss_profile_id');
-      var found=savedId?appSettings.profiles.find(function(p){return p.id===savedId;}):null;
-      if(found){completeLogin(found);}else{showProfileScreen();}
-    }else{
-      user=null;
-      document.getElementById('login-screen').style.display='flex';
-      document.getElementById('profile-screen').style.display='none';
+// ══════════════════════════════════════════════════
+// FIREBASE HELPERS
+// ══════════════════════════════════════════════════
+function userPath() {
+  const uid = window._currentUser?.uid;
+  if(!uid) throw new Error('Not logged in');
+  return `users/${uid}`;
+}
+function colRef(name) { return FB.collection(DB, `${userPath()}/${name}`); }
+function docRef(col, id) { return FB.doc(DB, `${userPath()}/${col}/${id}`); }
+
+async function fbSave(col, data) {
+  if(!DB) return null;
+  const ref = await FB.addDoc(colRef(col), {...data, _ts: FB.serverTimestamp()});
+  return ref.id;
+}
+async function fbUpdate(col, id, data) {
+  if(!DB||!id) return;
+  await FB.updateDoc(docRef(col,id), data);
+}
+async function fbDelete(col, id) {
+  if(!DB||!id) return;
+  await FB.deleteDoc(docRef(col,id));
+}
+async function fbGetAll(col) {
+  if(!DB) return [];
+  const snap = await FB.getDocs(FB.query(colRef(col), FB.orderBy('_ts','desc')));
+  return snap.docs.map(d=>({id:d.id,...d.data()}));
+}
+
+// ══════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════
+async function signInGoogle() {
+  try {
+    await window._signInWithPopup(window._auth, window._googleProvider);
+  } catch(e) { toast('Google sign-in failed: '+e.message); }
+}
+async function sendOTP() {
+  const phone = '+91'+v('login-phone');
+  if(phone.length<12){ toast('Enter valid 10-digit number'); return; }
+  try {
+    if(!window._recaptchaVerifier) {
+      window._recaptchaVerifier = new window._RecaptchaVerifier(window._auth, 'recaptcha-container', {size:'invisible'});
     }
-  });
+    window._confirmPin = await window._signInWithPhoneNumber(window._auth, phone, window._recaptchaVerifier);
+    document.getElementById('otp-section').style.display='block';
+    toast('OTP sent!');
+  } catch(e){ toast('Failed to send OTP: '+e.message); }
 }
-
-// ══ AUTH ══
-function signInGoogle(){
-  var btn=document.getElementById('login-btn');
-  if(btn){btn.disabled=true;btn.innerHTML='Opening Google...';}
-  var p=new firebase.auth.GoogleAuthProvider();
-  p.setCustomParameters({prompt:'select_account'});
-  auth.signInWithPopup(p).catch(function(e){
-    if(btn){btn.disabled=false;btn.innerHTML='<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continue with Google';}
-    if(e.code!=='auth/cancelled-popup-request'&&e.code!=='auth/popup-cancelled-by-user')toast('Login error: '+e.message);
-  });
+async function verifyOTP() {
+  try {
+    await window._confirmPin.confirm(v('login-otp'));
+  } catch(e){ toast('Invalid OTP'); }
 }
-
-// ══ PHONE AUTH ══
-function sendOTP(){
-  var phone=document.getElementById('login-phone').value.trim().replace(/\D/g,'');
-  if(phone.length!==10){toast('Enter valid 10-digit number');return;}
-  var btn=document.getElementById('send-otp-btn');
-  btn.disabled=true;btn.textContent='Sending...';
-  try{
-    if(!window._recaptchaVerifier){
-      window._recaptchaVerifier=new firebase.auth.RecaptchaVerifier('recaptcha-verifier-container',{'size':'invisible','callback':function(){}});
-    }
-    auth.signInWithPhoneNumber('+91'+phone,window._recaptchaVerifier).then(function(result){
-      confirmationResult=result;
-      document.getElementById('otp-section').style.display='block';
-      document.getElementById('otp-phone-display').textContent=phone;
-      btn.disabled=false;btn.textContent='Resend';
-      toast('📱 OTP sent to +91'+phone);
-    }).catch(function(e){
-      btn.disabled=false;btn.textContent='Send OTP';
-      toast('Error: '+e.message);
-      if(window._recaptchaVerifier){window._recaptchaVerifier.clear();window._recaptchaVerifier=null;}
-    });
-  }catch(e){btn.disabled=false;btn.textContent='Send OTP';toast('Error: '+e.message);}
-}
-function verifyOTP(){
-  var otp=document.getElementById('login-otp').value.trim();
-  if(otp.length!==6){toast('Enter 6-digit OTP');return;}
-  if(!confirmationResult){toast('Please request OTP first');return;}
-  var btn=document.getElementById('verify-otp-btn');
-  btn.disabled=true;btn.textContent='Verifying...';
-  confirmationResult.confirm(otp).catch(function(e){
-    btn.disabled=false;btn.textContent='Verify';
-    toast('Wrong OTP. Try again.');
-  });
-}
-function resetOTP(){
-  document.getElementById('otp-section').style.display='none';
-  document.getElementById('login-phone').value='';
-  document.getElementById('login-otp').value='';
-  confirmationResult=null;
-}
-function signOut(){if(confirm('Sign out?')){sessionStorage.removeItem('ss_profile_id');auth.signOut();}}
-
-// ══ CLOUD ══
-async function save(){
-  if(!user)return;
-  try{await db.collection('users').doc(user.uid).set({inv:inv,sales:sales,purchases:purchases,settings:appSettings});}
-  catch(e){console.error('Save:',e);}
-}
-async function loadCloud(){
-  if(!user)return;
-  try{
-    var doc=await db.collection('users').doc(user.uid).get();
-    if(doc.exists){
-      var d=doc.data();
-      inv=d.inv||[];sales=d.sales||[];purchases=d.purchases||[];
-      appSettings=d.settings||{};
-      if(!appSettings.profiles||!appSettings.profiles.length)
-        appSettings.profiles=[{id:'p_owner',name:'Owner',role:'owner',pin:''},{id:'p_staff',name:'Staff',role:'staff',pin:''}];
-      if(!appSettings.lists||!appSettings.lists.qualities)
-        appSettings.lists={qualities:defaultQualities.slice(),colors:defaultColors.slice(),parties:[]};
-      if(!appSettings.lists.parties)appSettings.lists.parties=[];
-    }else{
-      inv=[];sales=[];purchases=[];
-      appSettings={firmName:'',gstin:'',upiId:'',bank:'',accName:'',accNo:'',ifsc:'',
-        profiles:[{id:'p_owner',name:'Owner',role:'owner',pin:''},{id:'p_staff',name:'Staff',role:'staff',pin:''}],
-        lists:{qualities:defaultQualities.slice(),colors:defaultColors.slice(),parties:[]}};
-      await save();
-      setTimeout(showOnboarding,800);
-    }
-  }catch(e){inv=[];sales=[];purchases=[];console.error(e);}
-}
-
-// ══ PROFILES ══
-function showProfileScreen(){currentProfile=null;renderProfileSelection();document.getElementById('profile-screen').style.display='flex';}
-function switchProfileBtn(){sessionStorage.removeItem('ss_profile_id');showProfileScreen();}
-function renderProfileSelection(){
-  var html='';
-  appSettings.profiles.forEach(function(p){
-    var av=p.role==='owner'?'👑':p.role==='manager'?'💼':'👦';
-    var bg=p.role==='owner'?'background:var(--amber-dim);color:var(--amber)':p.role==='manager'?'background:var(--violet-dim);color:var(--violet)':'background:var(--indigo-dim);color:var(--indigo2)';
-    var lock=p.pin?'<div style="position:absolute;top:8px;right:12px;font-size:13px;opacity:0.7">🔒</div>':'';
-    var role=p.role==='owner'?'Full Access':p.role==='manager'?'Manager':'Staff';
-    html+='<div class="profile-card" onclick="attemptProfileLogin(\''+p.id+'\')">'
-      +lock
-      +'<div class="profile-avatar" style="'+bg+'">'+av+'</div>'
-      +'<div class="profile-name">'+esc(p.name)+'</div>'
-      +'<div style="font-size:11px;color:var(--text3);margin-top:3px">'+role+'</div>'
-      +'</div>';
-  });
-  document.getElementById('profile-cards-container').innerHTML=html;
-}
-function attemptProfileLogin(id){
-  var p=appSettings.profiles.find(function(x){return x.id===id;});
-  if(!p)return;
-  if(p.pin){pendingProfileLogin=p;document.getElementById('pin-input').value='';document.getElementById('pin-modal').classList.add('on');setTimeout(function(){document.getElementById('pin-input').focus();},100);}
-  else completeLogin(p);
-}
-function verifyPin(){
-  var input=document.getElementById('pin-input').value;
-  if(input===pendingProfileLogin.pin){document.getElementById('pin-modal').classList.remove('on');completeLogin(pendingProfileLogin);}
-  else{toast('❌ Wrong PIN');document.getElementById('pin-input').value='';}
-}
-function completeLogin(profile){
-  currentProfile=profile;
-  sessionStorage.setItem('ss_profile_id',profile.id);
+async function signOut() {
+  await window._fbSignOut(window._auth);
+  fabrics=[];sales=[];purchases=[];payments=[];profiles=[];settings={};
+  document.getElementById('login-screen').style.display='flex';
   document.getElementById('profile-screen').style.display='none';
-  var dn=(appSettings.firmName||(user&&user.displayName)||'User')+' ('+profile.name+')';
-  document.getElementById('user-display-name').textContent=dn;
-  var av=document.getElementById('sb-avatar');
-  if(av)av.textContent=profile.name.charAt(0).toUpperCase();
-  var mu=document.getElementById('mob-user');if(mu)mu.textContent='👤 '+profile.name;
-  document.body.classList.remove('staff-mode','manager-mode');
-  if(profile.role==='staff')document.body.classList.add('staff-mode');
-  if(profile.role==='manager')document.body.classList.add('manager-mode');
-  updateStats();renderDash();
-  goto('dash',document.querySelector('.sb-item'));
+}
+function switchProfileBtn() {
+  document.getElementById('profile-screen').style.display='flex';
 }
 
-// ══ MASTER DATA ══
-function populateDropdowns(){
-  var lists=appSettings.lists;if(!lists)return;
-  var qSel=document.getElementById('m-type');
-  if(qSel)qSel.innerHTML=(lists.qualities||defaultQualities).map(function(q){return '<option value="'+esc(q)+'">'+esc(q)+'</option>';}).join('');
-  var cList=document.getElementById('dl-color');
-  if(cList)cList.innerHTML=(lists.colors||defaultColors).map(function(c){return '<option value="'+esc(c)+'">'; }).join('');
-  var cf=document.getElementById('inv-cat-filters');
-  if(cf)cf.innerHTML='<button class="cat-p active" onclick="filterCat(\'\',this)">🧵 All</button>'+(lists.qualities||defaultQualities).slice(0,12).map(function(q){return '<button class="cat-p" onclick="filterCat(\''+esc(q)+'\',this)">'+esc(q)+'</button>';}).join('');
-}
-function updatePartyList(){
-  var parties=new Set(),gstins=new Set();
-  (appSettings.lists&&appSettings.lists.parties||[]).forEach(function(p){parties.add(p);});
-  sales.forEach(function(s){if(s.customer)parties.add(s.customer);if(s.buyerGstin)gstins.add(s.buyerGstin);});
-  purchases.forEach(function(p){if(p.party)parties.add(p.party);if(p.supplierGstin)gstins.add(p.supplierGstin);});
-  document.getElementById('dl-party').innerHTML=Array.from(parties).map(function(p){return '<option value="'+esc(p)+'">';}).join('');
-  document.getElementById('dl-gstin').innerHTML=Array.from(gstins).map(function(g){return '<option value="'+esc(g)+'">';}).join('');
-}
-function renderMasterData(){
-  document.getElementById('md-qualities').innerHTML=appSettings.lists.qualities.map(function(q,i){
-    return '<div class="md-item"><span>'+esc(q)+'</span><button class="btn btn-rose btn-sm" onclick="deleteQuality('+i+')">🗑️</button></div>';
-  }).join('')||'<div style="color:var(--text3);padding:10px;font-size:12px">None added</div>';
-  document.getElementById('md-colors').innerHTML=appSettings.lists.colors.map(function(c,i){
-    return '<div class="md-item"><span>'+esc(c)+'</span><button class="btn btn-rose btn-sm" onclick="deleteColor('+i+')">🗑️</button></div>';
-  }).join('')||'<div style="color:var(--text3);padding:10px;font-size:12px">None added</div>';
-  var allParties=new Set(appSettings.lists.parties||[]);
-  sales.forEach(function(s){if(s.customer)allParties.add(s.customer);});
-  purchases.forEach(function(p){if(p.party)allParties.add(p.party);});
-  var savedSet=new Set(appSettings.lists.parties||[]);
-  document.getElementById('md-parties').innerHTML=Array.from(allParties).map(function(p){
-    var isSaved=savedSet.has(p);
-    var del=isSaved?'<button class="btn btn-rose btn-sm" onclick="deleteParty(\''+esc(p)+'\')">🗑️</button>':'<span style="font-size:10px;color:var(--text3)">auto</span>';
-    return '<div class="md-item"><span>'+esc(p)+'</span>'+del+'</div>';
-  }).join('')||'<div style="color:var(--text3);padding:10px;font-size:12px">No parties yet</div>';
-}
-function addQuality(){var q=prompt('New Category:');if(q&&q.trim()){appSettings.lists.qualities.push(q.trim());save();populateDropdowns();renderMasterData();toast('Added!');}}
-function deleteQuality(i){if(confirm('Delete?')){appSettings.lists.qualities.splice(i,1);save();populateDropdowns();renderMasterData();}}
-function addColor(){var c=prompt('New Color:');if(c&&c.trim()){appSettings.lists.colors.push(c.trim());save();populateDropdowns();renderMasterData();toast('Added!');}}
-function deleteColor(i){if(confirm('Delete?')){appSettings.lists.colors.splice(i,1);save();populateDropdowns();renderMasterData();}}
-function addPartyManual(){var p=prompt('Party Name:');if(p&&p.trim()){if(!appSettings.lists.parties)appSettings.lists.parties=[];if(!appSettings.lists.parties.includes(p.trim())){appSettings.lists.parties.push(p.trim());save();updatePartyList();renderMasterData();toast('Added: '+p.trim());}else toast('Already exists!');}}
-function deleteParty(name){if(confirm('Remove "'+name+'"?')){appSettings.lists.parties=(appSettings.lists.parties||[]).filter(function(x){return x!==name;});save();updatePartyList();renderMasterData();}}
+// ══════════════════════════════════════════════════
+// INIT APP
+// ══════════════════════════════════════════════════
+async function initApp() {
+  waitForDB(async ()=>{
+    await loadSettings();
+    await loadMaster();
+    await loadProfiles();
+    await loadFabrics();
+    await loadSales();
+    await loadPurchases();
+    await loadPayments(); // NEW
 
-// ══ PROFILES PAGE ══
-function renderProfilesPage(){
-  var html='';
-  appSettings.profiles.forEach(function(p){
-    var av=p.role==='owner'?'👑':p.role==='manager'?'💼':'👦';
-    var role=p.role==='owner'?'Owner (Full)':p.role==='manager'?'Manager':'Staff';
-    var pin=p.pin?'🔒 PIN Protected':'🔓 No PIN';
-    var canDel=!(p.role==='owner'&&appSettings.profiles.filter(function(x){return x.role==='owner';}).length<=1);
-    html+='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:18px;display:flex;align-items:center;gap:14px">'
-      +'<div style="font-size:28px">'+av+'</div>'
-      +'<div style="flex:1"><div style="font-size:15px;font-weight:700">'+esc(p.name)+'</div><div style="font-size:11px;color:var(--text3);margin-top:2px">'+role+' · '+pin+'</div></div>'
-      +'<div style="display:flex;gap:6px">'
-      +'<button class="btn btn-ghost btn-sm" onclick="openEditProfileModal(\''+p.id+'\')">✏️ Edit</button>'
-      +(canDel?'<button class="btn btn-rose btn-sm" onclick="deleteProfile(\''+p.id+'\')">🗑️</button>':'')
-      +'</div></div>';
+    // Show profile screen if multiple profiles
+    if(profiles.length > 1) {
+      renderProfileScreen();
+      document.getElementById('profile-screen').style.display='flex';
+    } else if(profiles.length===1) {
+      applyProfile(profiles[0]);
+    } else {
+      // No profiles yet → onboarding
+      document.getElementById('profile-screen').style.display='none';
+      showOnboarding();
+    }
   });
-  document.getElementById('profiles-grid').innerHTML=html;
-}
-function openEditProfileModal(id){
-  if(id){var p=appSettings.profiles.find(function(x){return x.id===id;});document.getElementById('ep-title').textContent='Edit Profile';document.getElementById('ep-id').value=p.id;document.getElementById('ep-name').value=p.name;document.getElementById('ep-role').value=p.role;document.getElementById('ep-pin').value=p.pin||'';}
-  else{document.getElementById('ep-title').textContent='Add Profile';document.getElementById('ep-id').value='';document.getElementById('ep-name').value='';document.getElementById('ep-role').value='staff';document.getElementById('ep-pin').value='';}
-  document.getElementById('edit-profile-modal').classList.add('on');
-}
-function closeEditProfileModal(){document.getElementById('edit-profile-modal').classList.remove('on');}
-function saveEditProfile(){
-  var id=document.getElementById('ep-id').value,name=document.getElementById('ep-name').value.trim(),role=document.getElementById('ep-role').value,pin=document.getElementById('ep-pin').value.trim();
-  if(!name){toast('Name required!');return;}
-  if(id){var p=appSettings.profiles.find(function(x){return x.id===id;});if(p){p.name=name;p.role=role;p.pin=pin;}}
-  else appSettings.profiles.push({id:'p_'+Date.now(),name:name,role:role,pin:pin});
-  save();renderProfilesPage();renderProfileSelection();closeEditProfileModal();toast('Saved!');
-}
-function deleteProfile(id){
-  var p=appSettings.profiles.find(function(x){return x.id===id;});
-  if(p.role==='owner'&&appSettings.profiles.filter(function(x){return x.role==='owner';}).length<=1){toast('Cannot delete only owner!');return;}
-  if(confirm('Delete "'+p.name+'"?')){appSettings.profiles=appSettings.profiles.filter(function(x){return x.id!==id;});save();renderProfilesPage();renderProfileSelection();toast('Deleted');}
 }
 
-// ══ SETTINGS ══
-function openSettings(){
-  if(currentProfile&&currentProfile.role!=='owner'){toast('🔒 Owner only');return;}
-  document.getElementById('set-firm').value=appSettings.firmName||'';
-  document.getElementById('set-gstin').value=appSettings.gstin||'';
-  document.getElementById('set-upi').value=appSettings.upiId||'';
-  document.getElementById('set-bank').value=appSettings.bank||'';
-  document.getElementById('set-acc-name').value=appSettings.accName||'';
-  document.getElementById('set-acc-no').value=appSettings.accNo||'';
-  document.getElementById('set-ifsc').value=appSettings.ifsc||'';
+// ══════════════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════════════
+async function loadSettings() {
+  try {
+    const snap = await FB.getDoc(FB.doc(DB, `${userPath()}/config/settings`));
+    settings = snap.exists() ? snap.data() : {};
+  } catch(e) { settings = {}; }
+}
+async function saveSettings() {
+  settings = {
+    firm: v('set-firm'), gstin: v('set-gstin'), upi: v('set-upi'),
+    bank: v('set-bank'), accName: v('set-acc-name'), accNo: v('set-acc-no'), ifsc: v('set-ifsc')
+  };
+  await FB.setDoc(FB.doc(DB, `${userPath()}/config/settings`), settings);
+  document.getElementById('settings-modal').classList.remove('on');
+  toast('Settings saved ✅');
+}
+function openSettings() {
+  document.getElementById('set-firm').value = settings.firm||'';
+  document.getElementById('set-gstin').value = settings.gstin||'';
+  document.getElementById('set-upi').value = settings.upi||'';
+  document.getElementById('set-bank').value = settings.bank||'';
+  document.getElementById('set-acc-name').value = settings.accName||'';
+  document.getElementById('set-acc-no').value = settings.accNo||'';
+  document.getElementById('set-ifsc').value = settings.ifsc||'';
   document.getElementById('settings-modal').classList.add('on');
 }
-function closeSettings(){document.getElementById('settings-modal').classList.remove('on');}
-function saveSettings(){
-  appSettings.firmName=document.getElementById('set-firm').value.trim();
-  appSettings.gstin=document.getElementById('set-gstin').value.trim();
-  appSettings.upiId=document.getElementById('set-upi').value.trim();
-  appSettings.bank=document.getElementById('set-bank').value.trim();
-  appSettings.accName=document.getElementById('set-acc-name').value.trim();
-  appSettings.accNo=document.getElementById('set-acc-no').value.trim();
-  appSettings.ifsc=document.getElementById('set-ifsc').value.trim();
-  save();closeSettings();toast('⚙️ Settings saved');
+function closeSettings() { document.getElementById('settings-modal').classList.remove('on'); }
+
+// ══════════════════════════════════════════════════
+// MASTER DATA
+// ══════════════════════════════════════════════════
+async function loadMaster() {
+  try {
+    const snap = await FB.getDoc(FB.doc(DB, `${userPath()}/config/master`));
+    masterData = snap.exists() ? snap.data() : {qualities:[],colors:[],parties:[]};
+    if(!masterData.qualities) masterData.qualities = ['Georgette','Satin','Silk','Cotton','Linen','Polyester','Chiffon','Crepe'];
+    if(!masterData.colors) masterData.colors = ['Red','Green','Blue','Yellow','White','Black','Pink','Orange'];
+    if(!masterData.parties) masterData.parties = [];
+  } catch(e) { masterData={qualities:['Georgette','Satin','Silk','Cotton'],colors:['Red','Green','Blue'],parties:[]}; }
+  rebuildDatalists();
+}
+async function saveMaster() {
+  await FB.setDoc(FB.doc(DB, `${userPath()}/config/master`), masterData);
+}
+function rebuildDatalists() {
+  const dp = document.getElementById('dl-party');
+  dp.innerHTML = masterData.parties.map(p=>`<option value="${p}">`).join('');
+  const dc = document.getElementById('dl-color');
+  dc.innerHTML = masterData.colors.map(c=>`<option value="${c}">`).join('');
+  populateCatSelect();
+  renderMaster();
+}
+function populateCatSelect() {
+  ['m-type'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.innerHTML = masterData.qualities.map(q=>`<option>${q}</option>`).join('');
+  });
+  renderCatFilters();
+}
+function renderMaster() {
+  const qEl = document.getElementById('md-qualities');
+  const cEl = document.getElementById('md-colors');
+  const pEl = document.getElementById('md-parties');
+  if(qEl) qEl.innerHTML = masterData.qualities.map((q,i)=>`<div class="md-item">${q}<button onclick="delQ(${i})" style="background:none;border:none;color:var(--rose);cursor:pointer;font-size:13px">✕</button></div>`).join('');
+  if(cEl) cEl.innerHTML = masterData.colors.map((c,i)=>`<div class="md-item">${c}<button onclick="delC(${i})" style="background:none;border:none;color:var(--rose);cursor:pointer;font-size:13px">✕</button></div>`).join('');
+  if(pEl) pEl.innerHTML = masterData.parties.map((p,i)=>`<div class="md-item">${p}<button onclick="delP(${i})" style="background:none;border:none;color:var(--rose);cursor:pointer;font-size:13px">✕</button></div>`).join('');
+}
+async function addQuality(){ const v=prompt('New category name:'); if(v?.trim()){masterData.qualities.push(v.trim());await saveMaster();rebuildDatalists();} }
+async function addColor(){ const v=prompt('New color:'); if(v?.trim()){masterData.colors.push(v.trim());await saveMaster();rebuildDatalists();} }
+async function addPartyManual(){ const v=prompt('New party name:'); if(v?.trim()){addParty(v.trim());} }
+async function addParty(name){ if(!name||masterData.parties.includes(name)) return; masterData.parties.push(name); await saveMaster(); rebuildDatalists(); }
+async function delQ(i){ masterData.qualities.splice(i,1); await saveMaster(); rebuildDatalists(); }
+async function delC(i){ masterData.colors.splice(i,1); await saveMaster(); rebuildDatalists(); }
+async function delP(i){ masterData.parties.splice(i,1); await saveMaster(); rebuildDatalists(); }
+
+// ══════════════════════════════════════════════════
+// PROFILES
+// ══════════════════════════════════════════════════
+async function loadProfiles() {
+  profiles = await fbGetAll('profiles');
+}
+function renderProfileScreen() {
+  const c = document.getElementById('profile-cards-container');
+  c.innerHTML = profiles.map(p=>{
+    const avatars = {owner:'👑',manager:'💼',staff:'👦'};
+    const colors = {owner:'linear-gradient(135deg,#5c6ef8,#9b5cf8)',manager:'linear-gradient(135deg,#22c78e,#3b9ef5)',staff:'linear-gradient(135deg,#f5a623,#f05264)'};
+    return `<div class="profile-card" onclick="loginProfile('${p.id}')">
+      <div class="profile-avatar" style="background:${colors[p.role]||colors.staff}">${avatars[p.role]||'👤'}</div>
+      <div class="profile-name">${p.name}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px">${p.role||'staff'}</div>
+      ${p.pin?'<div style="font-size:10px;color:var(--amber);margin-top:4px">🔒 PIN protected</div>':''}
+    </div>`;
+  }).join('');
+}
+function loginProfile(id) {
+  const p = profiles.find(x=>x.id===id);
+  if(!p) return;
+  if(p.pin) {
+    pendingProfileLogin = p;
+    document.getElementById('pin-input').value='';
+    document.getElementById('pin-modal').classList.add('on');
+  } else { applyProfile(p); }
+}
+function verifyPin() {
+  const inp = document.getElementById('pin-input').value;
+  if(pendingProfileLogin && inp===pendingProfileLogin.pin) {
+    document.getElementById('pin-modal').classList.remove('on');
+    applyProfile(pendingProfileLogin);
+    pendingProfileLogin = null;
+  } else { toast('Wrong PIN'); document.getElementById('pin-input').value=''; }
+}
+function applyProfile(p) {
+  document.getElementById('profile-screen').style.display='none';
+  document.getElementById('user-display-name').textContent = p.name;
+  document.getElementById('sb-avatar').textContent = p.name.charAt(0).toUpperCase();
+  document.getElementById('mob-user').textContent = `${p.name} · ${p.role}`;
+  // Role classes
+  document.body.classList.remove('staff-mode','manager-mode');
+  if(p.role==='staff') document.body.classList.add('staff-mode');
+  else if(p.role==='manager') document.body.classList.add('manager-mode');
+  renderAll();
+}
+function renderProfilesPage() {
+  const g = document.getElementById('profiles-grid');
+  if(!g) return;
+  const avatars={owner:'👑',manager:'💼',staff:'👦'};
+  g.innerHTML = profiles.map(p=>`
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="width:42px;height:42px;border-radius:50%;background:var(--indigo-dim);display:flex;align-items:center;justify-content:center;font-size:20px">${avatars[p.role]||'👤'}</div>
+        <div><div style="font-size:14px;font-weight:700">${p.name}</div><div style="font-size:11px;color:var(--text3)">${p.role} ${p.pin?'· 🔒 PIN':''}</div></div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="openEditProfileModal('${p.id}')" style="flex:1">✏️ Edit</button>
+        <button class="btn btn-rose btn-sm" onclick="deleteProfile('${p.id}')" style="flex:1">🗑️ Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+function openEditProfileModal(id) {
+  const p = id ? profiles.find(x=>x.id===id) : null;
+  document.getElementById('ep-id').value = p?.id||'';
+  document.getElementById('ep-name').value = p?.name||'';
+  document.getElementById('ep-role').value = p?.role||'staff';
+  document.getElementById('ep-pin').value = '';
+  document.getElementById('ep-title').textContent = p ? 'Edit Profile' : 'Add Profile';
+  document.getElementById('edit-profile-modal').classList.add('on');
+}
+function closeEditProfileModal() { document.getElementById('edit-profile-modal').classList.remove('on'); }
+async function saveEditProfile() {
+  const name = v('ep-name'); if(!name){toast('Name required');return;}
+  const role = v('ep-role');
+  const pin = v('ep-pin');
+  const id = v('ep-id');
+  const data = {name,role,pin:pin||''};
+  if(id) { await fbUpdate('profiles',id,data); const i=profiles.findIndex(x=>x.id===id); if(i>=0) profiles[i]={...profiles[i],...data}; }
+  else { const fid = await fbSave('profiles',data); profiles.push({id:fid,...data}); }
+  closeEditProfileModal();
+  renderProfilesPage();
+  toast('Profile saved ✅');
+}
+async function deleteProfile(id) {
+  if(!confirm('Delete this profile?')) return;
+  await fbDelete('profiles',id);
+  profiles = profiles.filter(x=>x.id!==id);
+  renderProfilesPage();
+  toast('Deleted');
 }
 
-// ══ NAVIGATION ══
-var pgMap={dash:['Dashboard',''],inv:['Inventory','— All Fabrics'],sales:['Sales','— Record & History'],ledger:['Ledger',''],calc:['Calculator',''],report:['Monthly Report',''],profiles:['Manage Profiles',''],master:['Master Data','']};
-function goto(pg,el){
-  if(currentProfile){var r=currentProfile.role;if((r==='staff'||r==='manager')&&(pg==='profiles'||pg==='master')){toast('🔒 Owner only');return;}if(r==='staff'&&(pg==='ledger'||pg==='calc'||pg==='report')){toast('🔒 Restricted');return;}}
-  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
-  document.querySelectorAll('.sb-item').forEach(function(n){n.classList.remove('active');});
-  document.getElementById('pg-'+pg).classList.add('on');
-  if(el)el.classList.add('active');
-  var ts=pgMap[pg]||[pg,''];
-  document.getElementById('pg-title').textContent=ts[0];
-  document.getElementById('pg-sub').textContent=ts[1];
-  if(pg==='inv')renderInv();
-  if(pg==='sales'){fillSD();renderSalesList();}
-  if(pg==='ledger'){renderLedgerSummary();renderLedger();}
-  if(pg==='report')renderReport();
-  if(pg==='profiles')renderProfilesPage();
-  if(pg==='master')renderMasterData();
-  if(pg==='dash')renderDash();
+// ══════════════════════════════════════════════════
+// FABRICS (INVENTORY)
+// ══════════════════════════════════════════════════
+async function loadFabrics() {
+  fabrics = await fbGetAll('fabrics');
+  renderAll();
 }
-function toggleMobileMenu(){document.getElementById('mob-menu').classList.toggle('on');document.getElementById('mob-overlay').classList.toggle('on');}
-function closeMobileMenu(){document.getElementById('mob-menu').classList.remove('on');document.getElementById('mob-overlay').classList.remove('on');}
-function mobileGoto(pg){['dash','inv','sales','ledger','calc','report','profiles','master'].forEach(function(p){var el=document.getElementById('mob-'+p);if(el)el.classList.toggle('active',p===pg);});closeMobileMenu();goto(pg,null);}
+function renderAll() { renderDash(); renderInv(); renderSalesFabSelect(); renderSalesHistory(); renderLedger(); renderPayments(); renderReport(); renderProfilesPage(); updateLow(); }
 
-// ══ STATS ══
-function updateStats(){
-  var tot=inv.reduce(function(a,f){return a+f.meters;},0);
-  var low=inv.filter(function(f){return f.meters<f.threshold;}).length;
-  var val=inv.reduce(function(a,f){return a+f.meters*f.rate;},0);
-  document.getElementById('st-c').textContent=inv.length;
-  document.getElementById('st-m').textContent=tot.toLocaleString('en-IN')+'m';
-  document.getElementById('st-l').textContent=low;
-  document.getElementById('st-v').textContent=fv(val);
-  var b=document.getElementById('low-badge');b.textContent=low;b.classList.toggle('on',low>0);
-  var ban=document.getElementById('low-banner');
-  if(low>0){document.getElementById('low-banner-txt').textContent=inv.filter(function(f){return f.meters<f.threshold;}).map(function(f){return f.name;}).join(', ')+' — reorder needed';ban.style.display='block';}
-  else ban.style.display='none';
+function fabIcon(type) {
+  const m={'Georgette':'🧣','Satin':'✨','Silk':'🪡','Cotton':'🌿','Linen':'🌾','Polyester':'🧪','Chiffon':'🌸','Crepe':'🎀'};
+  return m[type]||'🧵';
 }
-function fv(v){
-  if(v===undefined||v===null)return '₹0';
-  v=Math.round(v);
-  if(v>=10000000)return '₹'+(v/10000000).toFixed(1)+'Cr';
-  if(v>=100000)return '₹'+(v/100000).toFixed(1)+'L';
-  return '₹'+v.toLocaleString('en-IN');
+function fabStockClass(f) {
+  const pct = f.threshold ? f.meters/f.threshold : 1;
+  if(f.meters<=0) return 'low';
+  if(pct<1) return 'low';
+  if(pct<2) return 'med';
+  return 'ok';
 }
-
-// ══ FABRIC CARD ══
-function fabCardHTML(f){
-  var pct=Math.min(100,Math.round(f.meters/Math.max((f.threshold||50)*3,1)*100));
-  var st=(f.meters<(f.threshold||50))?'low':f.meters<(f.threshold||50)*1.5?'med':'ok';
-  var bc=st==='ok'?'var(--emerald)':st==='med'?'var(--amber)':'var(--rose)';
-  var pill=st==='low'?'<span class="fab-tag" style="color:var(--rose);border-color:rgba(240,82,100,0.3)">⚠ Low</span>':st==='med'?'<span class="fab-tag" style="color:var(--amber);border-color:rgba(245,166,35,0.3)">▼ Running</span>':'<span class="fab-tag" style="color:var(--emerald);border-color:rgba(34,199,142,0.3)">✓ OK</span>';
-  var ftype=f.type||'Other';
-  var ic=getIcon(ftype),bg=getBg(ftype);
-  return '<div class="fab-card '+st+'" data-fid="'+f.id+'">'
-    +'<div class="fab-left">'
-      +'<div class="fab-icon" style="background:'+bg+'">'+ic+'</div>'
-      +'<div class="fab-info">'
-        +'<div class="fab-name">'+esc(f.name)+'</div>'
-        +'<div class="fab-meta"><span class="fab-tag">'+esc(ftype)+'</span><span class="fab-tag">'+esc(f.color||'—')+'</span><span class="fab-tag">'+esc(f.supplier||'—')+'</span>'+pill+'</div>'
-        +'<div class="fab-bar"><div class="fab-bar-f" style="width:'+pct+'%;background:'+bc+'"></div></div>'
-      +'</div>'
-    +'</div>'
-    +'<div class="fab-right">'
-      +'<div class="fab-meter-box"><div class="fab-meter-num">'+f.meters.toLocaleString('en-IN')+'</div><div class="fab-meter-lbl">Meters</div></div>'
-      +'<div class="fab-rate-box hide-staff"><div style="font-size:13px;font-weight:700;color:var(--text2);font-family:var(--fm)">₹'+(f.rate||0)+'/m</div><div style="font-size:11px;color:var(--text3)">'+fv(f.meters*(f.rate||0))+'</div></div>'
-      +'<div class="fab-actions"><button class="fab-btn fab-btn-add" data-action="add" data-fid="'+f.id+'">📥 Add</button><button class="fab-btn fab-btn-sell" data-action="sell" data-fid="'+f.id+'">💰 Sell</button><button class="fab-btn fab-btn-del hide-staff hide-manager" data-action="del" data-fid="'+f.id+'" title="Delete">🗑️</button></div>'
-    +'</div>'
-  +'</div>';
+function fabCardHTML(f, mode='full') {
+  const sc = fabStockClass(f);
+  const colors={'low':'var(--rose)','med':'var(--amber)','ok':'var(--emerald)'};
+  const pct = f.threshold ? Math.min(100,f.meters/f.threshold*100) : 80;
+  const btns = mode==='dash' ? `
+    <button class="fab-btn fab-btn-add" onclick="openAddStock('${f.id}')">+ Stock</button>
+    <button class="fab-btn fab-btn-sell" onclick="openQuickSell('${f.id}')">Sell</button>
+  ` : `
+    <button class="fab-btn fab-btn-add" onclick="openAddStock('${f.id}')">+ Stock</button>
+    <button class="fab-btn fab-btn-sell" onclick="openQuickSell('${f.id}')">Sell</button>
+    <button class="fab-btn fab-btn-del" onclick="deleteFabric('${f.id}')">🗑</button>
+  `;
+  return `<div class="fab-card ${sc}">
+    <div class="fab-left">
+      <div class="fab-icon" style="background:var(--bg3)">${fabIcon(f.type)}</div>
+      <div class="fab-info">
+        <div class="fab-name">${f.name}</div>
+        <div class="fab-meta">
+          <span class="fab-tag">${f.type||'—'}</span>
+          ${f.color?`<span class="fab-tag">🎨 ${f.color}</span>`:''}
+          ${f.supplier?`<span class="fab-tag">🏭 ${f.supplier}</span>`:''}
+        </div>
+        ${f.threshold?`<div class="fab-bar"><div class="fab-bar-f" style="width:${pct}%;background:${colors[sc]}"></div></div>`:''}
+      </div>
+    </div>
+    <div class="fab-right">
+      <div class="fab-meter-box hide-staff">
+        <div class="fab-meter-num" style="color:${colors[sc]}">${fmtN(f.meters)}</div>
+        <div class="fab-meter-lbl">meters</div>
+      </div>
+      <div class="fab-rate-box hide-staff">
+        <div style="font-size:13px;font-weight:700;color:var(--text2)">${f.rate?fmt(f.rate):'-'}</div>
+        <div class="fab-meter-lbl">₹/m</div>
+      </div>
+      <div class="fab-actions">${btns}</div>
+    </div>
+  </div>`;
 }
 
-document.addEventListener('click',function(e){
-  var btn=e.target.closest('[data-action]');
-  if(!btn)return;
-  var action=btn.dataset.action,fid=parseInt(btn.dataset.fid,10);
-  if(action==='add')openAddStock(fid);
-  if(action==='sell')openQS(fid);
-  if(action==='del')delFab(fid);
-});
-
-function renderDash(){
-  var el=document.getElementById('dash-grid');
-  if(!inv.length){el.innerHTML='<div class="empty"><div class="empty-ic">🧵</div><div class="empty-t">No Fabric Added</div><div class="empty-s">Add your first fabric to get started</div><button class="btn btn-primary" onclick="openModal()" style="margin:16px auto 0">+ Add First Fabric</button></div>';return;}
-  el.innerHTML=inv.slice(0,7).map(fabCardHTML).join('');
-}
-function filterCat(cat,el){selCatV=cat;document.querySelectorAll('.cat-p').forEach(function(p){p.classList.remove('active');});if(el)el.classList.add('active');renderInv();}
-function renderInv(){
-  var q=(document.getElementById('inv-q')||{value:''}).value.toLowerCase();
-  var list=inv.filter(function(f){return(!selCatV||(f.type||'').toLowerCase()===selCatV.toLowerCase())&&(f.name.toLowerCase().includes(q)||(f.type||'').toLowerCase().includes(q)||(f.color||'').toLowerCase().includes(q)||(f.supplier||'').toLowerCase().includes(q));});
-  var el=document.getElementById('inv-grid');
-  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">No results found</div></div>';return;}
-  el.innerHTML=list.map(fabCardHTML).join('');
-}
-function delFab(id){
-  if(currentProfile&&currentProfile.role!=='owner'){toast('🔒 Owner only');return;}
-  if(!confirm('Delete this fabric?'))return;
-  inv=inv.filter(function(f){return f.id!==id;});
-  save();updateStats();renderDash();renderInv();toast('Fabric deleted');
+function renderDash() {
+  const g = document.getElementById('dash-grid');
+  if(!g) return;
+  const low = fabrics.filter(f=>fabStockClass(f)!=='ok');
+  g.innerHTML = fabrics.slice(0,8).map(f=>fabCardHTML(f,'dash')).join('') || `<div class="empty"><div class="empty-ic">📦</div><div class="empty-t">No fabrics yet</div><div class="empty-s">Add your first fabric to get started</div></div>`;
+  // Stats
+  document.getElementById('st-c').textContent = fabrics.length;
+  document.getElementById('st-m').textContent = fmtN(fabrics.reduce((a,f)=>a+f.meters,0));
+  document.getElementById('st-l').textContent = low.length;
+  const val = fabrics.reduce((a,f)=>a+(f.meters*(f.rate||0)),0);
+  document.getElementById('st-v').textContent = fmt(val);
+  // Low badge
+  const badge = document.getElementById('low-badge');
+  badge.textContent = low.length; badge.classList.toggle('on',low.length>0);
+  // Low banner
+  const banner = document.getElementById('low-banner');
+  const bannerTxt = document.getElementById('low-banner-txt');
+  if(low.length>0) { banner.style.display='block'; bannerTxt.textContent = low.map(f=>f.name).join(', ')+' — running low!'; }
+  else banner.style.display='none';
 }
 
-// ══ ADD FABRIC MODAL ══
-function openModal(){document.getElementById('add-modal').classList.add('on');setTimeout(function(){document.getElementById('m-name').focus();},50);}
-function closeModal(){
-  document.getElementById('add-modal').classList.remove('on');
-  ['m-name','m-color','m-m','m-t','m-r','m-s'].forEach(function(id){document.getElementById(id).value='';});
+function renderInv() {
+  const g = document.getElementById('inv-grid');
+  if(!g) return;
+  const q = (document.getElementById('inv-q')?.value||'').toLowerCase();
+  let list = fabrics;
+  if(currentFabFilter) list = list.filter(f=>f.type===currentFabFilter);
+  if(q) list = list.filter(f=>(f.name+f.color+f.supplier+f.type).toLowerCase().includes(q));
+  g.innerHTML = list.map(f=>fabCardHTML(f,'full')).join('') || `<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">No results</div></div>`;
 }
-function _doSaveModal(){
-  var name=document.getElementById('m-name').value.trim();
-  var m=parseFloat(document.getElementById('m-m').value)||0;
-  if(!name){toast('Fabric name required!');return null;}
-  var r=parseFloat(document.getElementById('m-r').value)||0;
-  var s=document.getElementById('m-s').value.trim()||'—';
-  var ex=inv.find(function(f){return f.name.toLowerCase()===name.toLowerCase();});
-  var fabObj;
-  if(ex){ex.meters+=m;if(r>0)ex.rate=r;toast('✓ '+m+'m added to '+name);fabObj=ex;}
-  else{
-    fabObj={id:Date.now(),name:name,type:document.getElementById('m-type').value,color:document.getElementById('m-color').value.trim()||'—',meters:m,threshold:parseFloat(document.getElementById('m-t').value)||50,rate:r,supplier:s,addedAt:new Date().toISOString()};
-    inv.push(fabObj);toast('✓ Added!');
+
+function renderCatFilters() {
+  const r = document.getElementById('inv-cat-filters');
+  if(!r) return;
+  r.innerHTML = `<button class="cat-p ${!currentFabFilter?'active':''}" onclick="filterCat('',this)">🧵 All</button>`+
+    masterData.qualities.map(q=>`<button class="cat-p ${currentFabFilter===q?'active':''}" onclick="filterCat('${q}',this)">${q}</button>`).join('');
+}
+function filterCat(cat, btn) {
+  currentFabFilter=cat;
+  document.querySelectorAll('#inv-cat-filters .cat-p').forEach(b=>b.classList.remove('active'));
+  btn?.classList.add('active');
+  renderInv();
+}
+
+function updateLow() { renderDash(); }
+
+// Add Fabric Modal
+function openModal() {
+  document.getElementById('m-name').value='';
+  document.getElementById('m-color').value='';
+  document.getElementById('m-m').value='';
+  document.getElementById('m-t').value='50';
+  document.getElementById('m-r').value='';
+  document.getElementById('m-s').value='';
+  document.getElementById('add-modal').classList.add('on');
+}
+function closeModal() { document.getElementById('add-modal').classList.remove('on'); }
+async function saveModal(genReceipt=false) {
+  const name = v('m-name'); if(!name){toast('Fabric name required');return;}
+  const type = v('m-type');
+  const data = { name, type, color:v('m-color'), meters:nv('m-m'), threshold:nv('m-t')||50, rate:nv('m-r'), supplier:v('m-s') };
+  const id = await fbSave('fabrics', data);
+  fabrics.unshift({id,...data});
+  addParty(data.supplier);
+  closeModal();
+  toast('Fabric added ✅');
+  renderAll();
+  if(genReceipt) {
+    // Generate purchase receipt for opening stock
+    const receiptHTML = buildPurchaseReceiptHTML({
+      id, party: data.supplier||'Opening Stock', item: data.name,
+      meters: data.meters, rate: data.rate, gstRate:5, gstType:'intra',
+      total: data.meters*data.rate, note:'Opening stock', date: today()
+    });
+    openDocModal('📃 Purchase Receipt — '+data.name, receiptHTML, 'purchase-receipt');
   }
-  var purchData=null;
-  if(m>0){
-    purchData={id:Date.now(),party:s==='—'?'Supplier':s,supplierGstin:'',item:name,meters:m,rate:r,subtotal:m*r,gstRate:0,gstType:'intra',gstAmount:0,cgst:0,sgst:0,igst:0,total:m*r,note:'Initial stock',date:new Date().toISOString()};
-    purchases.unshift(purchData);
-  }
-  updatePartyList();save();updateStats();renderDash();renderInv();closeModal();
-  return {fab:fabObj,purch:purchData};
 }
-function saveModal(){_doSaveModal();}
-function saveModalAndReceipt(){
-  var result=_doSaveModal();
-  if(result&&result.purch)setTimeout(function(){openDocAfterStock(result.purch,result.fab.name);},300);
+async function saveModalAndReceipt() { await saveModal(true); }
+async function deleteFabric(id) {
+  if(!confirm('Delete this fabric?')) return;
+  await fbDelete('fabrics',id);
+  fabrics=fabrics.filter(f=>f.id!==id);
+  renderAll(); toast('Deleted');
 }
 
-// ══ ADD STOCK MODAL ══
-function openAddStock(id){
-  asFabId=id;
-  var f=inv.find(function(f){return f.id===id;});
-  if(!f){toast('Fabric not found!');return;}
-  document.getElementById('addstock-fab-name').textContent=f.name+' — Current: '+f.meters+'m';
-  ['as-m','as-r','as-s','as-gstin'].forEach(function(i){var el=document.getElementById(i);if(el)el.value='';});
+// Add Stock Modal
+function openAddStock(id) {
+  currentFabId = id;
+  const f = fabrics.find(x=>x.id===id);
+  document.getElementById('addstock-fab-name').textContent = f?.name||'—';
+  document.getElementById('as-m').value='';
+  document.getElementById('as-r').value=f?.rate||'';
+  document.getElementById('as-s').value=f?.supplier||'';
+  document.getElementById('as-gstin').value='';
   document.getElementById('addstock-modal').classList.add('on');
-  setTimeout(function(){document.getElementById('as-m').focus();},50);
 }
-function closeAddStock(){document.getElementById('addstock-modal').classList.remove('on');}
-function _doSaveAddStock(){
-  var m=parseFloat(document.getElementById('as-m').value);
-  if(!m||m<=0){toast('Enter meters!');return null;}
-  var f=inv.find(function(f){return f.id===asFabId;});
-  if(!f)return null;
-  f.meters+=m;
-  var r=parseFloat(document.getElementById('as-r').value);if(r>0)f.rate=r;
-  var s=document.getElementById('as-s').value.trim();if(s)f.supplier=s;
-  var gstin=document.getElementById('as-gstin').value.trim();
-  var rateUsed=r>0?r:f.rate;
-  var purchData={id:Date.now(),party:f.supplier||'Supplier',supplierGstin:gstin,item:f.name,meters:m,rate:rateUsed,subtotal:m*rateUsed,gstRate:0,gstType:'intra',gstAmount:0,cgst:0,sgst:0,igst:0,total:m*rateUsed,note:'Stock added',date:new Date().toISOString()};
-  purchases.unshift(purchData);
-  updatePartyList();save();updateStats();renderDash();renderInv();closeAddStock();
-  toast('✓ '+m+'m added to '+f.name+'!');
-  return {purch:purchData,fab:f};
+function closeAddStock() { document.getElementById('addstock-modal').classList.remove('on'); }
+async function saveAddStock(genReceipt=false) {
+  const m = nv('as-m'); if(!m){toast('Enter meters');return;}
+  const f = fabrics.find(x=>x.id===currentFabId);
+  if(!f) return;
+  const rate = nv('as-r')||f.rate;
+  f.meters += m; f.rate = rate||f.rate;
+  f.supplier = v('as-s')||f.supplier;
+  await fbUpdate('fabrics', currentFabId, {meters:f.meters, rate:f.rate, supplier:f.supplier});
+  // Record purchase in ledger
+  const gstRate = 5, gstType='intra';
+  const subtotal = m * rate;
+  const gst = subtotal*gstRate/100;
+  const total = subtotal+gst;
+  const purData = {
+    type:'purchase', party:f.supplier||v('as-s'), item:f.name,
+    meters:m, rate, gstRate, gstType, subtotal, gst, total,
+    gstin:v('as-gstin'), note:'', date:ts()
+  };
+  // Save document snapshot
+  const docSnap = buildPurchaseReceiptHTML({...purData, id:currentFabId});
+  purData.savedDoc = docSnap;
+  const pid = await fbSave('purchases', purData);
+  purchases.unshift({id:pid,...purData});
+  addParty(f.supplier);
+  closeAddStock();
+  toast('Stock added ✅');
+  renderAll();
+  if(genReceipt) openDocModal('📃 Purchase Receipt — '+f.name, docSnap, 'purchase-receipt');
 }
-function saveAddStock(){_doSaveAddStock();}
-function saveAddStockAndReceipt(){var r=_doSaveAddStock();if(r)setTimeout(function(){openDocAfterStock(r.purch,r.fab.name);},300);}
+async function saveAddStockAndReceipt() { await saveAddStock(true); }
 
-// ══ QS MODAL ══
-function openQS(id){
-  qsFabId=id;
-  var f=inv.find(function(f){return f.id===id;});
-  if(!f){toast('Fabric not found!');return;}
-  document.getElementById('qs-fab-name').textContent=f.name+' — Available: '+f.meters+'m';
-  ['qs-m','qs-disc','qs-c','qs-buyer-gstin','qs-phone'].forEach(function(i){var el=document.getElementById(i);if(el)el.value='';});
-  var kEl=document.getElementById('qs-kacha');if(kEl)kEl.checked=false;
-  document.getElementById('qs-r').value=f.rate||'';
+// ══════════════════════════════════════════════════
+// QUICK SELL
+// ══════════════════════════════════════════════════
+function openQuickSell(id) {
+  currentFabId = id;
+  const f = fabrics.find(x=>x.id===id);
+  document.getElementById('qs-fab-name').textContent = f?.name||'—';
+  document.getElementById('qs-m').value='';
+  document.getElementById('qs-r').value=f?.rate||'';
+  document.getElementById('qs-disc').value='0';
+  document.getElementById('qs-c').value='';
+  document.getElementById('qs-phone').value='';
+  document.getElementById('qs-kacha').checked=false;
+  document.getElementById('qs-buyer-gstin').value='';
   document.getElementById('qs-amt').textContent='₹0';
   document.getElementById('qs-gst-breakdown').innerHTML='';
   document.getElementById('quicksell-modal').classList.add('on');
-  setTimeout(function(){document.getElementById('qs-m').focus();},50);
 }
-function closeQS(){document.getElementById('quicksell-modal').classList.remove('on');}
-function calcQSAmt(){
-  var m=parseFloat(document.getElementById('qs-m').value)||0;
-  var r=parseFloat(document.getElementById('qs-r').value)||0;
-  var disc=parseFloat(document.getElementById('qs-disc').value)||0;
-  var rate=parseInt(document.getElementById('qs-gst-rate').value)||0;
-  var type=document.getElementById('qs-gst-type').value;
-  var g=calcGST(Math.max(0,m*r-disc),rate,type);
-  document.getElementById('qs-amt').textContent=fv(g.total);
-  document.getElementById('qs-gst-breakdown').innerHTML=gstBreakdownHTML(g,type);
+function closeQS() { document.getElementById('quicksell-modal').classList.remove('on'); }
+function calcQSAmt() {
+  const m=nv('qs-m'), r=nv('qs-r')||0, disc=nv('qs-disc')||0;
+  const rate=document.getElementById('qs-gst-rate')?.value||5;
+  const type=document.getElementById('qs-gst-type')?.value||'intra';
+  const sub=(m*r)-disc; const gst=sub*(parseFloat(rate)/100); const total=sub+gst;
+  document.getElementById('qs-amt').textContent=fmt(total);
+  document.getElementById('qs-gst-breakdown').innerHTML=gstBreakdownHTML(sub,parseFloat(rate),type);
 }
-function _doQSSale(withBill){
-  var f=inv.find(function(f){return f.id===qsFabId;});
-  if(!f){toast('Error!');return;}
-  var m=parseFloat(document.getElementById('qs-m').value);
-  var r=parseFloat(document.getElementById('qs-r').value)||f.rate;
-  var disc=parseFloat(document.getElementById('qs-disc').value)||0;
-  var cust=document.getElementById('qs-c').value.trim()||'Walk-in';
-  var isKacha=document.getElementById('qs-kacha')&&document.getElementById('qs-kacha').checked;
-  if(!m||m<=0){toast('Enter meters!');return;}
-  if(!isKacha&&m>f.meters){toast('Only '+f.meters+'m available!');return;}
-  var rate=parseInt(document.getElementById('qs-gst-rate').value)||0;
-  var type=document.getElementById('qs-gst-type').value;
-  var g=calcGST(Math.max(0,m*r-disc),rate,type);
-  var invType=document.getElementById('qs-inv-type').value;
-  var phone=(document.getElementById('qs-phone')||{value:''}).value.trim().replace(/\D/g,'');
-  var bgst=(document.getElementById('qs-buyer-gstin')||{value:''}).value.trim();
-  var paidAmt=invType==='Credit'?0:g.total;
-  var saleData={id:Date.now(),fabId:f.id,fabName:f.name,meters:m,rate:r,discount:disc,subtotal:g.subtotal,gstRate:rate,gstType:type,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,invType:invType,payMode:'Cash',paidAmt:paidAmt,dueAmt:g.total-paidAmt,customer:cust,customerPhone:phone,buyerGstin:bgst,note:'',date:new Date().toISOString(),isKacha:isKacha};
-  if(isKacha){closeQS();toast('📝 Kacha Bill — stock not deducted');if(withBill)setTimeout(function(){openDocAfterSale(saleData);},300);return;}
-  f.meters-=m;
-  sales.unshift(saleData);
-  updatePartyList();save();updateStats();renderDash();renderInv();closeQS();
-  toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
-  if(f.meters<f.threshold)sendLowStockAlert(f);
-  if(withBill)setTimeout(function(){openDocAfterSale(saleData);},300);
+async function saveQS(genBill=false) {
+  const m=nv('qs-m'); if(!m){toast('Enter meters');return;}
+  const f=fabrics.find(x=>x.id===currentFabId); if(!f)return;
+  const kacha = document.getElementById('qs-kacha').checked;
+  const r=nv('qs-r')||f.rate;
+  const disc=nv('qs-disc')||0;
+  const gstRate=parseFloat(document.getElementById('qs-gst-rate')?.value||5);
+  const gstType=document.getElementById('qs-gst-type')?.value||'intra';
+  const sub=(m*r)-disc; const gst=sub*gstRate/100; const total=sub+gst;
+  const saleData = {
+    type:'sale', fabric:f.name, fabricId:f.id, meters:m, rate:r, discount:disc,
+    gstRate, gstType, subtotal:sub, gst, total,
+    customer:v('qs-c'), phone:v('qs-phone'), buyerGstin:v('qs-buyer-gstin'),
+    invType:document.getElementById('qs-inv-type')?.value||'Cash',
+    kacha, date:ts()
+  };
+  // Save document snapshot
+  const docSnap = buildSaleInvoiceHTML(saleData);
+  saleData.savedDoc = docSnap;
+  if(!kacha) { f.meters=Math.max(0,f.meters-m); await fbUpdate('fabrics',f.id,{meters:f.meters}); }
+  const sid = await fbSave('sales', saleData);
+  sales.unshift({id:sid,...saleData});
+  addParty(saleData.customer);
+  closeQS();
+  toast(kacha?'Kacha bill noted 📝':'Sale recorded ✅');
+  renderAll();
+  if(genBill) openDocModal('🧾 Sale Invoice — '+f.name, docSnap, 'sale-invoice');
 }
-function saveQS(){_doQSSale(false);}
-function saveQSAndBill(){_doQSSale(true);}
+async function saveQSAndBill() { await saveQS(true); }
 
-function sendLowStockAlert(f){
-  emailjs.send(EJS_SVC,'template_8pvu8qc',{fabric_name:f.name,meters:f.meters,threshold:f.threshold,to_email:user?user.email:'',to_name:user?user.displayName:'Owner'}).catch(function(){});
+// ══════════════════════════════════════════════════
+// SALES PAGE
+// ══════════════════════════════════════════════════
+function renderSalesFabSelect() {
+  const sel = document.getElementById('s-fab');
+  if(!sel) return;
+  sel.innerHTML = fabrics.map(f=>`<option value="${f.id}">${f.name} (${fmtN(f.meters)}m)</option>`).join('');
+}
+function onFabChange() {
+  const id = document.getElementById('s-fab')?.value;
+  const f = fabrics.find(x=>x.id===id);
+  if(f) document.getElementById('s-r').value=f.rate||'';
+  calcSaleAmt();
+}
+function calcSaleAmt() {
+  const m=nv('s-m'), r=nv('s-r'), disc=nv('s-disc')||0;
+  const rate=parseFloat(document.getElementById('s-gst-rate')?.value||5);
+  const type=document.getElementById('s-gst-type')?.value||'intra';
+  const sub=(m*r)-disc; const gst=sub*rate/100; const total=sub+gst;
+  document.getElementById('s-subtotal').textContent=fmt(sub);
+  document.getElementById('s-amt').textContent=fmt(total);
+  document.getElementById('s-gst-breakdown').innerHTML=gstBreakdownHTML(sub,rate,type);
+}
+async function recSale(genBill=false) {
+  const fabId=v('s-fab'); const m=nv('s-m'); if(!m){toast('Enter meters');return;}
+  const f=fabrics.find(x=>x.id===fabId); if(!f)return;
+  const kacha=document.getElementById('s-kacha').checked;
+  const r=nv('s-r')||f.rate;
+  const disc=nv('s-disc')||0;
+  const gstRate=parseFloat(document.getElementById('s-gst-rate')?.value||5);
+  const gstType=document.getElementById('s-gst-type')?.value||'intra';
+  const sub=(m*r)-disc; const gst=sub*gstRate/100; const total=sub+gst;
+  const paid=nv('s-paid')||total;
+  const saleData = {
+    type:'sale', fabric:f.name, fabricId:f.id, meters:m, rate:r, discount:disc,
+    gstRate, gstType, subtotal:sub, gst, total, paid,
+    payMode:v('s-pay-mode'), invType:v('s-inv-type'),
+    customer:v('s-c'), phone:v('s-phone'), buyerGstin:v('s-buyer-gstin'),
+    note:v('s-n'), kacha, date:ts()
+  };
+  const docSnap = buildSaleInvoiceHTML(saleData);
+  saleData.savedDoc = docSnap;
+  if(!kacha) { f.meters=Math.max(0,f.meters-m); await fbUpdate('fabrics',f.id,{meters:f.meters}); }
+  const sid = await fbSave('sales', saleData);
+  sales.unshift({id:sid,...saleData});
+  addParty(saleData.customer);
+  // Reset form
+  document.getElementById('s-m').value=''; document.getElementById('s-paid').value='';
+  document.getElementById('s-c').value=''; document.getElementById('s-n').value='';
+  document.getElementById('s-disc').value='0'; document.getElementById('s-kacha').checked=false;
+  calcSaleAmt();
+  toast(kacha?'Kacha bill noted 📝':'Sale recorded ✅');
+  renderAll();
+  if(genBill) openDocModal('🧾 Sale Invoice', docSnap, 'sale-invoice');
+}
+async function recSaleAndBill() { await recSale(true); }
+function renderSalesHistory() {
+  const el = document.getElementById('sales-list');
+  if(!el) return;
+  el.innerHTML = sales.slice(0,10).map(s=>`
+    <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid ${s.kacha?'var(--amber)':'var(--emerald)'};border-radius:var(--r2);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:13px;font-weight:700">${s.fabric} ${s.kacha?'<span style="font-size:10px;color:var(--amber)">[Kacha]</span>':''}</div>
+        <div style="font-size:11px;color:var(--text3)">${fmtN(s.meters)}m · ${s.customer||'—'} · ${fmtDate(s.date)}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:16px;font-weight:800;color:var(--emerald)">${fmt(s.total)}</div>
+        ${s.savedDoc?`<button class="le-doc-btn" onclick="viewSavedDoc('sales','${s.id}')">📄</button>`:''}
+      </div>
+    </div>
+  `).join('') || '<div class="empty" style="padding:20px"><div class="empty-ic" style="font-size:28px">💰</div><div class="empty-t" style="font-size:13px">No sales yet</div></div>';
 }
 
-// ══ SALES PAGE ══
-function fillSD(){
-  var sel=document.getElementById('s-fab');
-  sel.innerHTML=inv.length?inv.map(function(f){return '<option value="'+f.id+'" data-rate="'+f.rate+'">'+esc(f.name)+' ('+f.meters+'m)</option>';}).join(''):'<option>Add stock first</option>';
-  if(inv.length){document.getElementById('s-r').value=inv[0].rate||'';calcSaleAmt();}
-}
-function onFabChange(){var opt=document.getElementById('s-fab').options[document.getElementById('s-fab').selectedIndex];document.getElementById('s-r').value=(opt&&opt.dataset&&opt.dataset.rate)||'';calcSaleAmt();}
-function calcSaleAmt(){
-  var m=parseFloat(document.getElementById('s-m').value)||0;
-  var r=parseFloat(document.getElementById('s-r').value)||0;
-  var disc=parseFloat(document.getElementById('s-disc').value)||0;
-  var rate=parseInt(document.getElementById('s-gst-rate').value)||0;
-  var type=document.getElementById('s-gst-type').value;
-  var g=calcGST(Math.max(0,m*r-disc),rate,type);
-  document.getElementById('s-subtotal').textContent=fv(m*r)+(disc>0?' (disc: -₹'+disc+')':'');
-  document.getElementById('s-amt').textContent=fv(g.total);
-  document.getElementById('s-gst-breakdown').innerHTML=gstBreakdownHTML(g,type);
-}
-function _doSale(withBill){
-  var id=parseInt(document.getElementById('s-fab').value);
-  var m=parseFloat(document.getElementById('s-m').value);
-  var r=parseFloat(document.getElementById('s-r').value);
-  var disc=parseFloat(document.getElementById('s-disc').value)||0;
-  var cust=document.getElementById('s-c').value.trim()||'Walk-in';
-  var note=document.getElementById('s-n').value.trim();
-  var f=inv.find(function(f){return f.id===id;});
-  if(!f){toast('Select a fabric!');return;}
-  if(!m||m<=0){toast('Enter meters!');return;}
-  var isKacha=document.getElementById('s-kacha')&&document.getElementById('s-kacha').checked;
-  if(!isKacha&&m>f.meters){toast('Only '+f.meters+'m available!');return;}
-  var rate=r||f.rate,gstRate=parseInt(document.getElementById('s-gst-rate').value)||0,gstType=document.getElementById('s-gst-type').value;
-  var g=calcGST(Math.max(0,m*rate-disc),gstRate,gstType);
-  var invType=document.getElementById('s-inv-type').value;
-  var payMode=document.getElementById('s-pay-mode').value;
-  var paidInput=parseFloat(document.getElementById('s-paid').value);
-  var paidAmt=isNaN(paidInput)?(invType==='Credit'?0:g.total):paidInput;
-  var bgst=document.getElementById('s-buyer-gstin').value.trim();
-  var phone=(document.getElementById('s-phone')||{value:''}).value.trim().replace(/\D/g,'');
-  var saleData={id:Date.now(),fabId:id,fabName:f.name,meters:m,rate:rate,discount:disc,subtotal:g.subtotal,gstRate:gstRate,gstType:gstType,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,invType:invType,payMode:payMode,paidAmt:paidAmt,dueAmt:g.total-paidAmt,customer:cust,buyerGstin:bgst,customerPhone:phone,note:note,date:new Date().toISOString(),isKacha:isKacha};
-  if(isKacha){toast('📝 Kacha Bill');if(withBill)setTimeout(function(){openDocAfterSale(saleData);},300);return;}
-  f.meters-=m;sales.unshift(saleData);
-  updatePartyList();save();updateStats();renderSalesList();fillSD();
-  toast('✓ '+m+'m '+f.name+' sold — '+fv(g.total));
-  ['s-m','s-c','s-n','s-buyer-gstin','s-disc','s-paid','s-phone'].forEach(function(i){var el=document.getElementById(i);if(el)el.value='';});
-  var sk=document.getElementById('s-kacha');if(sk)sk.checked=false;
-  document.getElementById('s-amt').textContent='₹0';
-  document.getElementById('s-subtotal').textContent='₹0';
-  document.getElementById('s-gst-breakdown').innerHTML='';
-  if(f.meters<f.threshold)sendLowStockAlert(f);
-  if(withBill)setTimeout(function(){openDocAfterSale(saleData);},300);
-}
-function recSale(){_doSale(false);}
-function recSaleAndBill(){_doSale(true);}
+// ══════════════════════════════════════════════════
+// LEDGER
+// ══════════════════════════════════════════════════
+async function loadSales() { sales = await fbGetAll('sales'); }
+async function loadPurchases() { purchases = await fbGetAll('purchases'); }
 
-function renderSalesList(){
-  var el=document.getElementById('sales-list');if(!el)return;
-  var list=sales.filter(function(s){return !s.isKacha;}).slice(0,12);
-  if(!list.length){el.innerHTML='<div class="empty" style="padding:30px"><div class="empty-ic">📋</div><div class="empty-t">No Sales Yet</div></div>';return;}
-  el.innerHTML=list.map(function(s){
-    var gTag=s.gstRate?'<span style="font-size:10px;background:var(--blue-dim);color:var(--blue);border-radius:4px;padding:1px 6px;font-weight:700;margin-left:3px">GST '+s.gstRate+'%</span>':'';
-    return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:10px 14px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center">'
-      +'<div><div style="font-size:13px;font-weight:700">'+esc(s.fabName)+(s.isReturned?'<span style="color:var(--rose);font-size:10px;font-weight:700;margin-left:4px">RETURNED</span>':'')+'</div>'
-      +'<div style="font-size:11px;color:var(--text3)">'+s.meters+'m · '+esc(s.customer)+' · '+new Date(s.date).toLocaleDateString('en-IN')+gTag+'</div></div>'
-      +'<div style="font-size:16px;font-weight:800;color:var(--emerald);font-family:var(--fm) hide-staff">'+fv(s.total)+'</div>'
-    +'</div>';
-  }).join('');
+function switchLedger(tab) {
+  currentLedgerTab=tab;
+  ['sales','purchases','udhaar'].forEach(t=>document.getElementById('tab-'+t)?.classList.remove('active'));
+  document.getElementById('tab-'+tab)?.classList.add('active');
+  renderLedger();
 }
+function renderLedger() {
+  const q=(document.getElementById('ledger-q')?.value||'').toLowerCase();
+  const g=document.getElementById('ledger-grid'); if(!g) return;
+  // Summary
+  const totalSales=sales.filter(s=>!s.kacha).reduce((a,s)=>a+s.total,0);
+  const totalPur=purchases.reduce((a,p)=>a+p.total,0);
+  document.getElementById('ls-total-sales').textContent=fmt(totalSales);
+  document.getElementById('ls-total-purchases').textContent=fmt(totalPur);
+  document.getElementById('ls-sales-count').textContent=sales.length+' entries';
+  document.getElementById('ls-purchases-count').textContent=purchases.length+' entries';
+  const profit=totalSales-totalPur;
+  const el=document.getElementById('ls-net-profit');
+  el.textContent=fmt(profit); el.style.color=profit>=0?'var(--emerald)':'var(--rose)';
 
-// ══ LEDGER ══
-function switchLedger(tab){activeLedgerTab=tab;['sales','purchases','udhaar'].forEach(function(t){document.getElementById('tab-'+t).classList.toggle('active',t===tab);});renderLedger();}
-function renderLedgerSummary(){
-  var ts=sales.filter(function(s){return !s.isReturned&&!s.isKacha;}).reduce(function(a,s){return a+s.total;},0);
-  var tp=purchases.filter(function(p){return !p.isReturned;}).reduce(function(a,p){return a+p.total;},0);
-  var net=ts-tp;
-  document.getElementById('ls-total-sales').textContent=fv(ts);
-  document.getElementById('ls-sales-count').textContent=sales.filter(function(s){return !s.isReturned&&!s.isKacha;}).length+' entries';
-  document.getElementById('ls-total-purchases').textContent=fv(tp);
-  document.getElementById('ls-purchases-count').textContent=purchases.filter(function(p){return !p.isReturned;}).length+' entries';
-  var nel=document.getElementById('ls-net-profit');nel.textContent=fv(Math.abs(net));nel.style.color=net>=0?'var(--emerald)':'var(--rose)';
-}
-function renderLedger(){
-  var q=(document.getElementById('ledger-q')||{value:''}).value.toLowerCase();
-  var el=document.getElementById('ledger-grid');if(!el)return;
-  if(activeLedgerTab==='udhaar'){
-    var dues={};
-    sales.filter(function(s){return !s.isReturned&&!s.isKacha&&s.dueAmt>0&&(s.customer||'').toLowerCase().includes(q);}).forEach(function(s){
-      if(!dues[s.customer])dues[s.customer]={totalDue:0,count:0,phone:''};
-      dues[s.customer].totalDue+=s.dueAmt;dues[s.customer].count++;
-      if(!dues[s.customer].phone&&s.customerPhone)dues[s.customer].phone=s.customerPhone;
-    });
-    var html='';
-    for(var cust in dues){
-      var contact=dues[cust].phone?'<a href="https://wa.me/91'+dues[cust].phone+'?text='+encodeURIComponent('Jai Jinendra '+cust+', aapka ₹'+Math.round(dues[cust].totalDue)+' pending hai.')+'" target="_blank" style="padding:5px 9px;background:#25D366;color:white;border:none;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none;display:inline-block">💬 WA</a>':'';
-      html+='<div class="udhaar-card"><div><div style="font-size:15px;font-weight:700">'+esc(cust)+'</div><div style="font-size:11px;color:var(--text3);margin-top:2px">'+dues[cust].count+' bills pending</div><div style="margin-top:6px">'+contact+'</div></div>'
-        +'<div style="text-align:right"><div style="font-size:20px;font-weight:800;color:var(--amber);font-family:var(--fm)">'+fv(dues[cust].totalDue)+'</div><button class="btn btn-ghost btn-sm" style="margin-top:4px" onclick="settleDue(\''+esc(cust)+'\')">✅ Settle</button></div></div>';
-    }
-    el.innerHTML=html||'<div class="empty"><div class="empty-ic">🎉</div><div class="empty-t">No Pending Dues</div></div>';
+  if(currentLedgerTab==='udhaar') {
+    const udhaar=sales.filter(s=>s.invType==='Credit'&&!s.kacha&&s.paid<s.total);
+    g.innerHTML=udhaar.length?udhaar.map(s=>`
+      <div class="udhaar-card">
+        <div><div style="font-size:14px;font-weight:700">${s.customer||'—'}</div><div style="font-size:11px;color:var(--text3)">${s.fabric} · ${fmtDate(s.date)}</div></div>
+        <div style="text-align:right">
+          <div style="font-size:18px;font-weight:800;color:var(--amber)">${fmt(s.total-(s.paid||0))}</div>
+          <div style="font-size:11px;color:var(--text3)">of ${fmt(s.total)}</div>
+        </div>
+      </div>
+    `).join(''):`<div class="empty"><div class="empty-ic">✅</div><div class="empty-t">No pending udhaar</div></div>`;
     return;
   }
-  var list=activeLedgerTab==='sales'?sales:purchases;
-  var filtered=list.filter(function(e){
-    if(activeLedgerTab==='sales'&&e.isKacha)return false;
-    return ((e.fabName||e.item||'').toLowerCase().includes(q)||(e.customer||e.party||'').toLowerCase().includes(q)||String(e.total||0).includes(q));
-  });
-  if(!filtered.length){el.innerHTML='<div class="empty"><div class="empty-ic">'+(activeLedgerTab==='sales'?'💰':'📥')+'</div><div class="empty-t">No records found</div></div>';return;}
-  el.innerHTML=filtered.map(function(e){
-    var isSale=activeLedgerTab==='sales';
-    var party=isSale?(e.customer||'Walk-in'):(e.party||'Unknown');
-    var item=isSale?e.fabName:(e.item||'—');
-    var qty=e.meters?e.meters+'m':'—';
-    var dateStr=new Date(e.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-    var gTag=e.gstRate>0?'<span style="font-size:10px;background:var(--blue-dim);color:var(--blue);border-radius:4px;padding:1px 6px;font-weight:700;margin-left:3px">GST '+e.gstRate+'%</span>':'';
-    
-    // Updated Document Actions
-    var docBtns = '<button onclick="openLedgerDoc('+e.id+','+isSale+')" class="btn btn-ghost" style="padding:4px 8px;font-size:11px;margin-left:6px">📄 Docs</button>';
-    
-    var retBtn=(currentProfile&&currentProfile.role==='owner')?(e.isReturned?'<span class="pill pill-r" style="margin-left:6px">RETURNED</span>':'<button onclick="returnItem('+e.id+','+isSale+')" class="btn btn-ghost btn-sm" style="margin-left:6px">↩️</button>'):(e.isReturned?'<span class="pill pill-r">RETURNED</span>':'');
-    return '<div class="ledger-entry '+(isSale?'sale-entry':'purchase-entry')+(e.isReturned?' returned':'')+'"><div class="le-icon '+(isSale?'sale':'purchase')+'">'+(isSale?'💰':'📥')+'</div><div><div class="le-name">'+esc(item)+retBtn+docBtns+'</div><div class="le-meta">'+esc(party)+' · '+qty+(e.rate?' · ₹'+e.rate+'/m':'')+gTag+'</div>'+(e.note?'<div style="font-size:10px;color:var(--text3);margin-top:1px;font-style:italic">'+esc(e.note)+'</div>':'')+(e.dueAmt>0&&!e.isReturned?'<div style="font-size:10px;color:var(--amber);margin-top:2px">Due: '+fv(e.dueAmt)+'</div>':'')+'</div><div class="le-date">'+dateStr+'</div><div class="le-amount '+(isSale?'sale':'purchase')+'">'+(e.isReturned?'<del>'+fv(e.total)+'</del>':fv(e.total))+'</div></div>';
+  const list = currentLedgerTab==='sales' ? sales : purchases;
+  const filtered = q ? list.filter(e=>((e.fabric||e.item||'')+(e.customer||e.party||'')+(e.total||'')+'').toLowerCase().includes(q)) : list;
+  g.innerHTML = filtered.length ? filtered.map(e=>{
+    const isSale = currentLedgerTab==='sales';
+    const name = isSale ? e.fabric : (e.item||e.party);
+    const party = isSale ? (e.customer||'—') : e.party;
+    const docBtn = e.savedDoc ? `<button class="le-doc-btn" onclick="viewSavedDoc('${isSale?'sales':'purchases'}','${e.id}')">📄 Bill</button>` : '';
+    return `<div class="ledger-entry ${isSale?'sale-entry':'purchase-entry'}">
+      <div class="le-icon ${isSale?'sale':'purchase'}">${isSale?'💰':'📦'}</div>
+      <div>
+        <div class="le-name">${name} ${e.kacha?'<span style="font-size:10px;color:var(--amber)">[Kacha]</span>':''}</div>
+        <div class="le-meta">${party} · ${fmtN(e.meters||0)}m${e.rate?' @ '+fmt(e.rate)+'/m':''}</div>
+      </div>
+      <div class="le-date">${fmtDate(e.date)}</div>
+      ${docBtn}
+      <div class="le-amount ${isSale?'sale':'purchase'}">${fmt(e.total)}</div>
+    </div>`;
+  }).join('') : `<div class="empty"><div class="empty-ic">📒</div><div class="empty-t">No records</div></div>`;
+}
+
+async function viewSavedDoc(col, id) {
+  const list = col==='sales' ? sales : purchases;
+  const entry = list.find(e=>e.id===id);
+  if(!entry?.savedDoc) { toast('No saved document found'); return; }
+  const title = col==='sales' ? '🧾 Sale Invoice' : '📃 Purchase Receipt';
+  openDocModal(title, entry.savedDoc, col==='sales'?'sale-invoice':'purchase-receipt');
+}
+
+function exportCSV() {
+  const rows=[['Date','Type','Item/Fabric','Party','Meters','Rate','GST%','Total']];
+  sales.forEach(s=>rows.push([fmtDate(s.date),'Sale',s.fabric,s.customer||'',s.meters,s.rate,s.gstRate,s.total]));
+  purchases.forEach(p=>rows.push([fmtDate(p.date),'Purchase',p.item||p.party,p.party,p.meters,p.rate,p.gstRate,p.total]));
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='stocksaathi-ledger.csv'; a.click();
+}
+
+// ══════════════════════════════════════════════════
+// PURCHASES
+// ══════════════════════════════════════════════════
+function openPurchaseModal() { document.getElementById('purchase-modal').classList.add('on'); }
+function closePurchaseModal() { document.getElementById('purchase-modal').classList.remove('on'); }
+function calcPurAmt() {
+  const m=nv('pur-meters'), r=nv('pur-rate');
+  const rate=parseFloat(document.getElementById('pur-gst-rate')?.value||5);
+  const type=document.getElementById('pur-gst-type')?.value||'intra';
+  const sub=m*r; const gst=sub*rate/100; const total=sub+gst;
+  document.getElementById('pur-total').textContent=fmt(total);
+  document.getElementById('pur-gst-breakdown').innerHTML=gstBreakdownHTML(sub,rate,type);
+}
+async function savePurchase(genReceipt=false) {
+  const party=v('pur-party'); if(!party){toast('Supplier required');return;}
+  const item=v('pur-item'); if(!item){toast('Item required');return;}
+  const meters=nv('pur-meters'); if(!meters){toast('Meters required');return;}
+  const rate=nv('pur-rate');
+  const gstRate=parseFloat(document.getElementById('pur-gst-rate')?.value||5);
+  const gstType=document.getElementById('pur-gst-type')?.value||'intra';
+  const sub=meters*rate; const gst=sub*gstRate/100; const total=sub+gst;
+  const purData={
+    type:'purchase', party, gstin:v('pur-gstin'), item, meters, rate,
+    gstRate, gstType, subtotal:sub, gst, total, note:v('pur-note'), date:ts()
+  };
+  const docSnap = buildPurchaseReceiptHTML(purData);
+  purData.savedDoc = docSnap;
+  const pid = await fbSave('purchases', purData);
+  purchases.unshift({id:pid,...purData});
+  addParty(party);
+  closePurchaseModal();
+  toast('Purchase recorded ✅');
+  renderAll();
+  if(genReceipt) openDocModal('📃 Purchase Receipt — '+item, docSnap, 'purchase-receipt');
+}
+async function savePurchaseAndReceipt() { await savePurchase(true); }
+
+// ══════════════════════════════════════════════════
+// PAYMENTS & CHEQUES (NEW FEATURE)
+// ══════════════════════════════════════════════════
+async function loadPayments() {
+  payments = await fbGetAll('payments');
+  renderPayments();
+  renderPaymentStats();
+}
+
+function renderPaymentStats() {
+  const total = payments.reduce((a,p)=>a+p.amount,0);
+  const receipts = payments.filter(p=>p.docType==='receipt');
+  const cheques = payments.filter(p=>p.docType==='cheque');
+  const now = new Date(); const thisMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const monthTotal = payments.filter(p=>p.date?.startsWith?.(thisMonth)).reduce((a,p)=>a+p.amount,0);
+  document.getElementById('pay-st-total').textContent = fmt(total);
+  document.getElementById('pay-st-receipts').textContent = receipts.length;
+  document.getElementById('pay-st-cheques').textContent = cheques.length;
+  document.getElementById('pay-st-month').textContent = fmt(monthTotal);
+}
+
+function filterPayments(f, btn) {
+  currentPayFilter=f;
+  document.querySelectorAll('#pay-filters .cat-p').forEach(b=>b.classList.remove('active'));
+  btn?.classList.add('active');
+  renderPayments();
+}
+
+function renderPayments() {
+  const g = document.getElementById('pay-grid'); if(!g) return;
+  const q = (document.getElementById('pay-q')?.value||'').toLowerCase();
+  let list = [...payments];
+  if(currentPayFilter!=='all') list=list.filter(p=>p.docType===currentPayFilter);
+  if(q) list=list.filter(p=>((p.party||'')+(p.purpose||'')+(p.amount||'')).toLowerCase().includes(q));
+  renderPaymentStats();
+  if(!list.length){
+    g.innerHTML=`<div class="empty"><div class="empty-ic">💳</div><div class="empty-t">No payment documents yet</div><div class="empty-s">Generate a receipt or cheque draft</div></div>`;
+    return;
+  }
+  g.innerHTML=list.map(p=>`
+    <div class="pay-card ${p.docType}-card">
+      <div class="pay-card-icon ${p.docType}">${p.docType==='receipt'?'💰':'🏦'}</div>
+      <div class="pay-card-info">
+        <div class="pay-card-title">${p.party||'—'} <span style="font-size:11px;font-weight:400;color:var(--text3)">· ${p.docType==='receipt'?'Receipt':'Cheque'}</span></div>
+        <div class="pay-card-meta">
+          ${p.purpose||'—'} · ${fmtDate(p.date)}
+          ${p.txnRef?` · Ref: ${p.txnRef}`:''}
+          ${p.chequeNo?` · Chq: ${p.chequeNo}`:''}
+        </div>
+      </div>
+      <div class="pay-card-amount">${fmt(p.amount)}</div>
+      <div class="pay-card-actions">
+        <button class="le-doc-btn" onclick="viewPaymentDoc('${p.id}')">📄 View</button>
+        <button class="le-doc-btn" style="background:var(--rose-dim);color:var(--rose);border-color:rgba(240,82,100,0.2)" onclick="deletePayment('${p.id}')">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openNewPaymentModal(type) {
+  const isReceipt = type==='receipt';
+  document.getElementById('npm-type').value = type;
+  document.getElementById('npm-title').textContent = isReceipt ? '💰 New Payment Receipt' : '🏦 New Cheque Draft';
+  document.getElementById('npm-sub').textContent = isReceipt ? 'Generate and save a payment receipt' : 'Generate and save a cheque draft';
+  document.getElementById('npm-cheque-fields').style.display = isReceipt ? 'none' : 'block';
+  document.getElementById('npm-receipt-fields').style.display = isReceipt ? 'block' : 'none';
+  document.getElementById('npm-party').value='';
+  document.getElementById('npm-amount').value='';
+  document.getElementById('npm-purpose').value='';
+  document.getElementById('npm-note').value='';
+  document.getElementById('npm-date').value=today();
+  document.getElementById('npm-words').textContent='';
+  if(!isReceipt) { document.getElementById('npm-chq-date').value=today(); }
+  document.getElementById('new-payment-modal').classList.add('on');
+}
+function closeNewPaymentModal() { document.getElementById('new-payment-modal').classList.remove('on'); }
+function updateNPMWords() {
+  const n=nv('npm-amount');
+  document.getElementById('npm-words').textContent=n?numToWords(n):'';
+}
+async function saveNewPayment() {
+  const type = v('npm-type');
+  const party = v('npm-party'); if(!party){toast('Party name required');return;}
+  const amount = nv('npm-amount'); if(!amount){toast('Amount required');return;}
+  const purpose = v('npm-purpose');
+  const date = v('npm-date')||today();
+  const payData = {
+    docType: type, party, amount, purpose, date, note:v('npm-note'),
+    from: v('npm-from')||party,
+    // Receipt specific
+    payMode: v('npm-mode'), txnRef: v('npm-txn'),
+    // Cheque specific
+    bank: v('npm-bank'), branch: v('npm-branch'), chequeNo: v('npm-chq-no'),
+    chequeDate: v('npm-chq-date'), accName: v('npm-acc-name')
+  };
+  // Build and save document
+  const docSnap = type==='receipt' ? buildPaymentReceiptHTML(payData) : buildChequeDraftHTML(payData);
+  payData.savedDoc = docSnap;
+  const pid = await fbSave('payments', payData);
+  payments.unshift({id:pid,...payData});
+  addParty(party);
+  closeNewPaymentModal();
+  toast('Payment document saved ✅');
+  renderPayments();
+  openDocModal(type==='receipt'?'💰 Payment Receipt':'🏦 Cheque Draft', docSnap, type==='receipt'?'payment-receipt':'cheque-draft');
+}
+
+function viewPaymentDoc(id) {
+  const p = payments.find(x=>x.id===id);
+  if(!p?.savedDoc) { toast('No saved document'); return; }
+  const title = p.docType==='receipt' ? '💰 Payment Receipt' : '🏦 Cheque Draft';
+  openDocModal(title, p.savedDoc, p.docType==='receipt'?'payment-receipt':'cheque-draft');
+}
+
+async function deletePayment(id) {
+  if(!confirm('Delete this payment record?')) return;
+  await fbDelete('payments',id);
+  payments=payments.filter(p=>p.id!==id);
+  renderPayments();
+  toast('Deleted');
+}
+
+// ══════════════════════════════════════════════════
+// DOCUMENT BUILDERS
+// ══════════════════════════════════════════════════
+function shopHeader() {
+  return `<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+    <div>
+      <div style="font-size:20px;font-weight:800;color:#1e293b;letter-spacing:-0.5px">${settings.firm||'Your Textile Shop'}</div>
+      ${settings.gstin?`<div style="font-size:11px;color:#64748b;margin-top:2px">GSTIN: ${settings.gstin}</div>`:''}
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:13px;font-weight:700;color:#5c6ef8">StockSaathi</div>
+      <div style="font-size:10px;color:#94a3b8">${new Date().toLocaleDateString('en-IN')}</div>
+    </div>
+  </div>
+  <hr style="border:none;border-top:2px solid #e2e8f0;margin-bottom:14px">`;
+}
+
+function buildSaleInvoiceHTML(s) {
+  const gstRate=s.gstRate||5, gstType=s.gstType||'intra';
+  const cgst=gstType==='intra'?s.gst/2:0, sgst=gstType==='intra'?s.gst/2:0, igst=gstType==='inter'?s.gst:0;
+  return `<div class="doc-preview-inner">
+    ${shopHeader()}
+    <div style="background:#f8faff;border-radius:8px;padding:12px 14px;margin-bottom:14px;border:1px solid #e2e8f0">
+      <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px">TAX INVOICE</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
+        <div><span style="color:#64748b">Customer: </span><strong>${s.customer||'—'}</strong></div>
+        <div><span style="color:#64748b">Date: </span><strong>${fmtDate(s.date)}</strong></div>
+        ${s.buyerGstin?`<div style="grid-column:1/-1"><span style="color:#64748b">Buyer GSTIN: </span><strong>${s.buyerGstin}</strong></div>`:''}
+        <div><span style="color:#64748b">Type: </span><strong>${s.invType||'Cash'}</strong></div>
+        ${s.phone?`<div><span style="color:#64748b">Mobile: </span><strong>+91 ${s.phone}</strong></div>`:''}
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>Item</th><th style="text-align:right">Qty(m)</th><th style="text-align:right">Rate</th><th style="text-align:right">Amount</th></tr></thead>
+      <tbody>
+        <tr><td>${s.fabric}</td><td style="text-align:right">${fmtN(s.meters)}</td><td style="text-align:right">${fmt(s.rate)}</td><td style="text-align:right">${fmt(s.meters*s.rate)}</td></tr>
+        ${s.discount?`<tr><td colspan="3" style="color:#64748b">Discount</td><td style="text-align:right;color:#f05264">-${fmt(s.discount)}</td></tr>`:''}
+        <tr style="border-top:1px solid #e2e8f0"><td colspan="3" style="font-weight:700">Subtotal</td><td style="text-align:right;font-weight:700">${fmt(s.subtotal)}</td></tr>
+        ${cgst?`<tr><td colspan="3" style="color:#3b82f6">CGST @${gstRate/2}%</td><td style="text-align:right;color:#3b82f6">${fmt(cgst)}</td></tr><tr><td colspan="3" style="color:#3b82f6">SGST @${gstRate/2}%</td><td style="text-align:right;color:#3b82f6">${fmt(sgst)}</td></tr>`:''}
+        ${igst?`<tr><td colspan="3" style="color:#3b82f6">IGST @${gstRate}%</td><td style="text-align:right;color:#3b82f6">${fmt(igst)}</td></tr>`:''}
+      </tbody>
+      <tfoot><tr style="background:#f8faff"><td colspan="3" style="font-weight:800;font-size:13px">TOTAL</td><td style="text-align:right;font-weight:800;font-size:15px;color:#4f46e5">${fmt(s.total)}</td></tr></tfoot>
+    </table>
+    <div style="margin-top:12px;font-size:11px;color:#64748b;font-style:italic">${numToWords(s.total)}</div>
+    ${s.note?`<div style="margin-top:8px;font-size:11px;color:#94a3b8">Note: ${s.note}</div>`:''}
+    ${s.kacha?'<div style="margin-top:10px;padding:8px 12px;background:#fff7ed;border-radius:6px;border:1px solid #fdba74;font-size:11px;font-weight:700;color:#c2410c">⚠️ KACHA BILL / ESTIMATE — Not a Tax Invoice</div>':''}
+    <div style="margin-top:14px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;text-align:center">Thank you for your business! · Powered by StockSaathi</div>
+  </div>`;
+}
+
+function buildPurchaseReceiptHTML(p) {
+  const gstRate=p.gstRate||5, gstType=p.gstType||'intra';
+  const cgst=gstType==='intra'?(p.gst||0)/2:0, igst=gstType==='inter'?(p.gst||0):0;
+  return `<div class="doc-preview-inner">
+    ${shopHeader()}
+    <div style="background:#f0fdf4;border-radius:8px;padding:12px 14px;margin-bottom:14px;border:1px solid #bbf7d0">
+      <div style="font-size:10px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px">PURCHASE RECEIPT</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
+        <div><span style="color:#64748b">Supplier: </span><strong>${p.party||'—'}</strong></div>
+        <div><span style="color:#64748b">Date: </span><strong>${fmtDate(p.date)}</strong></div>
+        ${p.gstin?`<div style="grid-column:1/-1"><span style="color:#64748b">GSTIN: </span><strong>${p.gstin}</strong></div>`:''}
+        ${p.note?`<div style="grid-column:1/-1"><span style="color:#64748b">Ref: </span><strong>${p.note}</strong></div>`:''}
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>Item</th><th style="text-align:right">Qty(m)</th><th style="text-align:right">Rate</th><th style="text-align:right">Amount</th></tr></thead>
+      <tbody>
+        <tr><td>${p.item||p.fabric||'—'}</td><td style="text-align:right">${fmtN(p.meters)}</td><td style="text-align:right">${fmt(p.rate)}</td><td style="text-align:right">${fmt(p.meters*p.rate)}</td></tr>
+        <tr style="border-top:1px solid #e2e8f0"><td colspan="3" style="font-weight:700">Subtotal</td><td style="text-align:right;font-weight:700">${fmt(p.subtotal||p.meters*p.rate)}</td></tr>
+        ${cgst?`<tr><td colspan="3" style="color:#3b82f6">CGST @${gstRate/2}%</td><td style="text-align:right;color:#3b82f6">${fmt(cgst)}</td></tr><tr><td colspan="3" style="color:#3b82f6">SGST @${gstRate/2}%</td><td style="text-align:right;color:#3b82f6">${fmt(cgst)}</td></tr>`:''}
+        ${igst?`<tr><td colspan="3" style="color:#3b82f6">IGST @${gstRate}%</td><td style="text-align:right;color:#3b82f6">${fmt(igst)}</td></tr>`:''}
+      </tbody>
+      <tfoot><tr style="background:#f0fdf4"><td colspan="3" style="font-weight:800;font-size:13px">TOTAL</td><td style="text-align:right;font-weight:800;font-size:15px;color:#16a34a">${fmt(p.total)}</td></tr></tfoot>
+    </table>
+    <div style="margin-top:12px;font-size:11px;color:#64748b;font-style:italic">${numToWords(p.total)}</div>
+    <div style="margin-top:14px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;text-align:center">Received from ${p.party} · Powered by StockSaathi</div>
+  </div>`;
+}
+
+function buildPaymentReceiptHTML(p) {
+  return `<div class="doc-preview-inner">
+    ${shopHeader()}
+    <div style="background:#f5f3ff;border-radius:8px;padding:14px;margin-bottom:14px;border:1px solid #c4b5fd;text-align:center">
+      <div style="font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">PAYMENT RECEIPT</div>
+      <div style="font-size:28px;font-weight:800;color:#4f46e5;letter-spacing:-1px">${fmt(p.amount)}</div>
+      <div style="font-size:12px;color:#6d28d9;margin-top:2px;font-style:italic">${numToWords(p.amount)}</div>
+    </div>
+    <table>
+      <tbody>
+        <tr><td style="color:#64748b;font-weight:600;width:140px">Paid To</td><td style="font-weight:700">${p.party}</td></tr>
+        <tr><td style="color:#64748b;font-weight:600">Received From</td><td style="font-weight:700">${p.from||p.party}</td></tr>
+        <tr><td style="color:#64748b;font-weight:600">Date</td><td>${fmtDate(p.date)}</td></tr>
+        <tr><td style="color:#64748b;font-weight:600">Mode</td><td><span style="background:#f5f3ff;color:#7c3aed;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700">${p.payMode||'Cash'}</span></td></tr>
+        ${p.txnRef?`<tr><td style="color:#64748b;font-weight:600">Txn Ref</td><td style="font-family:monospace">${p.txnRef}</td></tr>`:''}
+        <tr><td style="color:#64748b;font-weight:600">Purpose</td><td>${p.purpose||'—'}</td></tr>
+        ${p.note?`<tr><td style="color:#64748b;font-weight:600">Note</td><td style="color:#94a3b8">${p.note}</td></tr>`:''}
+      </tbody>
+    </table>
+    <div style="margin-top:14px;padding:10px 14px;background:#f8faff;border-radius:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid #e2e8f0">
+      ${settings.upi?`<div style="font-size:11px"><div style="color:#64748b;font-size:10px">UPI</div><div style="font-weight:700;color:#4f46e5">${settings.upi}</div></div>`:'<div></div>'}
+      <div style="font-size:10px;color:#94a3b8;text-align:right">Authorised Signatory<br>${settings.firm||'Your Shop'}</div>
+    </div>
+    <div style="margin-top:10px;font-size:10px;color:#94a3b8;text-align:center">Powered by StockSaathi</div>
+  </div>`;
+}
+
+function buildChequeDraftHTML(p) {
+  return `<div class="doc-preview-inner">
+    ${shopHeader()}
+    <div style="border:2px solid #1e3a5f;border-radius:12px;padding:20px;background:linear-gradient(135deg,#f0f7ff,#e8f4fd);margin-bottom:14px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:10px;right:12px;font-size:11px;font-weight:700;color:#1e3a5f;opacity:0.15;font-size:32px;transform:rotate(-15deg)">CHEQUE</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+        <div>
+          <div style="font-size:13px;font-weight:800;color:#1e3a5f">${p.bank||'Bank Name'}</div>
+          ${p.branch?`<div style="font-size:11px;color:#64748b">${p.branch} Branch</div>`:''}
+        </div>
+        <div style="text-align:right">
+          ${p.chequeNo?`<div style="font-size:12px;font-family:monospace;color:#1e3a5f;font-weight:700">Chq No: ${p.chequeNo}</div>`:''}
+          <div style="font-size:12px;color:#64748b">Date: ${fmtDate(p.chequeDate||p.date)}</div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:10px;color:#64748b;margin-bottom:3px">PAY TO</div>
+        <div style="font-size:15px;font-weight:800;color:#1e3a5f;border-bottom:1px solid #94a3b8;padding-bottom:4px">${p.party}</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div style="flex:1;margin-right:14px">
+          <div style="font-size:10px;color:#64748b;margin-bottom:3px">RUPEES (IN WORDS)</div>
+          <div style="font-size:12px;font-style:italic;color:#1e3a5f;border-bottom:1px solid #94a3b8;padding-bottom:4px">${numToWords(p.amount)}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:10px;color:#64748b;margin-bottom:3px">₹ AMOUNT</div>
+          <div style="font-size:22px;font-weight:800;color:#1e3a5f;letter-spacing:-0.5px;border:2px solid #1e3a5f;padding:4px 12px;border-radius:6px">${fmt(p.amount)}</div>
+        </div>
+      </div>
+      ${p.purpose?`<div style="margin-top:10px;font-size:11px;color:#64748b">Purpose: ${p.purpose}</div>`:''}
+    </div>
+    <table>
+      <tbody>
+        <tr><td style="color:#64748b;width:140px">Account Name</td><td style="font-weight:700">${p.accName||settings.accName||'—'}</td></tr>
+        ${settings.accNo?`<tr><td style="color:#64748b">A/C Number</td><td style="font-family:monospace">${settings.accNo}</td></tr>`:''}
+        ${settings.ifsc?`<tr><td style="color:#64748b">IFSC</td><td style="font-family:monospace">${settings.ifsc}</td></tr>`:''}
+        ${p.note?`<tr><td style="color:#64748b">Note</td><td style="color:#94a3b8">${p.note}</td></tr>`:''}
+      </tbody>
+    </table>
+    <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #e2e8f0;display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:10px;color:#94a3b8">⚠️ This is a cheque draft. Please verify all details before signing.</div>
+      <div style="font-size:10px;color:#94a3b8">StockSaathi</div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════
+// DOCUMENT MODAL
+// ══════════════════════════════════════════════════
+function openDocModal(title, html, type) {
+  document.getElementById('doc-modal-title').textContent = title;
+  document.getElementById('doc-preview').innerHTML = html;
+  document.getElementById('doc-tab-bar').innerHTML = '';
+  // Actions
+  const actBar = document.getElementById('doc-actions-bar');
+  actBar.innerHTML = `
+    <button class="btn btn-primary" onclick="downloadDocPDF('${type}')">📥 Download PDF</button>
+    <button class="btn btn-ghost" onclick="window.print()">🖨️ Print</button>
+    <button class="btn btn-ghost" onclick="closeDocModal()">Close</button>
+  `;
+  document.getElementById('doc-modal').classList.add('on');
+}
+function closeDocModal() { document.getElementById('doc-modal').classList.remove('on'); }
+function downloadDocPDF(type) {
+  const el = document.getElementById('doc-preview');
+  const opt = { margin:8, filename:`stocksaathi-${type}-${Date.now()}.pdf`, image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2}, jsPDF:{unit:'mm',format:'a5',orientation:'portrait'} };
+  html2pdf().from(el).set(opt).save();
+}
+
+// ══════════════════════════════════════════════════
+// CALCULATOR
+// ══════════════════════════════════════════════════
+function c1(){ const r=nv('c1m')*nv('c1r'); document.getElementById('c1-r').textContent=fmt(r); }
+function c2(){
+  const b=nv('c2b'),s=nv('c2s'),m=nv('c2m');
+  document.getElementById('c2-pm').textContent=fmt(s-b);
+  document.getElementById('c2-r').textContent=fmt((s-b)*m);
+}
+function c3(){
+  const a=nv('c3a'), rate=parseFloat(document.getElementById('c3g')?.value||0);
+  const type=document.getElementById('c3type')?.value||'intra';
+  const gst=a*rate/100;
+  document.getElementById('c3-g').textContent=fmt(gst);
+  document.getElementById('c3-t').textContent=fmt(a+gst);
+  const bd=document.getElementById('c3-breakdown');
+  if(rate&&a){ bd.style.display='block'; bd.innerHTML=gstBreakdownHTML(a,rate,type); }
+  else bd.style.display='none';
+}
+
+// ══════════════════════════════════════════════════
+// REPORT
+// ══════════════════════════════════════════════════
+function renderReport() {
+  const now=new Date();
+  const monthStr=now.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  document.getElementById('rpt-month').textContent=monthStr;
+  const thisMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const mSales=sales.filter(s=>!s.kacha&&s.date?.startsWith?.(thisMonth));
+  const mPur=purchases.filter(p=>p.date?.startsWith?.(thisMonth));
+  const totalSales=mSales.reduce((a,s)=>a+s.total,0);
+  const totalPur=mPur.reduce((a,p)=>a+p.total,0);
+  const profit=totalSales-totalPur;
+  const el=document.getElementById('rpt-stats');
+  if(el) el.innerHTML=`
+    <div class="ls-card"><div class="ls-label">Month Sales</div><div class="ls-value" style="color:var(--emerald)">${fmt(totalSales)}</div></div>
+    <div class="ls-card"><div class="ls-label">Month Purchases</div><div class="ls-value" style="color:var(--blue)">${fmt(totalPur)}</div></div>
+    <div class="ls-card"><div class="ls-label">Net Profit</div><div class="ls-value" style="color:${profit>=0?'var(--emerald)':'var(--rose)'}">${fmt(profit)}</div></div>
+    <div class="ls-card"><div class="ls-label">Stock Value</div><div class="ls-value" style="color:var(--amber)">${fmt(fabrics.reduce((a,f)=>a+f.meters*(f.rate||0),0))}</div></div>
+  `;
+  // Stock bars
+  const maxM=Math.max(...fabrics.map(f=>f.meters),1);
+  const stockEl=document.getElementById('rpt-stock');
+  if(stockEl) stockEl.innerHTML=fabrics.slice(0,8).map(f=>`
+    <div class="bar-row">
+      <div class="bar-lbl">${f.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${f.meters/maxM*100}%;background:${fabStockClass(f)==='ok'?'var(--emerald)':fabStockClass(f)==='med'?'var(--amber)':'var(--rose)'}"></div></div>
+      <div class="bar-val">${fmtN(f.meters)}m</div>
+    </div>
+  `).join('');
+  // Sales bars
+  const byFab={};
+  mSales.forEach(s=>{ byFab[s.fabric]=(byFab[s.fabric]||0)+s.total; });
+  const maxSale=Math.max(...Object.values(byFab),1);
+  const salesEl=document.getElementById('rpt-sales');
+  if(salesEl) salesEl.innerHTML=Object.entries(byFab).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([n,v])=>`
+    <div class="bar-row">
+      <div class="bar-lbl">${n}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${v/maxSale*100}%;background:var(--indigo)"></div></div>
+      <div class="bar-val">${fmt(v)}</div>
+    </div>
+  `).join('') || '<div style="color:var(--text3);font-size:12px;padding:8px">No sales this month</div>';
+  // Table
+  const tbody=document.getElementById('rpt-body');
+  if(tbody) tbody.innerHTML=fabrics.map(f=>{
+    const soldThisMonth=mSales.filter(s=>s.fabricId===f.id).reduce((a,s)=>a+s.meters,0);
+    const sc=fabStockClass(f);
+    return `<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 70px;padding:10px 18px;border-bottom:1px solid var(--border);font-size:12px;align-items:center">
+      <div style="font-weight:600">${f.name}</div>
+      <div style="text-align:right;color:var(--text2)">${fmtN(f.meters+soldThisMonth)}m</div>
+      <div style="text-align:right;color:var(--rose)">${fmtN(soldThisMonth)}m</div>
+      <div style="text-align:right;font-weight:700;color:${sc==='ok'?'var(--emerald)':sc==='med'?'var(--amber)':'var(--rose)'}">${fmtN(f.meters)}m</div>
+      <div style="text-align:right;color:var(--text2)">${fmt(f.meters*(f.rate||0))}</div>
+      <div style="text-align:right"><span class="pill ${sc==='ok'?'pill-g':sc==='med'?'pill-b':'pill-r'}">${sc.toUpperCase()}</span></div>
+    </div>`;
   }).join('');
 }
-function returnItem(id,isSale){
-  if(!confirm('Mark as returned?'))return;
-  if(isSale){var s=sales.find(function(x){return x.id===id;});if(s){var f=inv.find(function(x){return x.id===s.fabId;});if(f)f.meters+=s.meters;s.isReturned=true;s.dueAmt=0;}}
-  else{var p=purchases.find(function(x){return x.id===id;});if(p){var f=inv.find(function(x){return x.name===p.item;});if(f)f.meters-=p.meters;p.isReturned=true;}}
-  save();updateStats();renderLedgerSummary();renderLedger();toast('↩️ Marked returned');
+
+// ══════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════
+const pageMap = {
+  'dash':'Dashboard','inv':'Inventory','sales':'Sales','ledger':'Ledger',
+  'payments':'Payments & Cheques','calc':'Calculator','report':'Monthly Report',
+  'master':'Master Data','profiles':'Profiles'
+};
+function goto(pg, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-'+pg)?.classList.add('on');
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  btn?.classList.add('active');
+  document.getElementById('pg-title').textContent = pageMap[pg]||pg;
+  currentPage=pg;
+  if(pg==='report') renderReport();
+  if(pg==='payments') { renderPayments(); renderPaymentStats(); }
 }
-function settleDue(cust){if(!confirm('Settle dues for '+cust+'?'))return;sales.forEach(function(s){if(s.customer===cust)s.dueAmt=0;});save();renderLedger();toast('✅ Dues settled');}
-function exportCSV(){
-  var csv='Type,Date,Party,Item,Meters,Rate,Subtotal,GST,Total,Due,Returned\n';
-  sales.filter(function(s){return !s.isKacha;}).forEach(function(s){csv+='"Sale","'+s.date.split('T')[0]+'","'+(s.customer||'')+'","'+s.fabName+'",'+s.meters+','+s.rate+','+(s.subtotal||0)+','+(s.gstAmount||0)+','+s.total+','+(s.dueAmt||0)+','+(s.isReturned?'Yes':'No')+'\n';});
-  purchases.forEach(function(p){csv+='"Purchase","'+p.date.split('T')[0]+'","'+(p.party||'')+'","'+p.item+'",'+p.meters+','+p.rate+','+(p.subtotal||0)+','+(p.gstAmount||0)+','+p.total+',0,'+(p.isReturned?'Yes':'No')+'\n';});
-  var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='StockSaathi_Ledger.csv';a.click();
+function mobileGoto(pg) {
+  const btnId='mob-'+pg;
+  const btn=document.getElementById(btnId);
+  goto(pg,btn);
+  // Update mobile items
+  document.querySelectorAll('.mob-item').forEach(b=>b.classList.remove('active'));
+  btn?.classList.add('active');
+  closeMobileMenu();
+}
+function toggleMobileMenu() {
+  document.getElementById('mob-menu').classList.toggle('on');
+  document.getElementById('mob-overlay').classList.toggle('on');
+}
+function closeMobileMenu() {
+  document.getElementById('mob-menu').classList.remove('on');
+  document.getElementById('mob-overlay').classList.remove('on');
 }
 
-// ══ PURCHASE MODAL ══
-function openPurchaseModal(){
-  ['pur-party','pur-gstin','pur-item','pur-meters','pur-rate','pur-note'].forEach(function(i){document.getElementById(i).value='';});
-  document.getElementById('pur-total').textContent='₹0';
-  document.getElementById('pur-gst-breakdown').innerHTML='';
-  document.getElementById('purchase-modal').classList.add('on');
-  setTimeout(function(){document.getElementById('pur-party').focus();},50);
-}
-function closePurchaseModal(){document.getElementById('purchase-modal').classList.remove('on');}
-function calcPurAmt(){
-  var m=parseFloat(document.getElementById('pur-meters').value)||0;
-  var r=parseFloat(document.getElementById('pur-rate').value)||0;
-  var rate=parseInt(document.getElementById('pur-gst-rate').value)||0;
-  var type=document.getElementById('pur-gst-type').value;
-  var g=calcGST(m*r,rate,type);
-  document.getElementById('pur-total').textContent=fv(g.total);
-  document.getElementById('pur-gst-breakdown').innerHTML=gstBreakdownHTML(g,type);
-}
-function _doSavePurchase(){
-  var party=document.getElementById('pur-party').value.trim();
-  var item=document.getElementById('pur-item').value.trim();
-  var m=parseFloat(document.getElementById('pur-meters').value);
-  var r=parseFloat(document.getElementById('pur-rate').value);
-  if(!party){toast('Supplier name required!');return null;}
-  if(!item){toast('Item name required!');return null;}
-  if(!m||m<=0){toast('Enter meters!');return null;}
-  if(!r||r<=0){toast('Enter rate!');return null;}
-  var rate=parseInt(document.getElementById('pur-gst-rate').value)||0;
-  var type=document.getElementById('pur-gst-type').value;
-  var g=calcGST(m*r,rate,type);
-  var pData={id:Date.now(),party:party,supplierGstin:document.getElementById('pur-gstin').value.trim(),item:item,meters:m,rate:r,subtotal:g.subtotal,gstRate:rate,gstType:type,gstAmount:g.gstAmount,cgst:g.cgst,sgst:g.sgst,igst:g.igst,total:g.total,note:document.getElementById('pur-note').value.trim(),date:new Date().toISOString()};
-  purchases.unshift(pData);
-  updatePartyList();save();renderLedgerSummary();renderLedger();closePurchaseModal();
-  toast('✓ Purchase recorded — '+fv(g.total));
-  return pData;
-}
-function savePurchase(){_doSavePurchase();}
-function savePurchaseAndReceipt(){var p=_doSavePurchase();if(p)setTimeout(function(){openDocAfterStock(p, p.item);},300);}
-
-// ══ CALCS ══
-function c1(){document.getElementById('c1-r').textContent=fv((parseFloat(document.getElementById('c1m').value)||0)*(parseFloat(document.getElementById('c1r').value)||0));}
-function c2(){var b=parseFloat(document.getElementById('c2b').value)||0,s=parseFloat(document.getElementById('c2s').value)||0,m=parseFloat(document.getElementById('c2m').value)||0,pm=s-b,tot=pm*m;document.getElementById('c2-pm').textContent=(pm>=0?'+':'')+fv(pm);document.getElementById('c2-r').textContent=(tot>=0?'+':'')+fv(tot);document.getElementById('c2-pm').style.color=document.getElementById('c2-r').style.color=pm>=0?'var(--emerald)':'var(--rose)';}
-function c3(){var p=parseInt(document.getElementById('c3g').value)||5,type=document.getElementById('c3type').value,a=parseFloat(document.getElementById('c3a').value)||0,g=calcGST(a,p,type);document.getElementById('c3-g').textContent=fv(g.gstAmount);document.getElementById('c3-t').textContent=fv(g.total);var bd=document.getElementById('c3-breakdown');if(a>0){bd.style.display='block';bd.innerHTML=gstBreakdownHTML(g,type);}else bd.style.display='none';}
-
-// ══ REPORT ══
-function renderReport(){
-  var now=new Date();
-  document.getElementById('rpt-month').textContent=now.toLocaleString('en-IN',{month:'long',year:'numeric'});
-  var ms=sales.filter(function(s){var d=new Date(s.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()&&!s.isReturned&&!s.isKacha;});
-  var sa=ms.reduce(function(a,s){return a+s.total;},0);
-  var sm=ms.reduce(function(a,s){return a+s.meters;},0);
-  var iv=inv.reduce(function(a,f){return a+f.meters*f.rate;},0);
-  var lc=inv.filter(function(f){return f.meters<f.threshold;}).length;
-  document.getElementById('rpt-stats').innerHTML=[['Sales',fv(sa),'var(--emerald)'],['Meters',sm+'m','var(--indigo2)'],['Stock Value',fv(iv),'var(--amber)'],['Low Stock',lc,lc>0?'var(--rose)':'var(--emerald)']].map(function(x){return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px 18px"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:5px">'+x[0]+'</div><div style="font-size:26px;font-weight:800;color:'+x[2]+';font-family:var(--fm);letter-spacing:-1px">'+x[1]+'</div></div>';}).join('');
-  var mx=Math.max.apply(null,inv.map(function(f){return f.meters;}).concat([1]));
-  document.getElementById('rpt-stock').innerHTML=inv.length?inv.map(function(f){return '<div class="bar-row"><div class="bar-lbl" title="'+esc(f.name)+'">'+esc(f.name)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(f.meters/mx*100)+'%"></div></div><div class="bar-val">'+f.meters+'m</div></div>';}).join(''):'<div style="color:var(--text3);font-size:12px">No data</div>';
-  var sf={};ms.forEach(function(s){sf[s.fabName]=(sf[s.fabName]||0)+s.meters;});
-  var mxs=Math.max.apply(null,Object.values(sf).concat([1]));
-  document.getElementById('rpt-sales').innerHTML=Object.keys(sf).length?Object.entries(sf).map(function(e){return '<div class="bar-row"><div class="bar-lbl">'+esc(e[0])+'</div><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(e[1]/mxs*100)+'%;background:var(--emerald)"></div></div><div class="bar-val">'+e[1]+'m</div></div>';}).join(''):'<div style="color:var(--text3);font-size:12px">No sales this month</div>';
-  document.getElementById('rpt-body').innerHTML=inv.length?inv.map(function(f){var sold=ms.filter(function(s){return s.fabId===f.id;}).reduce(function(a,s){return a+s.meters;},0);var st=f.meters<f.threshold?'<span class="pill pill-r">LOW</span>':'<span class="pill pill-g">OK</span>';return '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 70px;padding:12px 18px;border-bottom:1px solid var(--border);align-items:center;gap:6px"><div><div style="font-weight:700;font-size:13px">'+esc(f.name)+'</div><div style="font-size:11px;color:var(--text3)">'+f.type+'</div></div><div style="color:var(--text2);font-size:12px;text-align:right;font-family:var(--fm)">'+(f.meters+sold)+'m</div><div style="color:var(--emerald);font-size:12px;text-align:right;font-family:var(--fm)">'+sold+'m</div><div style="font-weight:700;font-size:12px;text-align:right;font-family:var(--fm)">'+f.meters+'m</div><div style="color:var(--amber);font-size:12px;text-align:right;font-family:var(--fm)">'+fv(f.meters*f.rate)+'</div><div style="text-align:right">'+st+'</div></div>';}).join(''):'<div style="padding:20px;color:var(--text3);text-align:center">No data</div>';
-}
-
-// ══ ONBOARDING ══
-var obStep=1;
-var OB_STEPS=[
-  {title:'Welcome to StockSaathi! 🎉',sub:'Set up in under 2 minutes',feats:[['📦','Stock Tracking','Meter by meter, fabric by fabric'],['💰','Sales Recording','GST invoice in one tap'],['⚠️','Low Stock Alerts','Automatic email reminders'],['📒','Full Ledger','Sales + Purchase book']]},
-  {title:'Document Suite 📄',sub:'Professional docs ready to share',feats:[['🧾','Tax Invoice','GST bill for customers'],['📃','Purchase Receipt','For every stock arrival'],['🚚','Delivery Challan','For transport / logistics'],['💳','Payment Receipt','Cash/UPI/Cheque docs']]},
-  {title:'All Set! 🚀',sub:'You\'re ready to go',feats:[['👥','Team Profiles','Owner / Manager / Staff'],['📁','Master Data','Custom categories & lists'],['💬','WhatsApp Bills','Direct PDF to customer'],['📊','Monthly Reports','Business insights']]}
+// ══════════════════════════════════════════════════
+// ONBOARDING
+// ══════════════════════════════════════════════════
+const obSteps = [
+  {
+    title:'Welcome to StockSaathi! 🎉',
+    sub:'Your all-in-one textile stock manager',
+    body:`<div class="ob-features">
+      <div class="ob-feat"><div class="ob-feat-ic">📦</div><div><div class="ob-feat-t">Smart Inventory</div><div class="ob-feat-s">Track every fabric, meter by meter. Know exactly what's in stock.</div></div></div>
+      <div class="ob-feat"><div class="ob-feat-ic">🧾</div><div><div class="ob-feat-t">GST Invoices</div><div class="ob-feat-s">Generate tax invoices with CGST/SGST/IGST breakdown automatically.</div></div></div>
+      <div class="ob-feat"><div class="ob-feat-ic">💳</div><div><div class="ob-feat-t">Payments & Cheques</div><div class="ob-feat-s">Create payment receipts and cheque drafts — saved forever.</div></div></div>
+    </div>`
+  },
+  {
+    title:'Set up your shop 🏪',
+    sub:'This info appears on all your documents',
+    body:`<div class="fg"><label class="fl">Shop / Firm Name *</label><input id="ob-firm" placeholder="e.g. Rishi Textiles"/></div>
+         <div class="fg"><label class="fl">GSTIN <span class="fl-h">(Optional)</span></label><input id="ob-gstin" placeholder="24XXXXX0000X0Z0"/></div>
+         <div class="fg"><label class="fl">UPI ID <span class="fl-h">(for payments)</span></label><input id="ob-upi" placeholder="9876543210@paytm"/></div>`
+  },
+  {
+    title:'Create your first profile 👤',
+    sub:'Who will be using StockSaathi?',
+    body:`<div class="fg"><label class="fl">Your Name *</label><input id="ob-name" placeholder="e.g. Ramesh Bhai"/></div>
+         <div class="fg"><label class="fl">Role</label>
+           <select id="ob-role"><option value="owner">👑 Owner</option><option value="manager">💼 Manager</option><option value="staff">👦 Staff</option></select>
+         </div>
+         <div class="fg"><label class="fl">4-Digit PIN <span class="fl-h">(Optional)</span></label><input type="password" id="ob-pin" maxlength="4" placeholder="Leave empty" style="font-family:var(--fm);letter-spacing:4px"/></div>`
+  }
 ];
-function showOnboarding(){obStep=1;renderOB();document.getElementById('onboarding').classList.add('on');}
-function renderOB(){
-  var s=OB_STEPS[obStep-1];
+function showOnboarding() {
+  obStep=1;
+  document.getElementById('onboarding').classList.add('on');
+  renderOBStep();
+}
+function renderOBStep() {
+  const s=obSteps[obStep-1];
   document.getElementById('ob-title').textContent=s.title;
   document.getElementById('ob-sub').textContent=s.sub;
-  document.getElementById('ob-body').innerHTML='<div class="ob-features">'+s.feats.map(function(f){return '<div class="ob-feat"><div class="ob-feat-ic">'+f[0]+'</div><div><div class="ob-feat-t">'+f[1]+'</div><div class="ob-feat-s">'+f[2]+'</div></div></div>';}).join('')+'</div>';
-  document.getElementById('ob-counter').textContent='Step '+obStep+' / 3';
-  document.getElementById('ob-next').textContent=obStep===3?'Get Started! ✓':'Next →';
-  [1,2,3].forEach(function(i){var el=document.getElementById('ob-s'+i);if(el)el.className='ob-step'+(i<obStep?' done':i===obStep?' active':'');});
+  document.getElementById('ob-body').innerHTML=s.body;
+  document.getElementById('ob-counter').textContent=`Step ${obStep} / ${obSteps.length}`;
+  document.getElementById('ob-next').textContent=obStep===obSteps.length?'Get Started 🚀':'Next →';
+  [1,2,3].forEach(n=>{
+    const el=document.getElementById('ob-s'+n);
+    el.className='ob-step'+(n<obStep?' done':n===obStep?' active':'');
+  });
 }
-function obNext(){if(obStep<3){obStep++;renderOB();}else{closeOB();setTimeout(openModal,400);}}
-function skipOB(){closeOB();}
-function closeOB(){document.getElementById('onboarding').classList.remove('on');}
-
-// ════════════════════════════════════════
-// DOCUMENT SUITE 
-// ════════════════════════════════════════
-var _docData = null;
-function _dNo(p){ return p+'-'+Date.now().toString().slice(-6); }
-function _today(){ return new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
-function _shop(){ return appSettings.firmName||(user&&user.displayName)||'Your Shop'; }
-
-// Ledger helper
-function openLedgerDoc(id, isSale) {
-  if (isSale) {
-    var s = sales.find(x => x.id === id);
-    if(s) openDocAfterSale(s);
-  } else {
-    var p = purchases.find(x => x.id === id);
-    if(p) {
-       var fab = inv.find(f => f.name === p.item);
-       openDocAfterStock(p, fab ? fab.name : p.item);
-    }
+async function obNext() {
+  if(obStep===2) {
+    const firm=document.getElementById('ob-firm')?.value?.trim();
+    if(firm){ settings.firm=firm; settings.gstin=document.getElementById('ob-gstin')?.value?.trim(); settings.upi=document.getElementById('ob-upi')?.value?.trim(); await FB.setDoc(FB.doc(DB,`${userPath()}/config/settings`),settings); }
   }
-}
-
-// Called after Add Fabric / Add Stock
-function openDocAfterStock(purchData, fabName){
-  _docData = {type:'purchase', purch:purchData, fabName:fabName};
-  _initDocModal('Purchase Documents',[
-    {id:'purreceipt',label:'📃 Purchase Receipt'},
-    {id:'challan',   label:'🚚 Delivery Challan'}
-  ],'purreceipt');
-}
-// Called after Sale
-function openDocAfterSale(saleData){
-  _docData = {type:'sale', sale:saleData};
-  _initDocModal('Sale Documents',[
-    {id:'invoice',   label:'🧾 Tax Invoice'},
-    {id:'challan',   label:'🚚 Delivery Challan'},
-    {id:'payreceipt',label:'💳 Pay Receipt'}
-  ],'invoice');
-}
-function _initDocModal(title,tabs,def){
-  document.getElementById('doc-modal-title').textContent=title;
-  document.getElementById('doc-tab-bar').innerHTML=tabs.map(function(t,i){
-    return '<button class="doc-tab-btn'+(i===0?' active':'')+'" id="doctab-'+t.id+'" onclick="switchDocTab(\''+t.id+'\')">'+t.label+'</button>';
-  }).join('');
-  document.getElementById('doc-modal').classList.add('on');
-  switchDocTab(def);
-}
-function closeDocModal(){ document.getElementById('doc-modal').classList.remove('on'); }
-function switchDocTab(id){
-  document.querySelectorAll('.doc-tab-btn').forEach(function(b){b.classList.remove('active');});
-  var a=document.getElementById('doctab-'+id); if(a)a.classList.add('active');
-  if(id==='invoice')    _renderInvoice();
-  if(id==='challan')    _renderChallan();
-  if(id==='purreceipt') _renderPurReceipt();
-  if(id==='payreceipt') _renderPayReceiptSale();
-  _renderDocActions(id);
-}
-function _renderDocActions(tid){
-  var phone=(_docData&&_docData.type==='sale'&&_docData.sale)?(_docData.sale.customerPhone||''):'';
-  document.getElementById('doc-actions-bar').innerHTML=
-    '<button onclick="_printDoc()" class="btn btn-ghost" style="flex:1;justify-content:center;font-size:12px">🖨️ Print</button>'
-    +'<button onclick="_waDoc(\''+tid+'\',\''+phone+'\')" style="flex:1;justify-content:center;padding:9px 10px;background:#25D366;color:white;border:none;border-radius:var(--r);font-family:var(--ff);font-size:12px;font-weight:700;cursor:pointer">💬 WhatsApp</button>'
-    +'<button onclick="_pdfDoc(\''+tid+'\')" id="doc-pdf-btn" style="flex:1;justify-content:center;padding:9px 10px;background:var(--indigo);color:white;border:none;border-radius:var(--r);font-family:var(--ff);font-size:12px;font-weight:700;cursor:pointer">📤 PDF</button>';
-}
-function _printDoc(){
-  var c=document.getElementById('doc-preview').innerHTML;
-  var w=window.open('','_blank','width=520,height=760');
-  w.document.write(`<html><head><title>Document</title><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"><style>body{margin:14px;font-family:sans-serif;background:#fff}*{box-sizing:border-box}
-  .paper{background:#fff;color:#1a1a1a;font-family:'Plus Jakarta Sans',sans-serif;max-width:460px;margin:0 auto;border-radius:4px;overflow:hidden}
-  .paper-hdr{padding:20px 24px 16px;color:#fff}
-  .paper-hdr-firm{font-size:18px;font-weight:800;letter-spacing:-0.3px}
-  .paper-hdr-gstin{font-size:10px;opacity:0.7;margin-top:2px;letter-spacing:0.5px}
-  .paper-hdr-badge{display:inline-block;margin-top:9px;padding:2px 10px;background:rgba(255,255,255,0.18);border-radius:20px;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
-  .paper-meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;padding:10px 20px;background:#f8f9fc;border-bottom:1px solid #e5e7eb}
-  .paper-meta-cell label{display:block;font-size:8px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:2px}
-  .paper-meta-cell span{font-size:12px;font-weight:700;color:#1a1a1a}
-  .paper-party{padding:11px 20px;border-bottom:1px solid #e5e7eb}
-  .paper-party label{display:block;font-size:8px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:3px}
-  .paper-party-name{font-size:15px;font-weight:800;color:#1a1a1a}
-  .paper-party-sub{font-size:11px;color:#6b7280;margin-top:1px}
-  .paper-items{padding:11px 20px}
-  .paper-items-hdr{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding-bottom:6px;border-bottom:1px solid #e5e7eb;margin-bottom:6px}
-  .paper-items-hdr span{font-size:8px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;font-weight:700}
-  .paper-items-hdr span:not(:first-child){text-align:right}
-  .paper-item-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;margin-bottom:5px}
-  .paper-item-name{font-size:13px;font-weight:700;color:#1a1a1a}
-  .paper-item-sub{font-size:10px;color:#9ca3af}
-  .paper-item-row span{font-size:13px;font-weight:600;color:#1a1a1a;text-align:right;font-family:monospace}
-  .paper-totals{padding:10px 20px;background:#f8f9fc;border-top:1px solid #e5e7eb}
-  .paper-total-row{display:flex;justify-content:space-between;font-size:11px;color:#6b7280;margin-bottom:3px}
-  .paper-total-main{display:flex;justify-content:space-between;padding:7px 0;border-top:2px solid #1a1a1a;margin-top:5px}
-  .paper-total-main span:first-child{font-size:13px;font-weight:800;color:#1a1a1a}
-  .paper-total-main span:last-child{font-size:19px;font-weight:800;color:#1a5c9e;font-family:monospace}
-  .paper-footer{padding:13px 20px;text-align:center;border-top:1px solid #e5e7eb}
-  .paper-footer-msg{font-size:13px;font-weight:800;color:#1a1a1a;margin-bottom:2px}
-  .paper-footer-sub{font-size:10px;color:#9ca3af}
-  .paper-stamp{display:inline-block;margin-top:8px;padding:2px 12px;border:1.5px solid #e5e7eb;border-radius:20px;font-size:8px;font-weight:700;color:#9ca3af;letter-spacing:2px;text-transform:uppercase}
-  .challan-consign-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e5e7eb}
-  .challan-consign-cell{padding:11px 20px}
-  .challan-consign-cell:first-child{border-right:1px solid #e5e7eb}
-  .challan-sign-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:16px 20px;border-top:1px solid #e5e7eb}
-  .challan-sign-box{text-align:center}
-  .challan-sign-line{border-top:1.5px solid #1a1a1a;margin-bottom:5px}
-  .challan-sign-lbl{font-size:9px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.8px}
-  .cheque-paper{background:#fffbf0;border:2.5px double #c8973a;border-radius:8px;padding:18px 22px;font-family:'Plus Jakarta Sans',sans-serif;position:relative;overflow:hidden;max-width:460px;margin:0 auto}
-  .cheque-paper::before{content:'SAMPLE';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:70px;font-weight:900;color:rgba(200,151,58,0.06);letter-spacing:8px;pointer-events:none;white-space:nowrap}
-  .cheque-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:13px}
-  .cheque-bank{font-size:14px;font-weight:800;color:#2d2416}
-  .cheque-no{font-size:11px;color:#8a7a5a;font-family:monospace}
-  .cheque-row{display:flex;align-items:flex-end;gap:8px;margin-bottom:10px;border-bottom:1px dashed #c8973a;padding-bottom:10px}
-  .cheque-row label{font-size:9px;color:#8a7a5a;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;width:75px;flex-shrink:0}
-  .cheque-row .cv{font-size:14px;font-weight:700;color:#2d2416;flex:1;border-bottom:1px solid #c8973a;padding-bottom:1px;min-height:20px}
-  .cheque-amt-box{background:#fff8e8;border:2px solid #c8973a;border-radius:6px;padding:9px 13px;display:flex;justify-content:space-between;align-items:center;margin:8px 0}
-  .cheque-amt-words{font-size:12px;font-style:italic;color:#6b5c3e;font-weight:600;flex:1;padding-right:10px}
-  .cheque-amt-num{font-size:19px;font-weight:800;color:#c8973a;font-family:monospace;white-space:nowrap}
-  .cheque-sign-row{display:flex;justify-content:space-between;align-items:flex-end;margin-top:13px;padding-top:10px;border-top:1px dashed #c8973a}
-  .cheque-sign-box{text-align:center}
-  .cheque-sign-line{width:110px;border-top:1.5px solid #2d2416;margin-bottom:4px}
-  .cheque-sign-lbl{font-size:9px;color:#8a7a5a;font-weight:700;text-transform:uppercase;letter-spacing:0.8px}
-  </style></head><body>${c}</body></html>`);
-  w.document.close(); setTimeout(function(){w.print();},900);
-}
-function _pdfDoc(tid){
-  var btn=document.getElementById('doc-pdf-btn');
-  if(btn){btn.disabled=true;btn.textContent='Generating...';}
-  var shop=_shop().replace(/\s/g,'_');
-  var fname=shop+'_'+tid+'_'+Date.now().toString().slice(-5)+'.pdf';
-  html2pdf().set({margin:0.1,filename:fname,image:{type:'jpeg',quality:0.98},html2canvas:{scale:2, useCORS:true},jsPDF:{unit:'in',format:'a4',orientation:'portrait'}})
-    .from(document.getElementById('doc-preview')).outputPdf('blob').then(function(blob){
-      if(btn){btn.disabled=false;btn.textContent='📤 PDF';}
-      var file=new File([blob],fname,{type:'application/pdf'});
-      if(navigator.canShare&&navigator.canShare({files:[file]})){
-        navigator.share({title:fname,files:[file]}).catch(function(){downloadBlob(blob,fname);});
-      }else downloadBlob(blob,fname);
-    });
-}
-function _waDoc(tid,phone){
-  var msg='';var sh=_shop();
-  if(tid==='invoice'&&_docData.type==='sale'){
-    var s=_docData.sale;
-    msg='*'+sh+' — Tax Invoice*\nDate: '+_today()+'\nCustomer: '+(s.customer||'Walk-in')+'\n\n'+s.fabName+' | '+s.meters+'m × ₹'+s.rate+'/m'+(s.gstRate>0?'\nGST @'+s.gstRate+'%: +₹'+Math.round(s.gstAmount||0).toLocaleString('en-IN'):'')+'\n*TOTAL: ₹'+Math.round(s.total).toLocaleString('en-IN')+'*\n\nThank you! 🙏\n_StockSaathi_';
-  }else if(tid==='challan'){
-    var item=_docData.type==='sale'?_docData.sale.fabName:_docData.fabName;
-    var qty=_docData.type==='sale'?_docData.sale.meters:_docData.purch.meters;
-    var toParty=_docData.type==='sale'?_docData.sale.customer:_docData.purch.party;
-    msg='*'+sh+' — Delivery Challan*\nDate: '+_today()+'\nItem: '+item+' | '+qty+'m\nParty: '+(toParty||'—')+'\n_StockSaathi_';
-  }else if(tid==='purreceipt'){
-    var p=_docData.purch;
-    msg='*'+sh+' — Purchase Receipt*\nDate: '+_today()+'\nSupplier: '+(p.party||'')+'\n'+(_docData.fabName||p.item)+' | '+(p.meters||0)+'m × ₹'+(p.rate||0)+'\n*TOTAL PAID: ₹'+Math.round(p.total||0).toLocaleString('en-IN')+'*\n_StockSaathi_';
-  }else if(tid==='payreceipt'){
-    var s=_docData.sale;
-    msg='*'+sh+' — Payment Receipt*\nDate: '+_today()+'\nFrom: '+(s.customer||'')+'\nAmt Received: ₹'+Math.round(s.paidAmt||s.total).toLocaleString('en-IN')+(s.dueAmt>0?'\nDue: ₹'+Math.round(s.dueAmt).toLocaleString('en-IN'):'')+'\n_StockSaathi_';
+  if(obStep===3) {
+    const name=document.getElementById('ob-name')?.value?.trim();
+    const role=document.getElementById('ob-role')?.value||'owner';
+    const pin=document.getElementById('ob-pin')?.value;
+    if(name){ const data={name,role,pin:pin||''}; const id=await fbSave('profiles',data); profiles.push({id,...data}); applyProfile({id,...data}); }
+    skipOB(); return;
   }
-  var url=(phone?'https://wa.me/91'+phone:'https://wa.me/')+'?text='+encodeURIComponent(msg);
-  window.open(url,'_blank');
+  obStep++; renderOBStep();
+}
+function skipOB() {
+  document.getElementById('onboarding').classList.remove('on');
+  if(profiles.length===0) { document.getElementById('user-display-name').textContent='Owner'; document.getElementById('sb-avatar').textContent='O'; }
+  renderAll();
 }
 
-// ── SALE INVOICE ──
-function _renderInvoice(){
-  var s=_docData.sale, base=s.meters*(s.rate||0);
-  var gr='';
-  if(s.gstRate>0){
-    if(s.gstType==='intra'){gr+='<div class="paper-total-row"><span>CGST @ '+(s.gstRate/2)+'%</span><span>+₹'+Math.round(s.cgst||0).toLocaleString('en-IN')+'</span></div>';gr+='<div class="paper-total-row"><span>SGST @ '+(s.gstRate/2)+'%</span><span>+₹'+Math.round(s.sgst||0).toLocaleString('en-IN')+'</span></div>';}
-    else gr+='<div class="paper-total-row"><span>IGST @ '+s.gstRate+'%</span><span>+₹'+Math.round(s.igst||0).toLocaleString('en-IN')+'</span></div>';
+// ══════════════════════════════════════════════════
+// FALLBACK (localStorage) for demo without Firebase
+// ══════════════════════════════════════════════════
+// If Firebase is not configured, use localStorage as fallback
+setTimeout(()=>{
+  if(!window._db) {
+    console.warn('Firebase not configured — using localStorage demo mode');
+    setupLocalMode();
   }
-  var disc=s.discount>0?'<div class="paper-total-row" style="color:#dc2626"><span>Discount</span><span>-₹'+s.discount.toLocaleString('en-IN')+'</span></div>':'';
-  var due=s.dueAmt>0?'<div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;padding:7px 12px;display:flex;justify-content:space-between;margin:8px 20px;font-size:12px"><span style="font-weight:700;color:#92400e">Balance Due</span><span style="font-weight:800;color:#92400e;font-family:monospace">₹'+Math.round(s.dueAmt).toLocaleString('en-IN')+'</span></div>':'';
-  var upi=appSettings.upiId?'<div style="text-align:center;padding-bottom:12px"><img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=upi://pay?pa='+appSettings.upiId+'&pn='+encodeURIComponent(_shop())+'&am='+Math.round(s.dueAmt>0?s.dueAmt:s.total)+'&cu=INR" style="width:70px;height:70px;border:2px solid #e5e7eb;border-radius:6px;padding:3px;background:white"><div style="font-size:9px;color:#9ca3af;margin-top:3px">Scan to Pay · UPI</div></div>':'';
-  document.getElementById('doc-preview').innerHTML=
-    '<div class="paper">'
-    +'<div class="paper-hdr" style="background:linear-gradient(135deg,#2d2416,#4a3820)">'
-    +'<div class="paper-hdr-firm">'+esc(_shop())+'</div>'
-    +(appSettings.gstin?'<div class="paper-hdr-gstin">GSTIN: '+esc(appSettings.gstin)+'</div>':'')
-    +'<div class="paper-hdr-badge">'+(s.isKacha?'ESTIMATE':'TAX INVOICE')+'</div></div>'
-    +'<div class="paper-meta"><div class="paper-meta-cell"><label>Bill No.</label><span>'+_dNo('INV')+'</span></div>'
-    +'<div class="paper-meta-cell"><label>Date</label><span>'+_today()+'</span></div>'
-    +'<div class="paper-meta-cell"><label>Payment</label><span>'+(s.payMode||'Cash')+'</span></div>'
-    +'<div class="paper-meta-cell"><label>Type</label><span>'+(s.invType||'Cash')+'</span></div></div>'
-    +'<div class="paper-party"><label>Bill To</label><div class="paper-party-name">'+esc(s.customer||'Walk-in')+'</div>'
-    +(s.buyerGstin?'<div class="paper-party-sub">GSTIN: '+esc(s.buyerGstin)+'</div>':'')+'</div>'
-    +'<div class="paper-items"><div class="paper-items-hdr"><span>Item</span><span>Qty</span><span>Rate</span><span>Amt</span></div>'
-    +'<div class="paper-item-row"><div><div class="paper-item-name">'+esc(s.fabName)+'</div></div>'
-    +'<span>'+s.meters+'m</span><span>₹'+(s.rate||0)+'</span><span>₹'+Math.round(base).toLocaleString('en-IN')+'</span></div></div>'
-    +'<div class="paper-totals">'+disc+'<div class="paper-total-row"><span>Subtotal</span><span>₹'+Math.round(s.subtotal||base).toLocaleString('en-IN')+'</span></div>'+gr
-    +'<div class="paper-total-main"><span>TOTAL</span><span>₹'+Math.round(s.total).toLocaleString('en-IN')+'</span></div></div>'+due+upi
-    +'<div class="paper-footer"><div class="paper-footer-msg">Thank You! 🙏</div><div class="paper-footer-sub">Dhanyavaad for your business</div><div class="paper-stamp">StockSaathi</div></div></div>';
-}
+}, 3000);
 
-// ── PURCHASE RECEIPT ──
-function _renderPurReceipt(){
-  var p=_docData.purch, fn=_docData.fabName;
-  var gr='';
-  if((p.gstRate||0)>0){
-    if(p.gstType==='intra'){gr+='<div class="paper-total-row"><span>CGST @ '+(p.gstRate/2)+'%</span><span>+₹'+Math.round(p.cgst||0).toLocaleString('en-IN')+'</span></div>';gr+='<div class="paper-total-row"><span>SGST @ '+(p.gstRate/2)+'%</span><span>+₹'+Math.round(p.sgst||0).toLocaleString('en-IN')+'</span></div>';}
-    else gr+='<div class="paper-total-row"><span>IGST @ '+p.gstRate+'%</span><span>+₹'+Math.round(p.igst||0).toLocaleString('en-IN')+'</span></div>';
-  }
-  document.getElementById('doc-preview').innerHTML=
-    '<div class="paper">'
-    +'<div class="paper-hdr" style="background:linear-gradient(135deg,#0d2e22,#1a5c3a)">'
-    +'<div class="paper-hdr-firm">'+esc(_shop())+'</div>'
-    +(appSettings.gstin?'<div class="paper-hdr-gstin">GSTIN: '+esc(appSettings.gstin)+'</div>':'')
-    +'<div class="paper-hdr-badge">PURCHASE RECEIPT</div></div>'
-    +'<div class="paper-meta"><div class="paper-meta-cell"><label>Receipt No.</label><span>'+_dNo('RCPT')+'</span></div>'
-    +'<div class="paper-meta-cell"><label>Date</label><span>'+_today()+'</span></div></div>'
-    +'<div class="paper-party"><label>Received From (Supplier)</label><div class="paper-party-name">'+esc(p.party||'Supplier')+'</div>'
-    +(p.supplierGstin?'<div class="paper-party-sub">GSTIN: '+esc(p.supplierGstin)+'</div>':'')+'</div>'
-    +'<div class="paper-items"><div class="paper-items-hdr"><span>Item</span><span>Qty</span><span>Rate</span><span>Amt</span></div>'
-    +'<div class="paper-item-row"><div><div class="paper-item-name">'+esc(fn||p.item||'Fabric')+'</div></div>'
-    +'<span>'+(p.meters||0)+'m</span><span>₹'+(p.rate||0)+'</span>'
-    +'<span>₹'+Math.round((p.meters||0)*(p.rate||0)).toLocaleString('en-IN')+'</span></div></div>'
-    +'<div class="paper-totals"><div class="paper-total-row"><span>Subtotal</span><span>₹'+Math.round(p.subtotal||0).toLocaleString('en-IN')+'</span></div>'+gr
-    +'<div class="paper-total-main"><span>TOTAL PAID</span><span>₹'+Math.round(p.total||0).toLocaleString('en-IN')+'</span></div></div>'
-    +(p.note?'<div style="padding:7px 20px;font-size:11px;color:#6b7280;font-style:italic">Ref: '+esc(p.note)+'</div>':'')
-    +'<div class="paper-footer"><div class="paper-footer-msg">Stock Received ✓</div><div class="paper-footer-sub">Purchase acknowledged</div><div class="paper-stamp">StockSaathi</div></div></div>';
+function setupLocalMode() {
+  // Hide login screen in demo mode
+  document.getElementById('login-screen').style.display='none';
+  // Load from localStorage
+  fabrics = JSON.parse(localStorage.getItem('ss_fabrics')||'[]');
+  sales = JSON.parse(localStorage.getItem('ss_sales')||'[]');
+  purchases = JSON.parse(localStorage.getItem('ss_purchases')||'[]');
+  payments = JSON.parse(localStorage.getItem('ss_payments')||'[]');
+  profiles = JSON.parse(localStorage.getItem('ss_profiles')||'[]');
+  settings = JSON.parse(localStorage.getItem('ss_settings')||'{}');
+  masterData = JSON.parse(localStorage.getItem('ss_master')||JSON.stringify({qualities:['Georgette','Satin','Silk','Cotton','Linen','Polyester','Chiffon'],colors:['Red','Green','Blue','Yellow','White','Black','Pink'],parties:[]}));
+  
+  // Monkey-patch all firebase functions to use localStorage
+  window._currentUser = {uid:'demo'};
+  DB='LOCAL'; FB={};
+  
+  // Override all FB functions
+  window.fbSave = async (col, data)=>{
+    const id=uid(); const list=JSON.parse(localStorage.getItem('ss_'+col)||'[]');
+    list.unshift({id,...data}); localStorage.setItem('ss_'+col, JSON.stringify(list));
+    return id;
+  };
+  window.fbUpdate = async (col, id, data)=>{
+    const list=JSON.parse(localStorage.getItem('ss_'+col)||'[]');
+    const i=list.findIndex(x=>x.id===id); if(i>=0) list[i]={...list[i],...data};
+    localStorage.setItem('ss_'+col, JSON.stringify(list));
+  };
+  window.fbDelete = async (col, id)=>{
+    const list=JSON.parse(localStorage.getItem('ss_'+col)||'[]').filter(x=>x.id!==id);
+    localStorage.setItem('ss_'+col, JSON.stringify(list));
+  };
+  window.fbGetAll = async (col)=>JSON.parse(localStorage.getItem('ss_'+col)||'[]');
+  
+  // Override settings save
+  window.saveMaster = async ()=>localStorage.setItem('ss_master',JSON.stringify(masterData));
+  
+  if(profiles.length===0) showOnboarding();
+  else if(profiles.length===1) applyProfile(profiles[0]);
+  else { renderProfileScreen(); document.getElementById('profile-screen').style.display='flex'; }
+  rebuildDatalists(); renderAll();
+  toast('🔧 Demo mode — configure Firebase for cloud sync',4000);
 }
-
-// ── DELIVERY CHALLAN ──
-function _renderChallan(){
-  var isSale=_docData.type==='sale';
-  var item=isSale?_docData.sale.fabName:(_docData.fabName||_docData.purch.item);
-  var qty=isSale?_docData.sale.meters:(_docData.purch.meters||0);
-  var toParty=isSale?(_docData.sale.customer||'Customer'):(_docData.purch.party||'Supplier');
-  document.getElementById('doc-preview').innerHTML=
-    '<div class="paper">'
-    +'<div class="paper-hdr" style="background:linear-gradient(135deg,#0f2a1a,#1a4a2e)">'
-    +'<div class="paper-hdr-firm">'+esc(_shop())+'</div>'
-    +(appSettings.gstin?'<div class="paper-hdr-gstin">GSTIN: '+esc(appSettings.gstin)+'</div>':'')
-    +'<div class="paper-hdr-badge">DELIVERY CHALLAN</div></div>'
-    +'<div class="paper-meta"><div class="paper-meta-cell"><label>Challan No.</label><span>'+_dNo('DC')+'</span></div>'
-    +'<div class="paper-meta-cell"><label>Date</label><span>'+_today()+'</span></div>'
-    +'<div class="paper-meta-cell"><label>Mode</label><span>Road</span></div>'
-    +'<div class="paper-meta-cell"><label>Type</label><span>'+(isSale?'Outward':'Inward')+'</span></div></div>'
-    +'<div class="challan-consign-grid">'
-    +'<div class="challan-consign-cell"><div style="font-size:8px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:3px">Consignor (From)</div>'
-    +'<div style="font-size:13px;font-weight:700">'+esc(_shop())+'</div><div style="font-size:11px;color:#6b7280">Surat, Gujarat</div></div>'
-    +'<div class="challan-consign-cell"><div style="font-size:8px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:3px">'+(isSale?'Consignee (To)':'Received From')+'</div>'
-    +'<div style="font-size:13px;font-weight:700">'+esc(toParty)+'</div><div style="font-size:11px;color:#6b7280">&nbsp;</div></div>'
-    +'</div>'
-    +'<div class="paper-items"><div class="paper-items-hdr"><span>Description of Goods</span><span>HSN</span><span>Qty</span><span>Remarks</span></div>'
-    +'<div class="paper-item-row"><div><div class="paper-item-name">'+esc(item)+'</div><div class="paper-item-sub">Textile Fabric</div></div>'
-    +'<span>5208</span><span>'+qty+'m</span><span>—</span></div></div>'
-    +'<div style="padding:9px 20px;background:#f8f9fc;border-top:1px solid #e5e7eb">'
-    +'<div style="display:flex;justify-content:space-between;font-size:12px;color:#6b7280"><span>Total Quantity:</span><span style="font-weight:700;color:#1a1a1a">'+qty+' Meters</span></div>'
-    +'<div style="font-size:10px;color:#9ca3af;margin-top:4px">This challan is for transport reference only. Not a tax document.</div></div>'
-    +'<div class="challan-sign-row"><div class="challan-sign-box"><div class="challan-sign-line"></div><div class="challan-sign-lbl">Driver / Transporter</div></div>'
-    +'<div class="challan-sign-box"><div class="challan-sign-line"></div><div class="challan-sign-lbl">Authorised Signatory</div></div></div>'
-    +'<div class="paper-footer"><div class="paper-stamp">StockSaathi</div></div></div>';
-}
-
-// ── PAYMENT RECEIPT FOR SALE ──
-function _renderPayReceiptSale(){
-  var s=_docData.sale;
-  document.getElementById('doc-preview').innerHTML=
-    '<div class="paper">'
-    +'<div class="paper-hdr" style="background:linear-gradient(135deg,#1a1060,#2d2080)">'
-    +'<div class="paper-hdr-firm">'+esc(_shop())+'</div>'
-    +'<div class="paper-hdr-badge">PAYMENT RECEIPT</div></div>'
-    +'<div class="paper-meta"><div class="paper-meta-cell"><label>Receipt No.</label><span>'+_dNo('PAY')+'</span></div>'
-    +'<div class="paper-meta-cell"><label>Date</label><span>'+_today()+'</span></div>'
-    +'<div class="paper-meta-cell"><label>Mode</label><span>'+(s.payMode||'Cash')+'</span></div></div>'
-    +'<div class="paper-party"><label>Received From</label><div class="paper-party-name">'+esc(s.customer||'Customer')+'</div></div>'
-    +'<div style="padding:13px 20px">'
-    +'<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:11px 14px;margin-bottom:10px">'
-    +'<div style="font-size:9px;color:#15803d;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Amount Received</div>'
-    +'<div style="font-size:24px;font-weight:800;color:#15803d;font-family:monospace">₹'+Math.round(s.paidAmt||s.total).toLocaleString('en-IN')+'</div></div>'
-    +'<div style="font-size:12px;color:#6b7280;margin-bottom:3px">For: <strong style="color:#1a1a1a">'+esc(s.fabName)+'</strong> ('+s.meters+'m)</div>'
-    +(s.dueAmt>0?'<div style="margin-top:7px;padding-top:7px;border-top:1px dashed #e5e7eb;display:flex;justify-content:space-between;font-size:12px"><span style="color:#dc2626;font-weight:600">Balance Due:</span><span style="color:#dc2626;font-weight:700">₹'+Math.round(s.dueAmt).toLocaleString('en-IN')+'</span></div>':'')
-    +'</div>'
-    +'<div class="challan-sign-row" style="margin-top:0"><div class="challan-sign-box"><div class="challan-sign-line"></div><div class="challan-sign-lbl">Payer Signature</div></div>'
-    +'<div class="challan-sign-box"><div class="challan-sign-line"></div><div class="challan-sign-lbl">Receiver Signature</div></div></div>'
-    +'<div class="paper-footer"><div class="paper-footer-msg">Payment Confirmed ✓</div><div class="paper-stamp">StockSaathi</div></div></div>';
-}
-
-// ═══ STANDALONE PAYMENT RECEIPT / CHEQUE ═══
-// Adds a button to the ledger bar programmatically so it doesn't duplicate IDs.
-document.addEventListener('DOMContentLoaded',function(){
-  var btn=document.createElement('button');
-  btn.className='btn btn-emerald';
-  btn.textContent='💳 Payment Document';
-  btn.onclick=openPaymentReceiptModal;
-  var ledgSh=document.querySelector('#pg-ledger .sh > div:last-child');
-  if(ledgSh) ledgSh.appendChild(btn);
-});
-
-function openPaymentReceiptModal(){
-  document.getElementById('pr-type').value='receipt';
-  ['pr-party','pr-amount','pr-purpose','pr-txn','pr-bank','pr-chq-no'].forEach(function(i){var e=document.getElementById(i);if(e)e.value='';});
-  document.getElementById('pr-chq-date').value=new Date().toISOString().split('T')[0];
-  document.getElementById('pr-words').textContent='';
-  updatePRType();
-  document.getElementById('payment-receipt-modal').classList.add('on');
-}
-function updatePRType(){
-  var t=document.getElementById('pr-type').value;
-  document.getElementById('pr-cheque-fields').style.display=t==='cheque'?'block':'none';
-  document.getElementById('pr-receipt-fields').style.display=t==='receipt'?'block':'none';
-}
-function updatePRWords(){
-  var a=parseFloat(document.getElementById('pr-amount').value)||0;
-  document.getElementById('pr-words').textContent=a>0?'Words: '+_numWords(a)+' Only':'';
-}
-function generatePaymentDoc(){
-  var type=document.getElementById('pr-type').value;
-  var party=document.getElementById('pr-party').value.trim();
-  var amt=parseFloat(document.getElementById('pr-amount').value)||0;
-  var purpose=document.getElementById('pr-purpose').value.trim();
-  if(!party){toast('Party name required!');return;}
-  if(!amt){toast('Amount required!');return;}
-  document.getElementById('payment-receipt-modal').classList.remove('on');
-  document.getElementById('doc-modal-title').textContent=type==='cheque'?'Cheque Draft':'Payment Receipt';
-  document.getElementById('doc-tab-bar').innerHTML='';
-  var html='';
-  if(type==='cheque'){
-    var bank=document.getElementById('pr-bank').value.trim()||appSettings.bank||'State Bank of India';
-    var chqNo=document.getElementById('pr-chq-no').value||'______';
-    var dv=document.getElementById('pr-chq-date').value;
-    var ddisp=dv?new Date(dv).toLocaleDateString('en-IN'):_today();
-    html='<div style="background:#fff;padding:14px;font-family:sans-serif">'
-      +'<div style="font-size:10px;color:#9ca3af;text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Cheque Draft · '+esc(_shop())+'</div>'
-      +'<div class="cheque-paper">'
-      +'<div class="cheque-hdr"><div><div class="cheque-bank">'+esc(bank)+'</div><div style="font-size:11px;color:#8a7a5a;margin-top:2px">IFSC: '+(appSettings.ifsc||'—')+'</div></div>'
-      +'<div><div class="cheque-no">No. '+esc(chqNo)+'</div><div style="font-size:11px;color:#8a7a5a;margin-top:2px">Date: '+ddisp+'</div></div></div>'
-      +'<div class="cheque-row"><label>Pay To</label><div class="cv">'+esc(party)+'</div></div>'
-      +'<div class="cheque-amt-box"><div class="cheque-amt-words">'+_numWords(amt)+' Only</div><div class="cheque-amt-num">₹'+Math.round(amt).toLocaleString('en-IN')+'</div></div>'
-      +'<div class="cheque-row"><label>Purpose</label><div class="cv">'+esc(purpose||'Fabric Purchase')+'</div></div>'
-      +'<div class="cheque-sign-row"><div class="cheque-sign-box"><div class="cheque-sign-line"></div><div class="cheque-sign-lbl">Receiver Signature</div></div>'
-      +'<div class="cheque-sign-box"><div class="cheque-sign-line"></div><div class="cheque-sign-lbl">Authorised Signatory</div></div></div></div>'
-      +'<div style="font-size:10px;color:#9ca3af;text-align:center;margin-top:8px">Draft only — not a valid banking instrument.</div></div>';
-  }else{
-    var mode=document.getElementById('pr-mode').value;
-    var txn=document.getElementById('pr-txn').value.trim();
-    html='<div class="paper">'
-      +'<div class="paper-hdr" style="background:linear-gradient(135deg,#1a1060,#2d2080)">'
-      +'<div class="paper-hdr-firm">'+esc(_shop())+'</div>'
-      +'<div class="paper-hdr-badge">PAYMENT RECEIPT</div></div>'
-      +'<div class="paper-meta"><div class="paper-meta-cell"><label>Receipt No.</label><span>'+_dNo('PAY')+'</span></div>'
-      +'<div class="paper-meta-cell"><label>Date</label><span>'+_today()+'</span></div>'
-      +'<div class="paper-meta-cell"><label>Mode</label><span>'+esc(mode)+'</span></div></div>'
-      +'<div class="paper-party"><label>Paid To</label><div class="paper-party-name">'+esc(party)+'</div></div>'
-      +'<div style="padding:13px 20px">'
-      +'<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:11px 14px;margin-bottom:10px">'
-      +'<div style="font-size:9px;color:#15803d;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Amount Paid</div>'
-      +'<div style="font-size:24px;font-weight:800;color:#15803d;font-family:monospace">₹'+Math.round(amt).toLocaleString('en-IN')+'</div>'
-      +'<div style="font-size:11px;color:#166534;margin-top:2px;font-style:italic">'+_numWords(amt)+' Only</div></div>'
-      +(purpose?'<div style="font-size:12px;color:#6b7280;margin-bottom:3px">Purpose: <strong style="color:#1a1a1a">'+esc(purpose)+'</strong></div>':'')
-      +(txn?'<div style="font-size:12px;color:#6b7280;margin-bottom:3px">Txn Ref: <strong style="font-family:monospace;color:#1a1a1a">'+esc(txn)+'</strong></div>':'')
-      +'</div>'
-      +'<div class="challan-sign-row"><div class="challan-sign-box"><div class="challan-sign-line"></div><div class="challan-sign-lbl">Payer Signature</div></div>'
-      +'<div class="challan-sign-box"><div class="challan-sign-line"></div><div class="challan-sign-lbl">Receiver Signature</div></div></div>'
-      +'<div class="paper-footer"><div class="paper-footer-msg">Payment Confirmed ✓</div><div class="paper-stamp">StockSaathi</div></div></div>';
-  }
-  document.getElementById('doc-preview').innerHTML=html;
-  document.getElementById('doc-actions-bar').innerHTML=
-    '<button onclick="_printDoc()" class="btn btn-ghost" style="flex:1;justify-content:center;font-size:12px">🖨️ Print</button>'
-    +'<button onclick="_pdfDoc(\'pay\')" id="doc-pdf-btn" style="flex:1;justify-content:center;padding:9px 10px;background:var(--indigo);color:white;border:none;border-radius:var(--r);font-family:var(--ff);font-size:12px;font-weight:700;cursor:pointer">📤 PDF</button>'
-    +'<button onclick="_waPayStandalone(\''+esc(party)+'\','+amt+')" style="flex:1;justify-content:center;padding:9px 10px;background:#25D366;color:white;border:none;border-radius:var(--r);font-family:var(--ff);font-size:12px;font-weight:700;cursor:pointer">💬 WhatsApp</button>';
-  document.getElementById('doc-modal').classList.add('on');
-}
-function _waPayStandalone(party,amt){
-  var msg='*'+_shop()+' — Payment Receipt*\nDate: '+_today()+'\nTo: '+party+'\nAmt: ₹'+Math.round(amt).toLocaleString('en-IN')+' ('+_numWords(amt)+' Only)\n_StockSaathi_';
-  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
-}
-
-// ── Number to Words ──
-function _numWords(n){
-  var o=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
-  var t=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
-  function tw(x){return x<20?o[x]:t[Math.floor(x/10)]+(x%10?' '+o[x%10]:'');}
-  function c(x){
-    if(!x)return '';
-    if(x<100)return tw(x);
-    if(x<1000)return o[Math.floor(x/100)]+' Hundred'+(x%100?' '+tw(x%100):'');
-    if(x<100000)return c(Math.floor(x/1000))+' Thousand'+(x%1000?' '+c(x%1000):'');
-    if(x<10000000)return c(Math.floor(x/100000))+' Lakh'+(x%100000?' '+c(x%100000):'');
-    return c(Math.floor(x/10000000))+' Crore'+(x%10000000?' '+c(x%10000000):'');
-  }
-  n=Math.round(n); return n===0?'Zero':c(n).trim();
-}
-
-window.onload=function(){startApp();};
 </script>
 </body>
 </html>
