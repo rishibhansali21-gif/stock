@@ -11,14 +11,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithPhoneNumber, RecaptchaVerifier, onAuthStateChanged, signOut as fbSignOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
-// ── FIREBASE CONFIG ── Replace with your own config
-// Import the functions you need from the SDKs you need
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// ── FIREBASE CONFIG ──
 const firebaseConfig = {
   apiKey: "AIzaSyB5oBVuaur5Yl_gxfde9NFYtanLZdr6Qjs",
   authDomain: "stock-98c39.firebaseapp.com",
@@ -29,9 +22,8 @@ const firebaseConfig = {
   measurementId: "G-9YSBG3JSW4"
 };
 
-// Initialize Firebase
+// Initialize Firebase (Fixed duplicate init bug)
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
@@ -110,7 +102,7 @@ body{height:100%;background:var(--bg);color:var(--text);font-family:var(--ff);fo
 .tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
 
 /* Buttons */
-.btn{padding:9px 18px;border:none;border-radius:var(--r);font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;user-select:none;letter-spacing:-0.1px}
+.btn{padding:9px 18px;border:none;border-radius:var(--r);font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;user-select:none;letter-spacing:-0.1px;justify-content:center;}
 .btn-primary{background:linear-gradient(135deg,var(--indigo),#4a5ce8);color:#fff;box-shadow:0 4px 14px rgba(92,110,248,0.35)}
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(92,110,248,0.45)}
 .btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}
@@ -214,17 +206,19 @@ input::placeholder{color:var(--text3)}
 
 /* ── LEDGER ── */
 .ledger-tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:4px}
-.ledger-tab{flex:1;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;color:var(--text2);border:none;background:transparent;border-radius:var(--r);transition:all 0.15s}
+.ledger-tab{flex:1;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;color:var(--text2);border:none;background:transparent;border-radius:var(--r);transition:all 0.15s; white-space:nowrap;}
 .ledger-tab.active{background:var(--indigo-dim);color:var(--indigo2)}
 .ledger-entry{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:8px;display:grid;grid-template-columns:auto 1fr auto auto auto;gap:10px;align-items:center}
 .ledger-entry.sale-entry{border-left:3px solid var(--emerald)}
 .ledger-entry.purchase-entry{border-left:3px solid var(--blue)}
 .ledger-entry.payment-entry{border-left:3px solid var(--violet)}
+.ledger-entry.khata-entry{border-left:3px solid var(--amber)}
 .ledger-entry.returned{opacity:0.5}
 .le-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .le-icon.sale{background:var(--emerald-dim)}
 .le-icon.purchase{background:var(--blue-dim)}
 .le-icon.payment{background:var(--violet-dim)}
+.le-icon.khata{background:var(--amber-dim)}
 .le-name{font-size:14px;font-weight:700;margin-bottom:2px}
 .le-meta{font-size:11px;color:var(--text3)}
 .le-date{font-size:11px;color:var(--text3);text-align:right;min-width:75px}
@@ -232,6 +226,8 @@ input::placeholder{color:var(--text3)}
 .le-amount.sale{color:var(--emerald)}
 .le-amount.purchase{color:var(--blue)}
 .le-amount.payment{color:var(--violet)}
+.le-amount.khata-pos{color:var(--emerald)}
+.le-amount.khata-neg{color:var(--rose)}
 .le-doc-btn{padding:5px 9px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;background:var(--indigo-dim);color:var(--indigo2);border:1px solid rgba(92,110,248,0.2)}
 .le-doc-btn:hover{background:rgba(92,110,248,0.2)}
 .ledger-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
@@ -417,7 +413,7 @@ body.manager-mode .hide-manager{display:none !important}
   .main,.page,.content{overflow:visible;height:auto}
 }
 
-/* Mobile */
+/* Mobile De-clutter */
 @media(max-width:900px){
   .sb{display:none !important}
   .hamburger{display:flex !important}
@@ -428,6 +424,16 @@ body.manager-mode .hide-manager{display:none !important}
   .stats{grid-template-columns:1fr 1fr}
   .stat{padding:10px 12px;border-bottom:1px solid var(--border)}
   .content{padding:12px}
+  
+  /* Larger, touch-friendly inputs */
+  input, select, textarea { font-size:15px; padding:12px; }
+  .btn { padding:12px 16px; font-size:14px; width:100%; justify-content:center; }
+  
+  /* Clean up grids */
+  .fc { padding:16px; margin-bottom:12px; }
+  .g2, .g3 { grid-template-columns:1fr; gap:12px; }
+  
+  /* Fabric cards */
   .fab-card{flex-wrap:wrap}
   .fab-right{flex-wrap:wrap;gap:6px}
   .fab-actions{width:100%;justify-content:flex-end}
@@ -435,14 +441,25 @@ body.manager-mode .hide-manager{display:none !important}
   .rpt-grid{grid-template-columns:1fr}
   .rpt-stats{grid-template-columns:1fr 1fr}
   .modal,.qmodal{width:95vw;padding:18px}
-  .g2{grid-template-columns:1fr;gap:0}
+  
+  /* Ledger stacking */
   .ledger-summary{grid-template-columns:1fr 1fr}
+  .ledger-entry{grid-template-columns:1fr; position:relative; padding:16px; gap:8px;}
+  .le-amount { text-align:left; font-size:20px; margin-top:4px; }
+  .le-date { text-align:left; display:block; font-size:12px; margin-top:2px;}
+  .le-doc-btn { position:absolute; top:16px; right:16px; width:auto; padding:6px 12px;}
+  
+  .udhaar-card { flex-direction:column; align-items:flex-start; gap:12px; }
+  .udhaar-card > div:last-child { text-align:left; width:100%; display:flex; justify-content:space-between; align-items:center; }
+  
+  .sh { flex-direction:column; gap:10px; }
   .login-wrap{grid-template-columns:1fr}
   .login-left{display:none}
   .login-right{padding:32px 24px}
   .pay-stats{grid-template-columns:1fr 1fr}
-  .ledger-entry{grid-template-columns:auto 1fr auto}
-  .le-date,.le-doc-btn{display:none}
+  
+  .ledger-tabs { overflow-x:auto; }
+  .ledger-tab { padding:12px; flex:none; }
 }
 </style>
 </head>
@@ -458,7 +475,7 @@ body.manager-mode .hide-manager{display:none !important}
       <div class="sb-ico">S</div>
       <div>
         <div class="sb-name">StockSaathi</div>
-        <div class="sb-tag">Textile Manager v7</div>
+        <div class="sb-tag">Textile Manager v7.1</div>
       </div>
     </div>
   </div>
@@ -542,7 +559,7 @@ body.manager-mode .hide-manager{display:none !important}
     <div class="content">
       <div class="sh">
         <div><div class="sh-title">Today's Overview 📋</div><div class="sh-sub">Quick snapshot of your inventory</div></div>
-        <button class="btn btn-ghost" style="font-size:12px" onclick="goto('inv',document.querySelectorAll('.sb-item')[1])">View All →</button>
+        <button class="btn btn-ghost" style="font-size:12px; width:auto;" onclick="goto('inv',document.querySelectorAll('.sb-item')[1])">View All →</button>
       </div>
       <div class="low-banner hide-staff" id="low-banner">
         <div class="low-banner-t">⚠️ Low Stock Alert</div>
@@ -556,7 +573,7 @@ body.manager-mode .hide-manager{display:none !important}
     <div class="content">
       <div class="sh">
         <div><div class="sh-title">📦 Inventory</div><div class="sh-sub">All fabrics and stock levels</div></div>
-        <button class="btn btn-primary" onclick="openModal()">+ New Fabric</button>
+        <button class="btn btn-primary" style="width:auto" onclick="openModal()">+ New Fabric</button>
       </div>
       <div class="cat-row" id="inv-cat-filters">
         <button class="cat-p active" onclick="filterCat('',this)">🧵 All</button>
@@ -607,12 +624,24 @@ body.manager-mode .hide-manager{display:none !important}
             <div class="fg"><label class="fl">Discount (₹)</label><input id="s-disc" type="number" placeholder="0" oninput="calcSaleAmt()"/></div>
             <div class="fg"><label class="fl">Invoice Type</label><select id="s-inv-type"><option>Cash</option><option>Credit</option></select></div>
           </div>
-          <div class="g2 hide-staff">
+          
+          <div class="hide-staff" style="margin-top:20px; margin-bottom:12px; border-top:1px solid var(--border); padding-top:16px;">
+            <div style="font-size:12px; font-weight:700; color:var(--text); margin-bottom:10px;">🚚 Dispatch Details (Optional)</div>
+            <div class="g3">
+              <div class="fg"><label class="fl">Transport</label><input id="s-transport" placeholder="e.g. Mahadev"/></div>
+              <div class="fg"><label class="fl">L.R. No.</label><input id="s-lr" placeholder="e.g. 12345"/></div>
+              <div class="fg"><label class="fl">E-Way Bill</label><input id="s-eway" placeholder="123456789012"/></div>
+            </div>
+          </div>
+
+          <div class="g2 hide-staff" style="border-top:1px solid var(--border); padding-top:16px;">
             <div class="fg"><label class="fl">Payment Mode</label><select id="s-pay-mode"><option>Cash</option><option>UPI</option><option>Bank</option><option>Cheque</option></select></div>
             <div class="fg"><label class="fl">Paid (₹)</label><input id="s-paid" type="number" placeholder="Leave blank = full"/></div>
           </div>
+          
           <div class="res-box hide-staff" style="margin-bottom:6px"><span class="res-l">Subtotal</span><span id="s-subtotal" style="font-size:18px;font-weight:700;color:var(--text2);font-family:var(--fm)">₹0</span></div>
           <div class="res-box" style="margin-bottom:12px"><span class="res-l">Total (with GST)</span><span class="res-v" id="s-amt">₹0</span></div>
+          
           <div class="fg hide-staff"><label class="fl">Buyer GSTIN <span class="fl-h">(Optional)</span></label><input id="s-buyer-gstin" list="dl-gstin" placeholder="24XXXXX1234X1Z5"/></div>
           <div class="fg"><label class="fl">Customer Name</label><input id="s-c" list="dl-party" placeholder="e.g. Rajesh Bhai"/></div>
           <div class="fg hide-staff"><label class="fl">WhatsApp</label>
@@ -628,9 +657,9 @@ body.manager-mode .hide-manager{display:none !important}
               📝 Kacha Bill (Estimate — stock not deducted)
             </label>
           </div>
-          <div style="display:flex;gap:7px">
-            <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="recSale()">✅ Record</button>
-            <button class="btn btn-primary hide-staff" style="flex:1;justify-content:center" onclick="recSaleAndBill()">🧾 Record + Bill</button>
+          <div class="g2">
+            <button class="btn btn-ghost" onclick="recSale()">✅ Record</button>
+            <button class="btn btn-primary hide-staff" onclick="recSaleAndBill()">🧾 Record + Bill</button>
           </div>
         </div>
         <div>
@@ -644,13 +673,13 @@ body.manager-mode .hide-manager{display:none !important}
   <div class="page" id="pg-ledger">
     <div class="content">
       <div class="sh">
-        <div><div class="sh-title">📒 Ledger</div><div class="sh-sub">Sales &amp; Purchase Book</div></div>
+        <div><div class="sh-title">📒 Ledger</div><div class="sh-sub">Sales, Purchases & Khata Book</div></div>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-ghost" onclick="exportCSV()">📥 CSV</button>
-          <button class="btn btn-primary" onclick="openPurchaseModal()">+ Purchase</button>
+          <button class="btn btn-ghost" style="width:auto" onclick="exportCSV()">📥 CSV</button>
+          <button class="btn btn-primary" style="width:auto" onclick="openPurchaseModal()">+ Purchase</button>
         </div>
       </div>
-      <div class="ledger-summary">
+      <div class="ledger-summary" id="ledger-stats-box">
         <div class="ls-card"><div class="ls-label">Total Sales</div><div class="ls-value" id="ls-total-sales" style="color:var(--emerald)">₹0</div><div style="font-size:11px;color:var(--text3);margin-top:4px" id="ls-sales-count">0 entries</div></div>
         <div class="ls-card"><div class="ls-label">Total Purchases</div><div class="ls-value" id="ls-total-purchases" style="color:var(--blue)">₹0</div><div style="font-size:11px;color:var(--text3);margin-top:4px" id="ls-purchases-count">0 entries</div></div>
         <div class="ls-card"><div class="ls-label">Net Profit (Est.)</div><div class="ls-value" id="ls-net-profit">₹0</div><div style="font-size:11px;color:var(--text3);margin-top:4px">Sales − Purchases</div></div>
@@ -659,13 +688,21 @@ body.manager-mode .hide-manager{display:none !important}
         <button class="ledger-tab active" id="tab-sales" onclick="switchLedger('sales')">💰 Sales</button>
         <button class="ledger-tab" id="tab-purchases" onclick="switchLedger('purchases')">📥 Purchases</button>
         <button class="ledger-tab" id="tab-udhaar" onclick="switchLedger('udhaar')" style="color:var(--amber)">⏳ Udhaar</button>
+        <button class="ledger-tab" id="tab-khata" onclick="switchLedger('khata')" style="color:var(--indigo2)">📘 Party Khata</button>
       </div>
-      <div class="search-big">
+      
+      <div class="search-big" id="ledger-search-box">
         <div class="search-wrap">
           <span class="search-ic">🔍</span>
           <input id="ledger-q" placeholder="Search party, item, amount..." oninput="renderLedger()"/>
         </div>
       </div>
+      <div id="khata-select-box" style="display:none; margin-bottom: 16px;">
+        <select id="khata-party-select" onchange="renderKhata()" style="font-size: 15px; font-weight: bold; color:var(--indigo2); border-color:var(--indigo)">
+          <option value="">-- Select a Party to View Statement --</option>
+        </select>
+      </div>
+
       <div id="ledger-grid"></div>
     </div>
   </div>
@@ -680,7 +717,7 @@ body.manager-mode .hide-manager{display:none !important}
     <div class="content">
       <div class="sh">
         <div><div class="sh-title">💳 Payments &amp; Cheques</div><div class="sh-sub">Generate &amp; track all payment documents</div></div>
-        <div style="display:flex;gap:8px">
+        <div class="g2">
           <button class="btn btn-emerald" onclick="openNewPaymentModal('receipt')">💰 New Receipt</button>
           <button class="btn btn-ghost" onclick="openNewPaymentModal('cheque')">🏦 New Cheque</button>
         </div>
@@ -750,7 +787,7 @@ body.manager-mode .hide-manager{display:none !important}
     <div class="content">
       <div class="sh">
         <div><div class="sh-title">📊 Monthly Report</div><div class="sh-sub" id="rpt-month">—</div></div>
-        <button class="btn btn-ghost" style="font-size:12px" onclick="window.print()">🖨️ Print</button>
+        <button class="btn btn-ghost" style="font-size:12px; width:auto;" onclick="window.print()">🖨️ Print</button>
       </div>
       <div class="rpt-stats" id="rpt-stats"></div>
       <div class="rpt-grid">
@@ -777,7 +814,7 @@ body.manager-mode .hide-manager{display:none !important}
     <div class="content">
       <div class="sh">
         <div><div class="sh-title">👥 Manage Profiles</div><div class="sh-sub">Owner / Manager / Staff</div></div>
-        <button class="btn btn-primary" onclick="openEditProfileModal(null)">+ Add Profile</button>
+        <button class="btn btn-primary" style="width:auto;" onclick="openEditProfileModal(null)">+ Add Profile</button>
       </div>
       <div id="profiles-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px"></div>
     </div>
@@ -788,17 +825,17 @@ body.manager-mode .hide-manager{display:none !important}
       <div class="sh"><div><div class="sh-title">📁 Master Data</div><div class="sh-sub">Custom lists for dropdowns</div></div></div>
       <div class="g2">
         <div class="fc" style="padding:16px">
-          <div style="font-size:15px;font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">Categories <button class="btn btn-primary btn-sm" onclick="addQuality()">+ Add</button></div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">Categories <button class="btn btn-primary btn-sm" style="width:auto" onclick="addQuality()">+ Add</button></div>
           <div class="md-list" id="md-qualities"></div>
         </div>
         <div class="fc" style="padding:16px">
-          <div style="font-size:15px;font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">Colors <button class="btn btn-primary btn-sm" onclick="addColor()">+ Add</button></div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">Colors <button class="btn btn-primary btn-sm" style="width:auto" onclick="addColor()">+ Add</button></div>
           <div class="md-list" id="md-colors"></div>
         </div>
       </div>
       <div class="fc" style="padding:16px">
         <div style="font-size:15px;font-weight:700;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center">
-          Saved Parties <button class="btn btn-primary btn-sm" onclick="addPartyManual()">+ Add Party</button>
+          Saved Parties <button class="btn btn-primary btn-sm" style="width:auto" onclick="addPartyManual()">+ Add Party</button>
         </div>
         <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Parties auto-added from Sales &amp; Purchases</div>
         <div class="md-list" id="md-parties"></div>
@@ -813,10 +850,12 @@ body.manager-mode .hide-manager{display:none !important}
     <div class="fg hide-staff"><label class="fl">Rate ₹/m <span class="fl-h">(Update if changed)</span></label><input id="as-r" type="number" placeholder="Same as before"/></div>
     <div class="fg"><label class="fl">Supplier</label><input id="as-s" list="dl-party" placeholder="e.g. Rajan Textiles"/></div>
     <div class="fg hide-staff"><label class="fl">Supplier GSTIN <span class="fl-h">(Optional)</span></label><input id="as-gstin" list="dl-gstin" placeholder="24XXXXX1234X1Z5"/></div>
-    <div class="qmodal-foot">
-      <button class="btn btn-ghost" onclick="closeAddStock()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveAddStock()">Add Stock</button>
-      <button class="btn btn-emerald hide-staff" onclick="saveAddStockAndReceipt()">📃 Add + Receipt</button>
+    <div class="qmodal-foot" style="flex-direction:column;">
+      <div class="g2" style="width:100%">
+        <button class="btn btn-ghost" onclick="closeAddStock()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveAddStock()">Add Stock</button>
+      </div>
+      <button class="btn btn-emerald btn-full hide-staff" onclick="saveAddStockAndReceipt()">📃 Add + Receipt</button>
     </div>
   </div>
 </div>
@@ -848,6 +887,16 @@ body.manager-mode .hide-manager{display:none !important}
       <div class="fg"><label class="fl">Discount (₹)</label><input id="qs-disc" type="number" placeholder="0" oninput="calcQSAmt()"/></div>
       <div class="fg"><label class="fl">Invoice Type</label><select id="qs-inv-type"><option>Cash</option><option>Credit</option></select></div>
     </div>
+    
+    <div class="hide-staff" style="margin-top:12px; margin-bottom:12px; border-top:1px solid var(--border); padding-top:12px;">
+      <div style="font-size:11px; font-weight:700; color:var(--text); margin-bottom:8px;">🚚 Dispatch (Optional)</div>
+      <div class="g3">
+        <div class="fg"><input id="qs-transport" placeholder="Transport"/></div>
+        <div class="fg"><input id="qs-lr" placeholder="L.R. No"/></div>
+        <div class="fg"><input id="qs-eway" placeholder="E-Way Bill"/></div>
+      </div>
+    </div>
+
     <div class="res-box" style="margin-bottom:12px"><span class="res-l">Total (with GST)</span><span class="res-v" id="qs-amt">₹0</span></div>
     <div class="fg hide-staff"><label class="fl">Buyer GSTIN <span class="fl-h">(Optional)</span></label><input id="qs-buyer-gstin" list="dl-gstin" placeholder="24XXXXX1234X1Z5"/></div>
     <div class="fg"><label class="fl">Customer Name</label><input id="qs-c" list="dl-party" placeholder="e.g. Rajesh Bhai"/></div>
@@ -864,13 +913,11 @@ body.manager-mode .hide-manager{display:none !important}
       </label>
     </div>
     <div class="qmodal-foot" style="flex-direction:column;gap:7px">
-      <div style="display:flex;gap:7px;width:100%">
-        <button class="btn btn-ghost" onclick="closeQS()" style="flex:1;justify-content:center">Cancel</button>
-        <button class="btn btn-primary" onclick="saveQS()" style="flex:1;justify-content:center">✅ Record</button>
+      <div class="g2" style="width:100%">
+        <button class="btn btn-ghost" onclick="closeQS()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveQS()">✅ Record</button>
       </div>
-      <div style="display:flex;gap:7px;width:100%" class="hide-staff">
-        <button class="btn btn-full btn-emerald" onclick="saveQSAndBill()" style="justify-content:center">🧾 Sell + Generate Bill</button>
-      </div>
+      <button class="btn btn-full btn-emerald hide-staff" onclick="saveQSAndBill()">🧾 Sell + Generate Bill</button>
     </div>
   </div>
 </div>
@@ -905,10 +952,12 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
     <div class="res-box" style="margin-bottom:12px"><span class="res-l">Total (with GST)</span><span class="res-v" id="pur-total">₹0</span></div>
     <div class="fg"><label class="fl">Note <span class="fl-h">(Optional)</span></label><input id="pur-note" placeholder="Invoice no, challan no..."/></div>
-    <div class="qmodal-foot">
-      <button class="btn btn-ghost" onclick="closePurchaseModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="savePurchase()">✅ Record</button>
-      <button class="btn btn-emerald" onclick="savePurchaseAndReceipt()">📃 Record + Receipt</button>
+    <div class="qmodal-foot" style="flex-direction:column;">
+      <div class="g2" style="width:100%;">
+        <button class="btn btn-ghost" onclick="closePurchaseModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="savePurchase()">✅ Record</button>
+      </div>
+      <button class="btn btn-emerald btn-full" onclick="savePurchaseAndReceipt()">📃 Record + Receipt</button>
     </div>
   </div>
 </div>
@@ -930,10 +979,12 @@ body.manager-mode .hide-manager{display:none !important}
       <div class="fg hide-staff"><label class="fl">Rate ₹/m</label><input id="m-r" type="number" placeholder="0" min="0"/></div>
       <div class="fg"><label class="fl">Supplier</label><input id="m-s" list="dl-party" placeholder="e.g. Rajan Textiles"/></div>
     </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveModal()">✅ Add Fabric</button>
-      <button class="btn btn-emerald hide-staff" onclick="saveModalAndReceipt()">📃 Add + Purchase Receipt</button>
+    <div class="modal-foot" style="flex-direction:column;">
+      <div class="g2" style="width:100%">
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveModal()">✅ Add Fabric</button>
+      </div>
+      <button class="btn btn-emerald btn-full hide-staff" onclick="saveModalAndReceipt()">📃 Add + Purchase Receipt</button>
     </div>
   </div>
 </div>
@@ -959,7 +1010,7 @@ body.manager-mode .hide-manager{display:none !important}
         <div class="fg"><label class="fl">IFSC Code</label><input id="set-ifsc" placeholder="e.g. SBIN0001234"/></div>
       </div>
       <div style="text-align:right">
-        <button class="btn btn-primary" onclick="saveSettings()">✅ Save Details</button>
+        <button class="btn btn-primary" style="width:auto" onclick="saveSettings()">✅ Save Details</button>
       </div>
     </div>
 
@@ -977,7 +1028,7 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
 
     <div class="qmodal-foot" style="margin-top: 16px;">
-      <button class="btn btn-ghost" onclick="closeSettings()">Close</button>
+      <button class="btn btn-ghost btn-full" onclick="closeSettings()">Close</button>
     </div>
   </div>
 </div>
@@ -988,9 +1039,9 @@ body.manager-mode .hide-manager{display:none !important}
     <div class="qmodal-title">Enter PIN</div>
     <div style="font-size:12px;color:var(--text3);margin-bottom:16px">This profile is PIN protected</div>
     <input type="password" id="pin-input" style="text-align:center;font-size:22px;letter-spacing:10px;font-family:var(--fm);padding:14px;margin-bottom:16px" maxlength="4" placeholder="••••" onkeydown="if(event.key==='Enter')verifyPin()">
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('pin-modal').classList.remove('on')">Cancel</button>
-      <button class="btn btn-primary" style="flex:1" onclick="verifyPin()">Enter</button>
+    <div class="g2">
+      <button class="btn btn-ghost" onclick="document.getElementById('pin-modal').classList.remove('on')">Cancel</button>
+      <button class="btn btn-primary" onclick="verifyPin()">Enter</button>
     </div>
   </div>
 </div>
@@ -1011,7 +1062,7 @@ body.manager-mode .hide-manager{display:none !important}
     <div class="fg"><label class="fl">4-Digit PIN <span class="fl-h">(Optional)</span></label>
       <input type="password" id="ep-pin" maxlength="4" placeholder="Leave empty for no PIN" style="font-family:var(--fm);letter-spacing:4px"/>
     </div>
-    <div class="qmodal-foot">
+    <div class="qmodal-foot g2">
       <button class="btn btn-ghost" onclick="closeEditProfileModal()">Cancel</button>
       <button class="btn btn-primary" onclick="saveEditProfile()">✅ Save</button>
     </div>
@@ -1023,7 +1074,7 @@ body.manager-mode .hide-manager{display:none !important}
     <div class="qmodal-title" id="npm-title">💰 New Payment Receipt</div>
     <div class="qmodal-sub" id="npm-sub">Generate and save a payment document</div>
     <input type="hidden" id="npm-type" value="receipt">
-    <div class="fg"><label class="fl">Pay To / Party *</label><input id="npm-party" list="dl-party" placeholder="e.g. Rajan Textiles"/></div>
+    <input type="hidden" id="npm-linked-sale" value=""> <div class="fg"><label class="fl">Pay To / Party *</label><input id="npm-party" list="dl-party" placeholder="e.g. Rajan Textiles"/></div>
     
     <div id="npm-cheque-fields" style="display:none">
       <div class="g2">
@@ -1056,9 +1107,9 @@ body.manager-mode .hide-manager{display:none !important}
     <div id="npm-words" style="font-size:12px;color:var(--text3);margin-bottom:4px;font-style:italic;min-height:16px"></div>
     <div class="fg"><label class="fl">Purpose / Narration</label><input id="npm-purpose" placeholder="e.g. Fabric purchase Jan, advance payment..."/></div>
     <div class="fg"><label class="fl">Note <span class="fl-h">(Optional)</span></label><input id="npm-note" placeholder="Any internal note..."/></div>
-    <div class="qmodal-foot">
+    <div class="qmodal-foot g2">
       <button class="btn btn-ghost" onclick="closeNewPaymentModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveNewPayment()">💾 Save &amp; Generate →</button>
+      <button class="btn btn-primary" onclick="saveNewPayment()">💾 Save &amp; Gen →</button>
     </div>
   </div>
 </div>
@@ -1092,8 +1143,8 @@ body.manager-mode .hide-manager{display:none !important}
     <div class="ob-foot">
       <div class="ob-counter" id="ob-counter">Step 1 / 3</div>
       <div style="display:flex;gap:8px">
-        <button class="btn btn-ghost" onclick="skipOB()">Skip</button>
-        <button class="btn btn-primary" id="ob-next" onclick="obNext()">Next →</button>
+        <button class="btn btn-ghost" style="width:auto" onclick="skipOB()">Skip</button>
+        <button class="btn btn-primary" style="width:auto" id="ob-next" onclick="obNext()">Next →</button>
       </div>
     </div>
   </div>
@@ -1107,7 +1158,7 @@ body.manager-mode .hide-manager{display:none !important}
   </div>
   <div class="profile-cards" id="profile-cards-container"></div>
   <div style="margin-top:24px">
-    <button class="btn btn-ghost" onclick="signOut()">🚪 Sign Out</button>
+    <button class="btn btn-ghost" style="width:auto" onclick="signOut()">🚪 Sign Out</button>
   </div>
 </div>
 
@@ -1119,9 +1170,9 @@ body.manager-mode .hide-manager{display:none !important}
       <div class="login-left-s">Smart textile stock manager built for Surat's fabric traders. Simple, fast, in your language.</div>
       <div class="login-feat">
         <div class="login-feat-item"><div class="login-feat-dot"></div>Meter by meter stock tracking</div>
-        <div class="login-feat-item"><div class="login-feat-dot"></div>GST invoices + WhatsApp billing</div>
-        <div class="login-feat-item"><div class="login-feat-dot"></div>Purchase receipts &amp; delivery challans</div>
-        <div class="login-feat-item"><div class="login-feat-dot"></div>💳 Payments, receipts &amp; cheque drafts</div>
+        <div class="login-feat-item"><div class="login-feat-dot"></div>Permanent GST & Transport Invoices</div>
+        <div class="login-feat-item"><div class="login-feat-dot"></div>One-Click WhatsApp Sharing</div>
+        <div class="login-feat-item"><div class="login-feat-dot"></div>💳 Linked Payments & Party Khata</div>
         <div class="login-feat-item"><div class="login-feat-dot"></div>📄 Historical document storage</div>
         <div class="login-feat-item"><div class="login-feat-dot"></div>Owner / Manager / Staff profiles</div>
       </div>
@@ -1139,7 +1190,7 @@ body.manager-mode .hide-manager{display:none !important}
         <div class="phone-row">
           <span class="phone-prefix">+91</span>
           <input id="login-phone" type="tel" placeholder="9876543210" maxlength="10" style="flex:1" onkeydown="if(event.key==='Enter')sendOTP()"/>
-          <button class="btn btn-primary" onclick="sendOTP()" style="padding:10px 14px;white-space:nowrap">Send OTP</button>
+          <button class="btn btn-primary" style="width:auto" onclick="sendOTP()">Send OTP</button>
         </div>
         <div id="otp-section" style="display:none;margin-top:10px">
           <div class="otp-sent-row">
@@ -1159,12 +1210,12 @@ body.manager-mode .hide-manager{display:none !important}
 // ══════════════════════════════════════════════════
 // GLOBAL STATE
 // ══════════════════════════════════════════════════
-let DB = null; // Firestore instance (set after Firebase module loads)
+let DB = null; // Firestore instance
 let FB = null; // Firebase functions
 let fabrics = [];
 let sales = [];
 let purchases = [];
-let payments = []; // NEW: payments array
+let payments = []; 
 let profiles = [];
 let settings = {};
 let masterData = { qualities:[], colors:[], parties:[] };
@@ -1172,7 +1223,7 @@ let currentPage = 'dash';
 let currentLedgerTab = 'sales';
 let currentPayFilter = 'all';
 let currentFabFilter = '';
-let currentFabId = null; // for add-stock/quicksell
+let currentFabId = null; 
 let obStep = 1;
 let pendingProfileLogin = null;
 let _confirmPin = null;
@@ -1192,6 +1243,7 @@ function fmtN(n) { return Number(n||0).toLocaleString('en-IN',{maximumFractionDi
 function uid() { return Date.now().toString(36)+Math.random().toString(36).substr(2,5); }
 function ts() { return new Date().toISOString(); }
 function today() { return new Date().toISOString().split('T')[0]; }
+function generateInvoiceNo() { return 'INV-' + Math.floor(Date.now() / 1000).toString().slice(-6); }
 function fmtDate(iso) {
   if(!iso) return '—';
   const d = new Date(iso); if(isNaN(d)) return iso;
@@ -1217,7 +1269,6 @@ function numToWords(n) {
   return w+' Only';
 }
 
-// GST breakdown HTML
 function gstBreakdownHTML(base, rate, type) {
   if(!rate||!base) return '';
   const gst = base*rate/100;
@@ -1305,16 +1356,14 @@ async function initApp() {
     await loadFabrics();
     await loadSales();
     await loadPurchases();
-    await loadPayments(); // NEW
+    await loadPayments(); 
 
-    // Show profile screen if multiple profiles
     if(profiles.length > 1) {
       renderProfileScreen();
       document.getElementById('profile-screen').style.display='flex';
     } else if(profiles.length===1) {
       applyProfile(profiles[0]);
     } else {
-      // No profiles yet → onboarding
       document.getElementById('profile-screen').style.display='none';
       showOnboarding();
     }
@@ -1351,36 +1400,26 @@ function openSettings() {
 }
 function closeSettings() { document.getElementById('settings-modal').classList.remove('on'); }
 
-// ══════════════════════════════════════════════════
 // HARD RESET
-// ══════════════════════════════════════════════════
 async function hardResetApp() {
   const confirmText = prompt('WARNING: This will delete ALL your data permanently. Type "RESET" to confirm:');
   if (confirmText !== 'RESET') {
     toast('Hard reset cancelled.');
     return;
   }
-
-  // Handle Demo/Local Storage mode
   if (DB === 'LOCAL') {
     localStorage.clear();
     location.reload();
     return;
   }
-
-  // Handle Firebase mode
   try {
     toast('Erasing data... please wait', 4000);
-    
-    // Delete all collections
     const collectionsToClear = ['fabrics', 'sales', 'purchases', 'payments', 'profiles'];
     for (const col of collectionsToClear) {
       const snap = await FB.getDocs(colRef(col));
       const deletions = snap.docs.map(doc => FB.deleteDoc(doc.ref));
       await Promise.all(deletions);
     }
-    
-    // Delete config documents
     await FB.deleteDoc(FB.doc(DB, `${userPath()}/config/settings`));
     await FB.deleteDoc(FB.doc(DB, `${userPath()}/config/master`));
 
@@ -1388,12 +1427,10 @@ async function hardResetApp() {
     setTimeout(() => {
       closeSettings();
       signOut();
-      location.reload(); // Force a clean slate
+      location.reload(); 
     }, 2000);
-    
   } catch (error) {
     toast('Error resetting app: ' + error.message, 4000);
-    console.error("Reset Error: ", error);
   }
 }
 
@@ -1418,6 +1455,11 @@ function rebuildDatalists() {
   dp.innerHTML = masterData.parties.map(p=>`<option value="${p}">`).join('');
   const dc = document.getElementById('dl-color');
   dc.innerHTML = masterData.colors.map(c=>`<option value="${c}">`).join('');
+  
+  // Khata Select update
+  const kp = document.getElementById('khata-party-select');
+  if(kp) kp.innerHTML = `<option value="">-- Select a Party to View Statement --</option>` + masterData.parties.map(p=>`<option value="${p}">${p}</option>`).join('');
+  
   populateCatSelect();
   renderMaster();
 }
@@ -1447,9 +1489,7 @@ async function delP(i){ masterData.parties.splice(i,1); await saveMaster(); rebu
 // ══════════════════════════════════════════════════
 // PROFILES
 // ══════════════════════════════════════════════════
-async function loadProfiles() {
-  profiles = await fbGetAll('profiles');
-}
+async function loadProfiles() { profiles = await fbGetAll('profiles'); }
 function renderProfileScreen() {
   const c = document.getElementById('profile-cards-container');
   c.innerHTML = profiles.map(p=>{
@@ -1485,7 +1525,6 @@ function applyProfile(p) {
   document.getElementById('user-display-name').textContent = p.name;
   document.getElementById('sb-avatar').textContent = p.name.charAt(0).toUpperCase();
   document.getElementById('mob-user').textContent = `${p.name} · ${p.role}`;
-  // Role classes
   document.body.classList.remove('staff-mode','manager-mode');
   if(p.role==='staff') document.body.classList.add('staff-mode');
   else if(p.role==='manager') document.body.classList.add('manager-mode');
@@ -1541,10 +1580,7 @@ async function deleteProfile(id) {
 // ══════════════════════════════════════════════════
 // FABRICS (INVENTORY)
 // ══════════════════════════════════════════════════
-async function loadFabrics() {
-  fabrics = await fbGetAll('fabrics');
-  renderAll();
-}
+async function loadFabrics() { fabrics = await fbGetAll('fabrics'); renderAll(); }
 function renderAll() { renderDash(); renderInv(); renderSalesFabSelect(); renderSalesHistory(); renderLedger(); renderPayments(); renderReport(); renderProfilesPage(); updateLow(); }
 
 function fabIcon(type) {
@@ -1602,16 +1638,13 @@ function renderDash() {
   if(!g) return;
   const low = fabrics.filter(f=>fabStockClass(f)!=='ok');
   g.innerHTML = fabrics.slice(0,8).map(f=>fabCardHTML(f,'dash')).join('') || `<div class="empty"><div class="empty-ic">📦</div><div class="empty-t">No fabrics yet</div><div class="empty-s">Add your first fabric to get started</div></div>`;
-  // Stats
   document.getElementById('st-c').textContent = fabrics.length;
   document.getElementById('st-m').textContent = fmtN(fabrics.reduce((a,f)=>a+f.meters,0));
   document.getElementById('st-l').textContent = low.length;
   const val = fabrics.reduce((a,f)=>a+(f.meters*(f.rate||0)),0);
   document.getElementById('st-v').textContent = fmt(val);
-  // Low badge
   const badge = document.getElementById('low-badge');
   badge.textContent = low.length; badge.classList.toggle('on',low.length>0);
-  // Low banner
   const banner = document.getElementById('low-banner');
   const bannerTxt = document.getElementById('low-banner-txt');
   if(low.length>0) { banner.style.display='block'; bannerTxt.textContent = low.map(f=>f.name).join(', ')+' — running low!'; }
@@ -1643,7 +1676,7 @@ function filterCat(cat, btn) {
 
 function updateLow() { renderDash(); }
 
-// Add Fabric Modal
+// Add Fabric
 function openModal() {
   document.getElementById('m-name').value='';
   document.getElementById('m-color').value='';
@@ -1665,7 +1698,6 @@ async function saveModal(genReceipt=false) {
   toast('Fabric added ✅');
   renderAll();
   if(genReceipt) {
-    // Generate purchase receipt for opening stock
     const receiptHTML = buildPurchaseReceiptHTML({
       id, party: data.supplier||'Opening Stock', item: data.name,
       meters: data.meters, rate: data.rate, gstRate:5, gstType:'intra',
@@ -1682,7 +1714,7 @@ async function deleteFabric(id) {
   renderAll(); toast('Deleted');
 }
 
-// Add Stock Modal
+// Add Stock
 function openAddStock(id) {
   currentFabId = id;
   const f = fabrics.find(x=>x.id===id);
@@ -1702,7 +1734,7 @@ async function saveAddStock(genReceipt=false) {
   f.meters += m; f.rate = rate||f.rate;
   f.supplier = v('as-s')||f.supplier;
   await fbUpdate('fabrics', currentFabId, {meters:f.meters, rate:f.rate, supplier:f.supplier});
-  // Record purchase in ledger
+  
   const gstRate = 5, gstType='intra';
   const subtotal = m * rate;
   const gst = subtotal*gstRate/100;
@@ -1712,7 +1744,6 @@ async function saveAddStock(genReceipt=false) {
     meters:m, rate, gstRate, gstType, subtotal, gst, total,
     gstin:v('as-gstin'), note:'', date:ts()
   };
-  // Save document snapshot
   const docSnap = buildPurchaseReceiptHTML({...purData, id:currentFabId});
   purData.savedDoc = docSnap;
   const pid = await fbSave('purchases', purData);
@@ -1739,6 +1770,9 @@ function openQuickSell(id) {
   document.getElementById('qs-phone').value='';
   document.getElementById('qs-kacha').checked=false;
   document.getElementById('qs-buyer-gstin').value='';
+  document.getElementById('qs-transport').value='';
+  document.getElementById('qs-lr').value='';
+  document.getElementById('qs-eway').value='';
   document.getElementById('qs-amt').textContent='₹0';
   document.getElementById('qs-gst-breakdown').innerHTML='';
   document.getElementById('quicksell-modal').classList.add('on');
@@ -1761,14 +1795,15 @@ async function saveQS(genBill=false) {
   const gstRate=parseFloat(document.getElementById('qs-gst-rate')?.value||5);
   const gstType=document.getElementById('qs-gst-type')?.value||'intra';
   const sub=(m*r)-disc; const gst=sub*gstRate/100; const total=sub+gst;
+  
   const saleData = {
-    type:'sale', fabric:f.name, fabricId:f.id, meters:m, rate:r, discount:disc,
+    type:'sale', invoiceNo: generateInvoiceNo(), fabric:f.name, fabricId:f.id, meters:m, rate:r, discount:disc,
     gstRate, gstType, subtotal:sub, gst, total,
     customer:v('qs-c'), phone:v('qs-phone'), buyerGstin:v('qs-buyer-gstin'),
     invType:document.getElementById('qs-inv-type')?.value||'Cash',
-    kacha, date:ts()
+    transport: v('qs-transport'), lrNo: v('qs-lr'), eway: v('qs-eway'),
+    kacha, date:ts(), paid: (document.getElementById('qs-inv-type')?.value==='Cash')?total:0
   };
-  // Save document snapshot
   const docSnap = buildSaleInvoiceHTML(saleData);
   saleData.savedDoc = docSnap;
   if(!kacha) { f.meters=Math.max(0,f.meters-m); await fbUpdate('fabrics',f.id,{meters:f.meters}); }
@@ -1778,7 +1813,7 @@ async function saveQS(genBill=false) {
   closeQS();
   toast(kacha?'Kacha bill noted 📝':'Sale recorded ✅');
   renderAll();
-  if(genBill) openDocModal('🧾 Sale Invoice — '+f.name, docSnap, 'sale-invoice');
+  if(genBill) openDocModal('🧾 Sale Invoice — '+f.name, docSnap, 'sale-invoice', {phone: saleData.phone, text: `Hello ${saleData.customer||''}, your bill ${saleData.invoiceNo} for ${fmt(total)} is ready.`});
 }
 async function saveQSAndBill() { await saveQS(true); }
 
@@ -1814,12 +1849,16 @@ async function recSale(genBill=false) {
   const gstRate=parseFloat(document.getElementById('s-gst-rate')?.value||5);
   const gstType=document.getElementById('s-gst-type')?.value||'intra';
   const sub=(m*r)-disc; const gst=sub*gstRate/100; const total=sub+gst;
-  const paid=nv('s-paid')||total;
+  
+  let paid=nv('s-paid');
+  if (v('s-inv-type')==='Cash' && v('s-paid')==='') paid = total;
+  
   const saleData = {
-    type:'sale', fabric:f.name, fabricId:f.id, meters:m, rate:r, discount:disc,
-    gstRate, gstType, subtotal:sub, gst, total, paid,
+    type:'sale', invoiceNo: generateInvoiceNo(), fabric:f.name, fabricId:f.id, meters:m, rate:r, discount:disc,
+    gstRate, gstType, subtotal:sub, gst, total, paid: paid,
     payMode:v('s-pay-mode'), invType:v('s-inv-type'),
     customer:v('s-c'), phone:v('s-phone'), buyerGstin:v('s-buyer-gstin'),
+    transport:v('s-transport'), lrNo:v('s-lr'), eway:v('s-eway'),
     note:v('s-n'), kacha, date:ts()
   };
   const docSnap = buildSaleInvoiceHTML(saleData);
@@ -1828,14 +1867,15 @@ async function recSale(genBill=false) {
   const sid = await fbSave('sales', saleData);
   sales.unshift({id:sid,...saleData});
   addParty(saleData.customer);
+  
   // Reset form
-  document.getElementById('s-m').value=''; document.getElementById('s-paid').value='';
-  document.getElementById('s-c').value=''; document.getElementById('s-n').value='';
+  ['s-m','s-paid','s-c','s-n','s-transport','s-lr','s-eway'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('s-disc').value='0'; document.getElementById('s-kacha').checked=false;
   calcSaleAmt();
   toast(kacha?'Kacha bill noted 📝':'Sale recorded ✅');
   renderAll();
-  if(genBill) openDocModal('🧾 Sale Invoice', docSnap, 'sale-invoice');
+  
+  if(genBill) openDocModal('🧾 Sale Invoice', docSnap, 'sale-invoice', {phone: saleData.phone, text: `Hello ${saleData.customer||''}, your bill ${saleData.invoiceNo} for ${fmt(total)} is ready.`});
 }
 async function recSaleAndBill() { await recSale(true); }
 function renderSalesHistory() {
@@ -1856,21 +1896,48 @@ function renderSalesHistory() {
 }
 
 // ══════════════════════════════════════════════════
-// LEDGER
+// LEDGER & KHATA
 // ══════════════════════════════════════════════════
 async function loadSales() { sales = await fbGetAll('sales'); }
 async function loadPurchases() { purchases = await fbGetAll('purchases'); }
 
 function switchLedger(tab) {
   currentLedgerTab=tab;
-  ['sales','purchases','udhaar'].forEach(t=>document.getElementById('tab-'+t)?.classList.remove('active'));
+  ['sales','purchases','udhaar','khata'].forEach(t=>document.getElementById('tab-'+t)?.classList.remove('active'));
   document.getElementById('tab-'+tab)?.classList.add('active');
-  renderLedger();
+  
+  const sb = document.getElementById('ledger-search-box');
+  const kb = document.getElementById('khata-select-box');
+  const ls = document.getElementById('ledger-stats-box');
+  
+  if (tab === 'khata') {
+    sb.style.display = 'none';
+    ls.style.display = 'none';
+    kb.style.display = 'block';
+    renderKhata();
+  } else {
+    sb.style.display = 'flex';
+    ls.style.display = 'grid';
+    kb.style.display = 'none';
+    renderLedger();
+  }
 }
+
+function settleUdhaar(saleId) {
+  const s = sales.find(x=>x.id===saleId);
+  if(!s) return;
+  openNewPaymentModal('receipt');
+  document.getElementById('npm-party').value = s.customer || '';
+  document.getElementById('npm-amount').value = s.total - (s.paid||0);
+  document.getElementById('npm-purpose').value = `Bill Settlement for ${s.invoiceNo || 'Sale'}`;
+  document.getElementById('npm-linked-sale').value = saleId;
+}
+
 function renderLedger() {
+  if (currentLedgerTab === 'khata') return; // Handled separately
   const q=(document.getElementById('ledger-q')?.value||'').toLowerCase();
   const g=document.getElementById('ledger-grid'); if(!g) return;
-  // Summary
+  
   const totalSales=sales.filter(s=>!s.kacha).reduce((a,s)=>a+s.total,0);
   const totalPur=purchases.reduce((a,p)=>a+p.total,0);
   document.getElementById('ls-total-sales').textContent=fmt(totalSales);
@@ -1885,15 +1952,22 @@ function renderLedger() {
     const udhaar=sales.filter(s=>s.invType==='Credit'&&!s.kacha&&s.paid<s.total);
     g.innerHTML=udhaar.length?udhaar.map(s=>`
       <div class="udhaar-card">
-        <div><div style="font-size:14px;font-weight:700">${s.customer||'—'}</div><div style="font-size:11px;color:var(--text3)">${s.fabric} · ${fmtDate(s.date)}</div></div>
-        <div style="text-align:right">
-          <div style="font-size:18px;font-weight:800;color:var(--amber)">${fmt(s.total-(s.paid||0))}</div>
-          <div style="font-size:11px;color:var(--text3)">of ${fmt(s.total)}</div>
+        <div>
+          <div style="font-size:14px;font-weight:700">${s.customer||'—'} <span style="font-size:11px;color:var(--text3);font-weight:400">(${s.invoiceNo})</span></div>
+          <div style="font-size:11px;color:var(--text3)">${s.fabric} · ${fmtDate(s.date)}</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px">
+          <div style="text-align:right">
+            <div style="font-size:18px;font-weight:800;color:var(--amber)">${fmt(s.total-(s.paid||0))}</div>
+            <div style="font-size:11px;color:var(--text3)">of ${fmt(s.total)}</div>
+          </div>
+          <button class="btn btn-emerald" style="padding: 6px 12px; font-size: 11px;" onclick="settleUdhaar('${s.id}')">💳 Settle</button>
         </div>
       </div>
     `).join(''):`<div class="empty"><div class="empty-ic">✅</div><div class="empty-t">No pending udhaar</div></div>`;
     return;
   }
+  
   const list = currentLedgerTab==='sales' ? sales : purchases;
   const filtered = q ? list.filter(e=>((e.fabric||e.item||'')+(e.customer||e.party||'')+(e.total||'')+'').toLowerCase().includes(q)) : list;
   g.innerHTML = filtered.length ? filtered.map(e=>{
@@ -1914,12 +1988,60 @@ function renderLedger() {
   }).join('') : `<div class="empty"><div class="empty-ic">📒</div><div class="empty-t">No records</div></div>`;
 }
 
+function renderKhata() {
+  const g = document.getElementById('ledger-grid');
+  const p = document.getElementById('khata-party-select').value;
+  if(!p) {
+    g.innerHTML = `<div class="empty"><div class="empty-ic">📘</div><div class="empty-t">Select a Party</div><div class="empty-s">View combined sales, purchases & payments statement.</div></div>`;
+    return;
+  }
+  
+  let stmts = [];
+  sales.filter(s=>s.customer===p && !s.kacha).forEach(s=>stmts.push({date:s.date, type:'Sale', ref: s.invoiceNo, debit:s.total, credit:0, id: s.id, col:'sales'}));
+  purchases.filter(s=>s.party===p).forEach(s=>stmts.push({date:s.date, type:'Purchase', ref: s.note, debit:0, credit:s.total, id: s.id, col:'purchases'}));
+  payments.filter(s=>s.party===p).forEach(s=>{
+    if(s.docType==='receipt') stmts.push({date:s.date, type:'Receipt', ref: s.purpose, credit:s.amount, debit:0, id: s.id, col:'payments'});
+    else stmts.push({date:s.date, type:'Payment Made', ref: s.purpose, debit:s.amount, credit:0, id: s.id, col:'payments'});
+  });
+  
+  stmts.sort((a,b) => new Date(a.date) - new Date(b.date));
+  
+  let balance = 0;
+  let html = `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:16px;">
+    <div style="display:grid;grid-template-columns:80px 1fr 80px 80px;padding:12px 14px;border-bottom:1px solid var(--border);background:var(--bg3);font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;">
+      <div>Date</div><div>Description</div><div style="text-align:right">Dr(+)</div><div style="text-align:right">Cr(-)</div>
+    </div>`;
+  
+  if(stmts.length === 0) {
+    html += `<div style="padding:20px; text-align:center; color:var(--text3); font-size:12px">No transactions found for this party.</div>`;
+  } else {
+    stmts.forEach(s => {
+      balance += (s.debit - s.credit);
+      html += `<div style="display:grid;grid-template-columns:80px 1fr 80px 80px;padding:12px 14px;border-bottom:1px solid var(--border);font-size:12px;align-items:center;">
+        <div style="color:var(--text3)">${fmtDate(s.date).split(',')[0]}</div>
+        <div><div style="font-weight:600">${s.type}</div><div style="font-size:10px;color:var(--text3)">${s.ref||''}</div></div>
+        <div style="text-align:right;color:var(--emerald);font-family:var(--fm)">${s.debit?fmt(s.debit):''}</div>
+        <div style="text-align:right;color:var(--rose);font-family:var(--fm)">${s.credit?fmt(s.credit):''}</div>
+      </div>`;
+    });
+  }
+  
+  html += `<div style="display:grid;grid-template-columns:1fr auto;padding:14px;background:var(--bg3);font-size:14px;font-weight:700;">
+    <div>Net Balance</div>
+    <div style="text-align:right;font-family:var(--fm);color:${balance>=0?'var(--emerald)':'var(--rose)'}">${fmt(Math.abs(balance))} ${balance>=0?'Dr (Receivable)':'Cr (Payable)'}</div>
+  </div></div>`;
+  
+  g.innerHTML = html;
+}
+
 async function viewSavedDoc(col, id) {
   const list = col==='sales' ? sales : purchases;
   const entry = list.find(e=>e.id===id);
   if(!entry?.savedDoc) { toast('No saved document found'); return; }
   const title = col==='sales' ? '🧾 Sale Invoice' : '📃 Purchase Receipt';
-  openDocModal(title, entry.savedDoc, col==='sales'?'sale-invoice':'purchase-receipt');
+  let phone = entry.phone || '';
+  let msg = col==='sales' ? `Hello ${entry.customer||''}, your bill ${entry.invoiceNo||''} for ${fmt(entry.total)} is ready.` : '';
+  openDocModal(title, entry.savedDoc, col==='sales'?'sale-invoice':'purchase-receipt', {phone, text:msg});
 }
 
 function exportCSV() {
@@ -1970,7 +2092,7 @@ async function savePurchase(genReceipt=false) {
 async function savePurchaseAndReceipt() { await savePurchase(true); }
 
 // ══════════════════════════════════════════════════
-// PAYMENTS & CHEQUES (NEW FEATURE)
+// PAYMENTS & CHEQUES
 // ══════════════════════════════════════════════════
 async function loadPayments() {
   payments = await fbGetAll('payments');
@@ -2039,6 +2161,7 @@ function openNewPaymentModal(type) {
   document.getElementById('npm-amount').value='';
   document.getElementById('npm-purpose').value='';
   document.getElementById('npm-note').value='';
+  document.getElementById('npm-linked-sale').value='';
   document.getElementById('npm-date').value=today();
   document.getElementById('npm-words').textContent='';
   if(!isReceipt) { document.getElementById('npm-chq-date').value=today(); }
@@ -2055,24 +2178,34 @@ async function saveNewPayment() {
   const amount = nv('npm-amount'); if(!amount){toast('Amount required');return;}
   const purpose = v('npm-purpose');
   const date = v('npm-date')||today();
+  
   const payData = {
     docType: type, party, amount, purpose, date, note:v('npm-note'),
     from: v('npm-from')||party,
-    // Receipt specific
     payMode: v('npm-mode'), txnRef: v('npm-txn'),
-    // Cheque specific
     bank: v('npm-bank'), branch: v('npm-branch'), chequeNo: v('npm-chq-no'),
     chequeDate: v('npm-chq-date'), accName: v('npm-acc-name')
   };
-  // Build and save document
+  
   const docSnap = type==='receipt' ? buildPaymentReceiptHTML(payData) : buildChequeDraftHTML(payData);
   payData.savedDoc = docSnap;
   const pid = await fbSave('payments', payData);
   payments.unshift({id:pid,...payData});
   addParty(party);
+  
+  // Connect payment to Udhaar
+  const linkedSaleId = v('npm-linked-sale');
+  if(linkedSaleId && type==='receipt') {
+    const sale = sales.find(x=>x.id===linkedSaleId);
+    if(sale) {
+      sale.paid = (sale.paid||0) + amount;
+      await fbUpdate('sales', linkedSaleId, {paid: sale.paid});
+    }
+  }
+
   closeNewPaymentModal();
   toast('Payment document saved ✅');
-  renderPayments();
+  renderAll(); // Renders Payments and Ledgers
   openDocModal(type==='receipt'?'💰 Payment Receipt':'🏦 Cheque Draft', docSnap, type==='receipt'?'payment-receipt':'cheque-draft');
 }
 
@@ -2080,7 +2213,7 @@ function viewPaymentDoc(id) {
   const p = payments.find(x=>x.id===id);
   if(!p?.savedDoc) { toast('No saved document'); return; }
   const title = p.docType==='receipt' ? '💰 Payment Receipt' : '🏦 Cheque Draft';
-  openDocModal(title, p.savedDoc, p.docType==='receipt'?'payment-receipt':'cheque-draft');
+  openDocModal(title, p.savedDoc, p.docType==='receipt'?'payment-receipt':'cheque-draft', {text:`Hello ${p.party}, please find the attached ${title} for ${fmt(p.amount)}.`});
 }
 
 async function deletePayment(id) {
@@ -2114,15 +2247,31 @@ function buildSaleInvoiceHTML(s) {
   return `<div class="doc-preview-inner">
     ${shopHeader()}
     <div style="background:#f8faff;border-radius:8px;padding:12px 14px;margin-bottom:14px;border:1px solid #e2e8f0">
-      <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px">TAX INVOICE</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
-        <div><span style="color:#64748b">Customer: </span><strong>${s.customer||'—'}</strong></div>
-        <div><span style="color:#64748b">Date: </span><strong>${fmtDate(s.date)}</strong></div>
-        ${s.buyerGstin?`<div style="grid-column:1/-1"><span style="color:#64748b">Buyer GSTIN: </span><strong>${s.buyerGstin}</strong></div>`:''}
-        <div><span style="color:#64748b">Type: </span><strong>${s.invType||'Cash'}</strong></div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
+        <div style="font-size:12px;font-weight:800;color:#1e293b;text-transform:uppercase;letter-spacing:0.8px;">TAX INVOICE</div>
+        <div style="font-size:12px;font-weight:700;color:#4f46e5;">${s.invoiceNo || ''}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px">
+        <div><span style="color:#64748b">Bill To: </span><br><strong style="font-size:13px">${s.customer||'—'}</strong></div>
+        <div>
+          <div><span style="color:#64748b">Date: </span><strong>${fmtDate(s.date)}</strong></div>
+          <div><span style="color:#64748b">Type: </span><strong>${s.invType||'Cash'}</strong></div>
+        </div>
+        ${s.buyerGstin?`<div><span style="color:#64748b">Buyer GSTIN: </span><strong>${s.buyerGstin}</strong></div>`:''}
         ${s.phone?`<div><span style="color:#64748b">Mobile: </span><strong>+91 ${s.phone}</strong></div>`:''}
       </div>
     </div>
+
+    ${(s.transport || s.lrNo || s.eway) ? `
+    <div style="background:#fff; border-radius:8px; padding:10px 14px; margin-bottom:14px; border:1px solid #e2e8f0;">
+      <div style="font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:6px">DISPATCH DETAILS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px">
+        ${s.transport?`<div><span style="color:#64748b">Transport: </span><strong>${s.transport}</strong></div>`:''}
+        ${s.lrNo?`<div><span style="color:#64748b">L.R. No: </span><strong>${s.lrNo}</strong></div>`:''}
+        ${s.eway?`<div><span style="color:#64748b">E-Way Bill: </span><strong>${s.eway}</strong></div>`:''}
+      </div>
+    </div>` : ''}
+
     <table>
       <thead><tr><th>Item</th><th style="text-align:right">Qty(m)</th><th style="text-align:right">Rate</th><th style="text-align:right">Amount</th></tr></thead>
       <tbody>
@@ -2136,7 +2285,7 @@ function buildSaleInvoiceHTML(s) {
     </table>
     <div style="margin-top:12px;font-size:11px;color:#64748b;font-style:italic">${numToWords(s.total)}</div>
     ${s.note?`<div style="margin-top:8px;font-size:11px;color:#94a3b8">Note: ${s.note}</div>`:''}
-    ${s.kacha?'<div style="margin-top:10px;padding:8px 12px;background:#fff7ed;border-radius:6px;border:1px solid #fdba74;font-size:11px;font-weight:700;color:#c2410c">⚠️ KACHA BILL / ESTIMATE — Not a Tax Invoice</div>':''}
+    ${s.kacha?'<div style="margin-top:10px;padding:8px 12px;background:#fff7ed;border-radius:6px;border:1px solid #fdba74;font-size:11px;font-weight:700;color:#c2410c">⚠️ ESTIMATE / KACHA BILL — Not a Tax Invoice</div>':''}
     <div style="margin-top:14px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;text-align:center">Thank you for your business! · Powered by StockSaathi</div>
   </div>`;
 }
@@ -2244,26 +2393,38 @@ function buildChequeDraftHTML(p) {
 }
 
 // ══════════════════════════════════════════════════
-// DOCUMENT MODAL
+// DOCUMENT MODAL & WHATSAPP SHARE
 // ══════════════════════════════════════════════════
-function openDocModal(title, html, type) {
+let currentDocContext = null;
+
+function openDocModal(title, html, type, context={}) {
+  currentDocContext = context;
   document.getElementById('doc-modal-title').textContent = title;
   document.getElementById('doc-preview').innerHTML = html;
   document.getElementById('doc-tab-bar').innerHTML = '';
-  // Actions
+  
   const actBar = document.getElementById('doc-actions-bar');
   actBar.innerHTML = `
-    <button class="btn btn-primary" onclick="downloadDocPDF('${type}')">📥 Download PDF</button>
+    <button class="btn btn-emerald" onclick="shareWhatsApp()"><span style="font-size:15px">💬</span> Share</button>
+    <button class="btn btn-primary" onclick="downloadDocPDF('${type}')">📥 PDF</button>
     <button class="btn btn-ghost" onclick="window.print()">🖨️ Print</button>
     <button class="btn btn-ghost" onclick="closeDocModal()">Close</button>
   `;
   document.getElementById('doc-modal').classList.add('on');
 }
 function closeDocModal() { document.getElementById('doc-modal').classList.remove('on'); }
+
 function downloadDocPDF(type) {
   const el = document.getElementById('doc-preview');
   const opt = { margin:8, filename:`stocksaathi-${type}-${Date.now()}.pdf`, image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2}, jsPDF:{unit:'mm',format:'a5',orientation:'portrait'} };
   html2pdf().from(el).set(opt).save();
+}
+
+function shareWhatsApp() {
+  const phone = currentDocContext?.phone ? currentDocContext.phone.replace(/[^0-9]/g, '') : '';
+  const text = encodeURIComponent((currentDocContext?.text || "Hello, here is your document.") + "\n\n(Please note: PDF attachments must be sent manually after downloading.)");
+  let url = `https://wa.me/${phone ? '91'+phone : ''}?text=${text}`;
+  window.open(url, '_blank');
 }
 
 // ══════════════════════════════════════════════════
@@ -2361,12 +2522,12 @@ function goto(pg, btn) {
   currentPage=pg;
   if(pg==='report') renderReport();
   if(pg==='payments') { renderPayments(); renderPaymentStats(); }
+  if(pg==='ledger') { renderLedger(); }
 }
 function mobileGoto(pg) {
   const btnId='mob-'+pg;
   const btn=document.getElementById(btnId);
   goto(pg,btn);
-  // Update mobile items
   document.querySelectorAll('.mob-item').forEach(b=>b.classList.remove('active'));
   btn?.classList.add('active');
   closeMobileMenu();
@@ -2450,7 +2611,6 @@ function skipOB() {
 // ══════════════════════════════════════════════════
 // FALLBACK (localStorage) for demo without Firebase
 // ══════════════════════════════════════════════════
-// If Firebase is not configured, use localStorage as fallback
 setTimeout(()=>{
   if(!window._db) {
     console.warn('Firebase not configured — using localStorage demo mode');
@@ -2459,9 +2619,7 @@ setTimeout(()=>{
 }, 3000);
 
 function setupLocalMode() {
-  // Hide login screen in demo mode
   document.getElementById('login-screen').style.display='none';
-  // Load from localStorage
   fabrics = JSON.parse(localStorage.getItem('ss_fabrics')||'[]');
   sales = JSON.parse(localStorage.getItem('ss_sales')||'[]');
   purchases = JSON.parse(localStorage.getItem('ss_purchases')||'[]');
@@ -2470,11 +2628,9 @@ function setupLocalMode() {
   settings = JSON.parse(localStorage.getItem('ss_settings')||'{}');
   masterData = JSON.parse(localStorage.getItem('ss_master')||JSON.stringify({qualities:['Georgette','Satin','Silk','Cotton','Linen','Polyester','Chiffon'],colors:['Red','Green','Blue','Yellow','White','Black','Pink'],parties:[]}));
   
-  // Monkey-patch all firebase functions to use localStorage
   window._currentUser = {uid:'demo'};
   DB='LOCAL'; FB={};
   
-  // Override all FB functions
   window.fbSave = async (col, data)=>{
     const id=uid(); const list=JSON.parse(localStorage.getItem('ss_'+col)||'[]');
     list.unshift({id,...data}); localStorage.setItem('ss_'+col, JSON.stringify(list));
@@ -2491,7 +2647,6 @@ function setupLocalMode() {
   };
   window.fbGetAll = async (col)=>JSON.parse(localStorage.getItem('ss_'+col)||'[]');
   
-  // Override settings save
   window.saveMaster = async ()=>localStorage.setItem('ss_master',JSON.stringify(masterData));
   
   if(profiles.length===0) showOnboarding();
