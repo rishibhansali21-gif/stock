@@ -779,6 +779,44 @@ body.manager-mode .hide-manager{display:none !important}
       </div>
     </div>
   </div>
+  
+  <div class="page" id="pg-report">
+    <div class="content">
+      <div class="sh">
+        <div><div class="sh-title">📊 Business &amp; Tax Reports</div><div class="sh-sub">Financials, GST Estimates, and Outstanding</div></div>
+        <div style="display:flex; gap:8px;">
+          <input type="month" id="rpt-month-picker" onchange="renderReport()" class="btn btn-ghost" style="width:auto; padding:8px; font-family:var(--fm);"/>
+          <button class="btn btn-primary" style="width:auto" onclick="exportCA()">📥 Export for CA</button>
+        </div>
+      </div>
+      
+      <div class="fc-title">📈 Financial Overview</div>
+      <div class="rpt-stats" id="rpt-fin-stats"></div>
+
+      <div class="g2">
+        <div class="fc" style="padding:16px; background:linear-gradient(to bottom right, var(--bg2), rgba(59,158,245,0.05)); border-color:var(--border3)">
+          <div class="fc-title" style="color:var(--blue)">🏛️ GST Summary (GSTR-3B Est.)</div>
+          <div id="rpt-gst-summary"></div>
+        </div>
+        
+        <div class="fc" style="padding:16px; background:linear-gradient(to bottom right, var(--bg2), rgba(245,166,35,0.05)); border-color:var(--border3)">
+          <div class="fc-title" style="color:var(--amber)">⏳ Outstanding (Market Receivables)</div>
+          <div id="rpt-outstanding"></div>
+        </div>
+      </div>
+
+      <div class="g2">
+        <div class="fc" style="padding:16px">
+          <div class="fc-title">📦 Stock Valuation (Asset)</div>
+          <div id="rpt-stock-val"></div>
+        </div>
+        <div class="fc" style="padding:16px">
+          <div class="fc-title">🔥 Top Selling Fabrics</div>
+          <div id="rpt-top-items"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="qmodal-bg" id="addstock-modal">
@@ -2506,59 +2544,146 @@ function c3(){
 }
 
 // ══════════════════════════════════════════════════
-// REPORT
+// REPORT & CA EXPORT
 // ══════════════════════════════════════════════════
 function renderReport() {
-  const now=new Date();
-  const monthStr=now.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
-  document.getElementById('rpt-month').textContent=monthStr;
-  const thisMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  const mSales=sales.filter(s=>!s.kacha&&s.date?.startsWith?.(thisMonth));
-  const mPur=purchases.filter(p=>p.date?.startsWith?.(thisMonth));
-  const totalSales=mSales.reduce((a,s)=>a+s.total,0);
-  const totalPur=mPur.reduce((a,p)=>a+p.total,0);
-  const profit=totalSales-totalPur;
-  const el=document.getElementById('rpt-stats');
-  if(el) el.innerHTML=`
-    <div class="ls-card"><div class="ls-label">Month Sales</div><div class="ls-value" style="color:var(--emerald)">${fmt(totalSales)}</div></div>
-    <div class="ls-card"><div class="ls-label">Month Purchases</div><div class="ls-value" style="color:var(--blue)">${fmt(totalPur)}</div></div>
-    <div class="ls-card"><div class="ls-label">Net Profit</div><div class="ls-value" style="color:${profit>=0?'var(--emerald)':'var(--rose)'}">${fmt(profit)}</div></div>
-    <div class="ls-card"><div class="ls-label">Stock Value</div><div class="ls-value" style="color:var(--amber)">${fmt(fabrics.reduce((a,f)=>a+f.meters*(f.rate||0),0))}</div></div>
+  const picker = document.getElementById('rpt-month-picker');
+  if (!picker.value) {
+    const now = new Date();
+    picker.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  }
+  const selMonth = picker.value; 
+
+  const mSales = sales.filter(s => !s.kacha && s.date?.startsWith(selMonth));
+  const mPur = purchases.filter(p => p.date?.startsWith(selMonth));
+
+  // 1. Financial Overview
+  const totalSales = mSales.reduce((a,s) => a + s.total, 0);
+  const totalPur = mPur.reduce((a,p) => a + p.total, 0);
+  const profit = totalSales - totalPur; 
+  
+  const finStats = document.getElementById('rpt-fin-stats');
+  if(finStats) finStats.innerHTML = `
+    <div class="ls-card"><div class="ls-label">Total Sales</div><div class="ls-value" style="color:var(--emerald)">${fmt(totalSales)}</div></div>
+    <div class="ls-card"><div class="ls-label">Total Purchases</div><div class="ls-value" style="color:var(--blue)">${fmt(totalPur)}</div></div>
+    <div class="ls-card"><div class="ls-label">Net Cashflow</div><div class="ls-value" style="color:${profit>=0?'var(--emerald)':'var(--rose)'}">${fmt(profit)}</div></div>
+    <div class="ls-card"><div class="ls-label">Invoices Generated</div><div class="ls-value" style="color:var(--text)">${mSales.length}</div></div>
   `;
-  const maxM=Math.max(...fabrics.map(f=>f.meters),1);
-  const stockEl=document.getElementById('rpt-stock');
-  if(stockEl) stockEl.innerHTML=fabrics.slice(0,8).map(f=>`
-    <div class="bar-row">
-      <div class="bar-lbl">${f.name}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${f.meters/maxM*100}%;background:${fabStockClass(f)==='ok'?'var(--emerald)':fabStockClass(f)==='med'?'var(--amber)':'var(--rose)'}"></div></div>
-      <div class="bar-val">${fmtN(f.meters)}m</div>
+
+  // 2. GST Summary (GSTR-3B logic)
+  let outCgst=0, outSgst=0, outIgst=0;
+  mSales.forEach(s => {
+    if(s.gstType === 'inter') outIgst += (s.gst||0);
+    else { outCgst += (s.gst||0)/2; outSgst += (s.gst||0)/2; }
+  });
+  
+  let inCgst=0, inSgst=0, inIgst=0;
+  mPur.forEach(p => {
+    if(p.gstType === 'inter') inIgst += (p.gst||0);
+    else { inCgst += (p.gst||0)/2; inSgst += (p.gst||0)/2; }
+  });
+
+  const totalOutput = outCgst + outSgst + outIgst;
+  const totalInput = inCgst + inSgst + inIgst;
+  const netLiability = totalOutput - totalInput;
+
+  const gstContainer = document.getElementById('rpt-gst-summary');
+  if(gstContainer) gstContainer.innerHTML = `
+    <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:8px; padding-bottom:8px; border-bottom:1px dashed var(--border2)">
+      <div style="color:var(--text2)">Output Tax (Collected on Sales)</div>
+      <div style="font-weight:700; color:var(--emerald)">+ ${fmt(totalOutput)}</div>
     </div>
-  `).join('');
-  const byFab={};
-  mSales.forEach(s=>{ byFab[s.fabric]=(byFab[s.fabric]||0)+s.total; });
-  const maxSale=Math.max(...Object.values(byFab),1);
-  const salesEl=document.getElementById('rpt-sales');
-  if(salesEl) salesEl.innerHTML=Object.entries(byFab).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([n,v])=>`
+    <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:8px; padding-bottom:8px; border-bottom:1px dashed var(--border2)">
+      <div style="color:var(--text2)">Input Tax Credit (Paid on Purchases)</div>
+      <div style="font-weight:700; color:var(--blue)">- ${fmt(totalInput)}</div>
+    </div>
+    <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800; margin-bottom:12px; padding-top:4px;">
+      <div>Net GST Liability</div>
+      <div style="color:${netLiability>0?'var(--rose)':'var(--emerald)'}">${fmt(netLiability)}</div>
+    </div>
+    <div style="background:var(--bg3); padding:10px; border-radius:var(--r); font-size:11px; display:grid; grid-template-columns:1fr 1fr 1fr; text-align:center; gap:5px; border:1px solid var(--border)">
+      <div><div style="color:var(--text3)">Net CGST</div><div style="font-family:var(--fm); margin-top:2px; font-weight:600">${fmt(outCgst-inCgst)}</div></div>
+      <div><div style="color:var(--text3)">Net SGST</div><div style="font-family:var(--fm); margin-top:2px; font-weight:600">${fmt(outSgst-inSgst)}</div></div>
+      <div><div style="color:var(--text3)">Net IGST</div><div style="font-family:var(--fm); margin-top:2px; font-weight:600">${fmt(outIgst-inIgst)}</div></div>
+    </div>
+  `;
+
+  // 3. Outstanding (Udhaar) - Cumulative entire history
+  const receivables = sales.filter(s => !s.kacha && s.total > (s.paid||0)).reduce((a,s)=>a+(s.total-(s.paid||0)), 0);
+  
+  const outContainer = document.getElementById('rpt-outstanding');
+  if(outContainer) outContainer.innerHTML = `
+    <div style="text-align:center; padding:10px 0;">
+      <div style="font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Total Pending Collections</div>
+      <div style="font-size:28px; font-weight:800; color:var(--amber); font-family:var(--fm); letter-spacing:-1px;">${fmt(receivables)}</div>
+      <div style="font-size:11px; color:var(--text2); margin-top:8px;">Money stuck in the market</div>
+    </div>
+    <div style="margin-top:16px;">
+      <button class="btn btn-ghost btn-full btn-sm" onclick="goto('ledger', document.querySelectorAll('.sb-item')[4]); setTimeout(()=>switchLedger('udhaar'), 50);">View All Pending Bills →</button>
+    </div>
+  `;
+
+  // 4. Stock Valuation & Top Items
+  const stockVal = fabrics.reduce((a,f) => a + (f.meters * (f.rate||0)), 0);
+  const stockContainer = document.getElementById('rpt-stock-val');
+  if(stockContainer) stockContainer.innerHTML = `
+    <div style="font-size:24px; font-weight:800; font-family:var(--fm); margin-bottom:12px; color:var(--indigo2)">${fmt(stockVal)}</div>
+    ${fabrics.slice(0,5).map(f=>`
+      <div class="bar-row">
+        <div class="bar-lbl">${f.name}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.min(100, stockVal === 0 ? 0 : (f.meters*f.rate)/stockVal*100)}%; background:var(--indigo)"></div></div>
+        <div class="bar-val">${fmt(f.meters*f.rate)}</div>
+      </div>
+    `).join('')}
+  `;
+
+  const byFab = {};
+  mSales.forEach(s => { byFab[s.fabric] = (byFab[s.fabric]||0) + s.total; });
+  const topItems = Object.entries(byFab).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topMax = topItems[0]?.[1] || 1;
+  const topContainer = document.getElementById('rpt-top-items');
+  if(topContainer) topContainer.innerHTML = topItems.map(([n,v])=>`
     <div class="bar-row">
       <div class="bar-lbl">${n}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${v/maxSale*100}%;background:var(--indigo)"></div></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${v/topMax*100}%; background:var(--emerald)"></div></div>
       <div class="bar-val">${fmt(v)}</div>
     </div>
-  `).join('') || '<div style="color:var(--text3);font-size:12px;padding:8px">No sales this month</div>';
+  `).join('') || '<div style="color:var(--text3);font-size:12px;text-align:center;padding:20px">No sales data for this month</div>';
+}
+
+function exportCA() {
+  const picker = document.getElementById('rpt-month-picker');
+  const selMonth = picker ? picker.value : '';
+  if(!selMonth) { toast('Please select a month first'); return; }
   
-  const tbody=document.getElementById('rpt-body');
-  if(tbody) tbody.innerHTML=fabrics.map(f=>{
-    const soldThisMonth=mSales.filter(s=>s.fabricId===f.id).reduce((a,s)=>a+s.meters,0);
-    const sc=fabStockClass(f);
-    return `<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 70px;padding:10px 18px;border-bottom:1px solid var(--border);font-size:12px;align-items:center">
-      <div style="font-weight:600">${f.name}</div>
-      <div style="text-align:right;color:var(--text2)">${fmtN(f.meters+soldThisMonth)}m</div>
-      <div style="text-align:right;color:var(--rose)">${fmtN(soldThisMonth)}m</div>
-      <div style="text-align:right;font-weight:700;color:${sc==='ok'?'var(--emerald)':sc==='med'?'var(--amber)':'var(--rose)'}">${fmtN(f.meters)}m</div>
-      <div style="text-align:right;color:var(--text2)">${fmt(f.meters*(f.rate||0))}</div>
-      <div style="text-align:right"><span class="pill ${sc==='ok'?'pill-g':sc==='med'?'pill-b':'pill-r'}">${sc.toUpperCase()}</span></div>
-    </div>`;
-  }).join('');
+  const mSales = sales.filter(s => !s.kacha && s.date?.startsWith(selMonth));
+  const mPur = purchases.filter(p => p.date?.startsWith(selMonth));
+  
+  let csv = "STOCKSAATHI CA & AUDIT EXPORT - " + selMonth + "\n\n";
+  
+  csv += "--- OUTWARD SUPPLIES (SALES / B2B & B2C) ---\n";
+  csv += "Date,Invoice No,Customer Name,GSTIN,Taxable Value,CGST,SGST,IGST,Total Amount\n";
+  mSales.forEach(s => {
+    const outCgst = s.gstType==='intra' ? (s.gst/2).toFixed(2) : 0;
+    const outSgst = s.gstType==='intra' ? (s.gst/2).toFixed(2) : 0;
+    const outIgst = s.gstType==='inter' ? (s.gst).toFixed(2) : 0;
+    csv += `${s.date.split('T')[0]},${s.invoiceNo},${s.customer||'Cash'},${s.buyerGstin||''},${s.subtotal.toFixed(2)},${outCgst},${outSgst},${outIgst},${s.total.toFixed(2)}\n`;
+  });
+  
+  csv += "\n--- INWARD SUPPLIES (PURCHASES / ITC) ---\n";
+  csv += "Date,Ref Note,Supplier Name,GSTIN,Taxable Value,CGST,SGST,IGST,Total Amount\n";
+  mPur.forEach(p => {
+    const inCgst = p.gstType==='intra' ? (p.gst/2).toFixed(2) : 0;
+    const inSgst = p.gstType==='intra' ? (p.gst/2).toFixed(2) : 0;
+    const inIgst = p.gstType==='inter' ? (p.gst).toFixed(2) : 0;
+    csv += `${p.date.split('T')[0]},${p.note||''},${p.party||''},${p.gstin||''},${p.subtotal.toFixed(2)},${inCgst},${inSgst},${inIgst},${p.total.toFixed(2)}\n`;
+  });
+  
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `CA_Audit_Export_${selMonth}.csv`; 
+  a.click();
+  toast('Exported for CA 📥');
 }
 
 // ══════════════════════════════════════════════════
