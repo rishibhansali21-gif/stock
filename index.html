@@ -2105,4 +2105,610 @@ function calcPurAmt() {
   const m=nv('pur-meters'), r=nv('pur-rate');
   const rate=parseFloat(document.getElementById('pur-gst-rate')?.value||5);
   const type=document.getElementById('pur-gst-type')?.value||'intra';
-  const sub=m*r; const gst=sub*rate/100; const total=sub+
+  const sub=m*r; const gst=sub*rate/100; const total=sub+gst;
+  document.getElementById('pur-total').textContent=fmt(total);
+  document.getElementById('pur-gst-breakdown').innerHTML=gstBreakdownHTML(sub,rate,type);
+}
+async function savePurchase(genReceipt=false) {
+  const party=v('pur-party');
+  if(!party){toast('Supplier required');return;}
+  const item=v('pur-item'); if(!item){toast('Item required');return;}
+  const meters=nv('pur-meters'); if(!meters){toast('Meters required');return;}
+  const rate=nv('pur-rate');
+  const gstRate=parseFloat(document.getElementById('pur-gst-rate')?.value||5);
+  const gstType=document.getElementById('pur-gst-type')?.value||'intra';
+  const sub=meters*rate; const gst=sub*gstRate/100; const total=sub+gst;
+  const purData={
+    type:'purchase', party, gstin:v('pur-gstin'), item, meters, rate,
+    gstRate, gstType, subtotal:sub, gst, total, note:v('pur-note'), date:ts()
+  };
+  const docSnap = buildPurchaseReceiptHTML(purData);
+  purData.savedDoc = docSnap;
+  const pid = await fbSave('purchases', purData);
+  purchases.unshift({id:pid,...purData});
+  addParty(party);
+  closePurchaseModal();
+  toast('Purchase recorded ✅');
+  renderAll();
+  if(genReceipt) openDocModal('📃 Purchase Receipt — '+item, docSnap, 'purchase-receipt');
+}
+async function savePurchaseAndReceipt() { await savePurchase(true); }
+
+// ══════════════════════════════════════════════════
+// PAYMENTS & CHEQUES
+// ══════════════════════════════════════════════════
+async function loadPayments() {
+  payments = await fbGetAll('payments');
+  renderPayments();
+  renderPaymentStats();
+}
+
+function renderPaymentStats() {
+  const total = payments.reduce((a,p)=>a+p.amount,0);
+  const receipts = payments.filter(p=>p.docType==='receipt');
+  const cheques = payments.filter(p=>p.docType==='cheque');
+  const now = new Date(); const thisMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const monthTotal = payments.filter(p=>p.date?.startsWith?.(thisMonth)).reduce((a,p)=>a+p.amount,0);
+  document.getElementById('pay-st-total').textContent = fmt(total);
+  document.getElementById('pay-st-receipts').textContent = receipts.length;
+  document.getElementById('pay-st-cheques').textContent = cheques.length;
+  document.getElementById('pay-st-month').textContent = fmt(monthTotal);
+}
+
+function filterPayments(f, btn) {
+  currentPayFilter=f;
+  document.querySelectorAll('#pay-filters .cat-p').forEach(b=>b.classList.remove('active'));
+  btn?.classList.add('active');
+  renderPayments();
+}
+
+function renderPayments() {
+  const g = document.getElementById('pay-grid'); if(!g) return;
+  const q = (document.getElementById('pay-q')?.value||'').toLowerCase();
+  let list = [...payments];
+  if(currentPayFilter!=='all') list=list.filter(p=>p.docType===currentPayFilter);
+  if(q) list=list.filter(p=>((p.party||'')+(p.purpose||'')+(p.amount||'')).toLowerCase().includes(q));
+  renderPaymentStats();
+  if(!list.length){
+    g.innerHTML=`<div class="empty"><div class="empty-ic">💳</div><div class="empty-t">No payment documents yet</div><div class="empty-s">Generate a receipt or cheque draft</div></div>`;
+    return;
+  }
+  g.innerHTML=list.map(p=>`
+    <div class="pay-card ${p.docType}-card">
+      <div class="pay-card-icon ${p.docType}">${p.docType==='receipt'?'💰':'🏦'}</div>
+      <div class="pay-card-info">
+        <div class="pay-card-title">${p.party||'—'} <span style="font-size:11px;font-weight:400;color:var(--text3)">· ${p.docType==='receipt'?'Receipt':'Cheque'}</span></div>
+        <div class="pay-card-meta">
+          ${p.purpose||'—'} · ${fmtDate(p.date)}
+          ${p.txnRef?` · Ref: ${p.txnRef}`:''}
+          ${p.chequeNo?` · Chq: ${p.chequeNo}`:''}
+        </div>
+      </div>
+      <div class="pay-card-amount">${fmt(p.amount)}</div>
+      <div class="pay-card-actions">
+        <button class="le-doc-btn" onclick="viewPaymentDoc('${p.id}')">📄 View</button>
+        <button class="le-doc-btn" style="background:var(--rose-dim);color:var(--rose);border-color:rgba(240,82,100,0.2)" onclick="deletePayment('${p.id}')">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openNewPaymentModal(type) {
+  const isReceipt = type==='receipt';
+  document.getElementById('npm-type').value = type;
+  document.getElementById('npm-title').textContent = isReceipt ? '💰 New Payment Receipt' : '🏦 New Cheque Draft';
+  document.getElementById('npm-sub').textContent = isReceipt ? 'Generate and save a payment document' : 'Generate and save a cheque draft';
+  document.getElementById('npm-cheque-fields').style.display = isReceipt ? 'none' : 'block';
+  document.getElementById('npm-receipt-fields').style.display = isReceipt ? 'block' : 'none';
+  document.getElementById('npm-party').value='';
+  document.getElementById('npm-amount').value='';
+  document.getElementById('npm-purpose').value='';
+  document.getElementById('npm-note').value='';
+  document.getElementById('npm-linked-sale').value='';
+  document.getElementById('npm-date').value=today();
+  document.getElementById('npm-words').textContent='';
+  if(!isReceipt) { document.getElementById('npm-chq-date').value=today(); }
+  document.getElementById('new-payment-modal').classList.add('on');
+}
+function closeNewPaymentModal() { document.getElementById('new-payment-modal').classList.remove('on'); }
+function updateNPMWords() {
+  const n=nv('npm-amount');
+  document.getElementById('npm-words').textContent=n?numToWords(n):'';
+}
+async function saveNewPayment() {
+  const type = v('npm-type');
+  const party = v('npm-party'); if(!party){toast('Party name required');return;}
+  const amount = nv('npm-amount'); if(!amount){toast('Amount required');return;}
+  const purpose = v('npm-purpose');
+  const date = v('npm-date')||today();
+  
+  const payData = {
+    docType: type, party, amount, purpose, date, note:v('npm-note'),
+    from: v('npm-from')||party,
+    payMode: v('npm-mode'), txnRef: v('npm-txn'),
+    bank: v('npm-bank'), branch: v('npm-branch'), chequeNo: v('npm-chq-no'),
+    chequeDate: v('npm-chq-date'), accName: v('npm-acc-name')
+  };
+  const docSnap = type==='receipt' ? buildPaymentReceiptHTML(payData) : buildChequeDraftHTML(payData);
+  payData.savedDoc = docSnap;
+  const pid = await fbSave('payments', payData);
+  payments.unshift({id:pid,...payData});
+  addParty(party);
+  const linkedSaleId = v('npm-linked-sale');
+  if(linkedSaleId && type==='receipt') {
+    const sale = sales.find(x=>x.id===linkedSaleId);
+    if(sale) {
+      sale.paid = (sale.paid||0) + amount;
+      await fbUpdate('sales', linkedSaleId, {paid: sale.paid});
+    }
+  }
+
+  closeNewPaymentModal();
+  toast('Payment document saved ✅');
+  renderAll(); 
+  openDocModal(type==='receipt'?'💰 Payment Receipt':'🏦 Cheque Draft', docSnap, type==='receipt'?'payment-receipt':'cheque-draft');
+}
+
+function viewPaymentDoc(id) {
+  const p = payments.find(x=>x.id===id);
+  if(!p?.savedDoc) { toast('No saved document'); return; }
+  const title = p.docType==='receipt' ? '💰 Payment Receipt' : '🏦 Cheque Draft';
+  openDocModal(title, p.savedDoc, p.docType==='receipt'?'payment-receipt':'cheque-draft', {text:`Hello ${p.party}, please find the attached ${title} for ${fmt(p.amount)}.`});
+}
+
+async function deletePayment(id) {
+  if(!confirm('Delete this payment record?')) return;
+  await fbDelete('payments',id);
+  payments=payments.filter(p=>p.id!==id);
+  renderPayments();
+  toast('Deleted');
+}
+
+// ══════════════════════════════════════════════════
+// DOCUMENT BUILDERS
+// ══════════════════════════════════════════════════
+function shopHeader() {
+  return `<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+    <div>
+      <div style="font-size:20px;font-weight:800;color:#1e293b;letter-spacing:-0.5px">${settings.firm||'Your Textile Shop'}</div>
+      ${settings.gstin?`<div style="font-size:11px;color:#64748b;margin-top:2px">GSTIN: ${settings.gstin}</div>`:''}
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:13px;font-weight:700;color:#5c6ef8">StockSaathi</div>
+      <div style="font-size:10px;color:#94a3b8">${new Date().toLocaleDateString('en-IN')}</div>
+    </div>
+  </div>
+  <hr style="border:none;border-top:2px solid #e2e8f0;margin-bottom:14px">`;
+}
+
+function buildSaleInvoiceHTML(s) {
+  const gstRate=s.gstRate||5, gstType=s.gstType||'intra';
+  const cgst=gstType==='intra'?s.gst/2:0, sgst=gstType==='intra'?s.gst/2:0, igst=gstType==='inter'?s.gst:0;
+  // BATCH 1: UPI QR CODE GENERATOR
+  let qrHtml = '';
+  if(settings.upi && !s.kacha) {
+    const upiStr = `upi://pay?pa=${settings.upi}&pn=${encodeURIComponent(settings.firm||'StockSaathi')}&am=${s.total.toFixed(2)}&cu=INR`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(upiStr)}`;
+    qrHtml = `<div style="text-align:right;">
+      <img src="${qrUrl}" crossorigin="anonymous" width="60" height="60" style="border:1px solid #e2e8f0; border-radius:6px; padding:2px;" />
+      <div style="font-size:8px; color:#64748b; margin-top:2px; font-weight:700;">Scan to Pay</div>
+    </div>`;
+  }
+
+  return `<div class="doc-preview-inner">
+    ${shopHeader()}
+    <div style="background:#f8faff;border-radius:8px;padding:12px 14px;margin-bottom:14px;border:1px solid #e2e8f0">
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
+        <div style="font-size:12px;font-weight:800;color:#1e293b;text-transform:uppercase;letter-spacing:0.8px;">TAX INVOICE</div>
+        <div style="font-size:12px;font-weight:700;color:#4f46e5;">${s.invoiceNo || ''}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px">
+        <div><span style="color:#64748b">Bill To: </span><br><strong style="font-size:13px">${s.customer||'—'}</strong></div>
+        <div>
+          <div><span style="color:#64748b">Date: </span><strong>${fmtDate(s.date)}</strong></div>
+          <div><span style="color:#64748b">Type: </span><strong>${s.invType||'Cash'}</strong></div>
+        </div>
+        ${s.buyerGstin?`<div><span style="color:#64748b">Buyer GSTIN: </span><strong>${s.buyerGstin}</strong></div>`:''}
+        ${s.phone?`<div><span style="color:#64748b">Mobile: </span><strong>+91 ${s.phone}</strong></div>`:''}
+        ${s.broker?`<div><span style="color:#64748b">Broker: </span><strong>${s.broker}</strong></div>`:''}
+      </div>
+    </div>
+
+    ${(s.transport || s.lrNo || s.eway) ? `
+    <div style="background:#fff; border-radius:8px; padding:10px 14px; margin-bottom:14px; border:1px solid #e2e8f0;">
+      <div style="font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:6px">DISPATCH DETAILS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px">
+        ${s.transport?`<div><span style="color:#64748b">Transport: </span><strong>${s.transport}</strong></div>`:''}
+        ${s.lrNo?`<div><span style="color:#64748b">L.R. No: </span><strong>${s.lrNo}</strong></div>`:''}
+        ${s.eway?`<div><span style="color:#64748b">E-Way Bill: </span><strong>${s.eway}</strong></div>`:''}
+      </div>
+    </div>` : ''}
+
+    <table>
+      <thead><tr><th>Item</th><th style="text-align:right">Qty(m)</th><th style="text-align:right">Rate</th><th style="text-align:right">Amount</th></tr></thead>
+      <tbody>
+        <tr><td>${s.fabric}</td><td style="text-align:right">${fmtN(s.meters)}</td><td style="text-align:right">${fmt(s.rate)}</td><td style="text-align:right">${fmt(s.meters*s.rate)}</td></tr>
+        ${s.discount?`<tr><td colspan="3" style="color:#64748b">Discount</td><td style="text-align:right;color:#f05264">-${fmt(s.discount)}</td></tr>`:''}
+        <tr style="border-top:1px solid #e2e8f0"><td colspan="3" style="font-weight:700">Subtotal</td><td style="text-align:right;font-weight:700">${fmt(s.subtotal)}</td></tr>
+        ${cgst?`<tr><td colspan="3" style="color:#3b82f6">CGST @${gstRate/2}%</td><td style="text-align:right;color:#3b82f6">${fmt(cgst)}</td></tr><tr><td colspan="3" style="color:#3b82f6">SGST @${gstRate/2}%</td><td style="text-align:right;color:#3b82f6">${fmt(sgst)}</td></tr>`:''}
+        ${igst?`<tr><td colspan="3" style="color:#3b82f6">IGST @${gstRate}%</td><td style="text-align:right;color:#3b82f6">${fmt(igst)}</td></tr>`:''}
+      </tbody>
+      <tfoot><tr style="background:#f8faff"><td colspan="3" style="font-weight:800;font-size:13px">TOTAL</td><td style="text-align:right;font-weight:800;font-size:15px;color:#4f46e5">${fmt(s.total)}</td></tr></tfoot>
+    </table>
+    
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:12px;">
+      <div style="flex:1;">
+        <div style="font-size:11px;color:#64748b;font-style:italic">${numToWords(s.total)}</div>
+        ${s.note?`<div style="margin-top:8px;font-size:11px;color:#94a3b8">Note: ${s.note}</div>`:''}
+        ${s.kacha?'<div style="margin-top:10px;padding:8px 12px;background:#fff7ed;border-radius:6px;border:1px solid #fdba74;font-size:11px;font-weight:700;color:#c2410c;display:inline-block;">⚠️ ESTIMATE / KACHA BILL — Not a Tax Invoice</div>':''}
+      </div>
+      ${qrHtml}
+    </div>
+
+    ${settings.footerNote?`<div style="margin-top:10px;padding:8px 12px;background:#f1f5f9;border-radius:6px;font-size:10px;font-weight:600;color:#64748b;text-align:center">${settings.footerNote}</div>`:''}
+    <div style="margin-top:14px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;text-align:center">Thank you for your business! · Powered by StockSaathi</div>
+  </div>`;
+}
+
+function buildPurchaseReceiptHTML(p) {
+  const gstRate=p.gstRate||5, gstType=p.gstType||'intra';
+  const cgst=gstType==='intra'?(p.gst||0)/2:0, igst=gstType==='inter'?(p.gst||0):0;
+  return `<div class="doc-preview-inner">
+    ${shopHeader()}
+    <div style="background:#f0fdf4;border-radius:8px;padding:12px 14px;margin-bottom:14px;border:1px solid #bbf7d0">
+      <div style="font-size:10px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px">PURCHASE RECEIPT</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
+        <div><span style="color:#64748b">Supplier: </span><strong>${p.party||'—'}</strong></div>
+        <div><span style="color:#64748b">Date: </span><strong>${fmtDate(p.date)}</strong></div>
+        ${p.gstin?`<div style="grid-column:1/-1"><span style="color:#64748b">GSTIN: </span><strong>${p.gstin}</strong></div>`:''}
+        ${p.note?`<div style="grid-column:1/-1"><span style="color:#64748b">Ref: </span><strong>${p.note}</strong></div>`:''}
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>Item</th><th style="text-align:right">Qty(m)</th><th style="text-align:right">Rate</th><th style="text-align:right">Amount</th></tr></thead>
+      <tbody>
+        <tr><td>${p.item||p.fabric||'—'}</td><td style="text-align:right">${fmtN(p.meters)}</td><td style="text-align:right">${fmt(p.rate)}</td><td style="text-align:right">${fmt(p.meters*p.rate)}</td></tr>
+        <tr style="border-top:1px solid #e2e8f0"><td colspan="3" style="font-weight:700">Subtotal</td><td style="text-align:right;font-weight:700">${fmt(p.subtotal||p.meters*p.rate)}</td></tr>
+        ${cgst?`<tr><td colspan="3" style="color:#3b82f6">CGST @${gstRate/2}%</td><td style="text-align:right;color:#3b82f6">${fmt(cgst)}</td></tr><tr><td colspan="3" style="color:#3b82f6">SGST @${gstRate/2}%</td><td style="text-align:right;color:#3b82f6">${fmt(cgst)}</td></tr>`:''}
+        ${igst?`<tr><td colspan="3" style="color:#3b82f6">IGST @${gstRate}%</td><td style="text-align:right;color:#3b82f6">${fmt(igst)}</td></tr>`:''}
+      </tbody>
+      <tfoot><tr style="background:#f0fdf4"><td colspan="3" style="font-weight:800;font-size:13px">TOTAL</td><td style="text-align:right;font-weight:800;font-size:15px;color:#16a34a">${fmt(p.total)}</td></tr></tfoot>
+    </table>
+    <div style="margin-top:12px;font-size:11px;color:#64748b;font-style:italic">${numToWords(p.total)}</div>
+    <div style="margin-top:14px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;text-align:center">Received from ${p.party} · Powered by StockSaathi</div>
+  </div>`;
+}
+
+function buildPaymentReceiptHTML(p) {
+  return `<div class="doc-preview-inner">
+    ${shopHeader()}
+    <div style="background:#f5f3ff;border-radius:8px;padding:14px;margin-bottom:14px;border:1px solid #c4b5fd;text-align:center">
+      <div style="font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">PAYMENT RECEIPT</div>
+      <div style="font-size:28px;font-weight:800;color:#4f46e5;letter-spacing:-1px">${fmt(p.amount)}</div>
+      <div style="font-size:12px;color:#6d28d9;margin-top:2px;font-style:italic">${numToWords(p.amount)}</div>
+    </div>
+    <table>
+      <tbody>
+        <tr><td style="color:#64748b;font-weight:600;width:140px">Paid To</td><td style="font-weight:700">${p.party}</td></tr>
+        <tr><td style="color:#64748b;font-weight:600">Received From</td><td style="font-weight:700">${p.from||p.party}</td></tr>
+        <tr><td style="color:#64748b;font-weight:600">Date</td><td>${fmtDate(p.date)}</td></tr>
+        <tr><td style="color:#64748b;font-weight:600">Mode</td><td><span style="background:#f5f3ff;color:#7c3aed;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700">${p.payMode||'Cash'}</span></td></tr>
+        ${p.txnRef?`<tr><td style="color:#64748b;font-weight:600">Txn Ref</td><td style="font-family:monospace">${p.txnRef}</td></tr>`:''}
+        <tr><td style="color:#64748b;font-weight:600">Purpose</td><td>${p.purpose||'—'}</td></tr>
+        ${p.note?`<tr><td style="color:#64748b;font-weight:600">Note</td><td style="color:#94a3b8">${p.note}</td></tr>`:''}
+      </tbody>
+    </table>
+    <div style="margin-top:14px;padding:10px 14px;background:#f8faff;border-radius:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid #e2e8f0">
+      ${settings.upi?`<div style="font-size:11px"><div style="color:#64748b;font-size:10px">UPI</div><div style="font-weight:700;color:#4f46e5">${settings.upi}</div></div>`:'<div></div>'}
+      <div style="font-size:10px;color:#94a3b8;text-align:right">Authorised Signatory<br>${settings.firm||'Your Shop'}</div>
+    </div>
+    <div style="margin-top:10px;font-size:10px;color:#94a3b8;text-align:center">Powered by StockSaathi</div>
+  </div>`;
+}
+
+function buildChequeDraftHTML(p) {
+  return `<div class="doc-preview-inner">
+    ${shopHeader()}
+    <div style="border:2px solid #1e3a5f;border-radius:12px;padding:20px;background:linear-gradient(135deg,#f0f7ff,#e8f4fd);margin-bottom:14px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:10px;right:12px;font-size:11px;font-weight:700;color:#1e3a5f;opacity:0.15;font-size:32px;transform:rotate(-15deg)">CHEQUE</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+        <div>
+          <div style="font-size:13px;font-weight:800;color:#1e3a5f">${p.bank||'Bank Name'}</div>
+          ${p.branch?`<div style="font-size:11px;color:#64748b">${p.branch} Branch</div>`:''}
+        </div>
+        <div style="text-align:right">
+          ${p.chequeNo?`<div style="font-size:12px;font-family:monospace;color:#1e3a5f;font-weight:700">Chq No: ${p.chequeNo}</div>`:''}
+          <div style="font-size:12px;color:#64748b">Date: ${fmtDate(p.chequeDate||p.date)}</div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:10px;color:#64748b;margin-bottom:3px">PAY TO</div>
+        <div style="font-size:15px;font-weight:800;color:#1e3a5f;border-bottom:1px solid #94a3b8;padding-bottom:4px">${p.party}</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div style="flex:1;margin-right:14px">
+          <div style="font-size:10px;color:#64748b;margin-bottom:3px">RUPEES (IN WORDS)</div>
+          <div style="font-size:12px;font-style:italic;color:#1e3a5f;border-bottom:1px solid #94a3b8;padding-bottom:4px">${numToWords(p.amount)}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:10px;color:#64748b;margin-bottom:3px">₹ AMOUNT</div>
+          <div style="font-size:22px;font-weight:800;color:#1e3a5f;letter-spacing:-0.5px;border:2px solid #1e3a5f;padding:4px 12px;border-radius:6px">${fmt(p.amount)}</div>
+        </div>
+      </div>
+      ${p.purpose?`<div style="margin-top:10px;font-size:11px;color:#64748b">Purpose: ${p.purpose}</div>`:''}
+    </div>
+    <table>
+      <tbody>
+        <tr><td style="color:#64748b;width:140px">Account Name</td><td style="font-weight:700">${p.accName||settings.accName||'—'}</td></tr>
+        ${settings.accNo?`<tr><td style="color:#64748b">A/C Number</td><td style="font-family:monospace">${settings.accNo}</td></tr>`:''}
+        ${settings.ifsc?`<tr><td style="color:#64748b">IFSC</td><td style="font-family:monospace">${settings.ifsc}</td></tr>`:''}
+        ${p.note?`<tr><td style="color:#64748b">Note</td><td style="color:#94a3b8">${p.note}</td></tr>`:''}
+      </tbody>
+    </table>
+    <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #e2e8f0;display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:10px;color:#94a3b8">⚠️ This is a cheque draft. Please verify all details before signing.</div>
+      <div style="font-size:10px;color:#94a3b8">StockSaathi</div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════
+// DOCUMENT MODAL & WHATSAPP SHARE
+// ══════════════════════════════════════════════════
+let currentDocContext = null;
+function openDocModal(title, html, type, context={}) {
+  currentDocContext = context;
+  document.getElementById('doc-modal-title').textContent = title;
+  document.getElementById('doc-preview').innerHTML = html;
+  document.getElementById('doc-tab-bar').innerHTML = '';
+  const actBar = document.getElementById('doc-actions-bar');
+  actBar.innerHTML = `
+    <button class="btn btn-emerald" onclick="shareWhatsApp()"><span style="font-size:15px">💬</span> Share</button>
+    <button class="btn btn-primary" onclick="downloadDocPDF('${type}')">📥 PDF</button>
+    <button class="btn btn-ghost" onclick="window.print()">🖨️ Print</button>
+    <button class="btn btn-ghost" onclick="closeDocModal()">Close</button>
+  `;
+  document.getElementById('doc-modal').classList.add('on');
+}
+function closeDocModal() { document.getElementById('doc-modal').classList.remove('on'); }
+
+function downloadDocPDF(type) {
+  const el = document.getElementById('doc-preview');
+  const opt = { margin:8, filename:`stocksaathi-${type}-${Date.now()}.pdf`, image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm',format:'a5',orientation:'portrait'} };
+  html2pdf().from(el).set(opt).save();
+}
+
+function shareWhatsApp() {
+  const phone = currentDocContext?.phone ? currentDocContext.phone.replace(/[^0-9]/g, '') : '';
+  const text = encodeURIComponent((currentDocContext?.text || "Hello, here is your document.") + "\n\n(Please note: PDF attachments must be sent manually after downloading.)");
+  let url = `https://wa.me/${phone ? '91'+phone : ''}?text=${text}`;
+  window.open(url, '_blank');
+}
+
+// ══════════════════════════════════════════════════
+// CALCULATOR
+// ══════════════════════════════════════════════════
+function c1(){ const r=nv('c1m')*nv('c1r'); document.getElementById('c1-r').textContent=fmt(r); }
+function c2(){
+  const b=nv('c2b'),s=nv('c2s'),m=nv('c2m');
+  document.getElementById('c2-pm').textContent=fmt(s-b);
+  document.getElementById('c2-r').textContent=fmt((s-b)*m);
+}
+function c3(){
+  const a=nv('c3a'), rate=parseFloat(document.getElementById('c3g')?.value||0);
+  const type=document.getElementById('c3type')?.value||'intra';
+  const gst=a*rate/100;
+  document.getElementById('c3-g').textContent=fmt(gst);
+  document.getElementById('c3-t').textContent=fmt(a+gst);
+  const bd=document.getElementById('c3-breakdown');
+  if(rate&&a){ bd.style.display='block'; bd.innerHTML=gstBreakdownHTML(a,rate,type); }
+  else bd.style.display='none';
+}
+
+// ══════════════════════════════════════════════════
+// REPORT
+// ══════════════════════════════════════════════════
+function renderReport() {
+  const now=new Date();
+  const monthStr=now.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  document.getElementById('rpt-month').textContent=monthStr;
+  const thisMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const mSales=sales.filter(s=>!s.kacha&&s.date?.startsWith?.(thisMonth));
+  const mPur=purchases.filter(p=>p.date?.startsWith?.(thisMonth));
+  const totalSales=mSales.reduce((a,s)=>a+s.total,0);
+  const totalPur=mPur.reduce((a,p)=>a+p.total,0);
+  const profit=totalSales-totalPur;
+  const el=document.getElementById('rpt-stats');
+  if(el) el.innerHTML=`
+    <div class="ls-card"><div class="ls-label">Month Sales</div><div class="ls-value" style="color:var(--emerald)">${fmt(totalSales)}</div></div>
+    <div class="ls-card"><div class="ls-label">Month Purchases</div><div class="ls-value" style="color:var(--blue)">${fmt(totalPur)}</div></div>
+    <div class="ls-card"><div class="ls-label">Net Profit</div><div class="ls-value" style="color:${profit>=0?'var(--emerald)':'var(--rose)'}">${fmt(profit)}</div></div>
+    <div class="ls-card"><div class="ls-label">Stock Value</div><div class="ls-value" style="color:var(--amber)">${fmt(fabrics.reduce((a,f)=>a+f.meters*(f.rate||0),0))}</div></div>
+  `;
+  const maxM=Math.max(...fabrics.map(f=>f.meters),1);
+  const stockEl=document.getElementById('rpt-stock');
+  if(stockEl) stockEl.innerHTML=fabrics.slice(0,8).map(f=>`
+    <div class="bar-row">
+      <div class="bar-lbl">${f.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${f.meters/maxM*100}%;background:${fabStockClass(f)==='ok'?'var(--emerald)':fabStockClass(f)==='med'?'var(--amber)':'var(--rose)'}"></div></div>
+      <div class="bar-val">${fmtN(f.meters)}m</div>
+    </div>
+  `).join('');
+  const byFab={};
+  mSales.forEach(s=>{ byFab[s.fabric]=(byFab[s.fabric]||0)+s.total; });
+  const maxSale=Math.max(...Object.values(byFab),1);
+  const salesEl=document.getElementById('rpt-sales');
+  if(salesEl) salesEl.innerHTML=Object.entries(byFab).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([n,v])=>`
+    <div class="bar-row">
+      <div class="bar-lbl">${n}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${v/maxSale*100}%;background:var(--indigo)"></div></div>
+      <div class="bar-val">${fmt(v)}</div>
+    </div>
+  `).join('') || '<div style="color:var(--text3);font-size:12px;padding:8px">No sales this month</div>';
+  
+  const tbody=document.getElementById('rpt-body');
+  if(tbody) tbody.innerHTML=fabrics.map(f=>{
+    const soldThisMonth=mSales.filter(s=>s.fabricId===f.id).reduce((a,s)=>a+s.meters,0);
+    const sc=fabStockClass(f);
+    return `<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 70px;padding:10px 18px;border-bottom:1px solid var(--border);font-size:12px;align-items:center">
+      <div style="font-weight:600">${f.name}</div>
+      <div style="text-align:right;color:var(--text2)">${fmtN(f.meters+soldThisMonth)}m</div>
+      <div style="text-align:right;color:var(--rose)">${fmtN(soldThisMonth)}m</div>
+      <div style="text-align:right;font-weight:700;color:${sc==='ok'?'var(--emerald)':sc==='med'?'var(--amber)':'var(--rose)'}">${fmtN(f.meters)}m</div>
+      <div style="text-align:right;color:var(--text2)">${fmt(f.meters*(f.rate||0))}</div>
+      <div style="text-align:right"><span class="pill ${sc==='ok'?'pill-g':sc==='med'?'pill-b':'pill-r'}">${sc.toUpperCase()}</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════
+const pageMap = {
+  'dash':'Dashboard','inv':'Inventory','sales':'Sales','ledger':'Ledger',
+  'payments':'Payments & Cheques','calc':'Calculator','report':'Monthly Report',
+  'master':'Master Data','profiles':'Profiles'
+};
+function goto(pg, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-'+pg)?.classList.add('on');
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  btn?.classList.add('active');
+  document.getElementById('pg-title').textContent = pageMap[pg]||pg;
+  currentPage=pg;
+  if(pg==='report') renderReport();
+  if(pg==='payments') { renderPayments(); renderPaymentStats(); }
+  if(pg==='ledger') { renderLedger(); }
+}
+function mobileGoto(pg) {
+  const btnId='mob-'+pg;
+  const btn=document.getElementById(btnId);
+  goto(pg,btn);
+  document.querySelectorAll('.mob-item').forEach(b=>b.classList.remove('active'));
+  btn?.classList.add('active');
+  closeMobileMenu();
+}
+function toggleMobileMenu() {
+  document.getElementById('mob-menu').classList.toggle('on');
+  document.getElementById('mob-overlay').classList.toggle('on');
+}
+function closeMobileMenu() {
+  document.getElementById('mob-menu').classList.remove('on');
+  document.getElementById('mob-overlay').classList.remove('on');
+}
+
+// ══════════════════════════════════════════════════
+// ONBOARDING
+// ══════════════════════════════════════════════════
+const obSteps = [
+  {
+    title:'Welcome to StockSaathi! 🎉',
+    sub:'Your all-in-one textile stock manager',
+    body:`<div class="ob-features">
+      <div class="ob-feat"><div class="ob-feat-ic">📦</div><div><div class="ob-feat-t">Smart Inventory</div><div class="ob-feat-s">Track every fabric, meter by meter. Know exactly what's in stock.</div></div></div>
+      <div class="ob-feat"><div class="ob-feat-ic">🧾</div><div><div class="ob-feat-t">GST Invoices</div><div class="ob-feat-s">Generate tax invoices with CGST/SGST/IGST breakdown automatically.</div></div></div>
+      <div class="ob-feat"><div class="ob-feat-ic">💳</div><div><div class="ob-feat-t">Payments & Cheques</div><div class="ob-feat-s">Create payment receipts and cheque drafts — saved forever.</div></div></div>
+    </div>`
+  },
+  {
+    title:'Set up your shop 🏪',
+    sub:'This info appears on all your documents',
+    body:`<div class="fg"><label class="fl">Shop / Firm Name *</label><input id="ob-firm" placeholder="e.g. Rishi Textiles"/></div>
+         <div class="fg"><label class="fl">GSTIN <span class="fl-h">(Optional)</span></label><input id="ob-gstin" placeholder="24XXXXX0000X0Z0"/></div>
+         <div class="fg"><label class="fl">UPI ID <span class="fl-h">(for payments)</span></label><input id="ob-upi" placeholder="9876543210@paytm"/></div>`
+  },
+  {
+    title:'Create your first profile 👤',
+    sub:'Who will be using StockSaathi?',
+    body:`<div class="fg"><label class="fl">Your Name *</label><input id="ob-name" placeholder="e.g. Ramesh Bhai"/></div>
+         <div class="fg"><label class="fl">Role</label>
+           <select id="ob-role"><option value="owner">👑 Owner</option><option value="manager">💼 Manager</option><option value="staff">👦 Staff</option></select>
+         </div>
+         <div class="fg"><label class="fl">4-Digit PIN <span class="fl-h">(Optional)</span></label><input type="password" id="ob-pin" maxlength="4" placeholder="Leave empty" style="font-family:var(--fm);letter-spacing:4px"/></div>`
+  }
+];
+function showOnboarding() {
+  obStep=1;
+  document.getElementById('onboarding').classList.add('on');
+  renderOBStep();
+}
+function renderOBStep() {
+  const s=obSteps[obStep-1];
+  document.getElementById('ob-title').textContent=s.title;
+  document.getElementById('ob-sub').textContent=s.sub;
+  document.getElementById('ob-body').innerHTML=s.body;
+  document.getElementById('ob-counter').textContent=`Step ${obStep} / ${obSteps.length}`;
+  document.getElementById('ob-next').textContent=obStep===obSteps.length?'Get Started 🚀':'Next →';
+  [1,2,3].forEach(n=>{
+    const el=document.getElementById('ob-s'+n);
+    el.className='ob-step'+(n<obStep?' done':n===obStep?' active':'');
+  });
+}
+async function obNext() {
+  if(obStep===2) {
+    const firm=document.getElementById('ob-firm')?.value?.trim();
+    if(firm){ settings.firm=firm; settings.gstin=document.getElementById('ob-gstin')?.value?.trim(); settings.upi=document.getElementById('ob-upi')?.value?.trim(); await FB.setDoc(FB.doc(DB,`${userPath()}/config/settings`),settings); }
+  }
+  if(obStep===3) {
+    const name=document.getElementById('ob-name')?.value?.trim();
+    const role=document.getElementById('ob-role')?.value||'owner';
+    const pin=document.getElementById('ob-pin')?.value;
+    if(name){ const data={name,role,pin:pin||''};
+      const id=await fbSave('profiles',data); profiles.push({id,...data}); applyProfile({id,...data}); }
+    skipOB(); return;
+  }
+  obStep++; renderOBStep();
+}
+function skipOB() {
+  document.getElementById('onboarding').classList.remove('on');
+  if(profiles.length===0) { document.getElementById('user-display-name').textContent='Owner'; document.getElementById('sb-avatar').textContent='O'; }
+  renderAll();
+}
+
+// ══════════════════════════════════════════════════
+// FALLBACK (localStorage) for demo without Firebase
+// ══════════════════════════════════════════════════
+setTimeout(()=>{
+  if(!window._db) {
+    console.warn('Firebase not configured — using localStorage demo mode');
+    setupLocalMode();
+  }
+}, 3000);
+function setupLocalMode() {
+  document.getElementById('login-screen').style.display='none';
+  fabrics = JSON.parse(localStorage.getItem('ss_fabrics')||'[]');
+  sales = JSON.parse(localStorage.getItem('ss_sales')||'[]');
+  purchases = JSON.parse(localStorage.getItem('ss_purchases')||'[]');
+  payments = JSON.parse(localStorage.getItem('ss_payments')||'[]');
+  profiles = JSON.parse(localStorage.getItem('ss_profiles')||'[]');
+  settings = JSON.parse(localStorage.getItem('ss_settings')||'{}');
+  masterData = JSON.parse(localStorage.getItem('ss_master')||JSON.stringify({qualities:['Georgette','Satin','Silk','Cotton','Linen','Polyester','Chiffon'],colors:['Red','Green','Blue','Yellow','White','Black','Pink'],parties:[]}));
+  
+  window._currentUser = {uid:'demo'};
+  DB='LOCAL'; FB={};
+  window.fbSave = async (col, data)=>{
+    const id=uid(); const list=JSON.parse(localStorage.getItem('ss_'+col)||'[]');
+    list.unshift({id,...data}); localStorage.setItem('ss_'+col, JSON.stringify(list));
+    return id;
+  };
+  window.fbUpdate = async (col, id, data)=>{
+    const list=JSON.parse(localStorage.getItem('ss_'+col)||'[]');
+    const i=list.findIndex(x=>x.id===id); if(i>=0) list[i]={...list[i],...data};
+    localStorage.setItem('ss_'+col, JSON.stringify(list));
+  };
+  window.fbDelete = async (col, id)=>{
+    const list=JSON.parse(localStorage.getItem('ss_'+col)||'[]').filter(x=>x.id!==id);
+    localStorage.setItem('ss_'+col, JSON.stringify(list));
+  };
+  window.fbGetAll = async (col)=>JSON.parse(localStorage.getItem('ss_'+col)||'[]');
+  window.saveMaster = async ()=>localStorage.setItem('ss_master',JSON.stringify(masterData));
+  
+  if(profiles.length===0) showOnboarding();
+  else if(profiles.length===1) applyProfile(profiles[0]);
+  else { renderProfileScreen(); document.getElementById('profile-screen').style.display='flex'; }
+  rebuildDatalists(); renderAll();
+  toast('🔧 Demo mode — configure Firebase for cloud sync',4000);
+}
+</script>
+</body>
+</html>
