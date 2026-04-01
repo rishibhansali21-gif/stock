@@ -194,7 +194,7 @@ input::placeholder{color:var(--text3)}
 .gst-total-line{display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--blue);border-top:1px solid rgba(59,158,245,0.2);padding-top:4px;margin-top:3px}
 
 .ledger-tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:4px}
-.ledger-tab{flex:1;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;color:var(--text2);border:none;background:transparent;border-radius:var(--r);transition:all 0.15s; white-space:nowrap;}
+.ledger-tab{flex:1;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;color:var(--text2);border:none;background:transparent;border-radius:var(--r);transition:all 0.15s;white-space:nowrap;}
 .ledger-tab.active{background:var(--indigo-dim);color:var(--indigo2)}
 .ledger-entry{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:8px;display:grid;grid-template-columns:auto 1fr auto auto auto;gap:10px;align-items:center}
 .ledger-entry.sale-entry{border-left:3px solid var(--emerald)}
@@ -747,7 +747,7 @@ body.manager-mode .hide-manager{display:none !important}
     </div>
   </div>
 
-"pg-profiles">
+  <div class="page" id="pg-profiles">
     <div class="content">
       <div class="sh">
         <div><div class="sh-title">👥 Manage Profiles</div><div class="sh-sub">Owner / Manager / Staff</div></div>
@@ -1158,7 +1158,7 @@ body.manager-mode .hide-manager{display:none !important}
 // GLOBAL STATE
 // ══════════════════════════════════════════════════
 let DB = null;
-let FB = null; 
+let FB = null;
 let fabrics = [];
 let sales = [];
 let purchases = [];
@@ -1368,7 +1368,6 @@ async function hardResetApp() {
     }
     await FB.deleteDoc(FB.doc(DB, `${userPath()}/config/settings`));
     await FB.deleteDoc(FB.doc(DB, `${userPath()}/config/master`));
-
     toast('App reset successfully. Signing out...', 2000);
     setTimeout(() => {
       closeSettings();
@@ -1401,7 +1400,6 @@ function rebuildDatalists() {
   dp.innerHTML = masterData.parties.map(p=>`<option value="${p}">`).join('');
   const dc = document.getElementById('dl-color');
   dc.innerHTML = masterData.colors.map(c=>`<option value="${c}">`).join('');
-  
   const kp = document.getElementById('khata-party-select');
   if(kp) kp.innerHTML = `<option value="">-- Select a Party to View Statement --</option>` + masterData.parties.map(p=>`<option value="${p}">${p}</option>`).join('');
   
@@ -1423,9 +1421,11 @@ function renderMaster() {
   if(cEl) cEl.innerHTML = masterData.colors.map((c,i)=>`<div class="md-item">${c}<button onclick="delC(${i})" style="background:none;border:none;color:var(--rose);cursor:pointer;font-size:13px">✕</button></div>`).join('');
   if(pEl) pEl.innerHTML = masterData.parties.map((p,i)=>`<div class="md-item">${p}<button onclick="delP(${i})" style="background:none;border:none;color:var(--rose);cursor:pointer;font-size:13px">✕</button></div>`).join('');
 }
-async function addQuality(){ const v=prompt('New category name:'); if(v?.trim()){masterData.qualities.push(v.trim());await saveMaster();rebuildDatalists();} }
+async function addQuality(){ const v=prompt('New category name:');
+  if(v?.trim()){masterData.qualities.push(v.trim());await saveMaster();rebuildDatalists();} }
 async function addColor(){ const v=prompt('New color:'); if(v?.trim()){masterData.colors.push(v.trim());await saveMaster();rebuildDatalists();} }
-async function addPartyManual(){ const v=prompt('New party name:'); if(v?.trim()){addParty(v.trim());} }
+async function addPartyManual(){ const v=prompt('New party name:');
+  if(v?.trim()){addParty(v.trim());} }
 async function addParty(name){ if(!name||masterData.parties.includes(name)) return; masterData.parties.push(name); await saveMaster(); rebuildDatalists(); }
 async function delQ(i){ masterData.qualities.splice(i,1); await saveMaster(); rebuildDatalists(); }
 async function delC(i){ masterData.colors.splice(i,1); await saveMaster(); rebuildDatalists(); }
@@ -1543,7 +1543,8 @@ function fabCardHTML(f, mode='full') {
   const sc = fabStockClass(f);
   const colors={'low':'var(--rose)','med':'var(--amber)','ok':'var(--emerald)'};
   const pct = f.threshold ? Math.min(100,f.meters/f.threshold*100) : 80;
-  const btns = mode==='dash' ? `
+  const btns = mode==='dash' ?
+    `
     <button class="fab-btn fab-btn-add" onclick="openAddStock('${f.id}')">+ Stock</button>
     <button class="fab-btn fab-btn-sell" onclick="openQuickSell('${f.id}')">Sell</button>
   ` : `
@@ -1551,7 +1552,6 @@ function fabCardHTML(f, mode='full') {
     <button class="fab-btn fab-btn-sell" onclick="openQuickSell('${f.id}')">Sell</button>
     <button class="fab-btn fab-btn-del" onclick="deleteFabric('${f.id}')">🗑</button>
   `;
-  
   let rollsHtml = '';
   if(f.rolls && f.rolls.length > 0) {
     rollsHtml = `<div style="margin-bottom:8px">` + f.rolls.map(r => {
@@ -1593,7 +1593,8 @@ function renderDash() {
   const g = document.getElementById('dash-grid');
   if(!g) return;
   const low = fabrics.filter(f=>fabStockClass(f)!=='ok');
-  g.innerHTML = fabrics.slice(0,8).map(f=>fabCardHTML(f,'dash')).join('') || `<div class="empty"><div class="empty-ic">📦</div><div class="empty-t">No fabrics yet</div><div class="empty-s">Add your first fabric to get started</div></div>`;
+  g.innerHTML = fabrics.slice(0,8).map(f=>fabCardHTML(f,'dash')).join('') ||
+    `<div class="empty"><div class="empty-ic">📦</div><div class="empty-t">No fabrics yet</div><div class="empty-s">Add your first fabric to get started</div></div>`;
   document.getElementById('st-c').textContent = fabrics.length;
   document.getElementById('st-m').textContent = fmtN(fabrics.reduce((a,f)=>a+f.meters,0));
   document.getElementById('st-l').textContent = low.length;
@@ -1614,7 +1615,8 @@ function renderInv() {
   let list = fabrics;
   if(currentFabFilter) list = list.filter(f=>f.type===currentFabFilter);
   if(q) list = list.filter(f=>(f.name+f.color+f.supplier+f.type).toLowerCase().includes(q));
-  g.innerHTML = list.map(f=>fabCardHTML(f,'full')).join('') || `<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">No results</div></div>`;
+  g.innerHTML = list.map(f=>fabCardHTML(f,'full')).join('') ||
+    `<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">No results</div></div>`;
 }
 
 function renderCatFilters() {
@@ -1646,13 +1648,13 @@ function closeModal() { document.getElementById('add-modal').classList.remove('o
 
 // BATCH 1: UNIFIED PURCHASE CREATION
 async function saveModal() {
-  const name = v('m-name'); if(!name){toast('Fabric name required');return;}
+  const name = v('m-name');
+  if(!name){toast('Fabric name required');return;}
   const type = v('m-type');
   const initialMeters = nv('m-m');
   const rate = nv('m-r');
   const supplier = v('m-s');
   const rolls = initialMeters > 0 ? [{ rollNo: v('m-roll')||'T-001', meters: initialMeters, date: ts() }] : [];
-  
   const data = { 
     name, type, color:v('m-color'), meters:initialMeters, 
     threshold:nv('m-t')||50, rate, supplier, rolls 
@@ -1666,7 +1668,6 @@ async function saveModal() {
     const gstRate = 5; 
     const gst = subtotal * 0.05;
     const total = subtotal + gst;
-
     const purData = {
       type:'purchase', party: supplier, item: name,
       meters: initialMeters, rate: rate, gstRate, gstType: 'intra',
@@ -1706,7 +1707,8 @@ function closeAddStock() { document.getElementById('addstock-modal').classList.r
 
 // BATCH 1: UNIFIED ADD STOCK
 async function saveAddStock() {
-  const m = nv('as-m'); if(!m){toast('Enter meters');return;}
+  const m = nv('as-m');
+  if(!m){toast('Enter meters');return;}
   const f = fabrics.find(x=>x.id===currentFabId);
   if(!f) return;
   const rate = nv('as-r')||f.rate;
@@ -1718,7 +1720,6 @@ async function saveAddStock() {
   f.meters = f.rolls.reduce((sum, r) => sum + r.meters, 0);
   f.rate = rate||f.rate;
   f.supplier = supplier;
-  
   await fbUpdate('fabrics', currentFabId, {meters:f.meters, rate:f.rate, supplier:f.supplier, rolls:f.rolls});
   
   if(m > 0 && rate > 0 && supplier) {
@@ -1806,7 +1807,6 @@ async function saveQS(genBill=false) {
   const gstRate=parseFloat(document.getElementById('qs-gst-rate')?.value||5);
   const gstType=document.getElementById('qs-gst-type')?.value||'intra';
   const sub=(m*r)-disc; const gst=sub*gstRate/100; const total=sub+gst;
-  
   const saleData = {
     type:'sale', invoiceNo: generateInvoiceNo(), fabric:f.name, fabricId:f.id, meters:m, rate:r, discount:disc,
     gstRate, gstType, subtotal:sub, gst, total,
@@ -1842,7 +1842,7 @@ function renderSalesFabSelect() {
   const sel = document.getElementById('s-fab');
   if(!sel) return;
   sel.innerHTML = fabrics.map(f=>`<option value="${f.id}">${f.name} (${fmtN(f.meters)}m)</option>`).join('');
-  onFabChange(); 
+  onFabChange();
 }
 function onFabChange() {
   const id = document.getElementById('s-fab')?.value;
@@ -1890,7 +1890,6 @@ async function recSale(genBill=false) {
   const gstRate=parseFloat(document.getElementById('s-gst-rate')?.value||5);
   const gstType=document.getElementById('s-gst-type')?.value||'intra';
   const sub=(m*r)-disc; const gst=sub*gstRate/100; const total=sub+gst;
-  
   let paid=nv('s-paid');
   if (v('s-inv-type')==='Cash' && v('s-paid')==='') paid = total;
   
@@ -2049,7 +2048,6 @@ function renderKhata() {
     if(s.docType==='receipt') stmts.push({date:s.date, type:'Receipt', ref: s.purpose, credit:s.amount, debit:0, id: s.id, col:'payments'});
     else stmts.push({date:s.date, type:'Payment Made', ref: s.purpose, debit:s.amount, credit:0, id: s.id, col:'payments'});
   });
-  
   stmts.sort((a,b) => new Date(a.date) - new Date(b.date));
   
   let balance = 0;
@@ -2057,7 +2055,6 @@ function renderKhata() {
     <div style="display:grid;grid-template-columns:80px 1fr 80px 80px;padding:12px 14px;border-bottom:1px solid var(--border);background:var(--bg3);font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;">
       <div>Date</div><div>Description</div><div style="text-align:right">Dr(+)</div><div style="text-align:right">Cr(-)</div>
     </div>`;
-  
   if(stmts.length === 0) {
     html += `<div style="padding:20px; text-align:center; color:var(--text3); font-size:12px">No transactions found for this party.</div>`;
   } else {
@@ -2076,7 +2073,6 @@ function renderKhata() {
     <div>Net Balance</div>
     <div style="text-align:right;font-family:var(--fm);color:${balance>=0?'var(--emerald)':'var(--rose)'}">${fmt(Math.abs(balance))} ${balance>=0?'Dr (Receivable)':'Cr (Payable)'}</div>
   </div></div>`;
-  
   g.innerHTML = html;
 }
 
@@ -2114,7 +2110,8 @@ function calcPurAmt() {
   document.getElementById('pur-gst-breakdown').innerHTML=gstBreakdownHTML(sub,rate,type);
 }
 async function savePurchase(genReceipt=false) {
-  const party=v('pur-party'); if(!party){toast('Supplier required');return;}
+  const party=v('pur-party');
+  if(!party){toast('Supplier required');return;}
   const item=v('pur-item'); if(!item){toast('Item required');return;}
   const meters=nv('pur-meters'); if(!meters){toast('Meters required');return;}
   const rate=nv('pur-rate');
@@ -2232,13 +2229,11 @@ async function saveNewPayment() {
     bank: v('npm-bank'), branch: v('npm-branch'), chequeNo: v('npm-chq-no'),
     chequeDate: v('npm-chq-date'), accName: v('npm-acc-name')
   };
-  
   const docSnap = type==='receipt' ? buildPaymentReceiptHTML(payData) : buildChequeDraftHTML(payData);
   payData.savedDoc = docSnap;
   const pid = await fbSave('payments', payData);
   payments.unshift({id:pid,...payData});
   addParty(party);
-  
   const linkedSaleId = v('npm-linked-sale');
   if(linkedSaleId && type==='receipt') {
     const sale = sales.find(x=>x.id===linkedSaleId);
@@ -2289,142 +2284,6 @@ function shopHeader() {
 function buildSaleInvoiceHTML(s) {
   const gstRate=s.gstRate||5, gstType=s.gstType||'intra';
   const cgst=gstType==='intra'?s.gst/2:0, sgst=gstType==='intra'?s.gst/2:0, igst=gstType==='inter'?s.gst:0;
-  
-  // BATCH 1: UPI QR CODE GENERATOR
-  let qrHtml = '';
-  if(settings.upi && !s.kacha) {
-    const upiStr = `upi://pay?pa=${settings.upi}&pn=${encodeURIComponent(settings.firm||'StockSaathi')}&am=${s.total.toFixed(2)}&cu=INR`;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(upiStr)}`;
-    qrHtml = `<div style="text-align:right;">
-      <img src="${qrUrl}" crossorigin="anonymous" width="60" height="60" style="border:1px solid #e2e8f0; border-radius:6px; padding:2px;" />
-      <div style="font-size:8px; color:#64748b; margin-top:2px; font-weight:700;">Scan to Pay</div>
-    </div>`;
-  }
-
-  return `<div class="doc-preview-inner">
-    ${shopHeader()}
-    <div style="background:#f8faff;border-radius:8px;padding:12px 14px;margin-bottom:14px;border:1px solid #e2e8f0">
-      <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
-        <div style="font-size:12px;font-weight:800;color:#1e293b;text-transform:uppercase;letter-spacing:0.8px;">TAX INVOICE</div>
-        <div style="font-size:12px;font-weight:700;color:#4f46e5;">${s.invoiceNo || ''}</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px">
-        <div><span style="color:#64748b">Bill To: </span><br><strong style="font-size:13px">${s.customer||'—'}</strong></div>
-        <div>
-          <div><span style="color:#64748b">Date: </span><strong>${fmtDate(s.date)}</strong></div>
-          <div><span style="color:#64748b">Type: </span><strong>${s.invType||'Cash'}</strong></div>
-        </div>
-        ${s.buyerGstin?`<div><span style="color:#64748b">Buyer GSTIN: </span><strong>${s.buyerGstin}</strong></div>`:''}
-        ${s.phone?`<div><span style="color:#64748b">Mobile: </span><strong>+91 ${s.phone}</strong></div>`:''}
-        ${s.broker?`<div><span style="color:#64748b">Broker: </span><strong>${s.broker}</strong></div>`:''}
-      </div>
-    </div>
-
-    ${(s.transport || s.lrNo || s.eway) ? `
-    <div style="background:#fff; border-radius:8px; padding:10px 14px; margin-bottom:14px; border:1px solid #e2e8f0;">
-      <div style="font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:6px">DISPATCH DETAILS</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px">
-        ${s.transport?`<div><span style="color:#64748b">Transport: </span><strong>${s.transport}</strong></div>`:''}
-        ${s.lrNo?`<div><span style="color:#64748b">L.R. No: </span><strong>${s.lrNo}</strong></div>`:''}
-        ${s.eway?`<div><span style="color:#64748b">E-Way Bill: </span><strong>${s.eway}</strong></div>`:''}
-      </div>
-    </div>` : ''}
-
-    <table>
-      <thead><tr><th>Item</th><th style="text-align:right">Qty(m)</th><th style="text-align:right">Rate</th><th style="text-align:right">Amount</th></tr></thead>
-      <tbody>
-        <tr><td>${s.fabric}</td><td style="text-align:right">${fmtN(s.meters)}</td><td style="text-align:right">${fmt(s.rate)}</td><td style="text-align:right">${fmt(s.meters*s.rate)}</td></tr>
-        ${s.discount?`<tr><td colspan="3" style="color:#64748b">Discount</td><td style="text-align:right;color:#f05264">-${fmt(s.discount)}</td></tr>`:''}
-        <tr style="border-top:1px solid #e2e8f0"><td colspan="3" style="font-weight:700">Subtotal</td><td style="text-align:right;font-weight:700">${fmt(s.subtotal)}</td></tr>
-        ${cgst?`<tr><td colspan="3" style="color:#3b82f6">CGST @${gstRate/2}%</td><td style="text-align:right;color:#3b82f6">${fmt(cgst)}</td></tr><tr><td colspan="3" style="color:#3b82f6">SGST @${gstRate/2}%</td><td style="text-align:right;color:#3b82f6">${fmt(sgst)}</td></tr>`:''}
-        ${igst?`<tr><td colspan="3" style="color:#3b82f6">IGST @${gstRate}%</td><td style="text-align:right;color:#3b82f6">${fmt(igst)}</td></tr>`:''}
-      </tbody>
-      <tfoot><tr style="background:#f8faff"><td colspan="3" style="font-weight:800;font-size:13px">TOTAL</td><td style="text-align:right;font-weight:800;font-size:15px;color:#4f46e5">${fmt(s.total)}</td></tr></tfoot>
-    </table>
-    
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:12px;">
-      <div style="flex:1;">
-        <div style="font-size:11px;color:#64748b;font-style:italic">${numToWords(s.total)}</div>
-        ${s.note?`<div style="margin-top:8px;font-size:11px;color:#94a3b8">Note: ${s.note}</div>`:''}
-        ${s.kacha?'<div style="margin-top:10px;padding:8px 12px;background:#fff7ed;border-radius:6px;border:1px solid #fdba74;font-size:11px;font-weight:700;color:#c2410c;display:inline-block;">⚠️ ESTIMATE / KACHA BILL — Not a Tax Invoice</div>':''}
-      </div>
-      ${qrHtml}
-    </div>
-
-    ${settings.footerNote?`<div style="margin-top:10px;padding:8px 12px;background:#f1f5f9;border-radius:6px;font-size:10px;font-weight:600;color:#64748b;text-align:center">${settings.footerNote}</div>`:''}
-    <div style="margin-top:14px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;text-align:center">Thank you for your business! · Powered by StockSaathi</div>
-  </div>`;
-}
-
-function buildPurchaseReceiptHTML(p) {
-  const gstRate=p.gstRate||5, gstType=p.gstType||'intra';
-  const cgst=gstType==='intra'?(p.gst||0)/2:0, igst=gstType==='inter'?(p.gst||0):0;
-  return `<div class="doc-preview-inner">
-    ${shopHeader()}
-    <div style="background:#f0fdf4;border-radius:8px;padding:12px 14px;margin-bottom:14px;border:1px solid #bbf7d0">
-      <div style="font-size:10px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px">PURCHASE RECEIPT</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
-        <div><span style="color:#64748b">Supplier: </span><strong>${p.party||'—'}</strong></div>
-        <div><span style="color:#64748b">Date: </span><strong>${fmtDate(p.date)}</strong></div>
-        ${p.gstin?`<div style="grid-column:1/-1"><span style="color:#64748b">GSTIN: </span><strong>${p.gstin}</strong></div>`:''}
-        ${p.note?`<div style="grid-column:1/-1"><span style="color:#64748b">Ref: </span><strong>${p.note}</strong></div>`:''}
-      </div>
-    </div>
-    <table>
-      <thead><tr><th>Item</th><th style="text-align:right">Qty(m)</th><th style="text-align:right">Rate</th><th style="text-align:right">Amount</th></tr></thead>
-      <tbody>
-        <tr><td>${p.item||p.fabric||'—'}</td><td style="text-align:right">${fmtN(p.meters)}</td><td style="text-align:right">${fmt(p.rate)}</td><td style="text-align:right">${fmt(p.meters*p.rate)}</td></tr>
-        <tr style="border-top:1px solid #e2e8f0"><td colspan="3" style="font-weight:700">Subtotal</td><td style="text-align:right;font-weight:700">${fmt(p.subtotal||p.meters*p.rate)}</td></tr>
-        ${cgst?`<tr><td colspan="3" style="color:#3b82f6">CGST @${gstRate/2}%</td><td style="text-align:right;color:#3b82f6">${fmt(cgst)}</td></tr><tr><td colspan="3" style="color:#3b82f6">SGST @${gstRate/2}%</td><td style="text-align:right;color:#3b82f6">${fmt(cgst)}</td></tr>`:''}
-        ${igst?`<tr><td colspan="3" style="color:#3b82f6">IGST @${gstRate}%</td><td style="text-align:right;color:#3b82f6">${fmt(igst)}</td></tr>`:''}
-      </tbody>
-      <tfoot><tr style="background:#f0fdf4"><td colspan="3" style="font-weight:800;font-size:13px">TOTAL</td><td style="text-align:right;font-weight:800;font-size:15px;color:#16a34a">${fmt(p.total)}</td></tr></tfoot>
-    </table>
-    <div style="margin-top:12px;font-size:11px;color:#64748b;font-style:italic">${numToWords(p.total)}</div>
-    <div style="margin-top:14px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;text-align:center">Received from ${p.party} · Powered by StockSaathi</div>
-  </div>`;
-}
-
-function buildPaymentReceiptHTML(p) {
-  return `<div class="doc-preview-inner">
-    ${shopHeader()}
-    <div style="background:#f5f3ff;border-radius:8px;padding:14px;margin-bottom:14px;border:1px solid #c4b5fd;text-align:center">
-      <div style="font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">PAYMENT RECEIPT</div>
-      <div style="font-size:28px;font-weight:800;color:#4f46e5;letter-spacing:-1px">${fmt(p.amount)}</div>
-      <div style="font-size:12px;color:#6d28d9;margin-top:2px;font-style:italic">${numToWords(p.amount)}</div>
-    </div>
-    <table>
-      <tbody>
-        <tr><td style="color:#64748b;font-weight:600;width:140px">Paid To</td><td style="font-weight:700">${p.party}</td></tr>
-        <tr><td style="color:#64748b;font-weight:600">Received From</td><td style="font-weight:700">${p.from||p.party}</td></tr>
-        <tr><td style="color:#64748b;font-weight:600">Date</td><td>${fmtDate(p.date)}</td></tr>
-        <tr><td style="color:#64748b;font-weight:600">Mode</td><td><span style="background:#f5f3ff;color:#7c3aed;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700">${p.payMode||'Cash'}</span></td></tr>
-        ${p.txnRef?`<tr><td style="color:#64748b;font-weight:600">Txn Ref</td><td style="font-family:monospace">${p.txnRef}</td></tr>`:''}
-        <tr><td style="color:#64748b;font-weight:600">Purpose</td><td>${p.purpose||'—'}</td></tr>
-        ${p.note?`<tr><td style="color:#64748b;font-weight:600">Note</td><td style="color:#94a3b8">${p.note}</td></tr>`:''}
-      </tbody>
-    </table>
-    <div style="margin-top:14px;padding// ══════════════════════════════════════════════════
-// DOCUMENT BUILDERS
-// ══════════════════════════════════════════════════
-function shopHeader() {
-  return `<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
-    <div>
-      <div style="font-size:20px;font-weight:800;color:#1e293b;letter-spacing:-0.5px">${settings.firm||'Your Textile Shop'}</div>
-      ${settings.gstin?`<div style="font-size:11px;color:#64748b;margin-top:2px">GSTIN: ${settings.gstin}</div>`:''}
-    </div>
-    <div style="text-align:right">
-      <div style="font-size:13px;font-weight:700;color:#5c6ef8">StockSaathi</div>
-      <div style="font-size:10px;color:#94a3b8">${new Date().toLocaleDateString('en-IN')}</div>
-    </div>
-  </div>
-  <hr style="border:none;border-top:2px solid #e2e8f0;margin-bottom:14px">`;
-}
-
-function buildSaleInvoiceHTML(s) {
-  const gstRate=s.gstRate||5, gstType=s.gstType||'intra';
-  const cgst=gstType==='intra'?s.gst/2:0, sgst=gstType==='intra'?s.gst/2:0, igst=gstType==='inter'?s.gst:0;
-  
   // BATCH 1: UPI QR CODE GENERATOR
   let qrHtml = '';
   if(settings.upi && !s.kacha) {
@@ -2597,13 +2456,11 @@ function buildChequeDraftHTML(p) {
 // DOCUMENT MODAL & WHATSAPP SHARE
 // ══════════════════════════════════════════════════
 let currentDocContext = null;
-
 function openDocModal(title, html, type, context={}) {
   currentDocContext = context;
   document.getElementById('doc-modal-title').textContent = title;
   document.getElementById('doc-preview').innerHTML = html;
   document.getElementById('doc-tab-bar').innerHTML = '';
-  
   const actBar = document.getElementById('doc-actions-bar');
   actBar.innerHTML = `
     <button class="btn btn-emerald" onclick="shareWhatsApp()"><span style="font-size:15px">💬</span> Share</button>
@@ -2668,7 +2525,6 @@ function renderReport() {
     <div class="ls-card"><div class="ls-label">Net Profit</div><div class="ls-value" style="color:${profit>=0?'var(--emerald)':'var(--rose)'}">${fmt(profit)}</div></div>
     <div class="ls-card"><div class="ls-label">Stock Value</div><div class="ls-value" style="color:var(--amber)">${fmt(fabrics.reduce((a,f)=>a+f.meters*(f.rate||0),0))}</div></div>
   `;
-  
   const maxM=Math.max(...fabrics.map(f=>f.meters),1);
   const stockEl=document.getElementById('rpt-stock');
   if(stockEl) stockEl.innerHTML=fabrics.slice(0,8).map(f=>`
@@ -2678,7 +2534,6 @@ function renderReport() {
       <div class="bar-val">${fmtN(f.meters)}m</div>
     </div>
   `).join('');
-  
   const byFab={};
   mSales.forEach(s=>{ byFab[s.fabric]=(byFab[s.fabric]||0)+s.total; });
   const maxSale=Math.max(...Object.values(byFab),1);
@@ -2798,7 +2653,8 @@ async function obNext() {
     const name=document.getElementById('ob-name')?.value?.trim();
     const role=document.getElementById('ob-role')?.value||'owner';
     const pin=document.getElementById('ob-pin')?.value;
-    if(name){ const data={name,role,pin:pin||''}; const id=await fbSave('profiles',data); profiles.push({id,...data}); applyProfile({id,...data}); }
+    if(name){ const data={name,role,pin:pin||''};
+      const id=await fbSave('profiles',data); profiles.push({id,...data}); applyProfile({id,...data}); }
     skipOB(); return;
   }
   obStep++; renderOBStep();
@@ -2818,7 +2674,6 @@ setTimeout(()=>{
     setupLocalMode();
   }
 }, 3000);
-
 function setupLocalMode() {
   document.getElementById('login-screen').style.display='none';
   fabrics = JSON.parse(localStorage.getItem('ss_fabrics')||'[]');
@@ -2831,7 +2686,6 @@ function setupLocalMode() {
   
   window._currentUser = {uid:'demo'};
   DB='LOCAL'; FB={};
-  
   window.fbSave = async (col, data)=>{
     const id=uid(); const list=JSON.parse(localStorage.getItem('ss_'+col)||'[]');
     list.unshift({id,...data}); localStorage.setItem('ss_'+col, JSON.stringify(list));
@@ -2847,7 +2701,6 @@ function setupLocalMode() {
     localStorage.setItem('ss_'+col, JSON.stringify(list));
   };
   window.fbGetAll = async (col)=>JSON.parse(localStorage.getItem('ss_'+col)||'[]');
-  
   window.saveMaster = async ()=>localStorage.setItem('ss_master',JSON.stringify(masterData));
   
   if(profiles.length===0) showOnboarding();
