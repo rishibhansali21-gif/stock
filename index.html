@@ -9,6 +9,7 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
@@ -47,46 +48,55 @@
       measurementId: "G-9YSBG3JSW4"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+    let app, db, auth;
 
-    window._db = db;
-    window._auth = auth;
-    window._firebase = { 
-      collection, 
-      doc, 
-      addDoc, 
-      setDoc, 
-      getDoc, 
-      getDocs, 
-      updateDoc, 
-      deleteDoc, 
-      onSnapshot, 
-      query, 
-      orderBy, 
-      serverTimestamp 
-    };
-    window._fbSignOut = fbSignOut;
-    window._googleProvider = new GoogleAuthProvider();
-    window._signInWithPopup = signInWithPopup;
-    window._RecaptchaVerifier = RecaptchaVerifier;
-    window._signInWithPhoneNumber = signInWithPhoneNumber;
-    window._onAuthStateChanged = onAuthStateChanged;
+    try {
+      app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      auth = getAuth(app);
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        window._currentUser = user;
-        document.getElementById('login-screen').style.display = 'none';
-        initApp();
-      } else {
-        window._currentUser = null;
-        document.getElementById('login-screen').style.display = 'flex';
-      }
-    });
+      window._db = db;
+      window._auth = auth;
+      window._firebase = { 
+        collection, 
+        doc, 
+        addDoc, 
+        setDoc, 
+        getDoc, 
+        getDocs, 
+        updateDoc, 
+        deleteDoc, 
+        onSnapshot, 
+        query, 
+        orderBy, 
+        serverTimestamp 
+      };
+      window._fbSignOut = fbSignOut;
+      window._googleProvider = new GoogleAuthProvider();
+      window._signInWithPopup = signInWithPopup;
+      window._RecaptchaVerifier = RecaptchaVerifier;
+      window._signInWithPhoneNumber = signInWithPhoneNumber;
+      window._onAuthStateChanged = onAuthStateChanged;
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          window._currentUser = user;
+          document.getElementById('login-screen').style.display = 'none';
+          if(typeof initApp === 'function') initApp();
+        } else {
+          window._currentUser = null;
+          document.getElementById('login-screen').style.display = 'flex';
+        }
+      });
+    } catch (error) {
+      console.error("Firebase Initialization Error:", error);
+    }
   </script>
   
   <style>
+    /* ==========================================================================
+       GLOBAL RESET & VARIABLES
+       ========================================================================== */
     *, *::before, *::after {
       margin: 0;
       padding: 0;
@@ -144,6 +154,9 @@
       overflow: hidden;
     }
 
+    /* ==========================================================================
+       SIDEBAR COMPONENT
+       ========================================================================== */
     .sb {
       width: var(--sb-w);
       flex-shrink: 0;
@@ -295,6 +308,9 @@
       flex-shrink: 0;
     }
 
+    /* ==========================================================================
+       MAIN LAYOUT & TOPBAR
+       ========================================================================== */
     .main {
       flex: 1;
       display: flex;
@@ -336,6 +352,9 @@
       gap: 8px;
     }
 
+    /* ==========================================================================
+       BUTTON COMPONENTS
+       ========================================================================== */
     .btn {
       padding: 9px 18px;
       border: none;
@@ -401,16 +420,28 @@
       border: 1px solid rgba(245,166,35,0.25);
     }
 
+    .btn-amber:hover {
+      background: rgba(245,166,35,0.15);
+    }
+
     .btn-rose {
       background: var(--rose-dim);
       color: var(--rose);
       border: 1px solid rgba(240,82,100,0.25);
     }
 
+    .btn-rose:hover {
+      background: rgba(240,82,100,0.15);
+    }
+
     .btn-violet {
       background: var(--violet-dim);
       color: var(--violet);
       border: 1px solid rgba(155,92,248,0.25);
+    }
+
+    .btn-violet:hover {
+      background: rgba(155,92,248,0.15);
     }
 
     .btn-full {
@@ -440,6 +471,9 @@
       transform: translateY(-1px);
     }
 
+    /* ==========================================================================
+       PAGES & TABS
+       ========================================================================== */
     .page {
       display: none;
       flex: 1;
@@ -542,6 +576,9 @@
       margin-top: 2px;
     }
 
+    /* ==========================================================================
+       FORMS & INPUTS
+       ========================================================================== */
     input, select, textarea {
       width: 100%;
       background: var(--bg3);
@@ -571,6 +608,11 @@
 
     input::placeholder {
       color: var(--text3);
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
     }
 
     .fc {
@@ -616,18 +658,21 @@
       margin-left: 4px;
     }
 
-    .g2 { 
-      display: grid; 
-      grid-template-columns: 1fr 1fr; 
-      gap: 16px; 
+    .g2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
     }
 
-    .g3 { 
-      display: grid; 
-      grid-template-columns: 1fr 1fr 1fr; 
-      gap: 16px; 
+    .g3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
     }
 
+    /* ==========================================================================
+       FABRIC CARDS (INVENTORY)
+       ========================================================================== */
     .fab-grid {
       display: flex;
       flex-direction: column;
@@ -849,6 +894,9 @@
       background: rgba(240,82,100,0.15);
     }
 
+    /* ==========================================================================
+       FILTERS & SEARCH
+       ========================================================================== */
     .cat-row {
       display: flex;
       gap: 6px;
@@ -907,6 +955,9 @@
       pointer-events: none;
     }
 
+    /* ==========================================================================
+       GST BOX
+       ========================================================================== */
     .gst-box {
       background: var(--blue-dim);
       border: 1px solid rgba(59,158,245,0.2);
@@ -943,6 +994,9 @@
       margin-top: 3px;
     }
 
+    /* ==========================================================================
+       LEDGER & TABS
+       ========================================================================== */
     .ledger-tabs {
       display: flex;
       gap: 4px;
@@ -1105,6 +1159,9 @@
       align-items: center;
     }
 
+    /* ==========================================================================
+       PAYMENTS & EXPENSES
+       ========================================================================== */
     .pay-stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -1230,7 +1287,9 @@
       flex-shrink: 0;
     }
 
-    /* WIDER MODALS FOR DESKTOP */
+    /* ==========================================================================
+       MODALS
+       ========================================================================== */
     .qmodal-bg {
       position: fixed;
       inset: 0;
@@ -1339,6 +1398,9 @@
       justify-content: flex-end;
     }
 
+    /* ==========================================================================
+       REPORTS & CHARTS
+       ========================================================================== */
     .rpt-stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -1408,6 +1470,9 @@
       font-family: var(--fm);
     }
 
+    /* ==========================================================================
+       MASTER DATA
+       ========================================================================== */
     .md-list {
       background: var(--bg3);
       border: 1px solid var(--border);
@@ -1431,6 +1496,9 @@
       border-bottom: none;
     }
 
+    /* ==========================================================================
+       PROFILES & ONBOARDING
+       ========================================================================== */
     #profile-screen {
       position: fixed;
       inset: 0;
@@ -1606,6 +1674,9 @@
       color: var(--text3);
     }
 
+    /* ==========================================================================
+       UTILITIES & LOGIN
+       ========================================================================== */
     #toast {
       position: fixed;
       bottom: 24px;
@@ -1898,6 +1969,9 @@
       margin-top: 8px;
     }
 
+    /* ==========================================================================
+       MOBILE & RESPONSIVE
+       ========================================================================== */
     .calc-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -1954,11 +2028,21 @@
       pointer-events: auto;
     }
 
-    body.staff-mode .hide-staff { display: none !important; }
-    body.manager-mode .hide-manager { display: none !important; }
+    body.staff-mode .hide-staff {
+      display: none !important;
+    }
 
-    #pin-modal { z-index: 10000; }
-    #edit-profile-modal { z-index: 10000; }
+    body.manager-mode .hide-manager {
+      display: none !important;
+    }
+
+    #pin-modal {
+      z-index: 10000;
+    }
+
+    #edit-profile-modal {
+      z-index: 10000;
+    }
 
     .doc-preview-inner {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -2037,32 +2121,45 @@
       .tb-title { font-size: 14px; }
       .tb-sub { display: none; }
       .add-btn { font-size: 12px; padding: 7px 10px; }
+      
       .stats { grid-template-columns: 1fr 1fr; }
       .stat { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+      
       .content { padding: 12px; }
+      
       input, select, textarea { font-size: 15px; padding: 12px; }
       .btn { padding: 12px 16px; font-size: 14px; width: 100%; justify-content: center; }
+      
       .fc { padding: 16px; margin-bottom: 12px; }
       .g2, .g3 { grid-template-columns: 1fr; gap: 12px; }
+      
       .fab-card { flex-wrap: wrap; }
       .fab-right { flex-wrap: wrap; gap: 6px; }
       .fab-actions { width: 100%; justify-content: flex-end; }
+      
       .calc-grid { grid-template-columns: 1fr; }
       .rpt-grid { grid-template-columns: 1fr; }
       .rpt-stats { grid-template-columns: 1fr 1fr; }
+      
       .modal, .qmodal { width: 95vw; padding: 18px; }
+      
       .ledger-summary { grid-template-columns: 1fr 1fr; }
       .ledger-entry { grid-template-columns: 1fr; position: relative; padding: 16px; gap: 8px; }
       .le-amount { text-align: left; font-size: 20px; margin-top: 4px; }
       .le-date { text-align: left; display: block; font-size: 12px; margin-top: 2px; }
       .le-doc-btn { position: absolute; top: 16px; right: 16px; width: auto; padding: 6px 12px; }
+      
       .udhaar-card { flex-direction: column; align-items: flex-start; gap: 12px; }
       .udhaar-card > div:last-child { text-align: left; width: 100%; display: flex; justify-content: space-between; align-items: center; }
+      
       .sh { flex-direction: column; gap: 10px; }
+      
       .login-wrap { grid-template-columns: 1fr; }
       .login-left { display: none; }
       .login-right { padding: 32px 24px; }
+      
       .pay-stats { grid-template-columns: 1fr 1fr; }
+      
       .ledger-tabs { overflow-x: auto; }
       .ledger-tab { padding: 12px; flex: none; }
     }
@@ -2080,10 +2177,11 @@
       <div class="sb-ico">S</div>
       <div>
         <div class="sb-name">StockSaathi</div>
-        <div class="sb-tag">Textile Solutions</div>
+        <div class="sb-tag">Textile Manager v7.4</div>
       </div>
     </div>
   </div>
+  
   <nav class="sb-nav">
     <div class="sb-sec">Main</div>
     <div class="sb-item active" onclick="goto('dash',this)">
@@ -2121,6 +2219,7 @@
       <span class="sb-ic">👥</span>Profiles
     </div>
   </nav>
+  
   <div class="sb-foot">
     <div class="sb-user">
       <div class="sb-avatar" id="sb-avatar">U</div>
@@ -2260,10 +2359,18 @@
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;align-items:start">
         <div class="fc">
           <div class="fc-title">🛒 New Sale</div>
-          <div class="fg">
-            <label class="fl">Item / Fabric</label>
-            <select id="s-fab" onchange="onFabChange()"></select>
+          
+          <div class="g2">
+            <div class="fg">
+              <label class="fl">Bill Date</label>
+              <input type="date" id="s-date" />
+            </div>
+            <div class="fg">
+              <label class="fl">Item / Fabric</label>
+              <select id="s-fab" onchange="onFabChange()"></select>
+            </div>
           </div>
+          
           <div class="g2">
             <div class="fg">
               <label class="fl">Select Roll/Batch</label>
@@ -2274,6 +2381,7 @@
               <input id="s-m" type="number" placeholder="0" min="0" oninput="calcSaleAmt()"/>
             </div>
           </div>
+          
           <div class="fg hide-staff">
             <label class="fl">Rate ₹/unit</label>
             <input id="s-r" type="number" placeholder="auto" oninput="calcSaleAmt()"/>
@@ -2375,6 +2483,7 @@
             <label class="fl">Buyer GSTIN <span class="fl-h">(Optional)</span></label>
             <input id="s-buyer-gstin" list="dl-gstin" placeholder="24XXXXX1234X1Z5"/>
           </div>
+          
           <div class="fg">
             <label class="fl">Customer Name</label>
             <input id="s-c" list="dl-party" placeholder="e.g. Rajesh Bhai"/>
@@ -2561,19 +2670,43 @@
       <div class="calc-grid">
         <div class="fc">
           <div class="fc-title">💰 Item Cost</div>
-          <div class="fg"><label class="fl">Qty (m/pcs)</label><input id="c1m" type="number" placeholder="100" oninput="c1()"/></div>
-          <div class="fg"><label class="fl">Rate ₹/unit</label><input id="c1r" type="number" placeholder="120" oninput="c1()"/></div>
-          <div class="res-box"><span class="res-l">Total</span><span class="res-v" id="c1-r">₹0</span></div>
+          <div class="fg">
+            <label class="fl">Qty (m/pcs)</label>
+            <input id="c1m" type="number" placeholder="100" oninput="c1()"/>
+          </div>
+          <div class="fg">
+            <label class="fl">Rate ₹/unit</label>
+            <input id="c1r" type="number" placeholder="120" oninput="c1()"/>
+          </div>
+          <div class="res-box">
+            <span class="res-l">Total</span>
+            <span class="res-v" id="c1-r">₹0</span>
+          </div>
         </div>
         <div class="fc">
           <div class="fc-title">📈 Profit Calculator</div>
           <div class="g2">
-            <div class="fg"><label class="fl">Buy ₹/unit</label><input id="c2b" type="number" placeholder="100" oninput="c2()"/></div>
-            <div class="fg"><label class="fl">Sell ₹/unit</label><input id="c2s" type="number" placeholder="140" oninput="c2()"/></div>
+            <div class="fg">
+              <label class="fl">Buy ₹/unit</label>
+              <input id="c2b" type="number" placeholder="100" oninput="c2()"/>
+            </div>
+            <div class="fg">
+              <label class="fl">Sell ₹/unit</label>
+              <input id="c2s" type="number" placeholder="140" oninput="c2()"/>
+            </div>
           </div>
-          <div class="fg"><label class="fl">Qty</label><input id="c2m" type="number" placeholder="50" oninput="c2()"/></div>
-          <div class="res-box" style="margin-bottom:6px"><span class="res-l">Profit/Unit</span><span class="res-v" id="c2-pm">₹0</span></div>
-          <div class="res-box"><span class="res-l">Total Profit</span><span class="res-v" id="c2-r">₹0</span></div>
+          <div class="fg">
+            <label class="fl">Qty</label>
+            <input id="c2m" type="number" placeholder="50" oninput="c2()"/>
+          </div>
+          <div class="res-box" style="margin-bottom:6px">
+            <span class="res-l">Profit/Unit</span>
+            <span class="res-v" id="c2-pm">₹0</span>
+          </div>
+          <div class="res-box">
+            <span class="res-l">Total Profit</span>
+            <span class="res-v" id="c2-r">₹0</span>
+          </div>
         </div>
         <div class="fc">
           <div class="fc-title">🧾 GST Calculator</div>
@@ -2594,10 +2727,19 @@
               <option value="inter">Inter-State (IGST)</option>
             </select>
           </div>
-          <div class="fg"><label class="fl">Amount (₹)</label><input id="c3a" type="number" placeholder="5000" oninput="c3()"/></div>
+          <div class="fg">
+            <label class="fl">Amount (₹)</label>
+            <input id="c3a" type="number" placeholder="5000" oninput="c3()"/>
+          </div>
           <div id="c3-breakdown" style="background:var(--blue-dim);border:1px solid rgba(59,158,245,0.2);border-radius:var(--r);padding:10px 12px;margin-bottom:8px;display:none"></div>
-          <div class="res-box" style="margin-bottom:6px"><span class="res-l">GST</span><span class="res-v" id="c3-g">₹0</span></div>
-          <div class="res-box"><span class="res-l">Total incl. GST</span><span class="res-v" id="c3-t">₹0</span></div>
+          <div class="res-box" style="margin-bottom:6px">
+            <span class="res-l">GST</span>
+            <span class="res-v" id="c3-g">₹0</span>
+          </div>
+          <div class="res-box">
+            <span class="res-l">Total incl. GST</span>
+            <span class="res-v" id="c3-t">₹0</span>
+          </div>
         </div>
       </div>
     </div>
@@ -2730,20 +2872,29 @@
   <div class="qmodal" style="width:460px">
     <div class="qmodal-title">💰 Quick Sell</div>
     <div class="qmodal-sub" id="qs-fab-name">—</div>
+    
     <div class="g2">
+      <div class="fg">
+        <label class="fl">Bill Date</label>
+        <input type="date" id="qs-date" />
+      </div>
       <div class="fg">
         <label class="fl">Select Roll/Batch</label>
         <select id="qs-roll"></select>
       </div>
+    </div>
+    
+    <div class="g2">
       <div class="fg">
         <label class="fl">Qty to Sell</label>
         <input id="qs-m" type="number" placeholder="e.g. 20" min="0" oninput="calcQSAmt()"/>
       </div>
+      <div class="fg hide-staff">
+        <label class="fl">Rate ₹/unit</label>
+        <input id="qs-r" type="number" placeholder="auto" oninput="calcQSAmt()"/>
+      </div>
     </div>
-    <div class="fg hide-staff">
-      <label class="fl">Rate ₹/unit</label>
-      <input id="qs-r" type="number" placeholder="auto" oninput="calcQSAmt()"/>
-    </div>
+    
     <div class="g2 hide-staff" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
       <div class="fg">
         <label class="fl">Broker / Agent</label>
@@ -2805,6 +2956,7 @@
       <span class="res-l">Total (with GST)</span>
       <span class="res-v" id="qs-amt">₹0</span>
     </div>
+    
     <div class="fg hide-staff">
       <label class="fl">Buyer GSTIN <span class="fl-h">(Optional)</span></label>
       <input id="qs-buyer-gstin" list="dl-gstin" placeholder="24XXXXX1234X1Z5"/>
@@ -3037,14 +3189,33 @@
           <input id="set-ifsc" placeholder="e.g. SBIN0001234"/>
         </div>
       </div>
+      
+      <div class="fc-title" style="margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">📧 EmailJS Settings</div>
+      <div class="g2">
+        <div class="fg">
+          <label class="fl">Public Key</label>
+          <input id="set-emailjs-public" placeholder="Your EmailJS Public Key"/>
+        </div>
+        <div class="fg">
+          <label class="fl">Service ID</label>
+          <input id="set-emailjs-service" placeholder="e.g. service_xxxx"/>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Template ID</label>
+        <input id="set-emailjs-template" placeholder="e.g. template_xxxx"/>
+      </div>
+
       <div style="text-align:right">
         <button class="btn btn-primary" style="width:auto" onclick="saveSettings()">✅ Save Details</button>
       </div>
     </div>
+    
     <div class="fc" style="padding:16px">
       <div class="fc-title">👤 Account</div>
       <button class="btn btn-ghost btn-full" onclick="closeSettings(); signOut()">🚪 Sign Out</button>
     </div>
+    
     <div class="fc" style="padding:16px; border-color: rgba(240,82,100,0.3); background: var(--rose-dim); margin-bottom: 0;">
       <div class="fc-title" style="color: var(--rose); border-bottom-color: rgba(240,82,100,0.2)">⚠️ Danger Zone</div>
       <div style="font-size:12px; color:var(--text2); margin-bottom:14px; line-height:1.5;">
@@ -3325,6 +3496,7 @@
 // ══════════════════════════════════════════════════
 let DB = null; 
 let FB = null; 
+
 let fabrics = []; 
 let sales = []; 
 let purchases = [];
@@ -3332,6 +3504,7 @@ let payments = [];
 let expenses = []; 
 let profiles = []; 
 let settings = {};
+
 let masterData = { 
   qualities: [], 
   colors: [], 
@@ -3344,6 +3517,7 @@ let currentPayFilter = 'all';
 let currentExpFilter = 'all'; 
 let currentFabFilter = ''; 
 let currentFabId = null; 
+
 let obStep = 1; 
 let pendingProfileLogin = null; 
 let _confirmPin = null;
@@ -3359,9 +3533,17 @@ function waitForDB(cb, tries = 0) {
   } else if (tries < 50) {
     setTimeout(() => waitForDB(cb, tries + 1), 100);
   } else {
-    toast('Firebase not connected. Check your config.', 5000);
+    console.log('Firebase not connected. Defaulting to LocalStorage Mode to prevent data loss.');
+    setupLocalMode();
   }
 }
+
+// Ensure persistence if user doesn't login via Firebase within 2 seconds
+setTimeout(() => {
+  if (!window._currentUser && DB !== 'LOCAL') {
+    setupLocalMode();
+  }
+}, 2000);
 
 // ══════════════════════════════════════════════════
 // UTILITY FUNCTIONS
@@ -3391,10 +3573,18 @@ function generateInvoiceNo() {
 }
 
 function fmtDate(iso) { 
-  if (!iso) return '—'; 
+  if (!iso) {
+    return '—'; 
+  }
   const d = new Date(iso); 
-  if (isNaN(d)) return iso; 
-  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); 
+  if (isNaN(d)) {
+    return iso; 
+  }
+  return d.toLocaleDateString('en-IN', { 
+    day: '2-digit', 
+    month: 'short', 
+    year: 'numeric' 
+  }); 
 }
 
 function toast(msg, dur = 2500) { 
@@ -3408,11 +3598,13 @@ function toast(msg, dur = 2500) {
 }
 
 function v(id) { 
-  return document.getElementById(id)?.value?.trim() || ''; 
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : ''; 
 }
 
 function nv(id) { 
-  return parseFloat(document.getElementById(id)?.value) || 0; 
+  const el = document.getElementById(id);
+  return el ? parseFloat(el.value) || 0 : 0; 
 }
 
 function getUnit(f) { 
@@ -3420,9 +3612,11 @@ function getUnit(f) {
 }
 
 function numToWords(n) {
-  if (!n || isNaN(n)) return '';
-  const a = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
-  const b = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+  if (!n || isNaN(n)) {
+    return '';
+  }
+  const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+  const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
   
   function t(n) {
     if (n < 20) return a[n];
@@ -3435,15 +3629,21 @@ function numToWords(n) {
   
   const parts = String(Math.round(n)).split('.'); 
   let w = t(parseInt(parts[0])) || 'Zero';
+  
   if (parts[1]) {
     w += ' and ' + t(parseInt(parts[1])) + ' Paise'; 
   }
+  
   return w + ' Only';
 }
 
 function gstBreakdownHTML(base, rate, type) {
-  if (!rate || !base) return ''; 
+  if (!rate || !base) {
+    return ''; 
+  }
+  
   const gst = base * rate / 100;
+  
   if (type === 'inter') { 
     return `
       <div class="gst-line">
@@ -3451,14 +3651,18 @@ function gstBreakdownHTML(base, rate, type) {
         <span>${fmt(gst)}</span>
       </div>`; 
   }
+  
+  const halfGst = gst / 2;
+  const halfRate = rate / 2;
+  
   return `
     <div class="gst-line">
-      <span>CGST @${rate / 2}%</span>
-      <span>${fmt(gst / 2)}</span>
+      <span>CGST @${halfRate}%</span>
+      <span>${fmt(halfGst)}</span>
     </div>
     <div class="gst-line">
-      <span>SGST @${rate / 2}%</span>
-      <span>${fmt(gst / 2)}</span>
+      <span>SGST @${halfRate}%</span>
+      <span>${fmt(halfGst)}</span>
     </div>`;
 }
 
@@ -3467,7 +3671,10 @@ function gstBreakdownHTML(base, rate, type) {
 // ══════════════════════════════════════════════════
 function userPath() { 
   const u = window._currentUser?.uid; 
-  if (!u) throw new Error('Not logged in'); 
+  if (!u) {
+    if (DB === 'LOCAL') return 'localUser';
+    throw new Error('Not logged in'); 
+  }
   return `users/${u}`; 
 }
 
@@ -3481,6 +3688,11 @@ function docRef(col, id) {
 
 async function fbSave(col, data) { 
   if (!DB) return null; 
+  
+  if (DB === 'LOCAL') {
+    return window.fbSave(col, data);
+  }
+  
   const ref = await FB.addDoc(colRef(col), {
     ...data, 
     _ts: FB.serverTimestamp()
@@ -3490,18 +3702,67 @@ async function fbSave(col, data) {
 
 async function fbUpdate(col, id, data) { 
   if (!DB || !id) return; 
+  
+  if (DB === 'LOCAL') {
+    return window.fbUpdate(col, id, data);
+  }
+  
   await FB.updateDoc(docRef(col, id), data); 
 }
 
 async function fbDelete(col, id) { 
   if (!DB || !id) return; 
+  
+  if (DB === 'LOCAL') {
+    return window.fbDelete(col, id);
+  }
+  
   await FB.deleteDoc(docRef(col, id)); 
 }
 
 async function fbGetAll(col) { 
   if (!DB) return []; 
+  
+  if (DB === 'LOCAL') {
+    return window.fbGetAll(col);
+  }
+  
   const snap = await FB.getDocs(FB.query(colRef(col), FB.orderBy('_ts', 'desc'))); 
   return snap.docs.map(d => ({ id: d.id, ...d.data() })); 
+}
+
+// ══════════════════════════════════════════════════
+// EMAILJS INTEGRATION (AUTOMATIC EMAILS)
+// ══════════════════════════════════════════════════
+async function sendEmailJS(email, invoiceNo, total, customerName) {
+  if (!settings.emailjsPublic || !settings.emailjsService || !settings.emailjsTemplate) {
+    console.log("EmailJS not fully configured in Settings. Skipping automatic email.");
+    return;
+  }
+  
+  try {
+    emailjs.init(settings.emailjsPublic);
+    
+    toast('Sending automatic email to ' + email + '...', 3000);
+    
+    await emailjs.send(
+      settings.emailjsService, 
+      settings.emailjsTemplate, 
+      {
+        to_email: email,
+        to_name: customerName || 'Valued Customer',
+        invoice_no: invoiceNo,
+        total_amount: fmt(total),
+        firm_name: settings.firm || 'StockSaathi',
+        message: `Your automated invoice for the recent purchase is ready.`
+      }
+    );
+    
+    toast('Invoice Email Sent Successfully! 📧', 4000);
+  } catch (error) {
+    console.error("EmailJS Error:", error);
+    toast('Failed to send automatic email.', 4000);
+  }
 }
 
 // ══════════════════════════════════════════════════
@@ -3517,14 +3778,17 @@ async function signInGoogle() {
 
 async function sendOTP() {
   const phone = '+91' + v('login-phone'); 
+  
   if (phone.length < 12) { 
     toast('Enter valid 10-digit number'); 
     return; 
   }
+  
   try {
     if (!window._recaptchaVerifier) {
       window._recaptchaVerifier = new window._RecaptchaVerifier(window._auth, 'recaptcha-container', { size: 'invisible' });
     }
+    
     window._confirmPin = await window._signInWithPhoneNumber(window._auth, phone, window._recaptchaVerifier);
     document.getElementById('otp-section').style.display = 'block'; 
     toast('OTP sent!');
@@ -3542,7 +3806,10 @@ async function verifyOTP() {
 }
 
 async function signOut() {
-  await window._fbSignOut(window._auth); 
+  if (DB !== 'LOCAL') {
+    await window._fbSignOut(window._auth); 
+  }
+  
   fabrics = []; 
   sales = []; 
   purchases = []; 
@@ -3587,6 +3854,10 @@ async function initApp() {
 // ══════════════════════════════════════════════════
 async function loadSettings() { 
   try { 
+    if (DB === 'LOCAL') {
+      settings = JSON.parse(localStorage.getItem('ss_settings') || '{}');
+      return;
+    }
     const snap = await FB.getDoc(FB.doc(DB, `${userPath()}/config/settings`)); 
     settings = snap.exists() ? snap.data() : {}; 
   } catch(e) { 
@@ -3604,11 +3875,20 @@ async function saveSettings() {
     bank: v('set-bank'), 
     accName: v('set-acc-name'), 
     accNo: v('set-acc-no'), 
-    ifsc: v('set-ifsc') 
+    ifsc: v('set-ifsc'),
+    emailjsPublic: v('set-emailjs-public'),
+    emailjsService: v('set-emailjs-service'),
+    emailjsTemplate: v('set-emailjs-template')
   };
-  await FB.setDoc(FB.doc(DB, `${userPath()}/config/settings`), settings); 
+  
+  if (DB === 'LOCAL') {
+    localStorage.setItem('ss_settings', JSON.stringify(settings));
+  } else {
+    await FB.setDoc(FB.doc(DB, `${userPath()}/config/settings`), settings); 
+  }
+  
   document.getElementById('settings-modal').classList.remove('on'); 
-  toast('Settings saved ✅');
+  toast('Settings saved successfully! ✅');
 }
 
 function openSettings() {
@@ -3616,6 +3896,7 @@ function openSettings() {
     let e = document.getElementById(i); 
     if (e) e.value = vl; 
   };
+  
   s('set-firm', settings.firm || ''); 
   s('set-gstin', settings.gstin || ''); 
   s('set-pan', settings.pan || ''); 
@@ -3625,6 +3906,9 @@ function openSettings() {
   s('set-acc-name', settings.accName || ''); 
   s('set-acc-no', settings.accNo || ''); 
   s('set-ifsc', settings.ifsc || '');
+  s('set-emailjs-public', settings.emailjsPublic || '');
+  s('set-emailjs-service', settings.emailjsService || '');
+  s('set-emailjs-template', settings.emailjsTemplate || '');
   
   document.getElementById('settings-modal').classList.add('on');
 }
@@ -3635,6 +3919,7 @@ function closeSettings() {
 
 async function hardResetApp() {
   const confirmText = prompt('WARNING: This will delete ALL your data permanently. Type "RESET" to confirm:');
+  
   if (confirmText !== 'RESET') { 
     toast('Hard reset cancelled.'); 
     return; 
@@ -3660,11 +3945,13 @@ async function hardResetApp() {
     await FB.deleteDoc(FB.doc(DB, `${userPath()}/config/master`));
     
     toast('App reset successfully. Signing out...', 2000); 
+    
     setTimeout(() => { 
       closeSettings(); 
       signOut(); 
       location.reload(); 
     }, 2000);
+    
   } catch (error) { 
     toast('Error resetting app: ' + error.message, 4000); 
   }
@@ -3675,8 +3962,12 @@ async function hardResetApp() {
 // ══════════════════════════════════════════════════
 async function loadMaster() {
   try {
-    const snap = await FB.getDoc(FB.doc(DB, `${userPath()}/config/master`));
-    masterData = snap.exists() ? snap.data() : { qualities: [], colors: [], parties: [] };
+    if (DB === 'LOCAL') {
+      masterData = JSON.parse(localStorage.getItem('ss_master') || '{}');
+    } else {
+      const snap = await FB.getDoc(FB.doc(DB, `${userPath()}/config/master`));
+      masterData = snap.exists() ? snap.data() : {};
+    }
     
     if (!masterData.qualities || masterData.qualities.length === 0) {
       masterData.qualities = ['Georgette','Satin','Silk','Cotton','Linen','Polyester','Chiffon','Crepe','Saree','Sherwani','Kurti','Shirt'];
@@ -3698,7 +3989,11 @@ async function loadMaster() {
 }
 
 async function saveMaster() { 
-  await FB.setDoc(FB.doc(DB, `${userPath()}/config/master`), masterData); 
+  if (DB === 'LOCAL') {
+    localStorage.setItem('ss_master', JSON.stringify(masterData));
+  } else {
+    await FB.setDoc(FB.doc(DB, `${userPath()}/config/master`), masterData); 
+  }
 }
 
 function rebuildDatalists() {
@@ -3830,7 +4125,9 @@ function renderProfileScreen() {
     };
     return `
       <div class="profile-card" onclick="loginProfile('${p.id}')">
-        <div class="profile-avatar" style="background:${colors[p.role] || colors.staff}">${avatars[p.role] || '👤'}</div>
+        <div class="profile-avatar" style="background:${colors[p.role] || colors.staff}">
+          ${avatars[p.role] || '👤'}
+        </div>
         <div class="profile-name">${p.name}</div>
         <div style="font-size:11px;color:var(--text3);margin-top:3px">${p.role || 'staff'}</div>
         ${p.pin ? '<div style="font-size:10px;color:var(--amber);margin-top:4px">🔒 PIN protected</div>' : ''}
@@ -3888,7 +4185,9 @@ function renderProfilesPage() {
   g.innerHTML = profiles.map(p => `
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-        <div style="width:42px;height:42px;border-radius:50%;background:var(--indigo-dim);display:flex;align-items:center;justify-content:center;font-size:20px">${avatars[p.role] || '👤'}</div>
+        <div style="width:42px;height:42px;border-radius:50%;background:var(--indigo-dim);display:flex;align-items:center;justify-content:center;font-size:20px">
+          ${avatars[p.role] || '👤'}
+        </div>
         <div>
           <div style="font-size:14px;font-weight:700">${p.name}</div>
           <div style="font-size:11px;color:var(--text3)">${p.role} ${p.pin ? '· 🔒 PIN' : ''}</div>
@@ -3966,7 +4265,7 @@ function renderCharts() {
 
   const getDays = () => { 
     const d = []; 
-    for(let i = 6; i >= 0; i--) { 
+    for (let i = 6; i >= 0; i--) { 
       const date = new Date(); 
       date.setDate(date.getDate() - i); 
       d.push(date.toISOString().split('T')[0]); 
@@ -4051,7 +4350,7 @@ function renderAll() {
 }
 
 // ══════════════════════════════════════════════════
-// EXPENSES (NEW)
+// EXPENSES (PERSISTENT DATA FIX)
 // ══════════════════════════════════════════════════
 async function loadExpenses() { 
   expenses = await fbGetAll('expenses'); 
@@ -4498,6 +4797,7 @@ function openQuickSell(id) {
     if (e) e.value = vl; 
   };
   
+  s('qs-date', today());
   s('qs-m', ''); 
   s('qs-r', f?.rate || ''); 
   s('qs-broker', ''); 
@@ -4580,6 +4880,9 @@ async function saveQS(genBill = false) {
   const gst = sub * gstRate / 100; 
   const total = sub + gst;
   
+  const customDate = v('qs-date');
+  const finalDate = customDate ? (customDate + 'T12:00:00.000Z') : ts();
+  
   const saleData = {
     type: 'sale', 
     invoiceNo: generateInvoiceNo(), 
@@ -4606,7 +4909,7 @@ async function saveQS(genBill = false) {
     lrNo: v('qs-lr'), 
     eway: v('qs-eway'), 
     kacha, 
-    date: ts(), 
+    date: finalDate, 
     paid: (v('qs-inv-type') === 'Cash') ? total : 0
   };
   
@@ -4619,6 +4922,11 @@ async function saveQS(genBill = false) {
   addParty(saleData.customer); 
   if (v('qs-broker')) {
     addParty(v('qs-broker'));
+  }
+
+  // AUTOMATIC EMAILJS CALL
+  if (saleData.email && settings.emailjsPublic) {
+    sendEmailJS(saleData.email, saleData.invoiceNo, saleData.total, saleData.customer);
   }
 
   closeQS(); 
@@ -4663,6 +4971,13 @@ function onFabChange() {
       rollSel.innerHTML = `<option value="-1">Auto-Deduct (${f.meters}${u} avail)</option>`; 
     }
   }
+  
+  // Set default date to today in Sales screen
+  const dateInput = document.getElementById('s-date');
+  if (dateInput && !dateInput.value) {
+    dateInput.value = today();
+  }
+  
   calcSaleAmt();
 }
 
@@ -4685,6 +5000,7 @@ function calcSaleAmt() {
 async function recSale(genBill = false) {
   const fabId = v('s-fab'); 
   const m = nv('s-m'); 
+  
   if (!m) {
     toast('Enter quantity');
     return;
@@ -4729,6 +5045,9 @@ async function recSale(genBill = false) {
     paid = total;
   }
   
+  const customDate = v('s-date');
+  const finalDate = customDate ? (customDate + 'T12:00:00.000Z') : ts();
+  
   const saleData = {
     type: 'sale', 
     invoiceNo: generateInvoiceNo(), 
@@ -4758,7 +5077,7 @@ async function recSale(genBill = false) {
     eway: v('s-eway'), 
     note: v('s-n'), 
     kacha, 
-    date: ts()
+    date: finalDate
   };
   
   const docSnap = buildSaleInvoiceHTML(saleData); 
@@ -4771,14 +5090,20 @@ async function recSale(genBill = false) {
   if (v('s-broker')) {
     addParty(v('s-broker'));
   }
+
+  // AUTOMATIC EMAILJS CALL
+  if (saleData.email && settings.emailjsPublic) {
+    sendEmailJS(saleData.email, saleData.invoiceNo, saleData.total, saleData.customer);
+  }
   
   const s = (i, vl) => { 
     let e = document.getElementById(i); 
     if (e) e.value = vl; 
   };
   
-  ['s-m','s-paid','s-c','s-n','s-broker','s-comm','s-transport','s-lr','s-eway','s-email'].forEach(id => s(id, '')); 
+  ['s-m', 's-paid', 's-c', 's-n', 's-broker', 's-comm', 's-transport', 's-lr', 's-eway', 's-email'].forEach(id => s(id, '')); 
   s('s-disc', '0'); 
+  s('s-date', today());
   
   let chk = document.getElementById('s-kacha'); 
   if (chk) chk.checked = false;
@@ -4831,6 +5156,7 @@ function renderSalesHistory() {
 async function loadSales() { 
   sales = await fbGetAll('sales'); 
 }
+
 async function loadPurchases() { 
   purchases = await fbGetAll('purchases'); 
 }
@@ -4962,6 +5288,7 @@ function renderKhata() {
   }
   
   let stmts = [];
+  
   sales.filter(s => s.customer === p && !s.kacha).forEach(s => stmts.push({
     date: s.date, 
     type: 'Sale', 
@@ -5035,6 +5362,7 @@ function renderKhata() {
 async function viewSavedDoc(col, id) {
   const list = col === 'sales' ? sales : purchases; 
   const entry = list.find(e => e.id === id);
+  
   if (!entry?.savedDoc) { 
     toast('No saved document found'); 
     return; 
@@ -5064,6 +5392,284 @@ function exportCSV() {
   a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv); 
   a.download = 'stocksaathi-ledger.csv'; 
   a.click();
+}
+
+// ══════════════════════════════════════════════════
+// PURCHASES
+// ══════════════════════════════════════════════════
+function openPurchaseModal() { 
+  document.getElementById('purchase-modal').classList.add('on'); 
+}
+
+function closePurchaseModal() { 
+  document.getElementById('purchase-modal').classList.remove('on'); 
+}
+
+function calcPurAmt() {
+  const m = nv('pur-meters');
+  const r = nv('pur-rate');
+  const rate = parseFloat(v('pur-gst-rate') || 5); 
+  const type = v('pur-gst-type') || 'intra';
+  
+  const sub = m * r; 
+  const gst = sub * rate / 100; 
+  const total = sub + gst;
+  
+  document.getElementById('pur-total').textContent = fmt(total); 
+  document.getElementById('pur-gst-breakdown').innerHTML = gstBreakdownHTML(sub, rate, type);
+}
+
+async function savePurchase(genReceipt = false) {
+  const party = v('pur-party'); 
+  if (!party) {
+    toast('Supplier required');
+    return;
+  }
+  
+  const item = v('pur-item'); 
+  if (!item) {
+    toast('Item required');
+    return;
+  }
+  
+  const meters = nv('pur-meters'); 
+  if (!meters) {
+    toast('Quantity required');
+    return;
+  }
+  
+  const rate = nv('pur-rate');
+  const gstRate = parseFloat(v('pur-gst-rate') || 5); 
+  const gstType = v('pur-gst-type') || 'intra';
+  const sub = meters * rate; 
+  const gst = sub * gstRate / 100; 
+  const total = sub + gst;
+  
+  const purData = { 
+    type: 'purchase', 
+    party, 
+    gstin: v('pur-gstin'), 
+    item, 
+    unit: 'Meters', 
+    meters, 
+    rate, 
+    gstRate, 
+    gstType, 
+    subtotal: sub, 
+    gst, 
+    total, 
+    note: v('pur-note'), 
+    date: ts() 
+  };
+  
+  const docSnap = buildPurchaseReceiptHTML(purData); 
+  purData.savedDoc = docSnap;
+  
+  const pid = await fbSave('purchases', purData); 
+  purchases.unshift({ id: pid, ...purData }); 
+  
+  addParty(party);
+  closePurchaseModal(); 
+  toast('Purchase recorded ✅'); 
+  renderAll();
+  
+  if (genReceipt) {
+    openDocModal('📃 Purchase Receipt — ' + item, docSnap, 'purchase-receipt');
+  }
+}
+
+async function savePurchaseAndReceipt() { 
+  await savePurchase(true); 
+}
+
+// ══════════════════════════════════════════════════
+// PAYMENTS & CHEQUES
+// ══════════════════════════════════════════════════
+async function loadPayments() { 
+  payments = await fbGetAll('payments'); 
+  renderPayments(); 
+  renderPaymentStats(); 
+}
+
+function renderPaymentStats() {
+  const total = payments.reduce((a, p) => a + p.amount, 0);
+  const receipts = payments.filter(p => p.docType === 'receipt'); 
+  const cheques = payments.filter(p => p.docType === 'cheque');
+  
+  const now = new Date(); 
+  const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const monthTotal = payments.filter(p => p.date?.startsWith?.(thisMonth)).reduce((a, p) => a + p.amount, 0);
+  
+  document.getElementById('pay-st-total').textContent = fmt(total); 
+  document.getElementById('pay-st-receipts').textContent = receipts.length;
+  document.getElementById('pay-st-cheques').textContent = cheques.length; 
+  document.getElementById('pay-st-month').textContent = fmt(monthTotal);
+}
+
+function filterPayments(f, btn) { 
+  currentPayFilter = f; 
+  document.querySelectorAll('#pay-filters .cat-p').forEach(b => b.classList.remove('active')); 
+  btn?.classList.add('active'); 
+  renderPayments(); 
+}
+
+function renderPayments() {
+  const g = document.getElementById('pay-grid'); 
+  if (!g) return;
+  
+  const q = v('pay-q').toLowerCase(); 
+  let list = [...payments];
+  
+  if (currentPayFilter !== 'all') {
+    list = list.filter(p => p.docType === currentPayFilter);
+  }
+  
+  if (q) {
+    list = list.filter(p => ((p.party || '') + (p.purpose || '') + (p.amount || '')).toLowerCase().includes(q));
+  }
+  
+  renderPaymentStats();
+  
+  if (!list.length) { 
+    g.innerHTML = `
+      <div class="empty">
+        <div class="empty-ic">💳</div>
+        <div class="empty-t">No payment documents yet</div>
+        <div class="empty-s">Generate a receipt or cheque draft</div>
+      </div>`; 
+    return; 
+  }
+  
+  g.innerHTML = list.map(p => `
+    <div class="pay-card ${p.docType}-card">
+      <div class="pay-card-icon ${p.docType}">${p.docType === 'receipt' ? '💰' : '🏦'}</div>
+      <div class="pay-card-info">
+        <div class="pay-card-title">${p.party || '—'} <span style="font-size:11px;font-weight:400;color:var(--text3)">· ${p.docType === 'receipt' ? 'Receipt' : 'Cheque'}</span></div>
+        <div class="pay-card-meta">${p.purpose || '—'} · ${fmtDate(p.date)}${p.txnRef ? ` · Ref: ${p.txnRef}` : ''}${p.chequeNo ? ` · Chq: ${p.chequeNo}` : ''}</div>
+      </div>
+      <div class="pay-card-amount">${fmt(p.amount)}</div>
+      <div class="pay-card-actions">
+        <button class="le-doc-btn" onclick="viewPaymentDoc('${p.id}')">📄 View</button>
+        <button class="le-doc-btn" style="background:var(--rose-dim);color:var(--rose);border-color:rgba(240,82,100,0.2)" onclick="deletePayment('${p.id}')">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openNewPaymentModal(type) {
+  const isReceipt = type === 'receipt';
+  const se = (i, vl) => { 
+    let e = document.getElementById(i); 
+    if (e) e.value = vl; 
+  };
+  
+  se('npm-type', type); 
+  document.getElementById('npm-title').textContent = isReceipt ? '💰 New Payment Receipt' : '🏦 New Cheque Draft';
+  document.getElementById('npm-sub').textContent = isReceipt ? 'Generate and save a payment document' : 'Generate and save a cheque draft';
+  document.getElementById('npm-cheque-fields').style.display = isReceipt ? 'none' : 'block'; 
+  document.getElementById('npm-receipt-fields').style.display = isReceipt ? 'block' : 'none';
+  
+  se('npm-party', ''); 
+  se('npm-amount', ''); 
+  se('npm-purpose', ''); 
+  se('npm-note', ''); 
+  se('npm-linked-sale', ''); 
+  se('npm-date', today()); 
+  
+  document.getElementById('npm-words').textContent = '';
+  
+  if (!isReceipt) { 
+    se('npm-chq-date', today()); 
+  } 
+  
+  document.getElementById('new-payment-modal').classList.add('on');
+}
+
+function closeNewPaymentModal() { 
+  document.getElementById('new-payment-modal').classList.remove('on'); 
+}
+
+function updateNPMWords() { 
+  const n = nv('npm-amount'); 
+  document.getElementById('npm-words').textContent = n ? numToWords(n) : ''; 
+}
+
+async function saveNewPayment() {
+  const type = v('npm-type'); 
+  const party = v('npm-party'); 
+  
+  if (!party) {
+    toast('Party name required');
+    return;
+  }
+  
+  const amount = nv('npm-amount'); 
+  if (!amount) {
+    toast('Amount required');
+    return;
+  }
+  
+  const purpose = v('npm-purpose'); 
+  const date = v('npm-date') || today();
+  
+  const payData = { 
+    docType: type, 
+    party, 
+    amount, 
+    purpose, 
+    date, 
+    note: v('npm-note'), 
+    from: v('npm-from') || party, 
+    payMode: v('npm-mode'), 
+    txnRef: v('npm-txn'), 
+    bank: v('npm-bank'), 
+    branch: v('npm-branch'), 
+    chequeNo: v('npm-chq-no'), 
+    chequeDate: v('npm-chq-date'), 
+    accName: v('npm-acc-name') 
+  };
+  
+  const docSnap = type === 'receipt' ? buildPaymentReceiptHTML(payData) : buildChequeDraftHTML(payData); 
+  payData.savedDoc = docSnap;
+  
+  const pid = await fbSave('payments', payData); 
+  payments.unshift({ id: pid, ...payData }); 
+  addParty(party);
+  
+  const linkedSaleId = v('npm-linked-sale');
+  if (linkedSaleId && type === 'receipt') { 
+    const sale = sales.find(x => x.id === linkedSaleId); 
+    if (sale) { 
+      sale.paid = (sale.paid || 0) + amount; 
+      await fbUpdate('sales', linkedSaleId, { paid: sale.paid }); 
+    } 
+  }
+  
+  closeNewPaymentModal(); 
+  toast('Payment document saved ✅'); 
+  renderAll(); 
+  openDocModal(type === 'receipt' ? '💰 Payment Receipt' : '🏦 Cheque Draft', docSnap, type === 'receipt' ? 'payment-receipt' : 'cheque-draft');
+}
+
+function viewPaymentDoc(id) {
+  const p = payments.find(x => x.id === id); 
+  if (!p?.savedDoc) { 
+    toast('No saved document'); 
+    return; 
+  }
+  
+  const title = p.docType === 'receipt' ? '💰 Payment Receipt' : '🏦 Cheque Draft';
+  openDocModal(title, p.savedDoc, p.docType === 'receipt' ? 'payment-receipt' : 'cheque-draft', {
+    text: `Hello ${p.party}, please find the attached ${title} for ${fmt(p.amount)}.`
+  });
+}
+
+async function deletePayment(id) { 
+  if (!confirm('Delete this payment record?')) return; 
+  await fbDelete('payments', id); 
+  payments = payments.filter(p => p.id !== id); 
+  renderPayments(); 
+  toast('Deleted'); 
 }
 
 // ══════════════════════════════════════════════════
@@ -5384,101 +5990,11 @@ function buildChequeDraftHTML(p) {
           ${p.note ? `<tr><td style="color:#64748b">Note</td><td style="color:#94a3b8">${p.note}</td></tr>` : ''}
         </tbody>
       </table>
-      <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #e2e8f0;display:flex;justify-content:space-between;align-items:center">
+      <div style="margin-top:12px;padding:10px;border-top:1px dashed #e2e8f0;display:flex;justify-content:space-between;align-items:center">
         <div style="font-size:10px;color:#94a3b8">⚠️ This is a cheque draft. Please verify all details before signing.</div>
         <div style="font-size:10px;color:#94a3b8">StockSaathi</div>
       </div>
     </div>`;
-}
-
-// ══════════════════════════════════════════════════
-// DOCUMENT MODAL, WHATSAPP PDF SHARE, & EMAIL
-// ══════════════════════════════════════════════════
-let currentDocContext = null;
-
-function openDocModal(title, html, type, context = {}) {
-  currentDocContext = context;
-  document.getElementById('doc-modal-title').textContent = title;
-  document.getElementById('doc-preview').innerHTML = html;
-  document.getElementById('doc-tab-bar').innerHTML = '';
-  
-  const actBar = document.getElementById('doc-actions-bar');
-  actBar.innerHTML = `
-    <button class="btn btn-emerald" onclick="shareWhatsAppPDF('${type}')"><span style="font-size:15px">💬</span> Share PDF / Link</button>
-    <button class="btn btn-blue" onclick="sendEmail()"><span style="font-size:15px">📧</span> Email Bill</button>
-    <button class="btn btn-primary" onclick="downloadDocPDF('${type}')">📥 PDF</button>
-    <button class="btn btn-ghost" onclick="window.print()">🖨️ Print</button>
-    <button class="btn btn-ghost" onclick="closeDocModal()">Close</button>
-  `;
-  document.getElementById('doc-modal').classList.add('on');
-}
-
-function closeDocModal() { 
-  document.getElementById('doc-modal').classList.remove('on'); 
-}
-
-function downloadDocPDF(type) {
-  const el = document.getElementById('doc-preview');
-  const opt = { 
-    margin: 8, 
-    filename: `stocksaathi-${type}-${Date.now()}.pdf`, 
-    image: { type: 'jpeg', quality: 1 }, 
-    html2canvas: { scale: 2, useCORS: true }, 
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
-  };
-  html2pdf().from(el).set(opt).save();
-}
-
-function sendEmail() {
-  if (!currentDocContext || !currentDocContext.email) { 
-    toast('No Email ID was provided for this bill!'); 
-    return; 
-  }
-  const subject = encodeURIComponent(`Invoice ${currentDocContext.invoiceNo || ''} from ${settings.firm || 'StockSaathi'}`);
-  const body = encodeURIComponent(`Hello,\n\nPlease find the details for Invoice ${currentDocContext.invoiceNo || ''} attached/below.\nTotal Amount: ${fmt(currentDocContext.amount || 0)}\n\nThank you for your business.\n${settings.firm || ''}`);
-  
-  window.open(`mailto:${currentDocContext.email}?subject=${subject}&body=${body}`, '_blank'); 
-  toast('Opening Email Client...');
-}
-
-async function shareWhatsAppPDF(type) {
-  const phone = currentDocContext?.phone ? currentDocContext.phone.replace(/[^0-9]/g, '') : '';
-  let msg = currentDocContext?.text || "Hello, here is your document.";
-  
-  if (settings.upi && currentDocContext?.amount) { 
-    const upiLink = `upi://pay?pa=${settings.upi}&pn=${encodeURIComponent(settings.firm || 'StockSaathi')}&am=${currentDocContext.amount}&cu=INR`; 
-    msg += `\n\n💳 *Pay Instantly via UPI:*\n${upiLink}`; 
-  }
-  
-  const el = document.getElementById('doc-preview');
-  const opt = { 
-    margin: 8, 
-    filename: `Invoice-${Date.now()}.pdf`, 
-    image: { type: 'jpeg', quality: 1 }, 
-    html2canvas: { scale: 2, useCORS: true }, 
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
-  };
-  
-  if (navigator.canShare) {
-    try {
-      toast('Generating PDF for WhatsApp...', 2000);
-      const pdfData = await html2pdf().from(el).set(opt).outputPdf('blob');
-      const file = new File([pdfData], `Invoice-${Date.now()}.pdf`, { type: 'application/pdf' });
-      if (navigator.canShare({ files: [file] })) { 
-        await navigator.share({ title: 'Invoice', text: msg, files: [file] }); 
-        return; 
-      }
-    } catch(e) { 
-      console.log('Web share failed or cancelled', e); 
-    }
-  }
-  
-  toast('Downloading PDF... Please attach it in WhatsApp.', 3000); 
-  html2pdf().from(el).set(opt).save();
-  const text = encodeURIComponent(msg + "\n\n(Please attach the downloaded PDF here.)");
-  setTimeout(() => { 
-    window.open(`https://wa.me/${phone ? '91' + phone : ''}?text=${text}`, '_blank'); 
-  }, 1500);
 }
 
 // ══════════════════════════════════════════════════
@@ -5871,7 +6387,12 @@ async function obNext() {
       settings.firm = firm; 
       settings.gstin = v('ob-gstin'); 
       settings.upi = v('ob-upi'); 
-      await FB.setDoc(FB.doc(DB, `${userPath()}/config/settings`), settings); 
+      
+      if (DB !== 'LOCAL') {
+        await FB.setDoc(FB.doc(DB, `${userPath()}/config/settings`), settings); 
+      } else {
+        localStorage.setItem('ss_settings', JSON.stringify(settings));
+      }
     } 
   }
   
@@ -5907,15 +6428,8 @@ function skipOB() {
 }
 
 // ══════════════════════════════════════════════════
-// FALLBACK (localStorage) for demo without Firebase
+// FALLBACK (localStorage) FOR DATA PERSISTENCE
 // ══════════════════════════════════════════════════
-setTimeout(() => { 
-  if (!window._db) { 
-    console.warn('Firebase not configured — using localStorage mode'); 
-    setupLocalMode(); 
-  } 
-}, 3000);
-
 function setupLocalMode() {
   document.getElementById('login-screen').style.display = 'none';
   
@@ -5933,7 +6447,7 @@ function setupLocalMode() {
     parties: []
   }));
   
-  window._currentUser = { uid: 'demo' }; 
+  window._currentUser = { uid: 'local_user' }; 
   DB = 'LOCAL'; 
   FB = {};
   
@@ -5948,8 +6462,10 @@ function setupLocalMode() {
   window.fbUpdate = async (col, id, data) => { 
     const list = JSON.parse(localStorage.getItem('ss_' + col) || '[]'); 
     const i = list.findIndex(x => x.id === id); 
-    if (i >= 0) list[i] = { ...list[i], ...data }; 
-    localStorage.setItem('ss_' + col, JSON.stringify(list)); 
+    if (i >= 0) {
+      list[i] = { ...list[i], ...data }; 
+      localStorage.setItem('ss_' + col, JSON.stringify(list)); 
+    }
   };
   
   window.fbDelete = async (col, id) => { 
@@ -5973,7 +6489,7 @@ function setupLocalMode() {
   rebuildDatalists(); 
   renderAll(); 
   
-  toast('🔧 Demo mode — configure Firebase for cloud sync', 4000);
+  toast('App loaded in Offline Mode. Data saved to device.', 4000);
 }
 </script>
 </body>
