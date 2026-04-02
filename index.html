@@ -6492,6 +6492,55 @@ function setupLocalMode() {
   toast('App loaded in Offline Mode. Data saved to device.', 4000);
 }
 </script>
+  </script>
+
+<script>
+setTimeout(() => {
+  if (!localStorage.getItem('ss_heavy_data_loaded')) {
+    
+    const categories = ['Georgette','Satin','Silk','Cotton','Linen','Polyester','Chiffon','Crepe','Saree','Sherwani','Kurti','Shirt'];
+    const colors = ['Red','Green','Blue','Yellow','White','Black','Pink','Orange','Maroon','Navy','Peach','Cyan'];
+    const suppliers = ['Rajan Textiles', 'Mukesh Bhai', 'Surat Mega Mills', 'Gujarat Fabrics', 'Vikas Traders'];
+    
+    let existingFabrics = JSON.parse(localStorage.getItem('ss_fabrics') || '[]');
+    
+    // Generate 850 Items (Simulating ₹40 Crore Value)
+    for (let i = 1; i <= 850; i++) {
+        const cat = categories[Math.floor(Math.random() * categories.length)];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const supplier = suppliers[Math.floor(Math.random() * suppliers.length)];
+        const unit = ['Saree', 'Sherwani', 'Kurti', 'Shirt'].includes(cat) ? 'Pieces' : 'Meters';
+        
+        const rate = Math.floor(Math.random() * 1500) + 300; 
+        const meters = Math.floor(Math.random() * 800) + 200; 
+        const rollNo = `${unit === 'Pieces' ? 'B' : 'T'}-${1000 + i}`;
+        
+        existingFabrics.unshift({
+            id: `PRD-${Date.now().toString(36)}-${i}`,
+            name: `Premium ${color} ${cat} (Batch ${i})`,
+            type: cat,
+            color: color,
+            unit: unit,
+            rate: rate,
+            meters: meters,
+            threshold: 50,
+            supplier: supplier,
+            hsn: '5407',
+            rolls: [{ rollNo: rollNo, meters: meters, date: new Date().toISOString() }]
+        });
+    }
+    
+    // Save to LocalStorage permanently
+    localStorage.setItem('ss_fabrics', JSON.stringify(existingFabrics));
+    localStorage.setItem('ss_heavy_data_loaded', 'true'); 
+    
+    alert("✅ Heavy Stock Data (₹40 Crore) loaded successfully! App will now refresh.");
+    location.reload();
+  }
+}, 2000);
+</script>
+</body>
+</html>
 </body>
 </html>
 <div id="toast"></div>
