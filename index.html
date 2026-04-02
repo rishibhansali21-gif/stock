@@ -3524,7 +3524,10 @@ let _confirmPin = null;
 
 let salesChart = null; 
 let expensesChart = null;
-
+async function loadFabrics() { fabrics = await fbGetAll('fabrics'); }
+async function loadSales() { sales = await fbGetAll('sales'); }
+async function loadPurchases() { purchases = await fbGetAll('purchases'); }
+async function loadPayments() { payments = await fbGetAll('payments'); }
 function waitForDB(cb, tries = 0) {
   if (window._db && window._firebase) { 
     DB = window._db; 
