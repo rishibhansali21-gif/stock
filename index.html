@@ -11,7 +11,6 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithPhoneNumber, RecaptchaVerifier, onAuthStateChanged, signOut as fbSignOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
-// ── FIREBASE CONFIG ──
 const firebaseConfig = {
   apiKey: "AIzaSyB5oBVuaur5Yl_gxfde9NFYtanLZdr6Qjs",
   authDomain: "stock-98c39.firebaseapp.com",
@@ -139,11 +138,11 @@ input:focus,select:focus{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(92
 input::placeholder{color:var(--text3)}
 .fc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:20px;margin-bottom:16px}
 .fc-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
-.fg{margin-bottom:12px}
+.fg{margin-bottom:16px}
 .fl{display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px}
 .fl-h{font-size:11px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
 
 .fab-grid{display:flex;flex-direction:column;gap:8px}
 .fab-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;transition:all 0.15s;min-width:0;position:relative;overflow:hidden}
@@ -242,17 +241,19 @@ input::placeholder{color:var(--text3)}
 .pay-card-amount{font-size:20px;font-weight:800;font-family:var(--fm);letter-spacing:-0.5px;color:var(--violet);flex-shrink:0}
 .pay-card-actions{display:flex;gap:6px;flex-shrink:0}
 
+/* WIDER MODALS FOR DESKTOP */
 .qmodal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:600;display:none;align-items:center;justify-content:center}
 .qmodal-bg.on{display:flex;animation:fadeIn 0.15s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.qmodal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r3);width:440px;max-width:95vw;max-height:88vh;overflow-y:auto;padding:24px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
+.qmodal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r3);width:600px;max-width:95vw;max-height:88vh;overflow-y:auto;padding:28px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
 @keyframes popIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
 .qmodal-title{font-size:18px;font-weight:800;color:var(--text);margin-bottom:3px;letter-spacing:-0.4px}
 .qmodal-sub{font-size:12px;color:var(--text3);margin-bottom:18px}
 .qmodal-foot{display:flex;gap:8px;margin-top:18px;justify-content:flex-end}
+
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center}
 .modal-bg.on{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r3);width:500px;max-width:95vw;max-height:88vh;overflow-y:auto;padding:26px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r3);width:650px;max-width:95vw;max-height:88vh;overflow-y:auto;padding:30px;box-shadow:var(--shadow-md);animation:popIn 0.2s ease}
 .modal-title{font-size:20px;font-weight:800;margin-bottom:3px;letter-spacing:-0.5px}
 .modal-sub{font-size:12px;color:var(--text3);margin-bottom:20px}
 .modal-foot{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
@@ -471,7 +472,7 @@ body.manager-mode .hide-manager{display:none !important}
       <span class="tb-sub" id="pg-sub"></span>
     </div>
     <div class="tb-right">
-      <button class="add-btn" onclick="openModal()">+ Add Fabric</button>
+      <button class="add-btn" onclick="openModal()">+ Add Item</button>
     </div>
   </div>
 
@@ -509,8 +510,8 @@ body.manager-mode .hide-manager{display:none !important}
 
   <div class="page on" id="pg-dash">
     <div class="stats">
-      <div class="stat"><div class="stat-l">Total Fabrics</div><div class="stat-v" id="st-c" style="color:var(--indigo2)">0</div><div class="stat-h">types</div></div>
-      <div class="stat"><div class="stat-l">Total Meters</div><div class="stat-v" id="st-m" style="color:var(--emerald)">0</div><div class="stat-h">in stock</div></div>
+      <div class="stat"><div class="stat-l">Total Items</div><div class="stat-v" id="st-c" style="color:var(--indigo2)">0</div><div class="stat-h">types</div></div>
+      <div class="stat"><div class="stat-l">Total Stock</div><div class="stat-v" id="st-m" style="color:var(--emerald)">0</div><div class="stat-h">units available</div></div>
       <div class="stat hide-staff"><div class="stat-l">Low Stock</div><div class="stat-v" id="st-l" style="color:var(--rose)">0</div><div class="stat-h">needs reorder</div></div>
       <div class="stat hide-staff"><div class="stat-l">Stock Value</div><div class="stat-v" id="st-v" style="color:var(--amber)">₹0</div><div class="stat-h">total estimate</div></div>
     </div>
@@ -530,8 +531,8 @@ body.manager-mode .hide-manager{display:none !important}
   <div class="page" id="pg-inv">
     <div class="content">
       <div class="sh">
-        <div><div class="sh-title">📦 Inventory</div><div class="sh-sub">All fabrics and stock levels</div></div>
-        <button class="btn btn-primary" style="width:auto" onclick="openModal()">+ New Fabric</button>
+        <div><div class="sh-title">📦 Inventory</div><div class="sh-sub">All fabrics, garments and stock levels</div></div>
+        <button class="btn btn-primary" style="width:auto" onclick="openModal()">+ New Item</button>
       </div>
       <div class="cat-row" id="inv-cat-filters">
         <button class="cat-p active" onclick="filterCat('',this)">🧵 All</button>
@@ -552,12 +553,12 @@ body.manager-mode .hide-manager{display:none !important}
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;align-items:start">
         <div class="fc">
           <div class="fc-title">🛒 New Sale</div>
-          <div class="fg"><label class="fl">Fabric</label><select id="s-fab" onchange="onFabChange()"></select></div>
+          <div class="fg"><label class="fl">Item / Fabric</label><select id="s-fab" onchange="onFabChange()"></select></div>
           <div class="g2">
-            <div class="fg"><label class="fl">Select Roll</label><select id="s-roll" onchange="calcSaleAmt()"></select></div>
-            <div class="fg"><label class="fl">Meters to Sell</label><input id="s-m" type="number" placeholder="0" min="0" oninput="calcSaleAmt()"/></div>
+            <div class="fg"><label class="fl">Select Roll/Batch</label><select id="s-roll" onchange="calcSaleAmt()"></select></div>
+            <div class="fg"><label class="fl">Qty to Sell</label><input id="s-m" type="number" placeholder="0" min="0" oninput="calcSaleAmt()"/></div>
           </div>
-          <div class="fg hide-staff"><label class="fl">Rate ₹/m</label><input id="s-r" type="number" placeholder="auto" oninput="calcSaleAmt()"/></div>
+          <div class="fg hide-staff"><label class="fl">Rate ₹/unit</label><input id="s-r" type="number" placeholder="auto" oninput="calcSaleAmt()"/></div>
           
           <div class="g2 hide-staff" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
             <div class="fg"><label class="fl">Broker / Agent</label><input id="s-broker" placeholder="e.g. Mukesh Bhai"/></div>
@@ -569,7 +570,7 @@ body.manager-mode .hide-manager{display:none !important}
               <div class="fg" style="margin-bottom:0"><label class="fl" style="color:var(--blue)">GST Rate</label>
                 <select id="s-gst-rate" onchange="calcSaleAmt()">
                   <option value="0">0% — No GST</option>
-                  <option value="5" selected>5% — Fabric</option>
+                  <option value="5" selected>5% — Fabric/Garment</option>
                   <option value="12">12% — Garment ≥₹1000</option>
                   <option value="18">18% — Synthetic</option>
                   <option value="28">28% — Special</option>
@@ -706,19 +707,19 @@ body.manager-mode .hide-manager{display:none !important}
       <div class="sh"><div><div class="sh-title">🧮 Calculator</div><div class="sh-sub">Quick calculations</div></div></div>
       <div class="calc-grid">
         <div class="fc">
-          <div class="fc-title">💰 Fabric Cost</div>
-          <div class="fg"><label class="fl">Meters</label><input id="c1m" type="number" placeholder="100" oninput="c1()"/></div>
-          <div class="fg"><label class="fl">Rate ₹/meter</label><input id="c1r" type="number" placeholder="120" oninput="c1()"/></div>
+          <div class="fc-title">💰 Item Cost</div>
+          <div class="fg"><label class="fl">Qty (m/pcs)</label><input id="c1m" type="number" placeholder="100" oninput="c1()"/></div>
+          <div class="fg"><label class="fl">Rate ₹/unit</label><input id="c1r" type="number" placeholder="120" oninput="c1()"/></div>
           <div class="res-box"><span class="res-l">Total</span><span class="res-v" id="c1-r">₹0</span></div>
         </div>
         <div class="fc">
           <div class="fc-title">📈 Profit Calculator</div>
           <div class="g2">
-            <div class="fg"><label class="fl">Buy ₹/m</label><input id="c2b" type="number" placeholder="100" oninput="c2()"/></div>
-            <div class="fg"><label class="fl">Sell ₹/m</label><input id="c2s" type="number" placeholder="140" oninput="c2()"/></div>
+            <div class="fg"><label class="fl">Buy ₹/unit</label><input id="c2b" type="number" placeholder="100" oninput="c2()"/></div>
+            <div class="fg"><label class="fl">Sell ₹/unit</label><input id="c2s" type="number" placeholder="140" oninput="c2()"/></div>
           </div>
-          <div class="fg"><label class="fl">Meters</label><input id="c2m" type="number" placeholder="50" oninput="c2()"/></div>
-          <div class="res-box" style="margin-bottom:6px"><span class="res-l">Profit/Meter</span><span class="res-v" id="c2-pm">₹0</span></div>
+          <div class="fg"><label class="fl">Qty</label><input id="c2m" type="number" placeholder="50" oninput="c2()"/></div>
+          <div class="res-box" style="margin-bottom:6px"><span class="res-l">Profit/Unit</span><span class="res-v" id="c2-pm">₹0</span></div>
           <div class="res-box"><span class="res-l">Total Profit</span><span class="res-v" id="c2-r">₹0</span></div>
         </div>
         <div class="fc">
@@ -811,7 +812,7 @@ body.manager-mode .hide-manager{display:none !important}
           <div id="rpt-stock-val"></div>
         </div>
         <div class="fc" style="padding:16px">
-          <div class="fc-title">🔥 Top Selling Fabrics</div>
+          <div class="fc-title">🔥 Top Selling Items</div>
           <div id="rpt-top-items"></div>
         </div>
       </div>
@@ -824,10 +825,10 @@ body.manager-mode .hide-manager{display:none !important}
     <div class="qmodal-title">📥 Add Stock</div>
     <div class="qmodal-sub" id="addstock-fab-name">—</div>
     <div class="g2">
-      <div class="fg"><label class="fl">Roll / Taka No.</label><input id="as-roll" placeholder="e.g. T-002"/></div>
-      <div class="fg"><label class="fl">Meters Received</label><input id="as-m" type="number" placeholder="e.g. 100" min="0"/></div>
+      <div class="fg"><label class="fl">Roll / Batch No.</label><input id="as-roll" placeholder="e.g. T-002"/></div>
+      <div class="fg"><label class="fl">Qty Received</label><input id="as-m" type="number" placeholder="e.g. 100" min="0"/></div>
     </div>
-    <div class="fg hide-staff"><label class="fl">Rate ₹/m <span class="fl-h">(Update if changed)</span></label><input id="as-r" type="number" placeholder="Same as before"/></div>
+    <div class="fg hide-staff"><label class="fl">Rate ₹/unit <span class="fl-h">(Update if changed)</span></label><input id="as-r" type="number" placeholder="Same as before"/></div>
     <div class="fg"><label class="fl">Supplier</label><input id="as-s" list="dl-party" placeholder="e.g. Rajan Textiles"/></div>
     <div class="fg hide-staff"><label class="fl">Supplier GSTIN <span class="fl-h">(Optional)</span></label><input id="as-gstin" list="dl-gstin" placeholder="24XXXXX1234X1Z5"/></div>
     <div class="qmodal-foot" style="flex-direction:column;">
@@ -838,14 +839,14 @@ body.manager-mode .hide-manager{display:none !important}
 </div>
 
 <div class="qmodal-bg" id="quicksell-modal">
-  <div class="qmodal" style="width:460px">
+  <div class="qmodal">
     <div class="qmodal-title">💰 Quick Sell</div>
     <div class="qmodal-sub" id="qs-fab-name">—</div>
     <div class="g2">
-      <div class="fg"><label class="fl">Select Roll</label><select id="qs-roll"></select></div>
-      <div class="fg"><label class="fl">Meters to Sell</label><input id="qs-m" type="number" placeholder="e.g. 20" min="0" oninput="calcQSAmt()"/></div>
+      <div class="fg"><label class="fl">Select Roll/Batch</label><select id="qs-roll"></select></div>
+      <div class="fg"><label class="fl">Qty to Sell</label><input id="qs-m" type="number" placeholder="e.g. 20" min="0" oninput="calcQSAmt()"/></div>
     </div>
-    <div class="fg hide-staff"><label class="fl">Rate ₹/m</label><input id="qs-r" type="number" placeholder="auto" oninput="calcQSAmt()"/></div>
+    <div class="fg hide-staff"><label class="fl">Rate ₹/unit</label><input id="qs-r" type="number" placeholder="auto" oninput="calcQSAmt()"/></div>
     
     <div class="g2 hide-staff" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
       <div class="fg"><label class="fl">Broker / Agent</label><input id="qs-broker" placeholder="Name"/></div>
@@ -856,8 +857,8 @@ body.manager-mode .hide-manager{display:none !important}
       <div class="g2">
         <div class="fg" style="margin-bottom:0"><label class="fl" style="color:var(--blue)">Rate</label>
           <select id="qs-gst-rate" onchange="calcQSAmt()">
-            <option value="0">0% No GST</option><option value="5" selected>5% Fabric</option>
-            <option value="12">12% Garment</option><option value="18">18% Synthetic</option>
+            <option value="0">0% No GST</option><option value="5" selected>5% Fabric/Garment</option>
+            <option value="12">12%</option><option value="18">18% Synthetic</option>
           </select>
         </div>
         <div class="fg" style="margin-bottom:0"><label class="fl" style="color:var(--blue)">Type</label>
@@ -908,15 +909,15 @@ body.manager-mode .hide-manager{display:none !important}
 </div>
 
 <div class="qmodal-bg" id="purchase-modal">
-  <div class="qmodal" style="width:460px">
+  <div class="qmodal">
     <div class="qmodal-title">📥 Record Purchase</div>
     <div class="qmodal-sub">New stock from supplier</div>
     <div class="fg"><label class="fl">Supplier / Party *</label><input id="pur-party" list="dl-party" placeholder="e.g. Rajan Textiles"/></div>
     <div class="fg"><label class="fl">Supplier GSTIN <span class="fl-h">(Optional)</span></label><input id="pur-gstin" list="dl-gstin" placeholder="24XXXXX1234X1Z5"/></div>
     <div class="fg"><label class="fl">Item / Fabric *</label><input id="pur-item" placeholder="e.g. Lal Georgette"/></div>
     <div class="g2">
-      <div class="fg"><label class="fl">Meters *</label><input id="pur-meters" type="number" placeholder="0" min="0" oninput="calcPurAmt()"/></div>
-      <div class="fg"><label class="fl">Rate ₹/m *</label><input id="pur-rate" type="number" placeholder="0" min="0" oninput="calcPurAmt()"/></div>
+      <div class="fg"><label class="fl">Qty *</label><input id="pur-meters" type="number" placeholder="0" min="0" oninput="calcPurAmt()"/></div>
+      <div class="fg"><label class="fl">Rate ₹/unit *</label><input id="pur-rate" type="number" placeholder="0" min="0" oninput="calcPurAmt()"/></div>
     </div>
     <div class="gst-box">
       <div class="gst-box-title">GST on Purchase</div>
@@ -949,22 +950,51 @@ body.manager-mode .hide-manager{display:none !important}
 
 <div class="modal-bg" id="add-modal">
   <div class="modal">
-    <div class="modal-title">🧵 Add New Fabric</div>
-    <div class="modal-sub">Add a fabric to your inventory</div>
-    <div class="fg"><label class="fl">Fabric Name *</label><input id="m-name" placeholder="e.g. Lal Banarasi Georgette"/></div>
+    <div class="modal-title">🧵 Add New Item</div>
+    <div class="modal-sub">Add a fabric or garment to your inventory</div>
+    <div class="g2">
+      <div class="fg"><label class="fl">Item Name *</label><input id="m-name" placeholder="e.g. Lal Banarasi Georgette / Saree"/></div>
+      <div class="fg"><label class="fl">Unit *</label>
+        <select id="m-unit">
+          <option value="Meters">Meters (m)</option>
+          <option value="Pieces">Pieces (pcs)</option>
+        </select>
+      </div>
+    </div>
     <div class="g2">
       <div class="fg"><label class="fl">Category *</label><select id="m-type"></select></div>
       <div class="fg"><label class="fl">Color</label><input id="m-color" list="dl-color" placeholder="e.g. Rani Pink"/></div>
     </div>
     <div class="g3">
-      <div class="fg"><label class="fl">Initial Roll / Taka</label><input id="m-roll" placeholder="e.g. T-001"/></div>
-      <div class="fg"><label class="fl">Meters *</label><input id="m-m" type="number" placeholder="0" min="0"/></div>
-      <div class="fg"><label class="fl">Low Alert (m)</label><input id="m-t" type="number" placeholder="50" min="0"/></div>
+      <div class="fg"><label class="fl">Initial Roll / Batch</label><input id="m-roll" placeholder="e.g. T-001"/></div>
+      <div class="fg"><label class="fl">Quantity *</label><input id="m-m" type="number" placeholder="0" min="0"/></div>
+      <div class="fg"><label class="fl">Low Alert Qty</label><input id="m-t" type="number" placeholder="50" min="0"/></div>
     </div>
     <div class="g2">
-      <div class="fg hide-staff"><label class="fl">Rate ₹/m</label><input id="m-r" type="number" placeholder="0" min="0"/></div>
+      <div class="fg hide-staff"><label class="fl">Purchase Rate (₹)</label><input id="m-r" type="number" placeholder="0" min="0"/></div>
       <div class="fg"><label class="fl">Supplier</label><input id="m-s" list="dl-party" placeholder="e.g. Rajan Textiles"/></div>
     </div>
+    
+    <div class="gst-box hide-staff">
+      <div class="gst-box-title">🧾 GST on Initial Purchase</div>
+      <div class="g2" style="margin-bottom:8px">
+        <div class="fg" style="margin-bottom:0"><label class="fl" style="color:var(--blue)">GST Rate</label>
+          <select id="m-gst-rate">
+            <option value="0">0% — No GST</option>
+            <option value="5" selected>5% — Fabric</option>
+            <option value="12">12% — Garment</option>
+            <option value="18">18% — Synthetic</option>
+          </select>
+        </div>
+        <div class="fg" style="margin-bottom:0"><label class="fl" style="color:var(--blue)">GST Type</label>
+          <select id="m-gst-type">
+            <option value="intra">Intra-State (Gujarat)</option>
+            <option value="inter">Inter-State IGST</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
     <div class="modal-foot" style="flex-direction:column;">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
       <button class="btn btn-primary" onclick="saveModal()">✅ Save & Record Purchase</button>
@@ -973,7 +1003,7 @@ body.manager-mode .hide-manager{display:none !important}
 </div>
 
 <div class="qmodal-bg" id="settings-modal">
-  <div class="qmodal" style="width:520px">
+  <div class="qmodal">
     <div class="qmodal-title">⚙️ Settings</div>
     <div class="qmodal-sub">App preferences and account management</div>
     
@@ -1054,7 +1084,7 @@ body.manager-mode .hide-manager{display:none !important}
 </div>
 
 <div class="qmodal-bg" id="new-payment-modal">
-  <div class="qmodal" style="width:500px">
+  <div class="qmodal">
     <div class="qmodal-title" id="npm-title">💰 New Payment Receipt</div>
     <div class="qmodal-sub" id="npm-sub">Generate and save a payment document</div>
     <input type="hidden" id="npm-type" value="receipt">
@@ -1190,7 +1220,6 @@ body.manager-mode .hide-manager{display:none !important}
 </div>
 
 <div id="toast"></div>
-
 <script>
 // ══════════════════════════════════════════════════
 // GLOBAL STATE
@@ -1240,6 +1269,7 @@ function toast(msg, dur=2500) {
 }
 function v(id){ return document.getElementById(id)?.value?.trim()||''; }
 function nv(id){ return parseFloat(document.getElementById(id)?.value)||0; }
+function getUnit(f) { return (f && f.unit === 'Pieces') ? 'pcs' : 'm'; }
 
 function numToWords(n) {
   if(!n||isNaN(n)) return '';
@@ -1424,7 +1454,7 @@ async function loadMaster() {
   try {
     const snap = await FB.getDoc(FB.doc(DB, `${userPath()}/config/master`));
     masterData = snap.exists() ? snap.data() : {qualities:[],colors:[],parties:[]};
-    if(!masterData.qualities) masterData.qualities = ['Georgette','Satin','Silk','Cotton','Linen','Polyester','Chiffon','Crepe'];
+    if(!masterData.qualities) masterData.qualities = ['Georgette','Satin','Silk','Cotton','Linen','Polyester','Chiffon','Crepe','Saree','Sherwani','Kurti','Shirt'];
     if(!masterData.colors) masterData.colors = ['Red','Green','Blue','Yellow','White','Black','Pink','Orange'];
     if(!masterData.parties) masterData.parties = [];
   } catch(e) { masterData={qualities:['Georgette','Satin','Silk','Cotton'],colors:['Red','Green','Blue'],parties:[]}; }
@@ -1561,13 +1591,13 @@ async function deleteProfile(id) {
 }
 
 // ══════════════════════════════════════════════════
-// FABRICS (INVENTORY & ROLLS)
+// ITEMS & INVENTORY (FABRICS/GARMENTS)
 // ══════════════════════════════════════════════════
 async function loadFabrics() { fabrics = await fbGetAll('fabrics'); renderAll(); }
 function renderAll() { renderDash(); renderInv(); renderSalesFabSelect(); renderSalesHistory(); renderLedger(); renderPayments(); renderReport(); renderProfilesPage(); updateLow(); }
 
 function fabIcon(type) {
-  const m={'Georgette':'🧣','Satin':'✨','Silk':'🪡','Cotton':'🌿','Linen':'🌾','Polyester':'🧪','Chiffon':'🌸','Crepe':'🎀'};
+  const m={'Georgette':'🧣','Satin':'✨','Silk':'🪡','Cotton':'🌿','Linen':'🌾','Polyester':'🧪','Chiffon':'🌸','Crepe':'🎀','Saree':'👗','Sherwani':'👔','Kurti':'👚','Shirt':'👕'};
   return m[type]||'🧵';
 }
 function fabStockClass(f) {
@@ -1581,6 +1611,7 @@ function fabCardHTML(f, mode='full') {
   const sc = fabStockClass(f);
   const colors={'low':'var(--rose)','med':'var(--amber)','ok':'var(--emerald)'};
   const pct = f.threshold ? Math.min(100,f.meters/f.threshold*100) : 80;
+  const u = getUnit(f);
   const btns = mode==='dash' ?
     `
     <button class="fab-btn fab-btn-add" onclick="openAddStock('${f.id}')">+ Stock</button>
@@ -1595,7 +1626,7 @@ function fabCardHTML(f, mode='full') {
     rollsHtml = `<div style="margin-bottom:8px">` + f.rolls.map(r => {
       const days = Math.floor((new Date() - new Date(r.date)) / (1000*60*60*24));
       let ac = ''; if(days>90) ac='aging-danger'; else if(days>30) ac='aging-warning';
-      return `<span class="roll-tag ${ac}" title="${days} days old">#${r.rollNo}: ${fmtN(r.meters)}m</span>`;
+      return `<span class="roll-tag ${ac}" title="${days} days old">#${r.rollNo}: ${fmtN(r.meters)}${u}</span>`;
     }).join('') + `</div>`;
   }
 
@@ -1616,11 +1647,11 @@ function fabCardHTML(f, mode='full') {
     <div class="fab-right">
       <div class="fab-meter-box hide-staff">
         <div class="fab-meter-num" style="color:${colors[sc]}">${fmtN(f.meters)}</div>
-        <div class="fab-meter-lbl">meters</div>
+        <div class="fab-meter-lbl">${u}</div>
       </div>
       <div class="fab-rate-box hide-staff">
         <div style="font-size:13px;font-weight:700;color:var(--text2)">${f.rate?fmt(f.rate):'-'}</div>
-        <div class="fab-meter-lbl">₹/m</div>
+        <div class="fab-meter-lbl">₹/${u}</div>
       </div>
       <div class="fab-actions">${btns}</div>
     </div>
@@ -1632,7 +1663,7 @@ function renderDash() {
   if(!g) return;
   const low = fabrics.filter(f=>fabStockClass(f)!=='ok');
   g.innerHTML = fabrics.slice(0,8).map(f=>fabCardHTML(f,'dash')).join('') ||
-    `<div class="empty"><div class="empty-ic">📦</div><div class="empty-t">No fabrics yet</div><div class="empty-s">Add your first fabric to get started</div></div>`;
+    `<div class="empty"><div class="empty-ic">📦</div><div class="empty-t">No items yet</div><div class="empty-s">Add your first fabric or garment to get started</div></div>`;
   document.getElementById('st-c').textContent = fabrics.length;
   document.getElementById('st-m').textContent = fmtN(fabrics.reduce((a,f)=>a+f.meters,0));
   document.getElementById('st-l').textContent = low.length;
@@ -1674,27 +1705,34 @@ function updateLow() { renderDash(); }
 
 function openModal() {
   document.getElementById('m-name').value='';
+  document.getElementById('m-unit').value='Meters';
   document.getElementById('m-color').value='';
   document.getElementById('m-roll').value='';
   document.getElementById('m-m').value='';
   document.getElementById('m-t').value='50';
   document.getElementById('m-r').value='';
   document.getElementById('m-s').value='';
+  document.getElementById('m-gst-rate').value='5';
+  document.getElementById('m-gst-type').value='intra';
   document.getElementById('add-modal').classList.add('on');
 }
 function closeModal() { document.getElementById('add-modal').classList.remove('on'); }
 
-// BATCH 1: UNIFIED PURCHASE CREATION
+// BATCH 1 & 2: UNIFIED PURCHASE CREATION WITH UNIT & PROPER GST
 async function saveModal() {
   const name = v('m-name');
-  if(!name){toast('Fabric name required');return;}
+  if(!name){toast('Item name required');return;}
+  const unit = v('m-unit'); 
   const type = v('m-type');
   const initialMeters = nv('m-m');
   const rate = nv('m-r');
   const supplier = v('m-s');
-  const rolls = initialMeters > 0 ? [{ rollNo: v('m-roll')||'T-001', meters: initialMeters, date: ts() }] : [];
+  const gstRate = parseFloat(v('m-gst-rate') || 5);
+  const gstType = v('m-gst-type') || 'intra';
+
+  const rolls = initialMeters > 0 ? [{ rollNo: v('m-roll')||(unit==='Pieces'?'B-001':'T-001'), meters: initialMeters, date: ts() }] : [];
   const data = { 
-    name, type, color:v('m-color'), meters:initialMeters, 
+    name, unit, type, color:v('m-color'), meters:initialMeters, 
     threshold:nv('m-t')||50, rate, supplier, rolls 
   };
   const id = await fbSave('fabrics', data);
@@ -1703,14 +1741,13 @@ async function saveModal() {
 
   if(initialMeters > 0 && rate > 0 && supplier) {
     const subtotal = initialMeters * rate;
-    const gstRate = 5; 
-    const gst = subtotal * 0.05;
+    const gst = subtotal * (gstRate / 100);
     const total = subtotal + gst;
     const purData = {
-      type:'purchase', party: supplier, item: name,
-      meters: initialMeters, rate: rate, gstRate, gstType: 'intra',
+      type:'purchase', party: supplier, item: name, unit: unit,
+      meters: initialMeters, rate: rate, gstRate, gstType,
       subtotal, gst, total,
-      note: `Initial Stock (Roll: ${rolls[0]?.rollNo||'-'})`, date: ts()
+      note: `Initial Stock (Ref: ${rolls[0]?.rollNo||'-'})`, date: ts()
     };
     const docSnap = buildPurchaseReceiptHTML({...purData, id});
     purData.savedDoc = docSnap;
@@ -1719,12 +1756,12 @@ async function saveModal() {
   }
 
   closeModal();
-  toast('Fabric & Stock saved ✅');
+  toast('Item & Stock saved ✅');
   renderAll();
 }
 
 async function deleteFabric(id) {
-  if(!confirm('Delete this fabric?')) return;
+  if(!confirm('Delete this item permanently?')) return;
   await fbDelete('fabrics',id);
   fabrics=fabrics.filter(f=>f.id!==id);
   renderAll(); toast('Deleted');
@@ -1746,12 +1783,13 @@ function closeAddStock() { document.getElementById('addstock-modal').classList.r
 // BATCH 1: UNIFIED ADD STOCK
 async function saveAddStock() {
   const m = nv('as-m');
-  if(!m){toast('Enter meters');return;}
+  if(!m){toast('Enter quantity');return;}
   const f = fabrics.find(x=>x.id===currentFabId);
   if(!f) return;
   const rate = nv('as-r')||f.rate;
   const supplier = v('as-s')||f.supplier;
-  const rollNo = v('as-roll') || `T-${(f.rolls?.length||0)+1}`;
+  const u = getUnit(f);
+  const rollNo = v('as-roll') || `${u==='pcs'?'B':'T'}-${(f.rolls?.length||0)+1}`;
   
   if(!f.rolls) f.rolls = [];
   f.rolls.push({ rollNo, meters: m, date: ts() });
@@ -1766,9 +1804,9 @@ async function saveAddStock() {
     const gst = subtotal*gstRate/100;
     const total = subtotal+gst;
     const purData = {
-      type:'purchase', party:supplier, item:f.name,
+      type:'purchase', party:supplier, item:f.name, unit: f.unit||'Meters',
       meters:m, rate, gstRate, gstType, subtotal, gst, total,
-      gstin:v('as-gstin'), note:`Stock Add (Roll: ${rollNo})`, date:ts()
+      gstin:v('as-gstin'), note:`Stock Add (Ref: ${rollNo})`, date:ts()
     };
     const docSnap = buildPurchaseReceiptHTML({...purData, id:currentFabId});
     purData.savedDoc = docSnap;
@@ -1788,13 +1826,14 @@ async function saveAddStock() {
 function openQuickSell(id) {
   currentFabId = id;
   const f = fabrics.find(x=>x.id===id);
+  const u = getUnit(f);
   document.getElementById('qs-fab-name').textContent = f?.name||'—';
   
   const rollSel = document.getElementById('qs-roll');
   if(f?.rolls && f.rolls.length > 0) {
-    rollSel.innerHTML = f.rolls.map((r,i) => `<option value="${i}">#${r.rollNo} (${r.meters}m avail)</option>`).join('');
+    rollSel.innerHTML = f.rolls.map((r,i) => `<option value="${i}">#${r.rollNo} (${r.meters}${u} avail)</option>`).join('');
   } else {
-    rollSel.innerHTML = `<option value="-1">Auto-Deduct (${f?.meters||0}m avail)</option>`;
+    rollSel.innerHTML = `<option value="-1">Auto-Deduct (${f?.meters||0}${u} avail)</option>`;
   }
 
   document.getElementById('qs-m').value='';
@@ -1823,7 +1862,7 @@ function calcQSAmt() {
   document.getElementById('qs-gst-breakdown').innerHTML=gstBreakdownHTML(sub,parseFloat(rate),type);
 }
 async function saveQS(genBill=false) {
-  const m=nv('qs-m'); if(!m){toast('Enter meters');return;}
+  const m=nv('qs-m'); if(!m){toast('Enter quantity');return;}
   const f=fabrics.find(x=>x.id===currentFabId); if(!f)return;
   const kacha = document.getElementById('qs-kacha').checked;
   const r=nv('qs-r')||f.rate;
@@ -1832,11 +1871,11 @@ async function saveQS(genBill=false) {
   
   if(!kacha) {
     if(rollIdx >= 0 && f.rolls && f.rolls[rollIdx]) {
-      if(f.rolls[rollIdx].meters < m) { toast('Not enough meters in selected roll!'); return; }
+      if(f.rolls[rollIdx].meters < m) { toast('Not enough stock in selected batch!'); return; }
       f.rolls[rollIdx].meters -= m;
       if(f.rolls[rollIdx].meters <= 0) f.rolls.splice(rollIdx, 1);
     } else {
-      if(f.meters < m) { toast('Not enough meters!'); return; }
+      if(f.meters < m) { toast('Not enough stock!'); return; }
     }
     f.meters = f.rolls ? f.rolls.reduce((sum, r)=>sum+r.meters, 0) : Math.max(0, f.meters-m);
     await fbUpdate('fabrics', f.id, {rolls: f.rolls||[], meters: f.meters});
@@ -1846,7 +1885,7 @@ async function saveQS(genBill=false) {
   const gstType=document.getElementById('qs-gst-type')?.value||'intra';
   const sub=(m*r)-disc; const gst=sub*gstRate/100; const total=sub+gst;
   const saleData = {
-    type:'sale', invoiceNo: generateInvoiceNo(), fabric:f.name, fabricId:f.id, meters:m, rate:r, discount:disc,
+    type:'sale', invoiceNo: generateInvoiceNo(), fabric:f.name, fabricId:f.id, unit:f.unit||'Meters', meters:m, rate:r, discount:disc,
     gstRate, gstType, subtotal:sub, gst, total,
     broker: v('qs-broker'), commission: nv('qs-comm'),
     customer:v('qs-c'), phone:v('qs-phone'), buyerGstin:v('qs-buyer-gstin'),
@@ -1879,7 +1918,7 @@ async function saveQSAndBill() { await saveQS(true); }
 function renderSalesFabSelect() {
   const sel = document.getElementById('s-fab');
   if(!sel) return;
-  sel.innerHTML = fabrics.map(f=>`<option value="${f.id}">${f.name} (${fmtN(f.meters)}m)</option>`).join('');
+  sel.innerHTML = fabrics.map(f=>`<option value="${f.id}">${f.name} (${fmtN(f.meters)}${getUnit(f)})</option>`).join('');
   onFabChange();
 }
 function onFabChange() {
@@ -1888,10 +1927,11 @@ function onFabChange() {
   if(f) {
     document.getElementById('s-r').value=f.rate||'';
     const rollSel = document.getElementById('s-roll');
+    const u = getUnit(f);
     if(f.rolls && f.rolls.length > 0) {
-      rollSel.innerHTML = f.rolls.map((r,i) => `<option value="${i}">#${r.rollNo} (${r.meters}m avail)</option>`).join('');
+      rollSel.innerHTML = f.rolls.map((r,i) => `<option value="${i}">#${r.rollNo} (${r.meters}${u} avail)</option>`).join('');
     } else {
-      rollSel.innerHTML = `<option value="-1">Auto-Deduct (${f.meters}m avail)</option>`;
+      rollSel.innerHTML = `<option value="-1">Auto-Deduct (${f.meters}${u} avail)</option>`;
     }
   }
   calcSaleAmt();
@@ -1906,7 +1946,7 @@ function calcSaleAmt() {
   document.getElementById('s-gst-breakdown').innerHTML=gstBreakdownHTML(sub,rate,type);
 }
 async function recSale(genBill=false) {
-  const fabId=v('s-fab'); const m=nv('s-m'); if(!m){toast('Enter meters');return;}
+  const fabId=v('s-fab'); const m=nv('s-m'); if(!m){toast('Enter quantity');return;}
   const f=fabrics.find(x=>x.id===fabId); if(!f)return;
   const kacha=document.getElementById('s-kacha').checked;
   const r=nv('s-r')||f.rate;
@@ -1915,11 +1955,11 @@ async function recSale(genBill=false) {
 
   if(!kacha) {
     if(rollIdx >= 0 && f.rolls && f.rolls[rollIdx]) {
-      if(f.rolls[rollIdx].meters < m) { toast('Not enough meters in selected roll!'); return; }
+      if(f.rolls[rollIdx].meters < m) { toast('Not enough stock in selected batch!'); return; }
       f.rolls[rollIdx].meters -= m;
       if(f.rolls[rollIdx].meters <= 0) f.rolls.splice(rollIdx, 1);
     } else {
-      if(f.meters < m) { toast('Not enough meters!'); return; }
+      if(f.meters < m) { toast('Not enough stock!'); return; }
     }
     f.meters = f.rolls ? f.rolls.reduce((sum, rl)=>sum+rl.meters, 0) : Math.max(0, f.meters-m);
     await fbUpdate('fabrics', f.id, {rolls: f.rolls||[], meters: f.meters});
@@ -1932,7 +1972,7 @@ async function recSale(genBill=false) {
   if (v('s-inv-type')==='Cash' && v('s-paid')==='') paid = total;
   
   const saleData = {
-    type:'sale', invoiceNo: generateInvoiceNo(), fabric:f.name, fabricId:f.id, meters:m, rate:r, discount:disc,
+    type:'sale', invoiceNo: generateInvoiceNo(), fabric:f.name, fabricId:f.id, unit:f.unit||'Meters', meters:m, rate:r, discount:disc,
     gstRate, gstType, subtotal:sub, gst, total, paid: paid,
     broker: v('s-broker'), commission: nv('s-comm'),
     payMode:v('s-pay-mode'), invType:v('s-inv-type'),
@@ -1968,7 +2008,7 @@ function renderSalesHistory() {
     <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid ${s.kacha?'var(--amber)':'var(--emerald)'};border-radius:var(--r2);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
       <div>
         <div style="font-size:13px;font-weight:700">${s.fabric} ${s.kacha?'<span style="font-size:10px;color:var(--amber)">[Kacha]</span>':''}</div>
-        <div style="font-size:11px;color:var(--text3)">${fmtN(s.meters)}m · ${s.customer||'—'} · ${fmtDate(s.date)}</div>
+        <div style="font-size:11px;color:var(--text3)">${fmtN(s.meters)}${s.unit==='Pieces'?'pcs':'m'} · ${s.customer||'—'} · ${fmtDate(s.date)}</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
         <div style="font-size:16px;font-weight:800;color:var(--emerald)">${fmt(s.total)}</div>
@@ -2057,12 +2097,13 @@ function renderLedger() {
     const isSale = currentLedgerTab==='sales';
     const name = isSale ? e.fabric : (e.item||e.party);
     const party = isSale ? (e.customer||'—') : e.party;
+    const unit = e.unit === 'Pieces' ? 'pcs' : 'm';
     const docBtn = e.savedDoc ? `<button class="le-doc-btn" onclick="viewSavedDoc('${isSale?'sales':'purchases'}','${e.id}')">📄 Bill</button>` : '';
     return `<div class="ledger-entry ${isSale?'sale-entry':'purchase-entry'}">
       <div class="le-icon ${isSale?'sale':'purchase'}">${isSale?'💰':'📦'}</div>
       <div>
         <div class="le-name">${name} ${e.kacha?'<span style="font-size:10px;color:var(--amber)">[Kacha]</span>':''}</div>
-        <div class="le-meta">${party} · ${fmtN(e.meters||0)}m${e.rate?' @ '+fmt(e.rate)+'/m':''}</div>
+        <div class="le-meta">${party} · ${fmtN(e.meters||0)}${unit}${e.rate?' @ '+fmt(e.rate)+'/'+unit:''}</div>
       </div>
       <div class="le-date">${fmtDate(e.date)}</div>
       ${docBtn}
@@ -2125,9 +2166,9 @@ async function viewSavedDoc(col, id) {
 }
 
 function exportCSV() {
-  const rows=[['Date','Type','Item/Fabric','Party','Meters','Rate','GST%','Total']];
-  sales.forEach(s=>rows.push([fmtDate(s.date),'Sale',s.fabric,s.customer||'',s.meters,s.rate,s.gstRate,s.total]));
-  purchases.forEach(p=>rows.push([fmtDate(p.date),'Purchase',p.item||p.party,p.party,p.meters,p.rate,p.gstRate,p.total]));
+  const rows=[['Date','Type','Item/Fabric','Party','Qty','Unit','Rate','GST%','Total']];
+  sales.forEach(s=>rows.push([fmtDate(s.date),'Sale',s.fabric,s.customer||'',s.meters,s.unit||'Meters',s.rate,s.gstRate,s.total]));
+  purchases.forEach(p=>rows.push([fmtDate(p.date),'Purchase',p.item||p.party,p.party,p.meters,p.unit||'Meters',p.rate,p.gstRate,p.total]));
   const csv=rows.map(r=>r.join(',')).join('\n');
   const a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
@@ -2151,13 +2192,13 @@ async function savePurchase(genReceipt=false) {
   const party=v('pur-party');
   if(!party){toast('Supplier required');return;}
   const item=v('pur-item'); if(!item){toast('Item required');return;}
-  const meters=nv('pur-meters'); if(!meters){toast('Meters required');return;}
+  const meters=nv('pur-meters'); if(!meters){toast('Quantity required');return;}
   const rate=nv('pur-rate');
   const gstRate=parseFloat(document.getElementById('pur-gst-rate')?.value||5);
   const gstType=document.getElementById('pur-gst-type')?.value||'intra';
   const sub=meters*rate; const gst=sub*gstRate/100; const total=sub+gst;
   const purData={
-    type:'purchase', party, gstin:v('pur-gstin'), item, meters, rate,
+    type:'purchase', party, gstin:v('pur-gstin'), item, unit:'Meters', meters, rate,
     gstRate, gstType, subtotal:sub, gst, total, note:v('pur-note'), date:ts()
   };
   const docSnap = buildPurchaseReceiptHTML(purData);
@@ -2322,7 +2363,6 @@ function shopHeader() {
 function buildSaleInvoiceHTML(s) {
   const gstRate=s.gstRate||5, gstType=s.gstType||'intra';
   const cgst=gstType==='intra'?s.gst/2:0, sgst=gstType==='intra'?s.gst/2:0, igst=gstType==='inter'?s.gst:0;
-  // BATCH 1: UPI QR CODE GENERATOR
   let qrHtml = '';
   if(settings.upi && !s.kacha) {
     const upiStr = `upi://pay?pa=${settings.upi}&pn=${encodeURIComponent(settings.firm||'StockSaathi')}&am=${s.total.toFixed(2)}&cu=INR`;
@@ -2332,6 +2372,7 @@ function buildSaleInvoiceHTML(s) {
       <div style="font-size:8px; color:#64748b; margin-top:2px; font-weight:700;">Scan to Pay</div>
     </div>`;
   }
+  const u = s.unit === 'Pieces' ? 'pcs' : 'm';
 
   return `<div class="doc-preview-inner">
     ${shopHeader()}
@@ -2363,7 +2404,7 @@ function buildSaleInvoiceHTML(s) {
     </div>` : ''}
 
     <table>
-      <thead><tr><th>Item</th><th style="text-align:right">Qty(m)</th><th style="text-align:right">Rate</th><th style="text-align:right">Amount</th></tr></thead>
+      <thead><tr><th>Item</th><th style="text-align:right">Qty(${u})</th><th style="text-align:right">Rate</th><th style="text-align:right">Amount</th></tr></thead>
       <tbody>
         <tr><td>${s.fabric}</td><td style="text-align:right">${fmtN(s.meters)}</td><td style="text-align:right">${fmt(s.rate)}</td><td style="text-align:right">${fmt(s.meters*s.rate)}</td></tr>
         ${s.discount?`<tr><td colspan="3" style="color:#64748b">Discount</td><td style="text-align:right;color:#f05264">-${fmt(s.discount)}</td></tr>`:''}
@@ -2391,6 +2432,7 @@ function buildSaleInvoiceHTML(s) {
 function buildPurchaseReceiptHTML(p) {
   const gstRate=p.gstRate||5, gstType=p.gstType||'intra';
   const cgst=gstType==='intra'?(p.gst||0)/2:0, igst=gstType==='inter'?(p.gst||0):0;
+  const u = p.unit === 'Pieces' ? 'pcs' : 'm';
   return `<div class="doc-preview-inner">
     ${shopHeader()}
     <div style="background:#f0fdf4;border-radius:8px;padding:12px 14px;margin-bottom:14px;border:1px solid #bbf7d0">
@@ -2403,7 +2445,7 @@ function buildPurchaseReceiptHTML(p) {
       </div>
     </div>
     <table>
-      <thead><tr><th>Item</th><th style="text-align:right">Qty(m)</th><th style="text-align:right">Rate</th><th style="text-align:right">Amount</th></tr></thead>
+      <thead><tr><th>Item</th><th style="text-align:right">Qty(${u})</th><th style="text-align:right">Rate</th><th style="text-align:right">Amount</th></tr></thead>
       <tbody>
         <tr><td>${p.item||p.fabric||'—'}</td><td style="text-align:right">${fmtN(p.meters)}</td><td style="text-align:right">${fmt(p.rate)}</td><td style="text-align:right">${fmt(p.meters*p.rate)}</td></tr>
         <tr style="border-top:1px solid #e2e8f0"><td colspan="3" style="font-weight:700">Subtotal</td><td style="text-align:right;font-weight:700">${fmt(p.subtotal||p.meters*p.rate)}</td></tr>
@@ -2807,7 +2849,7 @@ function setupLocalMode() {
   payments = JSON.parse(localStorage.getItem('ss_payments')||'[]');
   profiles = JSON.parse(localStorage.getItem('ss_profiles')||'[]');
   settings = JSON.parse(localStorage.getItem('ss_settings')||'{}');
-  masterData = JSON.parse(localStorage.getItem('ss_master')||JSON.stringify({qualities:['Georgette','Satin','Silk','Cotton','Linen','Polyester','Chiffon'],colors:['Red','Green','Blue','Yellow','White','Black','Pink'],parties:[]}));
+  masterData = JSON.parse(localStorage.getItem('ss_master')||JSON.stringify({qualities:['Georgette','Satin','Silk','Cotton','Linen','Polyester','Chiffon','Crepe','Saree','Sherwani','Kurti','Shirt'],colors:['Red','Green','Blue','Yellow','White','Black','Pink','Orange'],parties:[]}));
   
   window._currentUser = {uid:'demo'};
   DB='LOCAL'; FB={};
