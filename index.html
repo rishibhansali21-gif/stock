@@ -3116,6 +3116,11 @@
         <input id="m-s" list="dl-party" placeholder="e.g. Rajan Textiles"/>
       </div>
     </div>
+    <div class="fg" style="border-top:1px dashed var(--border); padding-top:16px; margin-top:8px;">
+      <label class="fl">📸 Upload Item Photo <span class="fl-h">(Optional)</span></label>
+      <input type="file" id="m-photo" accept="image/*" onchange="compressPhoto(event)" style="padding:8px; cursor:pointer; background:var(--bg3);"/>
+      <img id="photo-preview" style="height:80px; margin-top:10px; border-radius:6px; display:none; border:1px solid var(--border2); object-fit:cover;"/>
+    </div>
     <div class="gst-box hide-staff">
       <div class="gst-box-title">🧾 GST on Initial Purchase</div>
       <div class="g2" style="margin-bottom:8px">
