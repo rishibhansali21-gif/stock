@@ -6634,6 +6634,50 @@ window.quickTrackLR = function() {
     document.getElementById('smart-tools-modal').classList.remove('on');
 };
 </script>
+  <script>
+window.tempPhoto = null; // Temporary photo save karne ke liye
+
+function compressPhoto(event) {
+    let file = event.target.files[0];
+    if(!file) return;
+
+    toast('Compressing Photo... ⏳', 2000);
+
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function(e) {
+        let img = new Image();
+        img.src = e.target.result;
+        img.onload = function() {
+            let canvas = document.createElement('canvas');
+            let ctx = canvas.getContext('2d');
+            
+            // Image ki maximum size 400px kar rahe hain (Taaki app superfast rahe)
+            let MAX_SIZE = 400;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+            } else {
+                if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // 60% quality jpeg (Database bachaane ke liye best)
+            window.tempPhoto = canvas.toDataURL('image/jpeg', 0.6);
+            
+            // Preview dikhana
+            document.getElementById('photo-preview').src = window.tempPhoto;
+            document.getElementById('photo-preview').style.display = 'block';
+            toast('Photo Ready! ✅', 1500);
+        }
+    }
+}
+</script>
  </body>
 </html>
 <div id="toast"></div>
