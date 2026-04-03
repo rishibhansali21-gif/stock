@@ -6542,7 +6542,7 @@ setTimeout(() => {
   document.body.insertAdjacentHTML('beforeend', smartHtml);
 }, 1500);
 
-// --- FEATURE 1: PDF CATALOG MAKER (SMART RATE TOGGLE + PHOTO READY) ---
+// --- FEATURE 1: PDF CATALOG MAKER (ONLY PHOTOS & NAMES, NO PRICE) ---
 window.shareCatalog = function() {
     let available = (typeof fabrics !== 'undefined' ? fabrics : []).filter(f => f.meters > 0).slice(0, 16); 
     
@@ -6550,9 +6550,6 @@ window.shareCatalog = function() {
         alert('Sir, you have no stock available to make a catalog!'); 
         return; 
     }
-
-    // NAYA VIP FEATURE: Dukaandaar se pucho Rate dikhana hai ya nahi!
-    let showRate = confirm("❓ Kya aap catalog mein item ka Bhav (Rate) dikhana chahte hain?\n\n[OK] = Dikhayen\n[Cancel] = Chhupayen (Ask for Price)");
     
     toast('Generating PDF Catalog... Please wait ⏳', 3000);
 
@@ -6575,20 +6572,14 @@ window.shareCatalog = function() {
             ? `<img src="${f.photo}" style="width:100%; height:100%; object-fit:cover; border-radius:6px;">` 
             : `<div style="height:100%; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:12px; font-weight:bold;">📷 NO PHOTO</div>`;
 
-        // Smart Rate Display Logic
-        let rateDisplay = showRate 
-            ? `<span style="font-size:15px; color:#22c78e; font-weight:800;">₹${f.rate} / ${f.unit === 'Pieces' ? 'pc' : 'm'}</span>`
-            : `<span style="font-size:12px; color:#f05264; font-weight:bold; background:#ffe4e6; padding:3px 6px; border-radius:4px;">📞 Ask for Price</span>`;
-
         html += `
             <div style="width:46%; border:1px solid #e2e8f0; border-radius:8px; padding:12px; box-sizing:border-box; background:#f8fafc;">
                 <div style="height:140px; background:#e2e8f0; border-radius:6px; margin-bottom:12px; border:1px dashed #cbd5e1; overflow:hidden;">
                     ${imageCode}
                 </div>
-                <h3 style="margin:0 0 6px 0; font-size:14px; color:#0f172a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${f.name}</h3>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="text-align:center; margin:0 0 6px 0; font-size:14px; color:#0f172a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${f.name}</h3>
+                <div style="text-align:center;">
                     <span style="font-size:12px; color:#475569; background:#e2e8f0; padding:3px 6px; border-radius:4px;">🏷️ ${f.type}</span>
-                    ${rateDisplay}
                 </div>
             </div>
         `;
