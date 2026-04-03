@@ -6498,6 +6498,88 @@ function setupLocalMode() {
   toast('App loaded in Offline Mode. Data saved to device.', 4000);
 }
 </script>
+  <script>
+setTimeout(() => {
+  // 1. Adding a Premium Rocket Floating Button & Modal Menu automatically
+  const smartHtml = `
+    <div id="smart-tools-btn" style="position:fixed; bottom:24px; right:24px; background:linear-gradient(135deg, #5c6ef8, #f05264); color:#fff; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:26px; cursor:pointer; box-shadow:0 8px 24px rgba(92,110,248,0.6); z-index:900; border:2px solid #fff; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" onclick="document.getElementById('smart-tools-modal').classList.add('on')">
+      🚀
+    </div>
+
+    <div class="qmodal-bg" id="smart-tools-modal" style="z-index:9999;">
+      <div class="qmodal" style="width:420px">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+           <div>
+             <div class="qmodal-title" style="color:var(--text)">🚀 Smart Business Tools</div>
+             <div class="qmodal-sub" style="margin-bottom:0;">Grow sales & recover payments fast!</div>
+           </div>
+           <button onclick="document.getElementById('smart-tools-modal').classList.remove('on')" style="background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer">✕</button>
+        </div>
+
+        <div class="fc" style="padding:16px; cursor:pointer; border-left:3px solid var(--emerald); transition:all 0.2s;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='var(--bg2)'" onclick="shareCatalog()">
+          <div style="font-size:16px; margin-bottom:4px; color:var(--text)">📲 <strong>Share Digital Catalog</strong></div>
+          <div style="font-size:12px; color:var(--text3)">Send top 15 available stock items on WhatsApp.</div>
+        </div>
+
+        <div class="fc" style="padding:16px; cursor:pointer; border-left:3px solid var(--amber); transition:all 0.2s;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='var(--bg2)'" onclick="openReminderMenu()">
+          <div style="font-size:16px; margin-bottom:4px; color:var(--text)">⏳ <strong>Udhaar Auto-Reminder</strong></div>
+          <div style="font-size:12px; color:var(--text3)">Send polite payment reminders to pending parties.</div>
+        </div>
+
+        <div class="fc" style="padding:16px; cursor:pointer; border-left:3px solid var(--blue); transition:all 0.2s;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='var(--bg2)'" onclick="quickTrackLR()">
+          <div style="font-size:16px; margin-bottom:4px; color:var(--text)">🚚 <strong>Quick L.R. Track</strong></div>
+          <div style="font-size:12px; color:var(--text3)">Track any parcel via Bilty/L.R. number.</div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', smartHtml);
+}, 1500);
+
+// --- FEATURE 1: CATALOG MAKER ---
+window.shareCatalog = function() {
+    let msg = `🌟 *NEW ARRIVALS - LATEST STOCK* 🌟\n\n`;
+    let available = (typeof fabrics !== 'undefined' ? fabrics : []).filter(f => f.meters > 0).slice(0, 15);
+    
+    if(available.length === 0) { 
+        alert('Sir, you have no stock available to share!'); 
+        return; 
+    }
+    
+    available.forEach((f, i) => {
+        msg += `🔹 *${f.name}*\n   📦 Stock: ${f.meters} ${f.unit}\n   💰 Rate: ₹${f.rate}/${f.unit}\n\n`;
+    });
+    msg += `👉 *To place an order, please reply to this message!* 🙏`;
+    
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    document.getElementById('smart-tools-modal').classList.remove('on');
+};
+
+// --- FEATURE 2: UDHAAR REMINDER ---
+window.openReminderMenu = function() {
+    let party = prompt("Party ka naam likhein (e.g., Ramesh Bhai):");
+    if(!party) return;
+    let amt = prompt(`${party} ka kitna udhaar baaki hai? (e.g., 50000):`);
+    if(!amt) return;
+    
+    let msg = `🙏 Jai Shree Krishna,\n\nDear *${party}*,\nAapka pichla outstanding balance *₹${amt}* pending hai. Kripya samay nikal kar account clear karein.\n\nRegards,\n*StockSaathi*`;
+    
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    document.getElementById('smart-tools-modal').classList.remove('on');
+};
+
+// --- FEATURE 3: TRANSPORT TRACKER ---
+window.quickTrackLR = function() {
+    let transport = prompt("Transport ka naam likhein (e.g., Mahadev Transport):");
+    if(!transport) return;
+    let lr = prompt("L.R. / Bilty Number likhein:");
+    if(!lr) return;
+    
+    // Auto-searches tracking details on Google
+    window.open(`https://www.google.com/search?q=${encodeURIComponent(transport + ' tracking LR ' + lr)}`, '_blank');
+    document.getElementById('smart-tools-modal').classList.remove('on');
+};
+</script>
  </body>
 </html>
 <div id="toast"></div>
