@@ -4233,6 +4233,26 @@ function closeEditProfileModal() {
 }
 
 async function saveEditProfile() {
+    // --- 🔒 VIP SECURITY LOCK START ---
+    let existingId = document.getElementById('ep-id') ? document.getElementById('ep-id').value : null;
+    let oldProfile = (typeof profiles !== 'undefined' && existingId) ? profiles.find(p => p.id === existingId) : null;
+    
+    if (oldProfile && oldProfile.pin) {
+        let oldPinAttempt = prompt("🔒 SECURITY LOCK:\nIs profile ko edit karne ke liye iska CURRENT (Purana) PIN daalein:");
+        if (oldPinAttempt === null) return; // Agar kisi ne Cancel dabaya toh ruk jao
+        if (oldPinAttempt !== oldProfile.pin) {
+            alert("❌ Galt PIN! Aapko is profile ko edit karne ki permission nahi hai.");
+            return; // Code yahin ruk jayega, save nahi hoga!
+        }
+    }
+    // --- 🔒 VIP SECURITY LOCK END ---
+
+    const name = v('ep-name');
+    if (!name) {
+        toast('Name required');
+        return;
+    }
+    // ... iske aage aapka baaki ka purana code waise hi rahega
   const name = v('ep-name'); 
   if (!name) { 
     toast('Name required'); 
