@@ -6679,6 +6679,130 @@ function compressPhoto(event) {
     }
 }
 </script>
+  <script>
+setTimeout(() => {
+  // 1. Ek naya chhota sa Edit Modal banayenge
+  const editModalHtml = `
+  <div class="modal-bg" id="edit-item-modal" style="z-index: 600;">
+    <div class="modal" style="width:400px;">
+      <div class="modal-title">✏️ Edit Item Details</div>
+      <div class="modal-sub">Update name, rate, and photo</div>
+      <input type="hidden" id="edit-id">
+      
+      <div class="fg" style="text-align:center; margin-bottom:20px; padding-bottom:16px; border-bottom:1px dashed var(--border);">
+        <img id="edit-photo-preview" style="height:120px; width:120px; border-radius:10px; border:2px solid var(--border2); display:none; margin:0 auto 10px; object-fit:cover; box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+        <br>
+        <label class="btn btn-emerald" style="cursor:pointer; display:inline-block; width:auto;">
+          📸 Upload New Photo
+          <input type="file" accept="image/*" style="display:none;" onchange="compressEditPhoto(event)">
+        </label>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Item Name</label>
+        <input id="edit-name" placeholder="Premium Saree">
+      </div>
+      <div class="g2">
+        <div class="fg"><label class="fl">Rate ₹</label><input id="edit-rate" type="number"></div>
+        <div class="fg"><label class="fl">Category</label><input id="edit-type"></div>
+      </div>
+      
+      <div class="modal-foot">
+        <button class="btn btn-ghost" onclick="document.getElementById('edit-item-modal').classList.remove('on')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveEditItem()">✅ Save Changes</button>
+      </div>
+    </div>
+  </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', editModalHtml);
+
+  // CSS for making names look clickable
+  document.head.insertAdjacentHTML('beforeend', '<style>.fab-name { cursor: pointer; transition: color 0.2s; } .fab-name:hover { color: #5c6ef8; } .fab-name:hover::after { content: " ✏️ Edit"; font-size: 11px; color: #5c6ef8; margin-left: 6px; }</style>');
+}, 1500);
+
+window.tempEditPhoto = null;
+
+// Photo Compressor (Edit mode ke liye)
+window.compressEditPhoto = function(event) {
+    let file = event.target.files[0];
+    if(!file) return;
+    toast('Compressing Photo... ⏳', 2000);
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function(e) {
+        let img = new Image();
+        img.src = e.target.result;
+        img.onload = function() {
+            let canvas = document.createElement('canvas');
+            let ctx = canvas.getContext('2d');
+            let MAX_SIZE = 400; let w = img.width, h = img.height;
+            if(w > h) { if(w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } } 
+            else { if(h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; } }
+            canvas.width = w; canvas.height = h;
+            ctx.drawImage(img, 0, 0, w, h);
+            window.tempEditPhoto = canvas.toDataURL('image/jpeg', 0.6);
+            document.getElementById('edit-photo-preview').src = window.tempEditPhoto;
+            document.getElementById('edit-photo-preview').style.display = 'block';
+            toast('Photo Ready! ✅', 1000);
+        }
+    }
+};
+
+// Open Edit Modal Form
+window.openEditItem = function(id) {
+    let f = fabrics.find(x => x.id === id);
+    if(!f) return;
+    document.getElementById('edit-id').value = id;
+    document.getElementById('edit-name').value = f.name || '';
+    document.getElementById('edit-rate').value = f.rate || '';
+    document.getElementById('edit-type').value = f.type || '';
+    
+    if(f.photo) {
+        window.tempEditPhoto = f.photo;
+        document.getElementById('edit-photo-preview').src = f.photo;
+        document.getElementById('edit-photo-preview').style.display = 'block';
+    } else {
+        window.tempEditPhoto = null;
+        document.getElementById('edit-photo-preview').style.display = 'none';
+    }
+    document.getElementById('edit-item-modal').classList.add('on');
+};
+
+// Save changes to Database
+window.saveEditItem = async function() {
+    let id = document.getElementById('edit-id').value;
+    let updates = {
+        name: document.getElementById('edit-name').value,
+        rate: Number(document.getElementById('edit-rate').value),
+        type: document.getElementById('edit-type').value,
+        photo: window.tempEditPhoto
+    };
+    
+    await fbUpdate('fabrics', id, updates);
+    toast('Item Updated Successfully! ✅');
+    document.getElementById('edit-item-modal').classList.remove('on');
+    
+    // UI update
+    let idx = fabrics.findIndex(x => x.id === id);
+    if(idx > -1) fabrics[idx] = {...fabrics[idx], ...updates};
+    if(typeof renderInv === 'function') renderInv();
+    if(typeof renderDash === 'function') renderDash();
+};
+
+// Smart Click Listener: Kisi bhi item ke naam par click karne se Edit khul jayega
+document.addEventListener('click', function(e) {
+    if(e.target && e.target.classList.contains('fab-name')) {
+        let card = e.target.closest('.fab-card');
+        if(card) {
+            let btn = card.querySelector('.fab-btn-add') || card.querySelector('.fab-btn-sell');
+            if(btn) {
+                let match = btn.getAttribute('onclick').match(/'([^']+)'/);
+                if(match && match[1]) openEditItem(match[1]);
+            }
+        }
+    }
+});
+</script>
  </body>
 </html>
 <div id="toast"></div>
