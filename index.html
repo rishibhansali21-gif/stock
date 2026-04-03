@@ -6679,14 +6679,13 @@ function compressPhoto(event) {
     }
 }
 </script>
-  <script>
+<script>
 setTimeout(() => {
-  // 1. Ek naya chhota sa Edit Modal banayenge
   const editModalHtml = `
   <div class="modal-bg" id="edit-item-modal" style="z-index: 600;">
     <div class="modal" style="width:400px;">
       <div class="modal-title">✏️ Edit Item Details</div>
-      <div class="modal-sub">Update name, rate, and photo</div>
+      <div class="modal-sub">Update name, rate, stock and photo</div>
       <input type="hidden" id="edit-id">
       
       <div class="fg" style="text-align:center; margin-bottom:20px; padding-bottom:16px; border-bottom:1px dashed var(--border);">
@@ -6704,8 +6703,9 @@ setTimeout(() => {
       </div>
       <div class="g2">
         <div class="fg"><label class="fl">Rate ₹</label><input id="edit-rate" type="number"></div>
-        <div class="fg"><label class="fl">Category</label><input id="edit-type"></div>
+        <div class="fg"><label class="fl">Available Stock</label><input id="edit-meters" type="number"></div>
       </div>
+      <div class="fg"><label class="fl">Category</label><input id="edit-type"></div>
       
       <div class="modal-foot">
         <button class="btn btn-ghost" onclick="document.getElementById('edit-item-modal').classList.remove('on')">Cancel</button>
@@ -6714,15 +6714,21 @@ setTimeout(() => {
     </div>
   </div>
   `;
+  // Agar purana edit form DOM mein hai toh hata do
+  let oldModal = document.getElementById('edit-item-modal');
+  if(oldModal) oldModal.remove();
+  
   document.body.insertAdjacentHTML('beforeend', editModalHtml);
 
   // CSS for making names look clickable
-  document.head.insertAdjacentHTML('beforeend', '<style>.fab-name { cursor: pointer; transition: color 0.2s; } .fab-name:hover { color: #5c6ef8; } .fab-name:hover::after { content: " ✏️ Edit"; font-size: 11px; color: #5c6ef8; margin-left: 6px; }</style>');
+  if(!document.querySelector('#edit-style-tag')) {
+      document.head.insertAdjacentHTML('beforeend', '<style id="edit-style-tag">.fab-name { cursor: pointer; transition: color 0.2s; } .fab-name:hover { color: #5c6ef8; } .fab-name:hover::after { content: " ✏️ Edit"; font-size: 11px; color: #5c6ef8; margin-left: 6px; }</style>');
+  }
 }, 1500);
 
 window.tempEditPhoto = null;
 
-// Photo Compressor (Edit mode ke liye)
+// Photo Compressor 
 window.compressEditPhoto = function(event) {
     let file = event.target.files[0];
     if(!file) return;
@@ -6755,6 +6761,7 @@ window.openEditItem = function(id) {
     document.getElementById('edit-id').value = id;
     document.getElementById('edit-name').value = f.name || '';
     document.getElementById('edit-rate').value = f.rate || '';
+    document.getElementById('edit-meters').value = f.meters || 0; // NEW: Stock edit
     document.getElementById('edit-type').value = f.type || '';
     
     if(f.photo) {
@@ -6774,6 +6781,7 @@ window.saveEditItem = async function() {
     let updates = {
         name: document.getElementById('edit-name').value,
         rate: Number(document.getElementById('edit-rate').value),
+        meters: Number(document.getElementById('edit-meters').value), // NEW: Save updated stock
         type: document.getElementById('edit-type').value,
         photo: window.tempEditPhoto
     };
@@ -6789,7 +6797,7 @@ window.saveEditItem = async function() {
     if(typeof renderDash === 'function') renderDash();
 };
 
-// Smart Click Listener: Kisi bhi item ke naam par click karne se Edit khul jayega
+// Smart Click Listener
 document.addEventListener('click', function(e) {
     if(e.target && e.target.classList.contains('fab-name')) {
         let card = e.target.closest('.fab-card');
