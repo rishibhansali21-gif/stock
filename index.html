@@ -6536,23 +6536,72 @@ setTimeout(() => {
   document.body.insertAdjacentHTML('beforeend', smartHtml);
 }, 1500);
 
-// --- FEATURE 1: CATALOG MAKER ---
+// --- FEATURE 1: PDF CATALOG MAKER (PREMIUM) ---
 window.shareCatalog = function() {
-    let msg = `🌟 *NEW ARRIVALS - LATEST STOCK* 🌟\n\n`;
-    let available = (typeof fabrics !== 'undefined' ? fabrics : []).filter(f => f.meters > 0).slice(0, 15);
+    let available = (typeof fabrics !== 'undefined' ? fabrics : []).filter(f => f.meters > 0).slice(0, 16); // Top 16 items
     
     if(available.length === 0) { 
-        alert('Sir, you have no stock available to share!'); 
+        alert('Sir, you have no stock available to make a catalog!'); 
         return; 
     }
     
-    available.forEach((f, i) => {
-        msg += `🔹 *${f.name}*\n   📦 Stock: ${f.meters} ${f.unit}\n   💰 Rate: ₹${f.rate}/${f.unit}\n\n`;
+    toast('Generating PDF Catalog... Please wait ⏳', 3000);
+
+    // 1. Ek temporary invisible design banayenge PDF ke liye
+    let catDiv = document.createElement('div');
+    catDiv.style.padding = '20px';
+    catDiv.style.fontFamily = 'Arial, sans-serif';
+    catDiv.style.color = '#333';
+    catDiv.style.background = '#fff';
+
+    // Header Design
+    let html = `
+        <div style="text-align:center; margin-bottom:20px; border-bottom:3px solid #5c6ef8; padding-bottom:15px;">
+            <h1 style="color:#5c6ef8; margin:0; font-size:28px; text-transform:uppercase;">🌟 Latest Collection 🌟</h1>
+            <p style="margin:5px 0 0 0; color:#6b7494; font-size:14px;">Premium Quality Fabrics & Garments</p>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:15px; justify-content:center;">
+    `;
+
+    // Loop through items and create Cards
+    available.forEach(f => {
+        html += `
+            <div style="width:46%; border:1px solid #e2e8f0; border-radius:8px; padding:12px; box-sizing:border-box; background:#f8fafc;">
+                <div style="height:140px; background:#e2e8f0; border-radius:6px; margin-bottom:12px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:12px; font-weight:bold; border:1px dashed #cbd5e1;">
+                    📷 [ ITEM PHOTO ]
+                </div>
+                <h3 style="margin:0 0 6px 0; font-size:14px; color:#0f172a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${f.name}</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; color:#475569; background:#e2e8f0; padding:3px 6px; border-radius:4px;">📦 ${f.meters} ${f.unit}</span>
+                    <span style="font-size:15px; color:#22c78e; font-weight:800;">₹${f.rate}</span>
+                </div>
+            </div>
+        `;
     });
-    msg += `👉 *To place an order, please reply to this message!* 🙏`;
-    
-    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-    document.getElementById('smart-tools-modal').classList.remove('on');
+
+    // Footer
+    html += `
+        </div>
+        <div style="margin-top:30px; text-align:center; font-size:11px; color:#94a3b8; border-top:1px solid #e2e8f0; padding-top:10px;">
+            Generated instantly via <b>StockSaathi App</b> - <i>Grow your textile business!</i>
+        </div>
+    `;
+
+    catDiv.innerHTML = html;
+
+    // 2. html2pdf library ko use karke is HTML ko PDF mein convert karna
+    let opt = {
+      margin:       0.4,
+      filename:     'New_Collection_Catalog.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'A4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(catDiv).save().then(() => {
+        toast('PDF Catalog Downloaded! ✅ Send it via WhatsApp.', 4000);
+        document.getElementById('smart-tools-modal').classList.remove('on');
+    });
 };
 
 // --- FEATURE 2: UDHAAR REMINDER ---
