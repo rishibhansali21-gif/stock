@@ -4667,6 +4667,7 @@ async function saveModal() {
   }] : [];
   
   const data = { 
+    photo: window.tempPhoto || null,
     name, unit, hsn, type, color: v('m-color'), meters: initialMeters, 
     threshold: nv('m-t') || 50, rate, supplier, rolls 
   };
