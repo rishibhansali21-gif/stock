@@ -6823,9 +6823,8 @@ document.addEventListener('click', function(e) {
         }
     }
 });
-</script>
-  // --- SMART PARTY DROPDOWN LOGIC (PRO VERSION) ---
-// Niche database wali script baad mein jodenge, abhi test ke liye ye 2 parties hain
+</script><script>
+// --- SMART PARTY DROPDOWN LOGIC (PRO VERSION) ---
 window.savedParties = [
     { name: "Ramesh Textiles", address: "101, Raghukul Market, Surat", gstin: "24AAACA1234A1Z5", whatsapp: "9876543210", email: "" },
     { name: "Mahadev Creations", address: "505, JJ Market, Surat", gstin: "24BBBCB5678B1Z5", whatsapp: "9998887776", email: "mahadev@gmail.com" }
@@ -6844,7 +6843,6 @@ window.searchParties = function() {
 
     let filtered = window.savedParties.filter(p => p.name.toLowerCase().includes(lowerInput));
     
-    // Agar party list mein mil gayi
     if(filtered.length > 0) {
         filtered.forEach(p => {
             let div = document.createElement('div');
@@ -6857,7 +6855,6 @@ window.searchParties = function() {
             div.onmouseover = () => div.style.background = 'var(--bg2)';
             div.onmouseout = () => div.style.background = 'transparent';
             
-            // Magic Auto-fill
             div.onclick = () => {
                 document.getElementById('s-customer').value = p.name;
                 document.getElementById('s-address').value = p.address || '';
@@ -6869,12 +6866,11 @@ window.searchParties = function() {
             dropdown.appendChild(div);
         });
     } 
-    // Agar party NAYI hai (list mein nahi mili)
     else {
         let div = document.createElement('div');
         div.style.padding = '12px 16px';
         div.style.cursor = 'pointer';
-        div.style.color = '#22c78e'; // Emerald Green
+        div.style.color = '#22c78e'; 
         div.innerHTML = `<div style="font-size:14px; font-weight:bold;">✨ + Add "${input}" as New Party</div>
                          <div style="font-size:11px; color:var(--text3); margin-top:4px;">Click to continue filling details below</div>`;
         
@@ -6882,7 +6878,6 @@ window.searchParties = function() {
         div.onmouseout = () => div.style.background = 'transparent';
         
         div.onclick = () => {
-            // Nayi party par click karte hi cursor seedha Address wale box me chala jayega
             document.getElementById('s-address').focus(); 
             dropdown.style.display = 'none';
         };
@@ -6892,11 +6887,13 @@ window.searchParties = function() {
     dropdown.style.display = 'block';
 };
 
-// Agar screen par kahin aur click kiya, toh dropdown band ho jaye
 document.addEventListener('click', function(e) {
     if(e.target.id !== 's-customer') {
         let dropdown = document.getElementById('party-dropdown');
-        if(dropdown) dropdown.style.display = 'none
+        if(dropdown) dropdown.style.display = 'none';
+    }
+});
+  </script>
+  <div id="toast"></div>
  </body>
 </html>
-<div id="toast"></div>
