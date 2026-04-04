@@ -7009,6 +7009,84 @@ window.addParty = async function(name) {
     await saveMaster();
     rebuildDatalists();
 };
+  // --- PARTY MASTER FUNCTIONS ---
+window.openPartyModal = function(name = '') {
+    const s = (id, v) => {
+        const el = document.getElementById(id);
+        if(el) el.value = v || '';
+    };
+    if(name && masterData.partyProfiles && masterData.partyProfiles[name]) {
+        let p = masterData.partyProfiles[name];
+        s('pm-name', name); s('pm-phone', p.phone); s('pm-gstin', p.gstin); s('pm-address', p.address); s('pm-email', p.email);
+        document.getElementById('pm-title').textContent = "Edit Party Profile";
+    } else {
+        s('pm-name', ''); s('pm-phone', ''); s('pm-gstin', ''); s('pm-address', ''); s('pm-email', '');
+        document.getElementById('pm-title').textContent = "Add New Party Profile";
+    }
+    document.getElementById('party-profile-modal').classList.add('on');
+};
+
+window.closePartyModal = function() {
+    document.getElementById('party-profile-modal').classList.remove('on');
+};
+
+window.savePartyProfileMaster = async function() {
+    const name = document.getElementById('pm-name').value.trim();
+    if(!name) { alert("Party Name is required!"); return; }
+    
+    if(!masterData.parties) masterData.parties = [];
+    if(!masterData.parties.includes(name)) masterData.parties.push(name);
+    
+    if(!masterData.partyProfiles) masterData.partyProfiles = {};
+    masterData.partyProfiles[name] = {
+        phone: document.getElementById('pm-phone').value,
+        gstin: document.getElementById('pm-gstin').value.toUpperCase(),
+        address: document.getElementById('pm-address').value,
+        email: document.getElementById('pm-email').value
+    };
+    
+    await saveMaster();
+    rebuildDatalists();
+    closePartyModal();
+    toast('Party Profile Saved! ✅');
+};
+// --- PARTY MASTER OPEN/CLOSE FUNCTIONS ---
+window.openPartyModal = function(name = '') {
+    const s = (id, v) => {
+        const el = document.getElementById(id);
+        if(el) el.value = v || '';
+    };
+    if(name && masterData.partyProfiles && masterData.partyProfiles[name]) {
+        let p = masterData.partyProfiles[name];
+        s('pm-name', name); s('pm-phone', p.phone); s('pm-gstin', p.gstin); s('pm-address', p.address); s('pm-email', p.email);
+        document.getElementById('pm-title').textContent = "Edit Party Profile";
+    } else {
+        s('pm-name', ''); s('s-phone', ''); s('pm-gstin', ''); s('pm-address', ''); s('pm-email', '');
+        document.getElementById('pm-title').textContent = "Add New Party Profile";
+    }
+    document.getElementById('party-profile-modal').classList.add('on');
+};
+
+window.closePartyModal = function() {
+    document.getElementById('party-profile-modal').classList.remove('on');
+};
+// Master list render upgrade
+const originalRenderMaster = window.renderMaster;
+window.renderMaster = function() {
+    if(originalRenderMaster) originalRenderMaster();
+    const pEl = document.getElementById('md-parties');
+    if (pEl && masterData.parties) {
+        pEl.innerHTML = masterData.parties.map((p, i) => `
+          <div class="md-item">
+            <div style="flex:1"><strong>${p}</strong></div>
+            <div style="display:flex; gap:8px;">
+               <button onclick="openPartyModal('${p}')" style="background:none;border:none;color:var(--indigo2);cursor:pointer;font-size:12px">✏️ Edit</button>
+               <button onclick="delP(${i})" style="background:none;border:none;color:var(--rose);cursor:pointer;font-size:13px">✕</button>
+            </div>
+          </div>
+        `).join('');
+    }
+};
 </script>  <div id="toast"></div>
  </body>
 </html>
