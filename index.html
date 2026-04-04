@@ -2360,9 +2360,43 @@
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;align-items:start">
-        <div class="fc">
-          <div class="fc-title">🛒 New Sale</div>
+        <div class="fc"><div class="fc-title">🛒 New Sale</div>
           
+          <div style="padding:16px; background:var(--bg3); border:1px solid var(--border2); border-radius:var(--r2); margin-bottom:20px; position:relative; z-index:20;">
+            <div style="font-size:12px; font-weight:800; color:var(--indigo2); margin-bottom:14px; text-transform:uppercase; letter-spacing:0.5px;">1. Customer Details</div>
+            
+            <div class="fg">
+              <label class="fl">Customer Name <span style="color:var(--rose)">*</span></label>
+              <input id="s-c" list="dl-party" placeholder="Search party or type new name..."/>
+            </div>
+            
+            <div class="g2 hide-staff">
+              <div class="fg">
+                <label class="fl">WhatsApp No.</label>
+                <div style="display:flex;gap:6px;align-items:center">
+                  <span class="phone-prefix">+91</span>
+                  <input id="s-phone" type="tel" placeholder="9876543210" style="flex:1"/>
+                </div>
+              </div>
+              <div class="fg">
+                <label class="fl">Buyer GSTIN</label>
+                <input id="s-buyer-gstin" list="dl-gstin" placeholder="24XXXXX1234X1Z5" style="text-transform:uppercase"/>
+              </div>
+            </div>
+            
+            <div class="g2 hide-staff">
+              <div class="fg">
+                <label class="fl">Billing Address</label>
+                <input id="s-address" placeholder="Shop No, Market Name, City..."/>
+              </div>
+              <div class="fg">
+                <label class="fl">Email ID</label>
+                <input id="s-email" type="email" placeholder="party@email.com"/>
+              </div>
+            </div>
+          </div>
+
+          <div style="font-size:12px; font-weight:800; color:var(--text); margin-bottom:14px; text-transform:uppercase; letter-spacing:0.5px;">2. Invoice & Item Details</div>
           <div class="g2">
             <div class="fg">
               <label class="fl">Bill Date</label>
