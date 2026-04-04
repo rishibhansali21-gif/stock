@@ -6895,236 +6895,105 @@ document.addEventListener('click', function(e) {
 });
   </script>
   <script>
-// ══════════════════════════════════════════════
-// PRO PARTY DROPDOWN — replaces native autocomplete
-// ══════════════════════════════════════════════
+<script>
+// ══════════════════════════════════════════════════════
+// STOCKSAATHI PRO — Party Profile System v2
+// 1. Party-first Sales form (like Vyapar/Tally)
+// 2. Smart party dropdown with auto-fill
+// 3. Party details saved & restored per party
+// ══════════════════════════════════════════════════════
 (function() {
-  const DROPDOWN_STYLE = `
-    .pp-wrap { position: relative; }
-    .pp-input-row {
-      display: flex; align-items: center; gap: 8px;
-      background: var(--bg3); border: 1px solid var(--border2);
-      border-radius: var(--r); padding: 10px 12px; cursor: text;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    .pp-input-row:focus-within {
-      border-color: var(--indigo);
-      box-shadow: 0 0 0 3px rgba(92,110,248,0.15);
-    }
-    .pp-input-row svg { flex-shrink: 0; }
-    .pp-real-input {
-      flex: 1; background: none; border: none; outline: none;
-      color: var(--text); font-family: var(--ff); font-size: 13px;
-      padding: 0; min-width: 0;
-    }
-    .pp-real-input::placeholder { color: var(--text3); }
-    .pp-clear {
-      background: none; border: none; color: var(--text3);
-      cursor: pointer; font-size: 16px; padding: 0; line-height: 1;
-      display: none;
-    }
-    .pp-dropdown {
-      position: absolute; top: calc(100% + 6px); left: 0; right: 0;
-      background: var(--bg2); border: 1px solid var(--border2);
-      border-radius: var(--r2); overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-      z-index: 9999; display: none; max-height: 260px; overflow-y: auto;
-    }
-    .pp-dropdown.open { display: block; animation: ppFade 0.12s ease; }
-    @keyframes ppFade { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
-    .pp-header {
-      padding: 7px 12px 5px;
-      font-size: 10px; color: var(--text3); font-weight: 700;
-      text-transform: uppercase; letter-spacing: 1px;
-      border-bottom: 1px solid var(--border);
-    }
-    .pp-list { padding: 4px; }
-    .pp-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 9px 10px; border-radius: var(--r); cursor: pointer;
-      transition: background 0.1s; margin-bottom: 1px;
-    }
-    .pp-item:hover, .pp-item.focused { background: var(--bg3); }
-    .pp-item.match-active { background: var(--indigo-dim); }
-    .pp-avatar {
-      width: 32px; height: 32px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700; color: #fff;
-      flex-shrink: 0; font-family: var(--ff);
-    }
-    .pp-item-info { flex: 1; min-width: 0; }
-    .pp-item-name { font-size: 13px; font-weight: 600; color: var(--text); }
-    .pp-item-name em { font-style: normal; color: var(--indigo2); }
-    .pp-item-sub { font-size: 11px; color: var(--text3); margin-top: 1px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .pp-item-arrow { color: var(--text3); font-size: 12px; }
-    .pp-add-row {
-      display: flex; align-items: center; gap: 8px;
-      padding: 9px 10px 10px; border-top: 1px solid var(--border);
-      margin-top: 2px; cursor: pointer; color: var(--emerald);
-      font-size: 12px; font-weight: 600; transition: background 0.1s;
-      border-radius: 0 0 var(--r) var(--r);
-    }
-    .pp-add-row:hover { background: var(--emerald-dim); }
-    .pp-empty { padding: 16px 12px; text-align: center; color: var(--text3); font-size: 12px; }
-  `;
 
-  const AV_COLORS = ['#5c6ef8','#22c78e','#f5a623','#9b5cf8','#3b9ef5','#f05264','#0d9488','#e879f9'];
-  function avatarColor(name) {
-    let h = 0; for (let c of name) h = (h * 31 + c.charCodeAt(0)) & 0xFFFFFF;
-    return AV_COLORS[Math.abs(h) % AV_COLORS.length];
-  }
-  function initials(name) {
-    const w = name.trim().split(/\s+/);
-    return (w[0]?.[0] || '').toUpperCase() + (w[1]?.[0] || '').toUpperCase();
-  }
-  function highlight(text, q) {
-    if (!q) return text;
-    const idx = text.toLowerCase().indexOf(q.toLowerCase());
-    if (idx < 0) return text;
-    return text.slice(0, idx) + '<em>' + text.slice(idx, idx + q.length) + '</em>' + text.slice(idx + q.length);
-  }
+// ── STORAGE: Party profiles (name → details) ──────────
+function getPartyProfiles() {
+  try { return JSON.parse(localStorage.getItem('ss_party_profiles') || '{}'); } catch { return {}; }
+}
+function savePartyProfiles(obj) {
+  localStorage.setItem('ss_party_profiles', JSON.stringify(obj));
+}
+function getPartyProfile(name) {
+  return getPartyProfiles()[name] || {};
+}
+function upsertPartyProfile(name, data) {
+  if (!name) return;
+  const all = getPartyProfiles();
+  all[name] = { ...(all[name] || {}), ...data };
+  savePartyProfiles(all);
+}
 
-  const styleEl = document.createElement('style');
-  styleEl.textContent = DROPDOWN_STYLE;
-  document.head.appendChild(styleEl);
-
-  function buildDropdown(originalInput) {
-    const wrap = document.createElement('div');
-    wrap.className = 'pp-wrap';
-    originalInput.parentNode.insertBefore(wrap, originalInput);
-
-    const row = document.createElement('div');
-    row.className = 'pp-input-row';
-
-    const searchIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>`;
-    row.innerHTML = searchIcon;
-
-    const inp = document.createElement('input');
-    inp.className = 'pp-real-input';
-    inp.placeholder = originalInput.placeholder || 'e.g. Rajesh Bhai';
-    inp.autocomplete = 'off';
-    inp.name = originalInput.id + '_pp';
-
-    const clearBtn = document.createElement('button');
-    clearBtn.className = 'pp-clear';
-    clearBtn.type = 'button';
-    clearBtn.innerHTML = '&times;';
-
-    row.appendChild(inp);
-    row.appendChild(clearBtn);
-    wrap.appendChild(row);
-
-    const ddEl = document.createElement('div');
-    ddEl.className = 'pp-dropdown';
-    ddEl.innerHTML = `<div class="pp-header">Saved Parties</div><div class="pp-list" id="pp-list-inner"></div>`;
-    wrap.appendChild(ddEl);
-
-    originalInput.style.display = 'none';
-    originalInput.removeAttribute('list');
-
-    let focusIdx = -1;
-
-    function getParties() { return (typeof masterData !== 'undefined' && masterData.parties) ? masterData.parties : []; }
-
-    function renderList(q) {
-      const parties = getParties();
-      const listEl = ddEl.querySelector('.pp-list');
-      const filtered = q ? parties.filter(p => p.toLowerCase().includes(q.toLowerCase())) : parties;
-
-      if (!filtered.length && !q) {
-        listEl.innerHTML = `<div class="pp-empty">No saved parties yet.<br>Type a name to add one.</div>`;
-      } else if (!filtered.length && q) {
-        listEl.innerHTML = `<div class="pp-empty">No match for "<strong>${q}</strong>"</div>`;
-      } else {
-        listEl.innerHTML = filtered.map((p, i) => {
-          const col = avatarColor(p);
-          const ini = initials(p);
-          const sub = (() => {
-            const s = (typeof sales !== 'undefined') ? sales.filter(s => s.customer === p) : [];
-            if (s.length) return `${s.length} sale${s.length > 1 ? 's' : ''} on record`;
-            const pur = (typeof purchases !== 'undefined') ? purchases.filter(x => x.party === p) : [];
-            if (pur.length) return `${pur.length} purchase${pur.length > 1 ? 's' : ''} on record`;
-            return 'No transactions yet';
-          })();
-          return `<div class="pp-item" data-name="${p}" data-idx="${i}">
-            <div class="pp-avatar" style="background:${col}">${ini || p[0]?.toUpperCase()}</div>
-            <div class="pp-item-info">
-              <div class="pp-item-name">${highlight(p, q)}</div>
-              <div class="pp-item-sub">${sub}</div>
-            </div>
-            <span class="pp-item-arrow">›</span>
-          </div>`;
-        }).join('');
-      }
-
-      // Add new party row
-      const addRow = document.createElement('div');
-      addRow.className = 'pp-add-row';
-      addRow.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> ${q ? `Add "<strong>${q}</strong>" as new party` : 'Add new party...'}`;
-      addRow.onclick = () => { select(q || inp.value.trim()); if (q && typeof addParty === 'function') addParty(q); };
-      listEl.after(addRow);
-      focusIdx = -1;
-    }
-
-    function open() { ddEl.classList.add('open'); renderList(inp.value.trim()); }
-    function close() { ddEl.classList.remove('open'); focusIdx = -1; }
-
-    function select(name) {
-      inp.value = name;
-      originalInput.value = name;
-      originalInput.dispatchEvent(new Event('input'));
-      clearBtn.style.display = name ? 'block' : 'none';
-      close();
-    }
-
-    inp.addEventListener('focus', () => open());
-    inp.addEventListener('input', () => {
-      originalInput.value = inp.value;
-      clearBtn.style.display = inp.value ? 'block' : 'none';
-      open();
-    });
-
-    ddEl.addEventListener('mousedown', e => {
-      const item = e.target.closest('.pp-item');
-      if (item) { e.preventDefault(); select(item.dataset.name); }
-    });
-
-    clearBtn.addEventListener('mousedown', e => {
-      e.preventDefault(); select(''); inp.focus();
-    });
-
-    inp.addEventListener('keydown', e => {
-      if (!ddEl.classList.contains('open')) { if (e.key !== 'Escape') open(); return; }
-      const items = ddEl.querySelectorAll('.pp-item');
-      if (e.key === 'ArrowDown') { e.preventDefault(); focusIdx = Math.min(focusIdx + 1, items.length - 1); items.forEach((el, i) => el.classList.toggle('focused', i === focusIdx)); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); focusIdx = Math.max(focusIdx - 1, 0); items.forEach((el, i) => el.classList.toggle('focused', i === focusIdx)); }
-      else if (e.key === 'Enter' && focusIdx >= 0) { e.preventDefault(); select(items[focusIdx].dataset.name); }
-      else if (e.key === 'Escape') close();
-      else if (e.key === 'Tab') close();
-    });
-
-    document.addEventListener('click', e => { if (!wrap.contains(e.target)) close(); });
-  }
-
-  function patchInputs() {
-    ['s-c', 'qs-c', 'npm-party', 'npm-from', 'pur-party', 'as-s', 'm-s'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el && !el.dataset.ppDone) {
-        el.dataset.ppDone = '1';
-        buildDropdown(el);
-      }
-    });
-  }
-
-  // Wait for DOM to be fully ready
-  if (document.readyState === 'complete') {
-    setTimeout(patchInputs, 300);
-  } else {
-    window.addEventListener('load', () => setTimeout(patchInputs, 300));
-  }
-})();
-</script>
+// ── STYLES ─────────────────────────────────────────────
+const CSS = `
+.pp-wrap { position: relative; }
+.pp-input-row {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: var(--r); padding: 10px 12px; cursor: text;
+  transition: border-color .15s, box-shadow .15s;
+}
+.pp-input-row:focus-within {
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 3px rgba(92,110,248,.15);
+}
+.pp-real-input {
+  flex:1; background:none; border:none; outline:none;
+  color:var(--text); font-family:var(--ff); font-size:13px; padding:0; min-width:0;
+}
+.pp-real-input::placeholder { color:var(--text3); }
+.pp-clear {
+  background:none; border:none; color:var(--text3);
+  cursor:pointer; font-size:18px; padding:0; line-height:1; display:none;
+}
+.pp-dropdown {
+  position:absolute; top:calc(100% + 6px); left:0; right:0;
+  background:var(--bg2); border:1px solid var(--border2);
+  border-radius:var(--r2); overflow:hidden;
+  box-shadow:0 12px 32px rgba(0,0,0,.45); z-index:9999;
+  display:none; max-height:300px; overflow-y:auto;
+}
+.pp-dropdown.open { display:block; animation:ppFade .12s ease; }
+@keyframes ppFade { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+.pp-header {
+  padding:8px 13px 6px;
+  font-size:10px; color:var(--text3); font-weight:700;
+  text-transform:uppercase; letter-spacing:1px;
+  border-bottom:1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.pp-list { padding:4px; }
+.pp-item {
+  display:flex; align-items:center; gap:10px;
+  padding:9px 10px; border-radius:var(--r); cursor:pointer;
+  transition:background .1s; margin-bottom:2px; position:relative;
+}
+.pp-item:hover,.pp-item.focused { background:var(--bg3); }
+.pp-avatar {
+  width:34px; height:34px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; color:#fff;
+  flex-shrink:0; font-family:var(--ff); letter-spacing:.5px;
+}
+.pp-item-info { flex:1; min-width:0; }
+.pp-item-name { font-size:13px; font-weight:600; color:var(--text); }
+.pp-item-name em { font-style:normal; color:var(--indigo2); }
+.pp-item-sub { font-size:11px; color:var(--text3); margin-top:2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pp-item-badges { display:flex; gap:4px; margin-top:3px; flex-wrap:wrap; }
+.pp-badge {
+  font-size:9px; font-weight:700; padding:1px 6px; border-radius:10px;
+  background:var(--bg4); color:var(--text3); border:1px solid var(--border2);
+}
+.pp-badge.gst { background:var(--blue-dim); color:var(--blue); border-color:rgba(59,158,245,.2); }
+.pp-badge.phone { background:var(--emerald-dim); color:var(--emerald); border-color:rgba(34,199,142,.2); }
+.pp-edit-btn {
+  opacity:0; padding:4px 8px; font-size:10px; font-weight:700;
+  background:var(--indigo-dim); color:var(--indigo2); border:1px solid rgba(92,110,248,.2);
+  border-radius:5px; cursor:pointer; transition:opacity .15s; white-space:nowrap;
+}
+.pp-item:hover .pp-edit-btn { opacity:1; }
+.pp-add-row {
+  display:flex; align-items:center; gap:8px;
+  padding:9px 10px 10px; border-top:1px solid var(--border);
+  cursor:pointer; color:var(--emerald); font-size:12
   <div id="toast"></div>
  </body>
 </html>
