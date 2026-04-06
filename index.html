@@ -7137,6 +7137,49 @@ window.renderMaster = function() {
         `).join('');
     }
 };
+  // --- DOCUMENT VIEWER MODAL LOGIC (BILL DIKHANE KE LIYE) ---
+function openDocModal(title, htmlContent, docType, options = {}) {
+    document.getElementById('doc-modal-title').textContent = title;
+    document.getElementById('doc-preview').innerHTML = htmlContent;
+    
+    let actionsHtml = `
+        <button class="btn btn-primary" onclick="printDoc()"><span style="font-size:16px">🖨️</span> Print</button>
+        <button class="btn btn-ghost" onclick="downloadPDF('${title}')"><span style="font-size:16px">📥</span> PDF</button>
+    `;
+    
+    if (options.phone) {
+        const waMsg = encodeURIComponent(options.text || `Here is your document: ${title}`);
+        actionsHtml += `<button class="btn btn-emerald" onclick="window.open('https://wa.me/91${options.phone}?text=${waMsg}', '_blank')"><span style="font-size:16px">💬</span> WhatsApp</button>`;
+    }
+    
+    document.getElementById('doc-actions-bar').innerHTML = actionsHtml;
+    document.getElementById('doc-modal').classList.add('on');
+}
+
+function closeDocModal() {
+    document.getElementById('doc-modal').classList.remove('on');
+}
+
+function printDoc() {
+    const printContents = document.getElementById('doc-preview').innerHTML;
+    const originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    location.reload(); 
+}
+
+function downloadPDF(filename) {
+    const element = document.getElementById('doc-preview');
+    toast('Generating PDF... ⏳', 2000);
+    html2pdf().set({
+        margin: 0.3,
+        filename: filename + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    }).from(element).save().then(() => toast('PDF Downloaded! ✅'));
+}
 </script>  <div id="toast"></div>
  </body>
 </html>
