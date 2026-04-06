@@ -3873,10 +3873,18 @@ async function signOut() {
   profiles = []; 
   settings = {};
   
-  document.getElementById('login-screen').style.display = 'flex'; 
-  document.getElementById('profile-screen').style.display = 'none';
-}
+  // Important property use karni padegi
+  const loginScreen = document.getElementById('login-screen');
+  if(loginScreen) loginScreen.style.setProperty('display', 'flex', 'important');
+  
+  const profileScreen = document.getElementById('profile-screen');
+  if(profileScreen) profileScreen.style.setProperty('display', 'none', 'important');
 
+  // Page reload taaki sab refresh ho jaye
+  setTimeout(() => {
+      location.reload();
+  }, 300);
+}
 function switchProfileBtn() { 
   document.getElementById('profile-screen').style.display = 'flex'; 
 }
