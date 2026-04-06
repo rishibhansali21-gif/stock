@@ -7172,6 +7172,84 @@ function downloadPDF(filename) {
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     }).from(element).save().then(() => toast('PDF Downloaded! ✅'));
 }
+  // --- LIVE DEMO & PAYWALL LOGIC ---
+
+function startDemoMode() {
+    document.getElementById('login-screen').style.setProperty('display', 'none', 'important');
+    document.getElementById('demo-banner').style.display = 'block';
+    
+    // 🪄 Dummy Data (Customer ko impress karne ke liye)
+    fabrics = [
+        { id: 'd1', name: 'Premium Georgette Saree', type: 'Saree', meters: 250, rate: 850, rolls: [{rollNo:'T-101', meters:250, date:ts()}] },
+        { id: 'd2', name: 'Linen Plain Shirt Fabric', type: 'Shirting', meters: 120, rate: 180, rolls: [{rollNo:'T-102', meters:120, date:ts()}] },
+        { id: 'd3', name: 'Designer Silk Kurti', type: 'Kurti', unit: 'Pieces', meters: 15, rate: 1200, rolls: [{rollNo:'B-201', meters:15, date:ts()}] }
+    ];
+    sales = [
+        { id: 's1', invoiceNo: 'INV-DEMO-01', fabric: 'Premium Georgette Saree', customer: 'Avadh Traders', meters: 50, rate: 900, subtotal: 45000, gst: 2250, total: 47250, paid: 47250, date: ts() }
+    ];
+    purchases = []; payments = []; expenses = [];
+    
+    document.getElementById('user-display-name').textContent = 'Demo User';
+    document.getElementById('sb-avatar').textContent = 'D';
+    
+    renderAll();
+    toast('Live Demo Started! Feel free to explore. 🚀', 3000);
+}
+
+function exitDemo() {
+    document.getElementById('demo-banner').style.display = 'none';
+    location.reload(); // Reload to clear dummy data
+}
+
+async function verifyActivation() {
+    const key = document.getElementById('activation-key').value.trim().toUpperCase();
+    
+    // 🔐 AAPKA SECRET PASSWORD (Isko kisi ko mat batana)
+    if (key === 'NIORI2026' || key === 'AVADH100') { 
+        settings.isActivated = true;
+        if (DB !== 'LOCAL') {
+            await window._firebase.setDoc(window._firebase.doc(DB, `${userPath()}/config/settings`), settings);
+        } else {
+            localStorage.setItem('ss_settings', JSON.stringify(settings));
+        }
+        toast('Shop Activated Successfully! Welcome to StockSaathi. 🎉', 4000);
+        document.getElementById('paywall-screen').style.display = 'none';
+        location.reload(); // Refresh to load actual user data
+    } else {
+        toast('❌ Invalid Activation Key! Contact Support.');
+    }
+}
+
+// ♻️ UPDATED INIT APP (Paywall Check ke sath)
+window.initApp = async function() {
+  waitForDB(async () => {
+    await loadSettings(); 
+    await loadMaster(); 
+    await loadProfiles(); 
+    await loadFabrics();
+    await loadSales(); 
+    await loadPurchases(); 
+    await loadPayments(); 
+    await loadExpenses(); 
+
+    // 🛑 THE PAYWALL CHECK (Agar premium nahi hai, toh rok do!)
+    if (!settings.isActivated) {
+        document.getElementById('paywall-screen').style.display = 'flex';
+        document.getElementById('profile-screen').style.setProperty('display', 'none', 'important');
+        return; // Code aage nahi jayega
+    }
+
+    if (profiles.length > 1) { 
+      renderProfileScreen(); 
+      document.getElementById('profile-screen').style.display = 'flex'; 
+    } else if (profiles.length === 1) { 
+      applyProfile(profiles[0]); 
+    } else { 
+      document.getElementById('profile-screen').style.display = 'none'; 
+      showOnboarding(); 
+    }
+  });
+};
 </script>  <div id="toast"></div>
   <div id="demo-banner" style="display:none; position:fixed; top:0; left:0; right:0; background:var(--amber); color:var(--amber-dim); text-align:center; padding:8px 12px; font-weight:700; z-index:100000; font-size:13px; box-shadow:0 4px 12px rgba(0,0,0,0.2);">
   ⚠️ You are viewing a Live Demo. (Data will not be saved) 
