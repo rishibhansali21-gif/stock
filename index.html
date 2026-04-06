@@ -6841,12 +6841,23 @@ window.openEditItem = function(id) {
 };
 
 // Save changes to Database
+// Save changes to Database (Fixed Roll Stock Logic)
 window.saveEditItem = async function() {
     let id = document.getElementById('edit-id').value;
+    let f = fabrics.find(x => x.id === id);
+    let newMeters = Number(document.getElementById('edit-meters').value);
+    
+    // Agar stock edit hua hai, toh usko pehle roll mein adjust kar do
+    let updatedRolls = f.rolls || [];
+    if (newMeters !== f.meters) {
+        updatedRolls = [{ rollNo: 'Manual-Adjust', meters: newMeters, date: ts() }];
+    }
+
     let updates = {
         name: document.getElementById('edit-name').value,
         rate: Number(document.getElementById('edit-rate').value),
-        meters: Number(document.getElementById('edit-meters').value), // NEW: Save updated stock
+        meters: newMeters,
+        rolls: updatedRolls, 
         type: document.getElementById('edit-type').value,
         photo: window.tempEditPhoto
     };
@@ -6861,7 +6872,6 @@ window.saveEditItem = async function() {
     if(typeof renderInv === 'function') renderInv();
     if(typeof renderDash === 'function') renderDash();
 };
-
 // Smart Click Listener
 document.addEventListener('click', function(e) {
     if(e.target && e.target.classList.contains('fab-name')) {
