@@ -7110,26 +7110,6 @@ window.savePartyProfileMaster = async function() {
     closePartyModal();
     toast('Party Profile Saved! ✅');
 };
-// --- PARTY MASTER OPEN/CLOSE FUNCTIONS ---
-window.openPartyModal = function(name = '') {
-    const s = (id, v) => {
-        const el = document.getElementById(id);
-        if(el) el.value = v || '';
-    };
-    if(name && masterData.partyProfiles && masterData.partyProfiles[name]) {
-        let p = masterData.partyProfiles[name];
-        s('pm-name', name); s('pm-phone', p.phone); s('pm-gstin', p.gstin); s('pm-address', p.address); s('pm-email', p.email);
-        document.getElementById('pm-title').textContent = "Edit Party Profile";
-    } else {
-        s('pm-name', ''); s('s-phone', ''); s('pm-gstin', ''); s('pm-address', ''); s('pm-email', '');
-        document.getElementById('pm-title').textContent = "Add New Party Profile";
-    }
-    document.getElementById('party-profile-modal').classList.add('on');
-};
-
-window.closePartyModal = function() {
-    document.getElementById('party-profile-modal').classList.remove('on');
-};
 // Master list render upgrade
 const originalRenderMaster = window.renderMaster;
 window.renderMaster = function() {
