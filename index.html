@@ -7245,7 +7245,7 @@ window.verifyActivation = async function() {
     }
 }
 
-// ♻️ UPDATED INIT APP (Paywall Check)
+// ♻️ UPDATED INIT APP (Paywall Check with VIP Developer Bypass)
 window.initApp = async function() {
   waitForDB(async () => {
     await loadSettings(); 
@@ -7257,11 +7257,21 @@ window.initApp = async function() {
     await loadPayments(); 
     await loadExpenses(); 
 
-    // 🛑 THE PAYWALL CHECK (Agar premium nahi hai, toh rok do!)
-    if (!settings.isActivated) {
+    // 👑 VIP DEVELOPER BYPASS (Aapka apna number yahan daalo)
+    // Dhyan rahe: "+91" zaroor lagana apne number ke aage
+    const myNumber = "+919328299848"; 
+    
+    let isDeveloper = false;
+    if (window._currentUser && window._currentUser.phoneNumber === myNumber) {
+        isDeveloper = true;
+        settings.isActivated = true; // Aapke liye hamesha Premium ON rahega
+    }
+
+    // 🛑 THE PAYWALL CHECK (Agar premium nahi hai aur developer bhi nahi hai, toh rok do)
+    if (!settings.isActivated && !isDeveloper) {
         document.getElementById('paywall-screen').style.display = 'flex';
         document.getElementById('profile-screen').style.setProperty('display', 'none', 'important');
-        return; 
+        return; // Code aage nahi jayega
     }
 
     if (profiles.length > 1) { 
@@ -7274,7 +7284,7 @@ window.initApp = async function() {
       showOnboarding(); 
     }
   });
-};</script>  <div id="toast"></div>
+};};</script>  <div id="toast"></div>
   <div id="demo-banner" style="display:none; position:fixed; top:0; left:0; right:0; background:var(--amber); color:var(--amber-dim); text-align:center; padding:8px 12px; font-weight:700; z-index:100000; font-size:13px; box-shadow:0 4px 12px rgba(0,0,0,0.2);">
   ⚠️ You are viewing a Live Demo. (Data will not be saved) 
   <button onclick="exitDemo()" style="margin-left:12px; padding:5px 12px; background:#fff; color:var(--amber-dim); border:none; border-radius:6px; font-weight:800; cursor:pointer;">👉 Start Your Shop</button>
