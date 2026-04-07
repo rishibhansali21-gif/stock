@@ -7172,7 +7172,7 @@ function downloadPDF(filename) {
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     }).from(element).save().then(() => toast('PDF Downloaded! ✅'));
 }
-  // --- LIVE DEMO & PAYWALL LOGIC (MASTER FIX) ---
+  // --- LIVE DEMO &  LOGIC (MASTER FIX) ---
 
 window.startDemoMode = function() {
     console.log("Demo mode starting...");
@@ -7291,25 +7291,62 @@ window.initApp = async function() {
   <button onclick="exitDemo()" style="margin-left:12px; padding:5px 12px; background:#fff; color:var(--amber-dim); border:none; border-radius:6px; font-weight:800; cursor:pointer;">👉 Start Your Shop</button>
 </div>
 
-<div id="paywall-screen" style="display:none; position:fixed; inset:0; background:var(--bg); z-index:99999; flex-direction:column; align-items:center; justify-content:center; padding:20px; text-align:center;">
-  <div style="font-size:55px; margin-bottom:10px;">🛑</div>
-  <h1 style="color:var(--text); margin-bottom:10px; font-size: 28px; font-weight:800; letter-spacing:-1px;">Activate Your Shop</h1>
-  <p style="color:var(--text3); max-width:400px; margin-bottom:25px; line-height:1.6; font-size:14px;">To use StockSaathi for your business, please pay the annual subscription fee of <strong style="color:var(--emerald); font-size:16px;">₹999/year</strong>.</p>
+<div id="paywall-screen" style="display:none; position:fixed; inset:0; background:var(--bg); z-index:99999; flex-direction:column; align-items:center; justify-content:center; padding:20px; text-align:center; overflow-y:auto;">
+  <div style="font-size:50px; margin-bottom:15px; margin-top:20px;">🚀</div>
+  <h1 style="color:var(--text); margin-bottom:10px; font-size: 26px; font-weight:800; letter-spacing:-1px;">Choose Your Plan</h1>
+  <p style="color:var(--text3); max-width:500px; margin-bottom:30px; line-height:1.6; font-size:14px;">Select a plan to unlock StockSaathi for your business. Contact support for the payment link and activation key.</p>
   
-  <div style="background:var(--bg2); padding:24px; border-radius:var(--r3); border:1px solid var(--border); margin-bottom:25px; box-shadow: var(--shadow-md);">
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi://pay?pa=yourupi@ybl&pn=StockSaathi&am=999" style="border-radius:10px; margin-bottom:12px; border:4px solid #fff;">
-    <div style="font-size:14px; font-weight:700; color:var(--text2);">Scan to Pay ₹999</div>
+  <div style="display:flex; gap:20px; margin-bottom:35px; flex-wrap:wrap; justify-content:center;">
+    
+    <div style="background:var(--bg2); padding:24px 20px; border-radius:var(--r3); border:1px solid var(--border2); width:240px; display:flex; flex-direction:column; box-shadow:var(--shadow);">
+       <div style="font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; margin-bottom:8px; letter-spacing:1px;">Silver Monthly</div>
+       <div style="font-size:32px; font-weight:800; color:var(--text); font-family:var(--fm); margin-bottom:4px; letter-spacing:-1px;">₹XXX</div>
+       <div style="font-size:11px; color:var(--text3); margin-bottom:20px;">Billed every month</div>
+       <div style="font-size:13px; color:var(--text2); line-height:2; text-align:left; border-top:1px solid var(--border); padding-top:16px; flex:1;">
+         <span style="color:var(--text)">✓</span> Auto Cloud Backup<br>
+         <span style="color:var(--text)">✓</span> Inventory Tracking<br>
+         <span style="color:var(--text)">✓</span> GST Billing<br>
+         <span style="color:var(--text)">✓</span> Standard Support
+       </div>
+    </div>
+
+    <div style="background:linear-gradient(145deg, var(--bg2), #151a2d); padding:24px 20px; border-radius:var(--r3); border:2px solid var(--indigo); width:260px; box-shadow:0 8px 32px rgba(92,110,248,0.25); position:relative; display:flex; flex-direction:column; transform:scale(1.05); z-index:10;">
+       <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--indigo); color:#fff; font-size:10px; font-weight:800; padding:5px 14px; border-radius:20px; letter-spacing:1px; box-shadow:0 4px 12px rgba(92,110,248,0.4);">BEST VALUE</div>
+       <div style="font-size:12px; font-weight:700; color:var(--indigo2); text-transform:uppercase; margin-bottom:8px; letter-spacing:1px;">Gold Annual</div>
+       <div style="font-size:36px; font-weight:800; color:var(--indigo2); font-family:var(--fm); margin-bottom:4px; letter-spacing:-1px;">₹XXX</div>
+       <div style="font-size:11px; color:var(--text3); margin-bottom:20px;">Billed once a year</div>
+       <div style="font-size:13px; color:var(--text2); line-height:2; text-align:left; border-top:1px solid var(--border3); padding-top:16px; flex:1;">
+         <span style="color:var(--indigo2)">✓</span> <strong>Save 2 Months Fee</strong><br>
+         <span style="color:var(--indigo2)">✓</span> Everything in Silver<br>
+         <span style="color:var(--indigo2)">✓</span> CA Export & Ledger<br>
+         <span style="color:var(--indigo2)">✓</span> Priority WhatsApp Support
+       </div>
+    </div>
+
+    <div style="background:var(--bg2); padding:24px 20px; border-radius:var(--r3); border:1px solid var(--border2); width:240px; display:flex; flex-direction:column; box-shadow:var(--shadow);">
+       <div style="font-size:12px; font-weight:700; color:var(--amber); text-transform:uppercase; margin-bottom:8px; letter-spacing:1px;">Platinum Lifetime</div>
+       <div style="font-size:32px; font-weight:800; color:var(--amber); font-family:var(--fm); margin-bottom:4px; letter-spacing:-1px;">₹XXX</div>
+       <div style="font-size:11px; color:var(--text3); margin-bottom:20px;">One-time payment</div>
+       <div style="font-size:13px; color:var(--text2); line-height:2; text-align:left; border-top:1px solid var(--border); padding-top:16px; flex:1;">
+         <span style="color:var(--amber)">✓</span> <strong>Pay Once, Use Forever</strong><br>
+         <span style="color:var(--amber)">✓</span> Unlimited Users<br>
+         <span style="color:var(--amber)">✓</span> Lifetime Updates<br>
+         <span style="color:var(--amber)">✓</span> Direct Founder Support
+       </div>
+    </div>
   </div>
 
-  <p style="font-size:12px; font-weight:600; color:var(--text2); margin-bottom:10px; text-transform:uppercase; letter-spacing:1px;">Enter Activation Key provided on WhatsApp:</p>
-  <div style="display:flex; gap:10px; margin-bottom:25px;">
-    <input type="text" id="activation-key" placeholder="ENTER KEY..." style="text-transform:uppercase; text-align:center; letter-spacing:3px; font-weight:800; width:220px; font-size:16px;">
-    <button class="btn btn-primary" onclick="verifyActivation()" style="font-size:15px; padding:0 20px;">Unlock 🔓</button>
+  <div style="background:var(--bg3); padding:20px; border-radius:var(--r2); border:1px dashed var(--border2); width:100%; max-width:500px; margin-bottom:20px;">
+    <div style="font-size:12px; font-weight:700; color:var(--text2); margin-bottom:12px; text-transform:uppercase; letter-spacing:1px;">Already Paid? Enter Activation Key</div>
+    <div style="display:flex; gap:10px; justify-content:center;">
+      <input type="text" id="activation-key" placeholder="e.g. NIORI2026" style="text-transform:uppercase; text-align:center; letter-spacing:2px; font-weight:700; width:200px; font-size:15px; background:var(--bg); border:1px solid var(--border);">
+      <button class="btn btn-primary" onclick="verifyActivation()" style="font-size:14px; padding:0 20px;">Unlock 🔓</button>
+    </div>
   </div>
 
-  <button class="btn btn-emerald" onclick="window.open('https://wa.me/919876543210?text=Hello,%20I%20want%20to%20activate%20my%20StockSaathi%20Shop.%20I%20have%20paid%20Rs999.', '_blank')">💬 Send Payment Screenshot</button>
-  
-  <button class="btn btn-ghost" style="margin-top:20px; color:var(--rose); border:none;" onclick="document.getElementById('paywall-screen').style.display='none'; signOut()">🚪 Sign Out & Go Back</button>
-</div>
- </body>
+  <div style="display:flex; gap:12px; margin-bottom:30px;">
+    <button class="btn btn-emerald" onclick="window.open('https://wa.me/919328299848?text=Hello,%20I%20want%20to%20activate%20my%20StockSaathi%20Shop.%20Please%20share%20the%20Razorpay%20link.', '_blank')">💬 Contact For Payment Link</button>
+    <button class="btn btn-ghost" style="color:var(--rose); border-color:var(--border2);" onclick="document.getElementById('paywall-screen').style.display='none'; signOut()">🚪 Sign Out</button>
+  </div>
+</div> </body>
 </html>
