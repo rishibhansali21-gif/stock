@@ -10,7 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-  
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
     import { 
@@ -7244,7 +7244,28 @@ window.verifyActivation = async function() {
         toast('❌ Invalid Activation Key!');
     }
 }
-
+window.payWithRazorpay = function(planName, amount) {
+    const options = {
+        "key": "rzp_test_SaiTIGvPMqUVee", 
+        "amount": amount * 100, 
+        "currency": "INR",
+        "name": "StockSaathi Premium",
+        "description": planName + " Activation",
+        "image": "https://cdn-icons-png.flaticon.com/512/10438/10438069.png",
+        "handler": function (response){
+            alert("Payment Successful! ID: " + response.razorpay_payment_id);
+            const msg = `Hello Rishi, I have paid ₹${amount} for the ${planName}. \n\nPayment ID: ${response.razorpay_payment_id}\n\nPlease send my Activation Key.`;
+            window.open(`https://wa.me/919328299848?text=${encodeURIComponent(msg)}`, '_blank');
+        },
+        "prefill": {
+            "name": window._currentUser?.displayName || "Shop Owner",
+            "contact": window._currentUser?.phoneNumber || ""
+        },
+        "theme": { "color": "#5c6ef8" }
+    };
+    const rzp = new Razorpay(options);
+    rzp.open();
+};
 // ♻️ UPDATED INIT APP (Paywall Check with VIP Developer Bypass)
 window.initApp = async function() {
   waitForDB(async () => {
