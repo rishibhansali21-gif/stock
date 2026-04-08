@@ -7139,9 +7139,13 @@ function openDocModal(title, htmlContent, docType, options = {}) {
         <button class="btn btn-ghost" onclick="downloadPDF('${title}')"><span style="font-size:16px">📥</span> PDF</button>
     `;
     
+    // NAYA BUTTON: Mobile Share Menu kholne ke liye (PDF ke sath)
+    let cleanText = options.text ? options.text.replace(/'/g, "\\'") : `Here is your document: ${title}`;
+    actionsHtml += `<button class="btn btn-blue" onclick="sharePDFMobile('${title}', '${cleanText}')"><span style="font-size:16px">📲</span> Share PDF</button>`;
+    
     if (options.phone) {
         const waMsg = encodeURIComponent(options.text || `Here is your document: ${title}`);
-        actionsHtml += `<button class="btn btn-emerald" onclick="window.open('https://wa.me/91${options.phone}?text=${waMsg}', '_blank')"><span style="font-size:16px">💬</span> WhatsApp</button>`;
+        actionsHtml += `<button class="btn btn-emerald" onclick="window.open('https://wa.me/91${options.phone}?text=${waMsg}', '_blank')"><span style="font-size:16px">💬</span> WA Text Bill</button>`;
     }
     
     document.getElementById('doc-actions-bar').innerHTML = actionsHtml;
@@ -7172,7 +7176,43 @@ function downloadPDF(filename) {
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     }).from(element).save().then(() => toast('PDF Downloaded! ✅'));
 }
-  // --- LIVE DEMO &  LOGIC (MASTER FIX) ---
+
+// NAYA FUNCTION: Web Share API jisse WhatsApp pe directly PDF bheja jayega
+async function sharePDFMobile(filename, msgText) {
+    if (!navigator.canShare || !navigator.share) {
+        toast('Share feature not supported on this browser/device. Use PDF Download.', 4000);
+        return;
+    }
+    
+    toast('Generating PDF to share... ⏳', 2000);
+    const element = document.getElementById('doc-preview');
+    
+    try {
+        const pdfBlob = await html2pdf().set({
+            margin: 0.3,
+            filename: filename + '.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        }).from(element).output('blob');
+        
+        const file = new File([pdfBlob], filename + '.pdf', { type: 'application/pdf' });
+        
+        if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+                files: [file],
+                title: filename,
+                text: msgText || 'Please find the attached document.'
+            });
+            toast('Opening Share Menu... ✅', 2000);
+        } else {
+            toast('Cannot share files on this device.', 3000);
+        }
+    } catch (error) {
+        console.error('Sharing failed', error);
+        toast('Failed to share document.', 3000);
+    }
+}  // --- LIVE DEMO &  LOGIC (MASTER FIX) ---
 
 window.startDemoMode = function() {
     console.log("Demo mode starting...");
