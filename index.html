@@ -7337,23 +7337,30 @@ window.initApp = async function() {
     await loadPayments(); 
     await loadExpenses(); 
 
-    // 👑 VIP DEVELOPER BYPASS (Aapka apna number yahan daalo)
-    // Dhyan rahe: "+91" zaroor lagana apne number ke aage
-    const myNumber = "+919328299848"; 
-    
+    // 👑 VIP DEVELOPER BYPASS & PREMIUM CHECK
+    const myNumber = "+919328299848";
     let isDeveloper = false;
+    
+    // Local Storage se pehle hi check kar lo (Instant loading ke liye)
+    const isLocalPremium = localStorage.getItem('stockSaathi_Status') === 'premium';
+
     if (window._currentUser && window._currentUser.phoneNumber === myNumber) {
         isDeveloper = true;
-        settings.isActivated = true; // Aapke liye hamesha Premium ON rahega
+        if(settings) settings.isActivated = true; 
     }
 
-    // 🛑 THE PAYWALL CHECK (Agar premium nahi hai aur developer bhi nahi hai, toh rok do)
-    if (!settings.isActivated && !isDeveloper) {
-        document.getElementById('paywall-screen').style.display = 'flex';
+    // 🛑 THE PAYWALL CHECK (Dono check karo: Firebase settings aur LocalStorage)
+    const hasPremium = (settings && settings.isActivated === true) || isLocalPremium;
+
+    if (!hasPremium && !isDeveloper) {
+        console.log("Access Denied: Showing Paywall");
+        document.getElementById('paywall-screen').style.setProperty('display', 'flex', 'important');
         document.getElementById('profile-screen').style.setProperty('display', 'none', 'important');
-        return; // Code aage nahi jayega
+        return; 
+    } else {
+        console.log("Access Granted: Welcome Premium User");
+        document.getElementById('paywall-screen').style.setProperty('display', 'none', 'important');
     }
-
     if (profiles.length > 1) { 
       renderProfileScreen(); 
       document.getElementById('profile-screen').style.display = 'flex'; 
