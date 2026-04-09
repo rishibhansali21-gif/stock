@@ -2910,7 +2910,7 @@
     </div>
     <div class="qmodal-foot" style="flex-direction:column;">
       <button class="btn btn-ghost" onclick="closeAddStock()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveAddStock()">✅ Save & Record Purchase</button>
+      <button class="btn btn-primary" onclick="transferQuickSellToMain()">✅ Proceed to Billing</button>
     </div>
   </div>
 </div>
@@ -7461,5 +7461,62 @@ function payWithRazorpay(planName, amountInRupees) {
 
   <button class="btn btn-ghost" style="color:var(--rose);" onclick="document.getElementById('paywall-screen').style.display='none'; signOut()">🚪 Sign Out</button>
 </div>
+  <script>
+// --- ⚡ QUICK SELL TO MAIN BILLING TRANSFER ---
+function transferQuickSellToMain() {
+    try {
+        // 1. Modal se data uthao (IDs match honi chahiye)
+        const itemName = document.getElementById('qs-fab-name')?.innerText || "";
+        const batchId = document.getElementById('qs-roll')?.value || "";
+        const qty = document.getElementById('qs-m')?.value || "";
+
+        // 2. Data ko memory mein save karo
+        const transferData = {
+            name: itemName,
+            batch: batchId,
+            qty: qty,
+            isFromQuick: true
+        };
+        localStorage.setItem('pendingQuickSale', JSON.stringify(transferData));
+
+        // 3. Modal band karo
+        const modal = document.getElementById('quicksell-modal-bg');
+        if (modal) modal.style.display = 'none';
+
+        // 4. Sales page par bhej do
+        if (typeof showPage === 'function') {
+            showPage('sales');
+        }
+
+        // 5. Thodi der baad auto-fill chalao
+        setTimeout(autoFillMainBill, 500);
+        
+    } catch (err) {
+        console.error("Transfer Error:", err);
+    }
+}
+
+// --- 🤖 AUTO-FILL MAIN BILLING FORM ---
+function autoFillMainBill() {
+    const rawData = localStorage.getItem('pendingQuickSale');
+    if (!rawData) return;
+
+    const data = JSON.parse(rawData);
+
+    // ⚠️ YAHA MAIN BILLING FORM KI IDs (Apne code se verify karlo)
+    const mainItemField = document.getElementById('as-party'); 
+    const mainBatchField = document.getElementById('as-roll-batch'); 
+    const mainQtyField = document.getElementById('as-m');
+
+    if (mainItemField) mainItemField.value = data.name;
+    if (mainBatchField) mainBatchField.value = data.batch;
+    if (mainQtyField) mainQtyField.value = data.qty;
+
+    // Kaam hone ke baad memory saaf karo
+    localStorage.removeItem('pendingQuickSale');
+    
+    if(typeof toast === 'function') toast("Quick Data Loaded! ⚡ Bill complete karein.");
+}
+</script>
 </body>
 </html>
