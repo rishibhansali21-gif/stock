@@ -7345,6 +7345,41 @@ window.initApp = async function() {
    }
   });
 };
+  // --- RAZORPAY AUTOMATIC PAYMENT & UNLOCK ---
+function payWithRazorpay(planName, amountInRupees) {
+    // ⚠️ YAHA APNI ASLI RAZORPAY TEST KEY DAALNA MAT BHOOLNA ⚠️
+    const razorpayKey = "rzp_test_SaiTIGvPMqUVee"; 
+
+    var options = {
+        "key": razorpayKey,
+        "amount": amountInRupees * 100, // Razorpay paise mein calculate karta hai
+        "currency": "INR",
+        "name": "StockSaathi",
+        "description": planName + " Subscription",
+        "theme": {
+            "color": "#4f46e5" 
+        },
+        "handler": async function (response) {
+            toast('Payment Successful! 🎉 Unlocking app...', 3000);
+            
+            settings.isActivated = true;
+            settings.plan = planName;
+            settings.paymentId = response.razorpay_payment_id; 
+            
+            if (window._currentUser) {
+                await fbSave('settings', window._currentUser.uid, settings);
+            }
+
+            document.getElementById('paywall-screen').style.setProperty('display', 'none', 'important');
+            if (typeof renderAll === 'function') renderAll();
+            
+            toast('Welcome to StockSaathi Premium! 🚀', 4000);
+        }
+    };
+    
+    var rzp1 = new window.Razorpay(options);
+    rzp1.open();
+}
 </script> <div id="toast"></div>
   <div id="demo-banner" style="display:none; position:fixed; top:0; left:0; right:0; background:var(--amber); color:var(--amber-dim); text-align:center; padding:8px 12px; font-weight:700; z-index:100000; font-size:13px; box-shadow:0 4px 12px rgba(0,0,0,0.2);">
   ⚠️ You are viewing a Live Demo. (Data will not be saved) 
