@@ -7284,48 +7284,43 @@ window.verifyActivation = async function() {
     }
 }
 window.payWithRazorpay = function(planName, amount) {
-  const options = {
-    "key": "rzp_test_SaiTIGvPmQUVee", 
-    "amount": amount * 100,
-    "currency": "INR",
-    "name": "StockSaathi Premium",
-    "description": planName + " Activation",
-    "image": "https://cdn-icons-png.flaticon.com/512/10438/10438069.png",
-    "handler": async function (response){
-      // 1. Alert aur WhatsApp message (User ke liye)
-      alert("Payment Successful! ID: " + response.razorpay_payment_id);
-      
-      // 2. App ko Activate karo (Ye sabse zaroori hai)
-      if (typeof settings !== 'undefined') {
-        settings.isActivated = true;
-        settings.plan = planName;
-        settings.paymentId = response.razorpay_payment_id;
-      }
+    const options = {
+        "key": "rzp_test_SaiTIGvPmQUVee", 
+        "amount": amount * 100,
+        "currency": "INR",
+        "name": "StockSaathi Premium",
+        "description": planName + " Activation",
+        "image": "https://cdn-icons-png.flaticon.com/512/10438/10438069.png",
+        "handler": async function (response) {
+            alert("Payment Successful! ID: " + response.razorpay_payment_id);
+            
+            if (typeof settings !== 'undefined') {
+                settings.isActivated = true;
+                settings.plan = planName;
+                settings.paymentId = response.razorpay_payment_id;
+            }
 
-      // 3. Local Storage mein save karo (Double Safety)
-      localStorage.setItem('stockSaathi_Status', 'premium');
+            localStorage.setItem('stockSaathi_Status', 'premium');
 
-      // 4. Firebase mein save karo (Permanent record)
-      if (window._currentUser) {
-        await fbSave('settings', window._currentUser.uid, settings);
-      }
+            if (window._currentUser) {
+                await fbSave('settings', window._currentUser.uid, settings);
+            }
 
-      // 5. WhatsApp pe confirmation bhej do (Optional)
-      const msg = `Hello Rishi, I have paid ₹${amount} for ${planName}. \nPayment ID: ${response.razorpay_payment_id}\nApp is now unlocked!`;
-      window.open(`https://wa.me/919328299848?text=${encodeURIComponent(msg)}`, '_blank');
+            const msg = `Hello Rishi, I have paid ₹${amount} for ${planName}. \nPayment ID: ${response.razorpay_payment_id}\nApp is now unlocked!`;
+            window.open(`https://wa.me/919328299848?text=${encodeURIComponent(msg)}`, '_blank');
 
-      // 6. Page reload karo taaki dashboard dikhne lage
-      setTimeout(() => { window.location.reload(); }, 1000);
-    },
-    "prefill": {
-      "name": window._currentUser?.displayName || "Shop Owner",
-      "contact": window._currentUser?.phoneNumber || ""
-    },
-    "theme": { "color": "#5c6ef8" }
-  };
-  const rzp = new Razorpay(options);
-  rzp.open();
-};// ♻️ UPDATED INIT APP (Paywall Check with VIP Developer Bypass)
+            setTimeout(() => { window.location.reload(); }, 1000);
+        },
+        "prefill": {
+            "name": window._currentUser?.displayName || "Shop Owner",
+            "contact": window._currentUser?.phoneNumber || ""
+        },
+        "theme": { "color": "#5c6ef8" }
+    };
+    // YE LINE FUNCTION KE ANDAR HONI CHAHIYE
+    const rzp = new Razorpay(options);
+    rzp.open();
+};};// ♻️ UPDATED INIT APP (Paywall Check with VIP Developer Bypass)
 window.initApp = async function() {
   waitForDB(async () => {
     await loadSettings(); 
