@@ -7317,22 +7317,22 @@ window.payWithRazorpay = function(planName, amount) {
         },
         "theme": { "color": "#5c6ef8" }
     };
-    // YE LINE FUNCTION KE ANDAR HONI CHAHIYE
     const rzp = new Razorpay(options);
     rzp.open();
-};};// ♻️ UPDATED INIT APP (Paywall Check with VIP Developer Bypass)
-window.initApp = async function() {
-  waitForDB(async () => {
-    await loadSettings(); 
-    await loadMaster(); 
-    await loadProfiles(); 
-    await loadFabrics();
-    await loadSales(); 
-    await loadPurchases(); 
-    await loadPayments(); 
-    await loadExpenses(); 
+};
 
-    // 👑 VIP DEVELOPER BYPASS & PREMIUM CHECK
+// ♻️ UPDATED INIT APP (Paywall Check with VIP Developer Bypass)
+window.initApp = async function() {
+    waitForDB(async () => {
+        await loadSettings(); 
+        await loadMaster(); 
+        await loadProfiles(); 
+        await loadFabrics();
+        await loadSales(); 
+        await loadPurchases(); 
+        await loadPayments(); 
+        await loadExpenses();
+      // 👑 VIP DEVELOPER BYPASS & PREMIUM CHECK
     const myNumber = "+919328299848";
     let isDeveloper = false;
     
