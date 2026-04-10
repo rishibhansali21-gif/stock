@@ -115,41 +115,55 @@
       box-sizing: border-box;
     }
 
-  :root {
-    /* 🌑 BACKGROUNDS (Pure Deep Black & Clean Dark Greys) */
-    --bg: #070707;       
-    --bg2: #111111;      
-    --bg3: #1a1a1a;      
-    --bg4: #222222;
+:root {
+    /* 🌑 BACKGROUNDS (Deep True Dark - No More Muddy Grey) */
+    --bg: #090a0f;       /* Pure Deep Dark Background */
+    --bg2: #14171f;      /* Cleaner Dark Grey for Sidebar/Cards */
+    --bg3: #1c212b;      /* Hover states */
+    --bg4: #252b36;
 
     /* ➖ BORDERS (Bohot subtle) */
-    --border: rgba(255, 255, 255, 0.04);
-    --border2: rgba(255, 255, 255, 0.08);
-    --border3: rgba(255, 255, 255, 0.12);
+    --border: rgba(255, 255, 255, 0.03); 
+    --border2: rgba(255, 255, 255, 0.06);
+    --border3: rgba(255, 255, 255, 0.09);
 
-    /* 📝 TEXT (High Contrast) */
-    --text: #ffffff;     
-    --text2: #a3a3a3;    
-    --text3: #666666;
+    /* 📝 TYPOGRAPHY (Hierarchy & Cleanliness) */
+    --text: #ffffff;     /* Main titles - pure white */
+    --text2: #a1a1aa;    /* Clean secondary grey (subtext) */
+    --text3: #71717a;
 
-    /* 🌟 PRIMARY BRAND ACCENT (Premium Mago Yellow) */
-    --indigo: #ffcc00;       
-    --indigo2: #e6b800;      
-    --indigo-dim: rgba(255, 204, 0, 0.1); 
+    /* 🌟 PRIMARY BRAND ACCENT (Professional Electric Blue - NOT Grey) */
+    /* This will replace your old indigo with a modern blue that pops */
+    --indigo: #3b82f6;       
+    --indigo2: #2563eb;      
+    --indigo-dim: rgba(59, 130, 246, 0.08); 
 
-    /* Utilities */
-    --emerald: #00cc66;  
-    --emerald-dim: rgba(0, 204, 102, 0.1);
-    --amber: #ffcc00;
-    --amber-dim: rgba(255, 204, 0, 0.1);
-    --rose: #ff4d4d;
-    --rose-dim: rgba(255, 77, 77, 0.1);
-    --violet: #9b5cf8;
-    --violet-dim: #1e1030;
-    --gold: #f0b429;
-    --blue: #3b9ef5;
+    /* Utilities (Matching the new dark palette) */
+    --emerald: #10b981;  
+    --emerald-dim: rgba(16, 185, 129, 0.1);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245, 158, 11, 0.1);
+    --rose: #ef4444;
+    --rose-dim: rgba(239, 68, 68, 0.1);
+    --violet: #8b5cf6;
+    --violet-dim: rgba(139, 92, 246, 0.1);
+    --gold: #f59e0b;
+    --blue: #3b82f6;
     --white: #ffffff;
 
+    /* Shapes & Shadows */
+    --r: 8px;
+    --r2: 12px;
+    --r3: 16px;
+    --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+    --shadow-md: 0 16px 48px -12px rgba(0, 0, 0, 0.9);
+
+    /* ⚠️ FONTS (Forcing modern aesthetics) */
+    /* Hum 'Inter' force karenge, ye dashboard ke liye sabse aesthetic aur clean font hai */
+    --ff: 'Inter', system-ui, -apple-system, sans-serif;
+    --fm: 'Roboto Mono', monospace;
+    --sb-w: 256px;
+}
     /* Shapes & Shadows */
     --r: 8px;
     --r2: 12px;
