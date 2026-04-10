@@ -7689,5 +7689,64 @@ select {
     color: var(--text2) !important;
 }
 </style>
+  <style>
+/* --- 🛑 EMERGENCY FIX: PREMIUM UNIFIED THEME --- */
+
+:root {
+    /* Wapas Sleek Dark Navy/Black par chalte hain */
+    --bg: #0b0f19 !important; 
+    --bg2: #151b2b !important; 
+    --bg3: #1e2638 !important;
+    
+    /* Clean Borders */
+    --border: rgba(255, 255, 255, 0.05) !important;
+    --border2: rgba(255, 255, 255, 0.08) !important;
+
+    /* Professional Blue Accent (No more yellow clash) */
+    --indigo: #4f46e5 !important; 
+    --indigo2: #4338ca !important;
+    
+    /* Text */
+    --text: #f9fafb !important;
+    --text2: #9ca3af !important;
+}
+
+/* Fix 1: Background & Sidebar unify karna */
+body, .sb, .dashboard-section {
+    background-color: var(--bg) !important;
+    color: var(--text) !important;
+}
+
+/* Fix 2: Cards ko clean karna aur ajeeb borders hatana */
+.dash-card, .chart-card, .val-card, .qmodal {
+    background: var(--bg2) !important;
+    border: 1px solid var(--border) !important;
+    border-top: 1px solid var(--border) !important; /* Nukes the random colored lines */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+    border-radius: 12px !important;
+}
+
+/* Fix 3: Buttons wapas professional blue aur white text */
+.btn-primary {
+    background: var(--indigo) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3) !important;
+}
+
+.btn-primary i {
+    color: #ffffff !important;
+}
+
+/* Fix 4: Clean typography (Removing weird overrides) */
+h1, h2, h3, .dash-card h2, .val-card h2 {
+    font-family: inherit !important;
+    color: var(--text) !important;
+    letter-spacing: normal !important;
+    background: none !important;
+    -webkit-text-fill-color: var(--text) !important;
+}
+</style>
 </body>
 </html>
