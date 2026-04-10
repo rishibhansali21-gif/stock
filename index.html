@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>StockSaathi — Kapda Stock Manager</title>
   
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -7585,6 +7585,35 @@ function autoFillMainBill() {
 /* 4. Inactive Items (Muted & Clean) */
 .sb-item:not(.active) {
     color: #555a66 !important;
+}
+</style>
+  <style>
+/* --- 💎 AESTHETIC PINTEREST FONTS --- */
+
+/* 1. Dashboard Numbers & Big Stats (Tall, Bold, Cinematic) */
+.dash-card h2, 
+.val-card h2,
+.text-2xl, 
+.text-3xl {
+    font-family: 'Oswald', sans-serif !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700 !important;
+}
+
+/* 2. Main Headings & Titles (Elegant Luxury Serif) */
+.sb-item span,
+.qmodal-title,
+.section-title,
+h1, h3 {
+    font-family: 'Playfair Display', serif !important;
+    letter-spacing: 0.5px;
+}
+
+/* 3. Button Text (Making it sharp and bold) */
+.btn-primary {
+    font-family: 'Oswald', sans-serif !important;
+    letter-spacing: 1.5px !important;
 }
 </style>
 </body>
