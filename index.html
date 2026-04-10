@@ -7518,5 +7518,43 @@ function autoFillMainBill() {
     if(typeof toast === 'function') toast("Quick Data Loaded! ⚡ Bill complete karein.");
 }
 </script>
+  <style>
+/* --- CLEAN & PREMIUM AESTHETIC UI (NIORI STYLE) --- */
+
+/* 1. Main Navbar Container (Matte Dark & Pill Shaped) */
+.sb-top {
+    background: #0a0a0c !important; 
+    border-radius: 30px !important; 
+    padding: 8px 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.04) !important;
+    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.8), 
+                0 1px 0 rgba(255, 255, 255, 0.02) !important;
+}
+
+/* 2. Active Tab Background (Subtle Glass Effect) */
+.sb-item.active {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 20px !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1) !important; 
+}
+
+/* 3. The "White Shine" Effect on Active Text & Icon */
+.sb-item.active, 
+.sb-item.active span, 
+.sb-item.active i {
+    background: linear-gradient(180deg, #ffffff 0%, #7a808d 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    text-shadow: 0 4px 12px rgba(255, 255, 255, 0.1) !important; 
+}
+
+/* 4. Inactive Items (Muted & Clean) */
+.sb-item:not(.active) {
+    color: #555a66 !important;
+}
+</style>
 </body>
 </html>
