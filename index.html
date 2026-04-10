@@ -7630,5 +7630,64 @@ h1, h3 {
     letter-spacing: 1.5px !important;
 }
 </style>
+  <style>
+/* --- 💎 DESIGN REFINEMENTS FOR AESTHETIC DASHBOARD --- */
+
+/* Force clean modern font everywhere */
+html, body, button, input, select, textarea {
+    font-family: var(--ff) !important;
+    letter-spacing: -0.01em !important; /* Premium tighter spacing */
+}
+
+/* Modern clean header title */
+.section-title h1 {
+    font-weight: 800 !important;
+    letter-spacing: -0.04em !important;
+    background: linear-gradient(180deg, #ffffff 0%, #a1a1aa 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+/* Clean cards with soft glow on hover */
+.dash-card, .val-card, .chart-card {
+    background: var(--bg2) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--r2) !important;
+    box-shadow: var(--shadow) !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+.dash-card:hover {
+    border-color: rgba(59, 130, 246, 0.3) !important;
+    box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.9), 0 0 10px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Modern inputs and search bar */
+.top-right input[type="search"],
+.quick-sell input,
+select {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: var(--text) !important;
+    border-radius: var(--r) !important;
+    font-weight: 500 !important;
+}
+
+.top-right input[type="search"]:focus {
+    border-color: var(--indigo) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+    background: #000 !important;
+}
+
+/* Clean dashboard numbers and values */
+.dash-card h2, .val-card h2, .text-2xl, .text-3xl {
+    font-weight: 700 !important;
+    color: var(--text) !important;
+}
+
+.text-sub {
+    color: var(--text2) !important;
+}
+</style>
 </body>
 </html>
