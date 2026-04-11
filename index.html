@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>StockSaathi — Kapda Stock Manager</title>
   
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -7759,6 +7759,107 @@ h1, h2, h3, .dash-card h2, .val-card h2 {
     background: none !important;
     -webkit-text-fill-color: var(--text) !important;
 }
+</style>
+  <style>
+/* =======================================================
+   💎 PREMIUM BLUE SAAS THEME & MOBILE BUG FIX
+   ======================================================= */
+
+/* 1. NAYE COLORS AUR FONTS */
+:root {
+    --bg: #050816 !important; /* Deep Dark Navy */
+    --bg2: #0A0F2C !important;
+    --bg3: #111827 !important;
+    --border: rgba(59, 130, 246, 0.2) !important;
+    --border2: rgba(255, 255, 255, 0.05) !important;
+    --indigo: #3B82F6 !important; /* Premium Blue Glow */
+    --indigo2: #2563eb !important;
+    --text: #ffffff !important;
+    --text2: #9ca3af !important;
+    --ff: 'Inter', sans-serif !important; /* Naya Aesthetic Font */
+}
+
+/* 2. MAIN BACKGROUND GRADIENT */
+html, body, .app, .dashboard-section {
+    background: radial-gradient(circle at top center, #0A0F2C 0%, #050816 100%) !important;
+    background-color: var(--bg) !important;
+    font-family: var(--ff) !important;
+    color: var(--text) !important;
+}
+
+/* 3. CARDS PAR GLASSMORPHISM (BLUR) EFFECT */
+.dash-card, .val-card, .chart-card, .qmodal, .card, .sb {
+    background: rgba(10, 15, 44, 0.4) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.1) !important;
+    border-radius: 20px !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Card pe mouse le jaane par glowing effect */
+.dash-card:hover, .val-card:hover {
+    transform: translateY(-5px) !important;
+    border-color: rgba(59, 130, 246, 0.6) !important;
+    box-shadow: 0 15px 45px rgba(59, 130, 246, 0.5) !important;
+    background: rgba(10, 15, 44, 0.6) !important;
+}
+
+/* 4. PREMIUM GLOWING BUTTONS */
+.btn-primary {
+    background: linear-gradient(135deg, #3B82F6 0%, #1d4ed8 100%) !important;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.8) !important;
+    transform: scale(1.03) !important;
+}
+
+/* 5. TEXT AUR CHARTS KO SHARP KARNA */
+h1, h2, h3, .text-2xl, .text-3xl {
+    font-weight: 800 !important;
+    letter-spacing: -0.02em !important;
+}
+
+polyline, path.line {
+    stroke: var(--indigo) !important;
+    filter: drop-shadow(0 0 8px var(--indigo)) !important; /* Graph ki line chamkegi */
+}
+
+/* =======================================================
+   🛠️ MOBILE BUG FIX (HAMBURGER MENU CLICKS)
+   ======================================================= */
+
+/* Demo banner ko click block karne se rokna */
+.demo-alert, .alert-box, #demo-banner {
+    position: relative !important;
+    z-index: 10 !important;
+    pointer-events: none !important; /* Ye background clicks ko allow karega */
+}
+
+/* Banner ke andar ka text wapas clickable banana */
+.demo-alert *, .alert-box *, #demo-banner * {
+    pointer-events: auto !important;
+}
+
+/* Hamburger Menu ko sabse aage (Top Layer) par lana */
+.menu-btn, .hamburger, .sb-toggle, #mobile-menu-btn {
+    position: relative !important;
+    z-index: 999999 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* Modals aur Sidebar ki depth theek karna */
+.overlay, .modal-bg, .qmodal-bg { z-index: 99990 !important; }
+.sb { z-index: 99995 !important; }
 </style>
 </body>
 </html>
