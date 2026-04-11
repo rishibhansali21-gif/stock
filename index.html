@@ -2248,6 +2248,18 @@
 .btn-primary i {
     color: #000000 !important;
 }
+   /* --- FIX BOTTOM GAP --- */
+html, body {
+    min-height: 100vh !important; /* Force full screen height */
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: var(--bg) !important; /* Gap ka color match karne ke liye */
+}
+
+/* Agar koi layout wrapper hai, toh usko bhi stretch karo */
+.app, .main-container, .dashboard-section {
+    min-height: 100vh !important;
+} 
   </style>
 </head>
 <body>
