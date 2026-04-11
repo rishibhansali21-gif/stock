@@ -7929,26 +7929,44 @@ async function sendAIMsg() {
 </div>
 
 <style>
-#niori-ai-btn {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #D4AF37 0%, #aa8c2c 100%);
-    color: #000;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
-    z-index: 999999;
-    transition: all 0.3s ease;
-    animation: pulseGlow 2s infinite;
+#niori-ai-btn { 
+    position: fixed; 
+    bottom: 30px; 
+    right: 30px; 
+    width: 60px; 
+    height: 60px; 
+    background: linear-gradient(135deg, #D4AF37 0%, #aa8c2c 100%); 
+    color: #000; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 28px; 
+    cursor: pointer; 
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4); 
+    z-index: 2147483647 !important; /* SABSE UPAR */
+    transition: all 0.3s ease; 
+    animation: pulseGlow 2s infinite; 
 }
 
+#niori-ai-panel { 
+    position: fixed; 
+    bottom: 100px; 
+    right: 20px; 
+    width: 350px; 
+    height: 500px; 
+    background: rgba(7, 7, 7, 0.98); 
+    backdrop-filter: blur(25px); 
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(212, 175, 55, 0.4); 
+    border-radius: 24px; 
+    display: none; 
+    flex-direction: column; 
+    z-index: 2147483647 !important; /* SABSE UPAR */
+    box-shadow: 0 25px 60px rgba(0,0,0,1);
+    font-family: 'Inter', sans-serif; 
+}
+  
 #niori-ai-btn:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 25px rgba(212, 175, 55, 0.6);
