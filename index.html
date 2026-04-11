@@ -7759,105 +7759,96 @@ h1, h2, h3, .dash-card h2, .val-card h2 {
     background: none !important;
     -webkit-text-fill-color: var(--text) !important;
 }
-</style>
-  <style>
+<style>
 /* =======================================================
-   💎 PREMIUM BLUE SAAS THEME & MOBILE BUG FIX
+   👑 LUXURY MATTE BLACK & GOLD AESTHETIC 👑
    ======================================================= */
 
-/* 1. NAYE COLORS AUR FONTS */
 :root {
-    --bg: #050816 !important; /* Deep Dark Navy */
-    --bg2: #0A0F2C !important;
-    --bg3: #111827 !important;
-    --border: rgba(59, 130, 246, 0.2) !important;
-    --border2: rgba(255, 255, 255, 0.05) !important;
-    --indigo: #3B82F6 !important; /* Premium Blue Glow */
-    --indigo2: #2563eb !important;
+    --bg: #070707 !important; /* Pitch Matte Black */
+    --bg2: #121212 !important; /* Expensive Dark Grey */
+    --bg3: #1a1a1a !important;
+    --border: rgba(255, 255, 255, 0.06) !important;
+    --indigo: #D4AF37 !important; /* Premium Gold Accent */
+    --indigo2: #b5952f !important;
     --text: #ffffff !important;
-    --text2: #9ca3af !important;
-    --ff: 'Inter', sans-serif !important; /* Naya Aesthetic Font */
+    --text2: #888888 !important; /* Soft editorial grey */
+    --ff: 'Inter', sans-serif !important;
 }
 
-/* 2. MAIN BACKGROUND GRADIENT */
+/* 1. MAIN BACKGROUND */
 html, body, .app, .dashboard-section {
-    background: radial-gradient(circle at top center, #0A0F2C 0%, #050816 100%) !important;
-    background-color: var(--bg) !important;
+    background: var(--bg) !important;
     font-family: var(--ff) !important;
     color: var(--text) !important;
 }
 
-/* 3. CARDS PAR GLASSMORPHISM (BLUR) EFFECT */
+/* 2. CLEAN CARDS (NUKING THE RAINBOW BORDERS) */
 .dash-card, .val-card, .chart-card, .qmodal, .card, .sb {
-    background: rgba(10, 15, 44, 0.4) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
+    background: var(--bg2) !important;
+    /* OVERRIDING THOSE UGLY COLORED TOP LINES */
     border: 1px solid var(--border) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.1) !important;
-    border-radius: 20px !important;
+    border-top: 1px solid var(--border) !important; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8) !important;
+    border-radius: 16px !important;
     transition: all 0.3s ease !important;
 }
 
-/* Card pe mouse le jaane par glowing effect */
 .dash-card:hover, .val-card:hover {
-    transform: translateY(-5px) !important;
-    border-color: rgba(59, 130, 246, 0.6) !important;
-    box-shadow: 0 15px 45px rgba(59, 130, 246, 0.5) !important;
-    background: rgba(10, 15, 44, 0.6) !important;
+    transform: translateY(-4px) !important;
+    border-color: rgba(212, 175, 55, 0.4) !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9) !important;
 }
 
-/* 4. PREMIUM GLOWING BUTTONS */
+/* 3. LUXURY GOLD BUTTONS */
 .btn-primary {
-    background: linear-gradient(135deg, #3B82F6 0%, #1d4ed8 100%) !important;
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    color: #ffffff !important;
-    border-radius: 12px !important;
-    font-weight: 700 !important;
+    background: linear-gradient(135deg, #D4AF37 0%, #aa8c2c 100%) !important;
+    color: #000000 !important; /* Black text on gold is peak luxury */
+    font-weight: 800 !important;
     letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    border: none !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2) !important;
 }
 
 .btn-primary:hover {
-    box-shadow: 0 0 30px rgba(59, 130, 246, 0.8) !important;
-    transform: scale(1.03) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4) !important;
 }
 
-/* 5. TEXT AUR CHARTS KO SHARP KARNA */
-h1, h2, h3, .text-2xl, .text-3xl {
-    font-weight: 800 !important;
-    letter-spacing: -0.02em !important;
+.btn-primary i { color: #000000 !important; }
+
+/* 4. CLEAN TEXT (NO NEON) */
+h1, h2, h3, .text-2xl, .text-3xl, .dash-card h2, .val-card h2 {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.5px !important;
+    text-shadow: none !important; /* Remove cheap glows */
 }
 
+.text-success, .text-danger, .text-warning {
+    color: #ffffff !important; /* Forces all numbers to white for a clean look */
+}
+
+/* 5. ELEGANT CHARTS & SIDEBAR */
 polyline, path.line {
     stroke: var(--indigo) !important;
-    filter: drop-shadow(0 0 8px var(--indigo)) !important; /* Graph ki line chamkegi */
+    filter: none !important;
 }
 
-/* =======================================================
-   🛠️ MOBILE BUG FIX (HAMBURGER MENU CLICKS)
-   ======================================================= */
-
-/* Demo banner ko click block karne se rokna */
-.demo-alert, .alert-box, #demo-banner {
-    position: relative !important;
-    z-index: 10 !important;
-    pointer-events: none !important; /* Ye background clicks ko allow karega */
+.sb-item.active {
+    border-left: 3px solid var(--indigo) !important;
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%) !important;
+    color: #ffffff !important;
 }
 
-/* Banner ke andar ka text wapas clickable banana */
-.demo-alert *, .alert-box *, #demo-banner * {
-    pointer-events: auto !important;
-}
+.sb-item.active i { color: var(--indigo) !important; }
 
-/* Hamburger Menu ko sabse aage (Top Layer) par lana */
-.menu-btn, .hamburger, .sb-toggle, #mobile-menu-btn {
-    position: relative !important;
-    z-index: 999999 !important;
-    pointer-events: auto !important;
-    cursor: pointer !important;
-}
-
-/* Modals aur Sidebar ki depth theek karna */
+/* MOBILE FIX REMAINS THE SAME */
+.demo-alert, .alert-box, #demo-banner { position: relative !important; z-index: 10 !important; pointer-events: none !important; }
+.demo-alert *, .alert-box *, #demo-banner * { pointer-events: auto !important; }
+.menu-btn, .hamburger, .sb-toggle, #mobile-menu-btn { position: relative !important; z-index: 999999 !important; pointer-events: auto !important; }
 .overlay, .modal-bg, .qmodal-bg { z-index: 99990 !important; }
 .sb { z-index: 99995 !important; }
 </style>
