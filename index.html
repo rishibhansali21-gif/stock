@@ -7852,5 +7852,65 @@ polyline, path.line {
 .overlay, .modal-bg, .qmodal-bg { z-index: 99990 !important; }
 .sb { z-index: 99995 !important; }
 </style>
+  <script>
+/* --- LIVE NIORI AI LOGIC (WITHOUT POPUP) --- */
+
+function toggleAIPanel() {
+    const panel = document.getElementById('niori-ai-panel');
+    if (panel.style.display === 'flex') {
+        panel.style.display = 'none';
+    } else {
+        panel.style.display = 'flex';
+        document.getElementById('ai-input').focus();
+    }
+}
+
+async function sendAIMsg() {
+    const input = document.getElementById('ai-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const chatBox = document.getElementById('ai-chat-box');
+    
+    // User message
+    chatBox.innerHTML += `<div class="user-msg">${text}</div>`;
+    input.value = '';
+
+    const thinkingId = "think-" + Date.now();
+    chatBox.innerHTML += `<div class="ai-msg" id="${thinkingId}">Niori AI is thinking... ⏳</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // 🚨 YAHAN APNI KEY DAAL DO (IN QUOTES KE ANDAR)
+    // Jaise: const API_KEY = "AIzaSyB_Es1kckZDBXV0WB7...";
+    const API_KEY = "AIzaSyB_Es1kckZDBXV0WB7_zbJGX8CXNrLOcC0"; 
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{ 
+                        text: "You are Niori AI, a highly intelligent and professional business assistant for a textile stock management app in Surat. Answer in short, crisp, and helpful sentences. The user just asked: " + text 
+                    }]
+                }]
+            })
+        });
+
+        const data = await response.json();
+        const aiReply = data.candidates[0].content.parts[0].text;
+
+        document.getElementById(thinkingId).remove();
+        const cleanReply = aiReply.replace(/\*\*/g, ''); 
+        
+        chatBox.innerHTML += `<div class="ai-msg">${cleanReply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+    } catch (error) {
+        document.getElementById(thinkingId).innerText = "System currently busy. Please try again later.";
+        console.error("AI Error:", error);
+    }
+}
+</script>
 </body>
 </html>
