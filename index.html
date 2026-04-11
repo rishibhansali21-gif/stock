@@ -7960,21 +7960,22 @@ async function sendAIMsg() {
     100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
 }
 
-#niori-ai-panel {
-    position: fixed;
-    bottom: 100px;
-    right: 30px;
-    width: 350px;
-    height: 450px;
-    background: rgba(18, 18, 18, 0.85);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+#niori-ai-panel { 
+    position: fixed; 
+    bottom: 100px; 
+    right: 20px; 
+    width: 350px; 
+    height: 500px; 
+    background: rgba(10, 10, 10, 0.95); /* Deep dark for contrast */
+    backdrop-filter: blur(25px); 
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(212, 175, 55, 0.4); 
+    border-radius: 24px; 
     display: none; 
-    flex-direction: column;
-    z-index: 999999;
-    font-family: 'Inter', sans-serif;
+    flex-direction: column; 
+    z-index: 2147483647 !important; /* Maximum possible z-index to stop overlap */
+    box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 20px rgba(212, 175, 55, 0.1);
+    font-family: 'Inter', sans-serif; 
 }
 
 .ai-header { padding: 16px 20px; background: rgba(0, 0, 0, 0.5); border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; }
