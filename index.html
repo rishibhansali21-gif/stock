@@ -7979,46 +7979,27 @@ function toggleAIPanel() {
 }
 
 async function sendAIMsg() {
-    const input = document.getElementById('ai-input');
-    const text = input.value.trim();
+    var input = document.getElementById('ai-input');
+    var text = input.value.trim();
     if (!text) return;
-
-    const chatBox = document.getElementById('ai-chat-box');
-    chatBox.innerHTML += `<div class="user-msg">${text}</div>`;
+    var chatBox = document.getElementById('ai-chat-box');
+    chatBox.innerHTML += '<div class="user-msg">' + text + '</div>';
     input.value = '';
-
-    const thinkingId = "think-" + Date.now();
-    chatBox.innerHTML += `<div class="ai-msg" id="${thinkingId}">Niori AI is thinking... ⏳</div>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    // 🚨 APNI KEY YAHAN PASTE KARO (Dono inverted commas ke beech mein)
-    const API_KEY = "AIzaSyD0I-4PKF4LnxgwLp7E5xg4Qbu6OGFlvmw"; 
-
-    try {
-        const response = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-            contents: [{
-                parts: [{
-                    text: "You are Niori AI for a Surat textile stock app. Answer short in Hinglish. User asked: " + text
-                }]
-            }]
-        })
-    });
-
-        const data = await response.json();
-        const aiReply = data.candidates[0].content.parts[0].text;
-
-        document.getElementById(thinkingId).remove();
-        const cleanReply = aiReply.replace(/\*\*/g, ''); 
-        chatBox.innerHTML += `<div class="ai-msg">${cleanReply}</div>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-    } catch (error) {
-        document.getElementById(thinkingId).innerText = "System offline. Error aa gaya bhai.";
-        console.error("AI Error:", error);
+    var t = text.toLowerCase();
+    var nm = t.match(/([a-z\s]+)\s+ko/);
+    var mm = t.match(/(\d+)\s*m/);
+    var rm = t.match(/(\d+)\s*ke\s+hisaab/);
+    var reply = '';
+    if (nm && mm && rm) {
+        var amt = mm[1] * rm[1];
+        reply = '✅ Party: <b>' + nm[1].trim() + '</b><br>📦 ' + mm[1] + 'm × ₹' + rm[1] + ' = <b>₹' + amt + '</b><br>👉 Sales page pe record karo!';
+    } else if (t.includes('stock')) {
+        reply = '📦 Items: <b>' + (typeof fabrics !== 'undefined' ? fabrics.length : 0) + '</b>';
+    } else {
+        reply = '🤔 Try: "Ramesh ko maal becha 200m 23 ke hisaab se"';
     }
+    chatBox.innerHTML += '<div class="ai-msg">' + reply + '</div>';
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 </script>
 </body>
