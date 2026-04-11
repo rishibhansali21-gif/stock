@@ -8022,15 +8022,13 @@ async function sendAIMsg() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 1000,
-    messages: [{ 
-        role: "user", 
-        content: "You are Niori AI for a Surat textile stock app. Answer short in Hinglish. User asked: " + text 
-    }]
+            contents: [{
+                parts: [{
+                    text: "You are Niori AI for a Surat textile stock app. Answer short in Hinglish. User asked: " + text
                 }]
-            })
-        });
+            }]
+        })
+    });
 
         const data = await response.json();
         const aiReply = data.candidates[0].content.parts[0].text;
