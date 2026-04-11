@@ -7866,141 +7866,198 @@ function toggleAIPanel() {
 }
 
 async function sendAIMsg() {
-    var input = document.getElementById('ai-input');
-    var text = input.value.trim();
+    const input = document.getElementById('ai-input');
+    const text = input.value.trim();
     if (!text) return;
-    var chatBox = document.getElementById('ai-chat-box');
+    const chatBox = document.getElementById('ai-chat-box');
     chatBox.innerHTML += '<div class="user-msg">' + text + '</div>';
     input.value = '';
-    var t = text.toLowerCase();
-    var nm = t.match(/([a-z\s]+)\s+ko/);
-    var mm = t.match(/(\d+)\s*m/);
-    var rm = t.match(/(\d+)\s*ke\s+hisaab/);
-    var reply = '';
-    if (nm && mm && rm) {
-        var amt = mm[1] * rm[1];
-        reply = '✅ Party: <b>' + nm[1].trim() + '</b><br>📦 ' + mm[1] + 'm × ₹' + rm[1] + ' = <b>₹' + amt + '</b><br>👉 Sales page pe record karo!';
-    } else if (t.includes('stock')) {
-        reply = '📦 Items: <b>' + (typeof fabrics !== 'undefined' ? fabrics.length : 0) + '</b>';
-    } else {
-        reply = '🤔 Try: "Ramesh ko maal becha 200m 23 ke hisaab se"';
-    }
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    if (!window.aiState) window.aiState = { step: 'idle' };
+    
+    const reply = await processAI(text);
     chatBox.innerHTML += '<div class="ai-msg">' + reply + '</div>';
     chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+async function processAI(text) {
+    const t = text.toLowerCase().trim();
+    const state = window.aiState;
+    
+    // STEP: Waiting for confirmation
+    if (state.step === 'confirm') {
+        if (t.includes('haan') || t.includes('yes') || t.includes('ha') || t.includes('ok') || t === 'h') {
+            return await finalizeAISale();
+        } else {
+            window.aiState = { step: 'idle' };
+            return '❌ Sale cancelled. Dobara batao!';
+        }
+    }
+    
+    // STEP: Waiting for rate
+    if (state.step === 'need_rate') {
+        const rate = parseFloat(text);
+        if (!rate) return '❓ Valid rate batao (sirf number, jaise 25)';
+        state.rate = rate;
+        state.step = 'need_invtype';
+        return '💳 Cash ya Credit?';
+    }
+    
+    // STEP: Waiting for invoice type
+    if (state.step === 'need_invtype') {
+        state.invType = (t.includes('credit') || t.includes('udhaar')) ? 'Credit' : 'Cash';
+        return buildConfirmation();
+    }
+    
+    // STEP: Fresh sale detection
+    const sold = t.includes('becha') || t.includes('sell') || t.includes('sold') || t.includes('diya') || t.includes('sale');
+    
+    if (sold) {
+        // Extract party name
+        let party = null;
+        const parties = (masterData && masterData.parties) ? masterData.parties : [];
+        for (let p of parties) {
+            if (t.includes(p.toLowerCase())) { party = p; break; }
+        }
+        
+        // Extract fabric
+        let fabric = null;
+        let fabricObj = null;
+        for (let f of fabrics) {
+            if (t.includes(f.name.toLowerCase())) { fabric = f.name; fabricObj = f; break; }
+        }
+        
+        // Extract meters
+        const mMatch = t.match(/(\d+)\s*m/);
+        const meters = mMatch ? parseFloat(mMatch[1]) : null;
+        
+        // Extract transport
+        const transMatch = text.match(/([A-Za-z]+\s*transport)/i);
+        const transport = transMatch ? transMatch[1] : null;
+        
+        // Extract LR number
+        const lrMatch = text.match(/lr[:\s#]?\s*(\w+)/i);
+        const lr = lrMatch ? lrMatch[1] : null;
+        
+        // Save state
+        window.aiState = {
+            step: 'need_rate',
+            party, fabric, fabricObj,
+            meters, transport, lr,
+            invType: 'Cash', rate: null
+        };
+        
+        // Build response
+        let msg = '📋 Got it! Here\'s what I found:\n<br>';
+        msg += party ? '✅ Party: <b>' + party + '</b><br>' : '⚠️ Party: <b>Not found in saved list — sale mein manually select karna</b><br>';
+        msg += fabric ? '✅ Fabric: <b>' + fabric + ' (' + (fabricObj ? fabricObj.meters : '?') + 'm available)</b><br>' : '⚠️ Fabric: <b>Not found in inventory</b><br>';
+        msg += meters ? '✅ Qty: <b>' + meters + 'm</b><br>' : '⚠️ Qty: <b>Not mentioned</b><br>';
+        msg += transport ? '✅ Transport: <b>' + transport + '</b><br>' : '';
+        msg += lr ? '✅ LR: <b>' + lr + '</b><br>' : '';
+        msg += '<br>❓ <b>Rate kya hai? (₹/m)</b>';
+        
+        return msg;
+    }
+    
+    // Stock check
+    if (t.includes('stock') || t.includes('kitna') || t.includes('how much')) {
+        const total = fabrics.reduce((a, f) => a + f.meters, 0);
+        return '📦 Total stock: <b>' + total + ' units</b> | Items: <b>' + fabrics.length + '</b>';
+    }
+    
+    return '🤔 Try: <i>"Rishi ko becha 4000m silky milky gupta transport LR 12345"</i>';
+}
+
+function buildConfirmation() {
+    const s = window.aiState;
+    const total = (s.meters || 0) * (s.rate || 0);
+    const gst = total * 0.05;
+    
+    window.aiState.step = 'confirm';
+    window.aiState.total = total;
+    
+    return '✅ <b>Confirm karu?</b><br>' +
+           '👤 Party: <b>' + (s.party || 'Unknown') + '</b><br>' +
+           '📦 Fabric: <b>' + (s.fabric || 'Unknown') + '</b><br>' +
+           '📏 Qty: <b>' + s.meters + 'm</b><br>' +
+           '💰 Rate: <b>₹' + s.rate + '/m</b><br>' +
+           '🧾 Subtotal: <b>₹' + total + '</b><br>' +
+           '🧾 GST (5%): <b>₹' + gst + '</b><br>' +
+           '💵 Total: <b>₹' + (total + gst) + '</b><br>' +
+           (s.transport ? '🚚 Transport: <b>' + s.transport + '</b><br>' : '') +
+           (s.lr ? '📄 LR: <b>' + s.lr + '</b><br>' : '') +
+           '💳 Type: <b>' + s.invType + '</b><br><br>' +
+           '<b>Haan / Nahi?</b>';
+}
+
+async function finalizeAISale() {
+    const s = window.aiState;
+    window.aiState = { step: 'idle' };
+    
+    const f = s.fabricObj || fabrics.find(x => x.name === s.fabric);
+    if (!f) return '❌ Fabric not found in inventory!';
+    if (f.meters < s.meters) return '❌ Stock kam hai! Available: ' + f.meters + 'm';
+    
+    const total = s.meters * s.rate;
+    const gst = total * 0.05;
+    const finalTotal = total + gst;
+    
+    const saleData = {
+        type: 'sale',
+        invoiceNo: generateInvoiceNo(),
+        fabric: f.name,
+        fabricId: f.id,
+        unit: f.unit || 'Meters',
+        hsn: f.hsn || '',
+        meters: s.meters,
+        rate: s.rate,
+        discount: 0,
+        gstRate: 5,
+        gstType: 'intra',
+        subtotal: total,
+        gst: gst,
+        total: finalTotal,
+        customer: s.party || '',
+        invType: s.invType,
+        transport: s.transport || '',
+        lrNo: s.lr || '',
+        kacha: false,
+        date: new Date().toISOString(),
+        paid: s.invType === 'Cash' ? finalTotal : 0
+    };
+    
+    // Deduct stock
+    f.meters = Math.max(0, f.meters - s.meters);
+    if (f.rolls && f.rolls.length > 0) {
+        f.rolls[0].meters = Math.max(0, f.rolls[0].meters - s.meters);
+    }
+    await fbUpdate('fabrics', f.id, { meters: f.meters, rolls: f.rolls || [] });
+    
+    // Save sale
+    const docSnap = buildSaleInvoiceHTML(saleData);
+    saleData.savedDoc = docSnap;
+    const sid = await fbSave('sales', saleData);
+    sales.unshift({ id: sid, ...saleData });
+    
+    addParty(s.party);
+    renderAll();
+    
+    // Open bill
+    setTimeout(() => {
+        openDocModal('🧾 Sale Invoice', docSnap, 'sale-invoice', {
+            phone: '',
+            text: 'Bill ready for ' + s.party,
+            amount: finalTotal,
+            invoiceNo: saleData.invoiceNo
+        });
+    }, 500);
+    
+    return '🎉 <b>Sale recorded successfully!</b><br>' +
+           '📄 Invoice: <b>' + saleData.invoiceNo + '</b><br>' +
+           '💰 Total: <b>₹' + finalTotal + '</b><br>' +
+           'Bill generating...';
 }
   </script>
-  <div id="niori-ai-btn" onclick="toggleAIPanel()">✨</div>
-
-<div id="niori-ai-panel">
-    <div class="ai-header">
-        <div class="ai-title"><span>✨</span> Niori Intelligence</div>
-        <div class="ai-close" onclick="toggleAIPanel()">✖</div>
-    </div>
-    <div class="ai-body" id="ai-chat-box">
-        <div class="ai-msg">Hello Founder. I am your Niori AI Assistant. Ask me about your stock, low inventory, or sales trends.</div>
-    </div>
-    <div class="ai-footer">
-        <input type="text" id="ai-input" placeholder="Ask AI..." onkeypress="if(event.key === 'Enter') sendAIMsg()">
-        <button onclick="sendAIMsg()">➤</button>
-    </div>
-</div>
-
-<style>
-#niori-ai-btn {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #D4AF37 0%, #aa8c2c 100%);
-    color: #000;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
-    z-index: 999999;
-    transition: all 0.3s ease;
-    animation: pulseGlow 2s infinite;
-}
-
-#niori-ai-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 25px rgba(212, 175, 55, 0.6);
-}
-
-@keyframes pulseGlow {
-    0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
-    70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
-}
-
-#niori-ai-panel {
-    position: fixed;
-    bottom: 100px;
-    right: 30px;
-    width: 350px;
-    height: 450px;
-    background: rgba(18, 18, 18, 0.85);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.8);
-    display: none; 
-    flex-direction: column;
-    z-index: 999999;
-    font-family: 'Inter', sans-serif;
-}
-
-.ai-header { padding: 16px 20px; background: rgba(0, 0, 0, 0.5); border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; }
-.ai-title { color: #D4AF37; font-weight: 700; font-size: 16px; }
-.ai-close { color: #888; cursor: pointer; font-size: 14px; }
-.ai-close:hover { color: #fff; }
-.ai-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-.ai-msg { background: rgba(212, 175, 55, 0.1); color: #e0e0e0; padding: 12px 16px; border-radius: 0 16px 16px 16px; font-size: 14px; border-left: 2px solid #D4AF37; width: fit-content; max-width: 85%; }
-.user-msg { background: rgba(255, 255, 255, 0.05); color: #fff; padding: 12px 16px; border-radius: 16px 0 16px 16px; font-size: 14px; align-self: flex-end; width: fit-content; max-width: 85%; }
-.ai-footer { padding: 15px; background: rgba(0, 0, 0, 0.5); border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; gap: 10px; }
-#ai-input { flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 10px 15px; border-radius: 10px; outline: none; }
-#ai-input:focus { border-color: #D4AF37; }
-.ai-footer button { background: #D4AF37; color: #000; border: none; border-radius: 10px; width: 42px; cursor: pointer; font-weight: bold; font-size: 16px; }
-</style>
-
-<script>
-function toggleAIPanel() {
-    const panel = document.getElementById('niori-ai-panel');
-    if (panel.style.display === 'flex') {
-        panel.style.display = 'none';
-    } else {
-        panel.style.display = 'flex';
-        document.getElementById('ai-input').focus();
-    }
-}
-
-async function sendAIMsg() {
-    var input = document.getElementById('ai-input');
-    var text = input.value.trim();
-    if (!text) return;
-    var chatBox = document.getElementById('ai-chat-box');
-    chatBox.innerHTML += '<div class="user-msg">' + text + '</div>';
-    input.value = '';
-    var t = text.toLowerCase();
-    var nm = t.match(/([a-z\s]+)\s+ko/);
-    var mm = t.match(/(\d+)\s*m/);
-    var rm = t.match(/(\d+)\s*ke\s+hisaab/);
-    var reply = '';
-    if (nm && mm && rm) {
-        var amt = mm[1] * rm[1];
-        reply = '✅ Party: <b>' + nm[1].trim() + '</b><br>📦 ' + mm[1] + 'm × ₹' + rm[1] + ' = <b>₹' + amt + '</b><br>👉 Sales page pe record karo!';
-    } else if (t.includes('stock')) {
-        reply = '📦 Items: <b>' + (typeof fabrics !== 'undefined' ? fabrics.length : 0) + '</b>';
-    } else {
-        reply = '🤔 Try: "Ramesh ko maal becha 200m 23 ke hisaab se"';
-    }
-    chatBox.innerHTML += '<div class="ai-msg">' + reply + '</div>';
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-</script>
 </body>
 </html>
