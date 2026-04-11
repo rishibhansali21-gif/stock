@@ -188,7 +188,7 @@
       font-family: var(--ff);
       font-size: 14px;
       display: flex;
-      overflow: hidden;
+      overflow: auto;
     }
 
     /* ==========================================================================
@@ -352,7 +352,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow: auto;
       min-width: 0;
       position: relative;
       z-index: 1;
@@ -515,7 +515,7 @@
       display: none;
       flex: 1;
       flex-direction: column;
-      overflow: hidden;
+      overflow: auto;
     }
 
     .page.on {
@@ -534,7 +534,7 @@
       padding: 16px 20px;
       border-right: 1px solid var(--border);
       position: relative;
-      overflow: hidden;
+      overflow: auto;
       cursor: default;
     }
 
@@ -728,7 +728,7 @@
       transition: all 0.15s;
       min-width: 0;
       position: relative;
-      overflow: hidden;
+      overflow: auto;
     }
 
     .fab-card::before {
@@ -779,7 +779,7 @@
       font-weight: 700;
       margin-bottom: 3px;
       white-space: nowrap;
-      overflow: hidden;
+      overflow: auto;
       text-overflow: ellipsis;
       letter-spacing: -0.2px;
     }
@@ -834,7 +834,7 @@
       height: 3px;
       background: var(--border2);
       border-radius: 2px;
-      overflow: hidden;
+      overflow: auto;
       margin-top: 7px;
       width: 100px;
     }
@@ -1256,7 +1256,7 @@
       align-items: center;
       gap: 14px;
       position: relative;
-      overflow: hidden;
+      overflow: auto;
       transition: all 0.15s;
       margin-bottom: 8px;
     }
@@ -1478,7 +1478,7 @@
       color: var(--text2);
       width: 110px;
       white-space: nowrap;
-      overflow: hidden;
+      overflow: auto;
       text-overflow: ellipsis;
       font-weight: 500;
     }
@@ -1488,7 +1488,7 @@
       height: 6px;
       background: var(--border2);
       border-radius: 3px;
-      overflow: hidden;
+      overflow: auto;
     }
 
     .bar-fill {
@@ -1836,7 +1836,7 @@
       max-width: 860px;
       width: 95%;
       border-radius: 20px;
-      overflow: hidden;
+      overflow: auto;
       box-shadow: 0 40px 80px rgba(0,0,0,0.6);
       border: 1px solid var(--border2);
     }
@@ -1848,7 +1848,7 @@
       flex-direction: column;
       justify-content: center;
       position: relative;
-      overflow: hidden;
+      overflow: auto;
     }
 
     .login-left::before {
@@ -6958,7 +6958,7 @@ document.addEventListener('click', function(e) {
     .pp-real-input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-family: var(--ff); font-size: 13px; padding: 0; min-width: 0; }
     .pp-real-input::placeholder { color: var(--text3); }
     .pp-clear { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 16px; padding: 0; line-height: 1; display: none; }
-    .pp-dropdown { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--r2); overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.35); z-index: 9999; display: none; max-height: 260px; overflow-y: auto; }
+    .pp-dropdown { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--r2); overflow: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.35); z-index: 9999; display: none; max-height: 260px; overflow-y: auto; }
     .pp-dropdown.open { display: block; animation: ppFade 0.12s ease; }
     @keyframes ppFade { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
     .pp-header { padding: 7px 12px 5px; font-size: 10px; color: var(--text3); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); }
@@ -6969,7 +6969,7 @@ document.addEventListener('click', function(e) {
     .pp-item-info { flex: 1; min-width: 0; }
     .pp-item-name { font-size: 13px; font-weight: 600; color: var(--text); }
     .pp-item-name em { font-style: normal; color: var(--indigo2); }
-    .pp-item-sub { font-size: 11px; color: var(--text3); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pp-item-sub { font-size: 11px; color: var(--text3); margin-top: 1px; white-space: nowrap; overflow: auto; text-overflow: ellipsis; }
     .pp-add-row { display: flex; align-items: center; gap: 8px; padding: 9px 10px 10px; border-top: 1px solid var(--border); margin-top: 2px; cursor: pointer; color: var(--emerald); font-size: 12px; font-weight: 600; transition: background 0.1s; border-radius: 0 0 var(--r) var(--r); }
     .pp-add-row:hover { background: var(--emerald-dim); }
     .pp-empty { padding: 16px 12px; text-align: center; color: var(--text3); font-size: 12px; }
