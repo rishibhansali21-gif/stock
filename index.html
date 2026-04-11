@@ -7866,57 +7866,27 @@ function toggleAIPanel() {
 }
 
 async function sendAIMsg() {
-    const input = document.getElementById('ai-input');
-    const text = input.value.trim();
+    var input = document.getElementById('ai-input');
+    var text = input.value.trim();
     if (!text) return;
-    const chatBox = document.getElementById('ai-chat-box');
+    var chatBox = document.getElementById('ai-chat-box');
     chatBox.innerHTML += '<div class="user-msg">' + text + '</div>';
     input.value = '';
+    var t = text.toLowerCase();
+    var nm = t.match(/([a-z\s]+)\s+ko/);
+    var mm = t.match(/(\d+)\s*m/);
+    var rm = t.match(/(\d+)\s*ke\s+hisaab/);
+    var reply = '';
+    if (nm && mm && rm) {
+        var amt = mm[1] * rm[1];
+        reply = '✅ Party: <b>' + nm[1].trim() + '</b><br>📦 ' + mm[1] + 'm × ₹' + rm[1] + ' = <b>₹' + amt + '</b><br>👉 Sales page pe record karo!';
+    } else if (t.includes('stock')) {
+        reply = '📦 Items: <b>' + (typeof fabrics !== 'undefined' ? fabrics.length : 0) + '</b>';
+    } else {
+        reply = '🤔 Try: "Ramesh ko maal becha 200m 23 ke hisaab se"';
+    }
+    chatBox.innerHTML += '<div class="ai-msg">' + reply + '</div>';
     chatBox.scrollTop = chatBox.scrollHeight;
-    
-    const reply = processTextileQuery(text);
-    setTimeout(() => {
-        chatBox.innerHTML += '<div class="ai-msg">' + reply + '</div>';
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 500);
-}
-
-function processTextileQuery(text) {
-    text = text.toLowerCase();
-    
-    // Sale detect karo
-    const nameMatch = text.match(/([a-z\s]+)\s+ko/);
-    const amountMatch = text.match(/(\d+)\s*ka/);
-    const metersMatch = text.match(/(\d+)\s*m/);
-    const rateMatch = text.match(/(\d+)\s*ke\s+hisaab/);
-    
-    if (nameMatch && (amountMatch || metersMatch)) {
-        const name = nameMatch[1].trim();
-        const meters = metersMatch ? metersMatch[1] : null;
-        const rate = rateMatch ? rateMatch[1] : null;
-        const amount = meters && rate ? meters * rate : (amountMatch ? amountMatch[1] : null);
-        
-        return '✅ Samajh gaya!<br>' +
-               '👤 Party: <b>' + name + '</b><br>' +
-               (meters ? '📦 Maal: <b>' + meters + 'm</b><br>' : '') +
-               (rate ? '💰 Rate: <b>₹' + rate + '/m</b><br>' : '') +
-               '💵 Total: <b>₹' + amount + '</b><br><br>' +
-               '👉 Sales page pe ja aur record karo!';
-    }
-    
-    // Stock check
-    if (text.includes('stock') || text.includes('kitna')) {
-        const total = fabrics.reduce((a, f) => a + f.meters, 0);
-        return '📦 Total stock: <b>' + total + ' units</b><br>Items: <b>' + fabrics.length + '</b>';
-    }
-    
-    // Low stock
-    if (text.includes('low') || text.includes('kam')) {
-        const low = fabrics.filter(f => f.meters < 50);
-        return low.length ? '⚠️ Low stock:<br>' + low.map(f => '• ' + f.name + ': ' + f.meters).join('<br>') : '✅ Sab stock theek hai!';
-    }
-    
-    return '🤔 Samjha nahi. Try karo:<br>• "Ramesh ko maal becha 200m 23 ke hisaab se"<br>• "Stock kitna hai"<br>• "Low stock kaun sa hai"';
 }
   </script>
   <div id="niori-ai-btn" onclick="toggleAIPanel()">✨</div>
