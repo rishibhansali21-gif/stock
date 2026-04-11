@@ -7872,20 +7872,51 @@ async function sendAIMsg() {
     const chatBox = document.getElementById('ai-chat-box');
     chatBox.innerHTML += '<div class="user-msg">' + text + '</div>';
     input.value = '';
-    const tid = 'think' + Date.now();
-    chatBox.innerHTML += '<div class="ai-msg" id="' + tid + '">Soch raha hoon...</div>';
     chatBox.scrollTop = chatBox.scrollHeight;
-    try {
-        const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer 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'},
-            body: JSON.stringify({model: 'llama3-8b-8192', messages: [{role: 'user', content: text}], max_tokens: 300})
-        });
-        const d = await r.json();
-        document.getElementById(tid).innerText = d.choices[0].message.content;
-    } catch(e) {
-        document.getElementById(tid).innerText = 'Error aaya!';
+    
+    const reply = processTextileQuery(text);
+    setTimeout(() => {
+        chatBox.innerHTML += '<div class="ai-msg">' + reply + '</div>';
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 500);
+}
+
+function processTextileQuery(text) {
+    text = text.toLowerCase();
+    
+    // Sale detect karo
+    const nameMatch = text.match(/([a-z\s]+)\s+ko/);
+    const amountMatch = text.match(/(\d+)\s*ka/);
+    const metersMatch = text.match(/(\d+)\s*m/);
+    const rateMatch = text.match(/(\d+)\s*ke\s+hisaab/);
+    
+    if (nameMatch && (amountMatch || metersMatch)) {
+        const name = nameMatch[1].trim();
+        const meters = metersMatch ? metersMatch[1] : null;
+        const rate = rateMatch ? rateMatch[1] : null;
+        const amount = meters && rate ? meters * rate : (amountMatch ? amountMatch[1] : null);
+        
+        return '✅ Samajh gaya!<br>' +
+               '👤 Party: <b>' + name + '</b><br>' +
+               (meters ? '📦 Maal: <b>' + meters + 'm</b><br>' : '') +
+               (rate ? '💰 Rate: <b>₹' + rate + '/m</b><br>' : '') +
+               '💵 Total: <b>₹' + amount + '</b><br><br>' +
+               '👉 Sales page pe ja aur record karo!';
     }
+    
+    // Stock check
+    if (text.includes('stock') || text.includes('kitna')) {
+        const total = fabrics.reduce((a, f) => a + f.meters, 0);
+        return '📦 Total stock: <b>' + total + ' units</b><br>Items: <b>' + fabrics.length + '</b>';
+    }
+    
+    // Low stock
+    if (text.includes('low') || text.includes('kam')) {
+        const low = fabrics.filter(f => f.meters < 50);
+        return low.length ? '⚠️ Low stock:<br>' + low.map(f => '• ' + f.name + ': ' + f.meters).join('<br>') : '✅ Sab stock theek hai!';
+    }
+    
+    return '🤔 Samjha nahi. Try karo:<br>• "Ramesh ko maal becha 200m 23 ke hisaab se"<br>• "Stock kitna hai"<br>• "Low stock kaun sa hai"';
 }
   </script>
   <div id="niori-ai-btn" onclick="toggleAIPanel()">✨</div>
