@@ -6187,11 +6187,11 @@ function renderReport() {
   }
   const selMonth = picker.value; 
 
-  // Safe Date Filtering
-  const mSales = sales.filter(s => !s.kacha && s.date && s.date.startsWith(selMonth));
-  const mPur = purchases.filter(p => p.date && p.date.startsWith(selMonth));
-  const mExp = expenses.filter(e => e.date && e.date.startsWith(selMonth));
-
+ // GOD MODE FILTER: Kacha, Pakka, Purana, Naya... sab dikhayega!
+  const mSales = sales;
+  const mPur = purchases;
+  const mExp = expenses;
+  
   // 🛡️ BULLETPROOF MATH (NaN aane hi nahi dega)
   const totalSales = mSales.reduce((a, s) => a + (Number(s.total) || 0), 0);
   const totalPur = mPur.reduce((a, p) => a + (Number(p.total) || 0), 0); 
