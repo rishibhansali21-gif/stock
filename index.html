@@ -6183,17 +6183,19 @@ function renderReport() {
   const picker = document.getElementById('rpt-month-picker');
   if (!picker.value) { 
     const now = new Date(); 
-    picker.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; 
+    picker.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   }
   const selMonth = picker.value; 
 
-  const mSales = sales.filter(s => !s.kacha && s.date?.startsWith(selMonth));
-  const mPur = purchases.filter(p => p.date?.startsWith(selMonth));
-  const mExp = expenses.filter(e => e.date?.startsWith(selMonth));
+  // Safe Date Filtering
+  const mSales = sales.filter(s => !s.kacha && s.date && s.date.startsWith(selMonth));
+  const mPur = purchases.filter(p => p.date && p.date.startsWith(selMonth));
+  const mExp = expenses.filter(e => e.date && e.date.startsWith(selMonth));
 
-  const totalSales = mSales.reduce((a, s) => a + s.total, 0); 
-  const totalPur = mPur.reduce((a, p) => a + p.total, 0); 
-  const totalExp = mExp.reduce((a, e) => a + e.amount, 0);
+  // 🛡️ BULLETPROOF MATH (NaN aane hi nahi dega)
+  const totalSales = mSales.reduce((a, s) => a + (Number(s.total) || 0), 0);
+  const totalPur = mPur.reduce((a, p) => a + (Number(p.total) || 0), 0); 
+  const totalExp = mExp.reduce((a, e) => a + (Number(e.amount) || 0), 0);
   const profit = totalSales - totalPur - totalExp; 
   
   const finStats = document.getElementById('rpt-fin-stats');
@@ -6217,34 +6219,23 @@ function renderReport() {
       </div>`;
   }
 
-  let outCgst = 0;
-  let outSgst = 0;
-  let outIgst = 0; 
-  
+  // Safe GST Calculation
+  let outCgst = 0, outSgst = 0, outIgst = 0;
   mSales.forEach(s => { 
-    if (s.gstType === 'inter') {
-      outIgst += (s.gst || 0); 
-    } else { 
-      outCgst += (s.gst || 0) / 2; 
-      outSgst += (s.gst || 0) / 2; 
-    } 
+    const gstVal = Number(s.gst) || 0;
+    if (s.gstType === 'inter') { outIgst += gstVal; } 
+    else { outCgst += gstVal / 2; outSgst += gstVal / 2; } 
   });
-  
-  let inCgst = 0;
-  let inSgst = 0;
-  let inIgst = 0; 
-  
+
+  let inCgst = 0, inSgst = 0, inIgst = 0;
   mPur.forEach(p => { 
-    if (p.gstType === 'inter') {
-      inIgst += (p.gst || 0); 
-    } else { 
-      inCgst += (p.gst || 0) / 2; 
-      inSgst += (p.gst || 0) / 2; 
-    } 
+    const gstVal = Number(p.gst) || 0;
+    if (p.gstType === 'inter') { inIgst += gstVal; } 
+    else { inCgst += gstVal / 2; inSgst += gstVal / 2; } 
   });
 
   const totalOutput = outCgst + outSgst + outIgst; 
-  const totalInput = inCgst + inSgst + inIgst; 
+  const totalInput = inCgst + inSgst + inIgst;
   const netLiability = totalOutput - totalInput;
 
   const gstContainer = document.getElementById('rpt-gst-summary');
@@ -6278,7 +6269,7 @@ function renderReport() {
       </div>`;
   }
 
-  const receivables = sales.filter(s => !s.kacha && s.total > (s.paid || 0)).reduce((a, s) => a + (s.total - (s.paid || 0)), 0);
+  const receivables = sales.filter(s => !s.kacha && (Number(s.total)||0) > (Number(s.paid)||0)).reduce((a, s) => a + ((Number(s.total)||0) - (Number(s.paid)||0)), 0);
   
   const outContainer = document.getElementById('rpt-outstanding');
   if (outContainer) {
@@ -6292,8 +6283,9 @@ function renderReport() {
   const brokerMap = {};
   let totalComm = 0;
   mSales.forEach(s => {
-    if (s.broker && s.commission > 0) {
-      const commAmt = (s.subtotal * parseFloat(s.commission)) / 100;
+    const commRate = Number(s.commission) || 0;
+    if (s.broker && commRate > 0) {
+      const commAmt = ((Number(s.subtotal) || 0) * commRate) / 100;
       brokerMap[s.broker] = (brokerMap[s.broker] || 0) + commAmt;
       totalComm += commAmt;
     }
@@ -6318,7 +6310,8 @@ function renderReport() {
 
   const byFab = {};
   mSales.forEach(s => { 
-    byFab[s.fabric] = (byFab[s.fabric] || 0) + s.total; 
+    const fabName = s.fabric || 'Unknown';
+    byFab[fabName] = (byFab[fabName] || 0) + (Number(s.total) || 0); 
   });
   
   const topItems = Object.entries(byFab).sort((a, b) => b[1] - a[1]).slice(0, 5);
@@ -6330,12 +6323,70 @@ function renderReport() {
       <div class="bar-row">
         <div class="bar-lbl">${n}</div>
         <div class="bar-track">
-          <div class="bar-fill" style="width:${v / topMax * 100}%; background:var(--emerald)"></div>
+          <div class="bar-fill" style="width:${(v / topMax) * 100}%; background:var(--emerald)"></div>
         </div>
         <div class="bar-val">${fmt(v)}</div>
       </div>
     `).join('') || '<div style="color:var(--text3);font-size:12px;text-align:center;padding:20px">No sales data</div>';
   }
+}
+
+function exportCA() {
+  const picker = document.getElementById('rpt-month-picker'); 
+  const selMonth = picker ? picker.value : ''; 
+  if (!selMonth) { 
+    toast('Please select a month first'); 
+    return;
+  } 
+  
+  const mSales = sales.filter(s => !s.kacha && s.date && s.date.startsWith(selMonth)); 
+  const mPur = purchases.filter(p => p.date && p.date.startsWith(selMonth));
+  const mExp = expenses.filter(e => e.date && e.date.startsWith(selMonth));
+  
+  let csv = "--- OUTWARD SUPPLIES (SALES) ---\n"; 
+  csv += "Date,Invoice No,Customer Name,GSTIN,Taxable Value,CGST,SGST,IGST,Total Amount\n";
+  
+  mSales.forEach(s => { 
+    const gstVal = Number(s.gst) || 0;
+    const subVal = Number(s.subtotal) || Number(s.total) || 0;
+    const totVal = Number(s.total) || 0;
+
+    const outCgst = s.gstType === 'intra' ? (gstVal / 2).toFixed(2) : 0; 
+    const outSgst = s.gstType === 'intra' ? (gstVal / 2).toFixed(2) : 0; 
+    const outIgst = s.gstType === 'inter' ? gstVal.toFixed(2) : 0; 
+    
+    const dateStr = s.date ? s.date.split('T')[0] : '';
+    csv += `${dateStr},${s.invoiceNo || '-'},${s.customer || 'Cash'},${s.buyerGstin || ''},${subVal.toFixed(2)},${outCgst},${outSgst},${outIgst},${totVal.toFixed(2)}\n`; 
+  });
+  
+  csv += "\n--- INWARD SUPPLIES (PURCHASES / ITC) ---\n"; 
+  csv += "Date,Ref Note,Supplier Name,GSTIN,Taxable Value,CGST,SGST,IGST,Total Amount\n";
+  
+  mPur.forEach(p => { 
+    const gstVal = Number(p.gst) || 0;
+    const subVal = Number(p.subtotal) || Number(p.total) || 0;
+    const totVal = Number(p.total) || 0;
+
+    const inCgst = p.gstType === 'intra' ? (gstVal / 2).toFixed(2) : 0; 
+    const inSgst = p.gstType === 'intra' ? (gstVal / 2).toFixed(2) : 0; 
+    const inIgst = p.gstType === 'inter' ? gstVal.toFixed(2) : 0; 
+    
+    const dateStr = p.date ? p.date.split('T')[0] : '';
+    csv += `${dateStr},${p.note || ''},${p.party || ''},${p.gstin || ''},${subVal.toFixed(2)},${inCgst},${inSgst},${inIgst},${totVal.toFixed(2)}\n`; 
+  });
+  
+  csv += "\n--- SHOP EXPENSES ---\n"; 
+  csv += "Date,Category,Description,Amount\n"; 
+  mExp.forEach(e => { 
+    const dateStr = e.date ? e.date.split('T')[0] : '';
+    csv += `${dateStr},${e.category || ''},${e.desc || ''},${Number(e.amount || 0).toFixed(2)}\n`; 
+  }); 
+  
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv); 
+  a.download = `CA_Audit_Export_${selMonth}.csv`; 
+  a.click(); 
+  toast('Exported for CA 📥');
 }
 
 function exportCA() {
