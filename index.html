@@ -15,27 +15,11 @@
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
     import { 
       getFirestore, 
-      collection, 
-      doc, 
-      addDoc, 
-      setDoc, 
-      getDoc, 
-      getDocs, 
-      updateDoc, 
-      deleteDoc, 
-      onSnapshot, 
-      query, 
-      orderBy, 
-      serverTimestamp 
+      enableIndexedDbPersistence,
+      collection, doc, addDoc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, writeBatch 
     } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
     import { 
-      getAuth, 
-      signInWithPopup, 
-      GoogleAuthProvider, 
-      signInWithPhoneNumber, 
-      RecaptchaVerifier, 
-      onAuthStateChanged, 
-      signOut as fbSignOut 
+      getAuth, signInWithPopup, GoogleAuthProvider, signInWithPhoneNumber, RecaptchaVerifier, onAuthStateChanged, signOut as fbSignOut 
     } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
     const firebaseConfig = {
@@ -55,44 +39,40 @@
       db = getFirestore(app);
       auth = getAuth(app);
 
+      // 🔴 FIX 1: ENABLE OFFLINE PERSISTENCE
+      enableIndexedDbPersistence(db).catch((err) => {
+        if (err.code == 'failed-precondition') {
+          console.warn("Multiple tabs open, persistence disabled.");
+        } else if (err.code == 'unimplemented') {
+          console.warn("Browser doesn't support persistence.");
+        }
+      });
+
       window._db = db;
       window._auth = auth;
       window._firebase = { 
-        collection, 
-        doc, 
-        addDoc, 
-        setDoc, 
-        getDoc, 
-        getDocs, 
-        updateDoc, 
-        deleteDoc, 
-        onSnapshot, 
-        query, 
-        orderBy, 
-        serverTimestamp 
+        collection, doc, addDoc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, writeBatch 
       };
+
       window._fbSignOut = fbSignOut;
       window._googleProvider = new GoogleAuthProvider();
       window._signInWithPopup = signInWithPopup;
       window._RecaptchaVerifier = RecaptchaVerifier;
       window._signInWithPhoneNumber = signInWithPhoneNumber;
-      window._onAuthStateChanged = onAuthStateChanged;
 
-     onAuthStateChanged(auth, (user) => {
+      onAuthStateChanged(auth, (user) => {
         const overlay = document.getElementById('auth-overlay');
         const loginScreen = document.getElementById('login-screen');
 
         if (user) {
           window._currentUser = user;
           if(loginScreen) loginScreen.style.setProperty('display', 'none', 'important');
-          
           if(typeof initApp === 'function') initApp();
         } else {
           window._currentUser = null;
           if(loginScreen) loginScreen.style.setProperty('display', 'flex', 'important');
         }
 
-        // Smooth parda hatane ka wait (600ms)
         setTimeout(() => {
           if(overlay) {
             overlay.style.opacity = '0';
