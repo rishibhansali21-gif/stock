@@ -7334,56 +7334,72 @@ async function sharePDFMobile(filename, msgText) {
 }  // --- LIVE DEMO &  LOGIC (MASTER FIX) ---
 
 window.startDemoMode = function() {
-    console.log("Demo mode starting...");
-    const loginSc = document.getElementById('login-screen');
-    if(loginSc) loginSc.style.setProperty('display', 'none', 'important');
-    
-    document.getElementById('demo-banner').style.display = 'block';
-    
-    // 1. FULL Dummy Data Restored
-    fabrics = [
-        { id: 'd1', name: 'Premium Georgette Saree', type: 'Saree', meters: 250, rate: 850, rolls: [{rollNo:'T-101', meters:250, date: ts()}] },
-        { id: 'd2', name: 'Linen Plain Shirt Fabric', type: 'Shirting', meters: 120, rate: 180, rolls: [{rollNo:'T-102', meters:120, date: ts()}] },
-        { id: 'd3', name: 'Designer Silk Kurti', type: 'Kurti', unit: 'Pieces', meters: 15, rate: 1200, rolls: [{rollNo:'B-201', meters:15, date: ts()}] }
-    ];
-    sales = [
-        { id: 's1', invoiceNo: 'INV-DEMO-01', fabric: 'Premium Georgette Saree', customer: 'Avadh Traders', meters: 50, rate: 900, subtotal: 45000, gst: 2250, total: 47250, paid: 47250, date: ts() }
-    ];
-    purchases = []; payments = []; expenses = [];
+  console.log("Demo mode starting...");
+  const loginSc = document.getElementById('login-screen');
+  if(loginSc) loginSc.style.setProperty('display', 'none', 'important');
+  
+  // Show Demo Banner across the top
+  const demoBanner = document.getElementById('demo-banner') || document.createElement('div');
+  demoBanner.id = 'demo-banner';
+  demoBanner.innerHTML = `⚠️ Demo Data — Sign in to save real data. <button onclick="exitDemo()" style="margin-left:15px; background:black; color:white; border:none; padding:4px 12px; border-radius:6px; cursor:pointer; font-weight:700;">Exit Demo</button>`;
+  demoBanner.style = "background:var(--amber); color:#000; text-align:center; padding:10px; font-weight:bold; font-size:13px; z-index:9999; position:relative;";
+  document.body.insertBefore(demoBanner, document.body.firstChild);
+  
+  DB = 'LOCAL';
+  window._currentUser = { uid: 'demo_user' };
+  
+  // 1. Auto-Populate 5 Inventory Items
+  fabrics = [
+    { id: 'd1', name: 'Satin 60x60', type: 'Satin', meters: 500, rate: 85, rolls: [{rollNo:'T-101', meters:500, date: ts()}] },
+    { id: 'd2', name: 'Georgette Print', type: 'Georgette', meters: 320, rate: 110, rolls: [{rollNo:'T-102', meters:320, date: ts()}] },
+    { id: 'd3', name: 'Pure Cotton', type: 'Cotton', meters: 800, rate: 65, rolls: [{rollNo:'T-103', meters:800, date: ts()}] },
+    { id: 'd4', name: 'Crepe Fabric', type: 'Crepe', meters: 150, rate: 140, rolls: [{rollNo:'T-104', meters:150, date: ts()}] },
+    { id: 'd5', name: 'Dyeable Silk', type: 'Silk', meters: 60, rate: 450, rolls: [{rollNo:'T-105', meters:60, date: ts()}] }
+  ];
+  
+  // 2. Auto-Populate 3 Recent Sales (2 Udhaar, 1 Cash)
+  sales = [
+    { id: 's1', invoiceNo: 'INV-2024-001', fabric: 'Satin 60x60', customer: 'Avadh Traders', meters: 50, rate: 90, subtotal: 4500, gst: 225, total: 4725, paid: 4725, invType: 'Cash', date: ts() },
+    { id: 's2', invoiceNo: 'INV-2024-002', fabric: 'Georgette Print', customer: 'Ramesh Bhai', meters: 100, rate: 120, subtotal: 12000, gst: 600, total: 12600, paid: 5000, invType: 'Credit', date: ts() },
+    { id: 's3', invoiceNo: 'INV-2024-003', fabric: 'Pure Cotton', customer: 'Shiv Textiles', meters: 200, rate: 70, subtotal: 14000, gst: 700, total: 14700, paid: 0, invType: 'Credit', date: ts() }
+  ];
+  
+  purchases = [];
+  payments = [];
+  
+  // 3. Auto-populate 1 Expense
+  expenses = [
+    { id: 'e1', date: ts(), category: 'Transport', amount: 450, desc: 'Tempo fare to Ring Road godown' }
+  ];
 
-    // 2. Dummy Master Data (Taki dropdowns khali na rahein)
-    masterData = {
-        parties: ['Avadh Traders', 'Ramesh Bhai', 'Shiv Textiles', 'Mukesh Agent'],
-        qualities: ['Saree', 'Shirting', 'Kurti', 'Georgette'],
-        colors: ['Red', 'Blue', 'Pink', 'Black']
-    };
-    if (typeof rebuildDatalists === 'function') rebuildDatalists();
-
-    // 3. Dummy Settings (Taki PDF Invoice First Class bane!)
-    settings = { firm: 'StockSaathi Demo Shop', gstin: '24DEMO1234X1Z5', upi: 'demo@upi' };
-
-    document.getElementById('user-display-name').textContent = 'Demo User (Owner)';
-    document.getElementById('sb-avatar').textContent = 'D';
-
-    // 4. FIX: Staff Mode hatao, saare VIP buttons wapas lao!
-    document.body.classList.remove('staff-mode', 'manager-mode');
-
-    // 5. MAGIC FIX: Prevent App Crash in Demo Mode (Local Saving Enabled)
-    window._oldFbSave = window.fbSave;
-    window._oldFbUpdate = window.fbUpdate;
-    window._oldFbDelete = window.fbDelete;
-
-    window.fbSave = async function(col, data) { return 'demo-' + Date.now(); };
-    window.fbUpdate = async function(col, id, data) { return; };
-    window.fbDelete = async function(col, id) { return; };
-
-    if(typeof renderAll === 'function') renderAll();
-    toast('Live Demo Started! Create a dummy bill now. 🚀', 4000);
+  // Dummy Master Data
+  masterData = {
+    parties: ['Avadh Traders', 'Ramesh Bhai', 'Shiv Textiles', 'Mukesh Agent'],
+    qualities: ['Saree', 'Shirting', 'Kurti', 'Georgette', 'Satin', 'Cotton', 'Crepe', 'Silk'],
+    colors: ['Red', 'Blue', 'Pink', 'Black']
+  };
+  
+  settings = { firm: 'StockSaathi Demo Shop', gstin: '24DEMO1234X1Z5', upi: 'demo@upi' };
+  
+  document.getElementById('user-display-name').textContent = 'Demo User (Explore Mode)';
+  document.getElementById('sb-avatar').textContent = 'D';
+  
+  document.body.classList.remove('staff-mode', 'manager-mode');
+  
+  window.fbSave = async function(col, data) { return 'demo-' + Date.now(); };
+  window.fbUpdate = async function(col, id, data) { return; };
+  window.fbDelete = async function(col, id) { return; };
+  
+  if (typeof rebuildDatalists === 'function') rebuildDatalists();
+  if (typeof renderAll === 'function') renderAll();
+  
+  toast('Live Demo Started! Feel free to explore fully.', 4000);
 }
 
 window.exitDemo = function() {
-    document.getElementById('demo-banner').style.display = 'none';
-    location.reload(); 
+  const demoBanner = document.getElementById('demo-banner');
+  if(demoBanner) demoBanner.style.display = 'none';
+  location.reload();
 }
 
 window.verifyActivation = async function() {
