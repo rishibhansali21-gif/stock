@@ -3770,17 +3770,39 @@ function gstBreakdownHTML(base, rate, type) {
 }
 
 // ══════════════════════════════════════════════════
+// OFFLINE NETWORK LISTENERS (FIX 1)
+// ══════════════════════════════════════════════════
+window.addEventListener('online', () => {
+  const ind = document.getElementById('sync-indicator');
+  if(ind) {
+    ind.style.display = 'flex';
+    document.getElementById('sync-icon').textContent = '🟢';
+    document.getElementById('sync-text').textContent = 'Online & Saved ✓';
+    setTimeout(() => ind.style.display = 'none', 3000);
+  }
+});
+
+window.addEventListener('offline', () => {
+  const ind = document.getElementById('sync-indicator');
+  if(ind) {
+    ind.style.display = 'flex';
+    document.getElementById('sync-icon').textContent = '🔴';
+    document.getElementById('sync-text').textContent = 'Offline — Will sync later';
+  }
+});
+
+// ══════════════════════════════════════════════════
 // FIREBASE DB HELPERS
 // ══════════════════════════════════════════════════
 function userPath() { 
-  const u = window._currentUser?.uid; 
+  const u = window._currentUser?.uid;
   if (!u) {
-    if (DB === 'LOCAL') return 'localUser';
-    throw new Error('Not logged in'); 
+    if (DB === 'LOCAL') return 'localShop';
+    throw new Error('Not logged in');
   }
-  return `users/${u}`; 
+  return `shops/${u}`; // Changed from users/ to shops/ per your request
 }
-
+  
 function colRef(name) { 
   return FB.collection(DB, `${userPath()}/${name}`); 
 }
