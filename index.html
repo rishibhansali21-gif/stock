@@ -7532,7 +7532,104 @@ function payWithRazorpay(planName, amountInRupees) {
     var rzp1 = new window.Razorpay(options);
     rzp1.open();
 }
-</script> <div id="toast"></div>
+</script>
+
+<!-- PARTY PROFILE MODAL (TALLY STYLE) -->
+<div class="qmodal-bg" id="party-profile-modal" style="z-index:10001">
+  <div class="qmodal" style="width:620px; max-height:90vh; overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <div class="qmodal-title" id="pm-title">Add Party Profile</div>
+      <button onclick="closePartyModal()" style="background:none;border:none;font-size:22px;color:var(--text3);cursor:pointer">✕</button>
+    </div>
+    <div class="qmodal-sub">Tally-style party master with full details</div>
+
+    <div class="fc" style="padding:14px;margin-bottom:12px">
+      <div class="fc-title">🏷️ Basic Info</div>
+      <div class="g2">
+        <div class="fg"><label class="fl">Party Name <span style="color:var(--rose)">*</span></label><input id="pm-name" placeholder="e.g. Ramesh Textiles"/></div>
+        <div class="fg"><label class="fl">Alias / Short Name</label><input id="pm-alias" placeholder="e.g. Ramesh Bhai"/></div>
+      </div>
+      <div class="fg">
+        <label class="fl">Under (Party Type)</label>
+        <select id="pm-under">
+          <option value="Sundry Debtor">Sundry Debtor (Customer)</option>
+          <option value="Sundry Creditor">Sundry Creditor (Supplier)</option>
+          <option value="Both">Both</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="fc" style="padding:14px;margin-bottom:12px">
+      <div class="fc-title">📞 Contact Details</div>
+      <div class="g2">
+        <div class="fg"><label class="fl">Mobile No.</label><input id="pm-phone" type="tel" placeholder="9876543210"/></div>
+        <div class="fg"><label class="fl">Alt. Mobile</label><input id="pm-phone2" type="tel" placeholder="9876543210"/></div>
+      </div>
+      <div class="g2">
+        <div class="fg"><label class="fl">Email ID</label><input id="pm-email" type="email" placeholder="party@email.com"/></div>
+        <div class="fg"><label class="fl">WhatsApp No.</label><input id="pm-whatsapp" type="tel" placeholder="9876543210"/></div>
+      </div>
+    </div>
+
+    <div class="fc" style="padding:14px;margin-bottom:12px">
+      <div class="fc-title">📍 Address</div>
+      <div class="fg"><label class="fl">Street / Shop Address</label><input id="pm-address" placeholder="Shop No. 12, Kapda Bazar..."/></div>
+      <div class="g3">
+        <div class="fg"><label class="fl">City</label><input id="pm-city" placeholder="e.g. Surat"/></div>
+        <div class="fg"><label class="fl">State</label>
+          <select id="pm-state">
+            <option>Gujarat</option><option>Maharashtra</option><option>Rajasthan</option>
+            <option>Delhi</option><option>UP</option><option>MP</option>
+            <option>Karnataka</option><option>Tamil Nadu</option><option>Other</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Pincode</label><input id="pm-pin" type="number" placeholder="395003"/></div>
+      </div>
+    </div>
+
+    <div class="fc" style="padding:14px;margin-bottom:12px">
+      <div class="fc-title">🧾 Tax & Legal</div>
+      <div class="g2">
+        <div class="fg"><label class="fl">GSTIN / UIN</label><input id="pm-gstin" placeholder="24XXXXX1234X1Z5" style="text-transform:uppercase"/></div>
+        <div class="fg"><label class="fl">PAN Number</label><input id="pm-pan" placeholder="ABCDE1234F" style="text-transform:uppercase"/></div>
+      </div>
+    </div>
+
+    <div class="fc" style="padding:14px;margin-bottom:12px">
+      <div class="fc-title">💰 Financial Settings</div>
+      <div class="g2">
+        <div class="fg"><label class="fl">Credit Limit (₹)</label><input id="pm-credit-limit" type="number" placeholder="e.g. 100000"/></div>
+        <div class="fg"><label class="fl">Opening Balance (₹)</label><input id="pm-opening-bal" type="number" placeholder="e.g. 5000"/></div>
+      </div>
+      <div class="fg"><label class="fl">Balance Type</label>
+        <select id="pm-bal-type">
+          <option value="Dr">Dr — Debit (Customer owes you)</option>
+          <option value="Cr">Cr — Credit (You owe them)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="fc" style="padding:14px;margin-bottom:0">
+      <div class="fc-title">🏦 Bank Details</div>
+      <div class="g2">
+        <div class="fg"><label class="fl">Account Name</label><input id="pm-acc-name" placeholder="Account holder name"/></div>
+        <div class="fg"><label class="fl">Account Number</label><input id="pm-acc-no" placeholder="XXXXXXXXXXXX"/></div>
+      </div>
+      <div class="g2">
+        <div class="fg"><label class="fl">Bank Name</label><input id="pm-bank" placeholder="e.g. SBI, HDFC"/></div>
+        <div class="fg"><label class="fl">IFSC Code</label><input id="pm-ifsc" placeholder="SBIN0001234"/></div>
+      </div>
+      <div class="fg"><label class="fl">UPI ID</label><input id="pm-upi" placeholder="9876543210@paytm"/></div>
+    </div>
+
+    <div class="qmodal-foot g2" style="margin-top:16px">
+      <button class="btn btn-ghost" onclick="closePartyModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="savePartyProfileMaster()">✅ Save Party</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
   <div id="demo-banner" style="display:none; position:fixed; top:0; left:0; right:0; background:var(--amber); color:var(--amber-dim); text-align:center; padding:8px 12px; font-weight:700; z-index:100000; font-size:13px; box-shadow:0 4px 12px rgba(0,0,0,0.2);">
   ⚠️ You are viewing a Live Demo. (Data will not be saved) 
   <button onclick="exitDemo()" style="margin-left:12px; padding:5px 12px; background:#fff; color:var(--amber-dim); border:none; border-radius:6px; font-weight:800; cursor:pointer;">👉 Start Your Shop</button>
