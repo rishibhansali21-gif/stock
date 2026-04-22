@@ -7201,45 +7201,71 @@ window.addParty = async function(name) {
     rebuildDatalists();
 };
   // --- PARTY MASTER FUNCTIONS ---
-window.openPartyModal = function(name = '') {
-    const s = (id, v) => {
-        const el = document.getElementById(id);
-        if(el) el.value = v || '';
-    };
+window.openPartyModal = function(name) {
+    name = name || '';
+    const s = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
     if(name && masterData.partyProfiles && masterData.partyProfiles[name]) {
         let p = masterData.partyProfiles[name];
-        s('pm-name', name); s('pm-phone', p.phone); s('pm-gstin', p.gstin); s('pm-address', p.address); s('pm-email', p.email);
-        document.getElementById('pm-title').textContent = "Edit Party Profile";
+        s('pm-name', name); s('pm-alias', p.alias); s('pm-under', p.under);
+        s('pm-phone', p.phone); s('pm-phone2', p.phone2);
+        s('pm-email', p.email); s('pm-whatsapp', p.whatsapp);
+        s('pm-address', p.address); s('pm-city', p.city);
+        s('pm-state', p.state); s('pm-pin', p.pin);
+        s('pm-gstin', p.gstin); s('pm-pan', p.pan);
+        s('pm-credit-limit', p.creditLimit); s('pm-opening-bal', p.openingBal);
+        s('pm-bal-type', p.balType);
+        s('pm-acc-name', p.accName); s('pm-acc-no', p.accNo);
+        s('pm-bank', p.bank); s('pm-ifsc', p.ifsc); s('pm-upi', p.upi);
+        document.getElementById('pm-title').textContent = "✏️ Edit Party — " + name;
     } else {
-        s('pm-name', ''); s('pm-phone', ''); s('pm-gstin', ''); s('pm-address', ''); s('pm-email', '');
-        document.getElementById('pm-title').textContent = "Add New Party Profile";
+        ['pm-name','pm-alias','pm-phone','pm-phone2','pm-email','pm-whatsapp',
+         'pm-address','pm-city','pm-pin','pm-gstin','pm-pan',
+         'pm-credit-limit','pm-opening-bal','pm-acc-name',
+         'pm-acc-no','pm-bank','pm-ifsc','pm-upi'].forEach(id => s(id, ''));
+        document.getElementById('pm-title').textContent = "➕ Add Party Profile";
     }
-    document.getElementById('party-profile-modal').classList.add('on');
+    const modal = document.getElementById('party-profile-modal');
+    if(!modal) { alert('Modal HTML missing!'); return; }
+    modal.classList.add('on');
 };
-
+  
 window.closePartyModal = function() {
     document.getElementById('party-profile-modal').classList.remove('on');
 };
 
 window.savePartyProfileMaster = async function() {
     const name = document.getElementById('pm-name').value.trim();
-    if(!name) { alert("Party Name is required!"); return; }
-    
+    if(!name) { toast('Party Name is required!'); return; }
     if(!masterData.parties) masterData.parties = [];
-    if(!masterData.parties.includes(name)) masterData.parties.push(name);
-    
     if(!masterData.partyProfiles) masterData.partyProfiles = {};
+    if(!masterData.parties.includes(name)) masterData.parties.push(name);
     masterData.partyProfiles[name] = {
+        alias: document.getElementById('pm-alias').value,
+        under: document.getElementById('pm-under').value,
         phone: document.getElementById('pm-phone').value,
-        gstin: document.getElementById('pm-gstin').value.toUpperCase(),
+        phone2: document.getElementById('pm-phone2').value,
+        email: document.getElementById('pm-email').value,
+        whatsapp: document.getElementById('pm-whatsapp').value,
         address: document.getElementById('pm-address').value,
-        email: document.getElementById('pm-email').value
+        city: document.getElementById('pm-city').value,
+        state: document.getElementById('pm-state').value,
+        pin: document.getElementById('pm-pin').value,
+        gstin: document.getElementById('pm-gstin').value.toUpperCase(),
+        pan: document.getElementById('pm-pan').value.toUpperCase(),
+        creditLimit: parseFloat(document.getElementById('pm-credit-limit').value)||0,
+        openingBal: parseFloat(document.getElementById('pm-opening-bal').value)||0,
+        balType: document.getElementById('pm-bal-type').value,
+        accName: document.getElementById('pm-acc-name').value,
+        accNo: document.getElementById('pm-acc-no').value,
+        bank: document.getElementById('pm-bank').value,
+        ifsc: document.getElementById('pm-ifsc').value,
+        upi: document.getElementById('pm-upi').value
     };
-    
     await saveMaster();
     rebuildDatalists();
     closePartyModal();
     toast('Party Profile Saved! ✅');
+    if(typeof renderMaster === 'function') renderMaster();
 };
 // Master list render upgrade
 const originalRenderMaster = window.renderMaster;
