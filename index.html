@@ -6464,18 +6464,22 @@ function goto(pg, btn) {
   
   document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active')); 
   btn?.classList.add('active'); 
+
+  document.querySelectorAll('.mob-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('mob-' + pg)?.classList.add('active');
   
   document.getElementById('pg-title').textContent = pageMap[pg] || pg; 
   currentPage = pg; 
   
-  if (pg === 'report') renderReport(); 
-  if (pg === 'payments') { 
-    renderPayments(); 
-    renderPaymentStats(); 
-  } 
-  if (pg === 'expenses') renderExpenses(); 
-  if (pg === 'ledger') renderLedger(); 
-}
+  if (pg === 'report') {
+    // Month picker default set karo aur render karo
+    const picker = document.getElementById('rpt-month-picker');
+    if (picker && !picker.value) {
+      const now = new Date();
+      picker.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+    }
+    renderReport();
+  }
 
 function mobileGoto(pg) { 
   const btnId = 'mob-' + pg; 
