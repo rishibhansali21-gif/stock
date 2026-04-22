@@ -4208,9 +4208,17 @@ async function addColor() {
 }
 
 async function addPartyManual() { 
-  const v = prompt('New party name:'); 
-  if (v?.trim()) {
-    addParty(v.trim());
+  const name = prompt('New party name:'); 
+  if (name?.trim()) {
+    if (!masterData.parties) masterData.parties = [];
+    if (!masterData.parties.includes(name.trim())) {
+      masterData.parties.push(name.trim());
+      await saveMaster();
+      rebuildDatalists();
+      toast('Party added ✅');
+    } else {
+      toast('Party already exists!');
+    }
   } 
 }
 
