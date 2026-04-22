@@ -4491,9 +4491,10 @@ function renderAll() {
   renderLedger(); 
   renderPayments(); 
   renderExpenses(); 
-  renderReport(); 
   renderProfilesPage(); 
-  renderCharts(); 
+  renderCharts();
+  // Report renders only when on report page, or force render now
+  try { renderReport(); } catch(e) { console.log('Report render deferred', e); }
 }
 
 // ══════════════════════════════════════════════════
@@ -6184,11 +6185,11 @@ function c3() {
 // ══════════════════════════════════════════════════
 function renderReport() {
   const picker = document.getElementById('rpt-month-picker');
-  if (!picker.value) { 
-    const now = new Date(); 
-    picker.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const now = new Date();
+  if (!picker || !picker.value) { 
+    if(picker) picker.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   }
-  const selMonth = picker.value; 
+  const selMonth = picker ? picker.value : `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
  // GOD MODE FILTER: Kacha, Pakka, Purana, Naya... sab dikhayega!
   const mSales = sales;
@@ -6468,7 +6469,9 @@ function goto(pg, btn) {
   document.getElementById('pg-title').textContent = pageMap[pg] || pg; 
   currentPage = pg; 
   
-  if (pg === 'report') renderReport(); 
+  if (pg === 'report') { 
+    setTimeout(() => renderReport(), 100); 
+  }
   if (pg === 'payments') { 
     renderPayments(); 
     renderPaymentStats(); 
