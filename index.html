@@ -7223,8 +7223,11 @@ window.closePartyModal = function() {
 };
 
 window.savePartyProfileMaster = async function() {
-    const name = document.getElementById('pm-name').value.trim();
-    if(!name) { toast('Party Name is required!'); return; }
+    const name = document.getElementById('pm-name') ? document.getElementById('pm-name').value.trim() : '';
+    if(!name) { 
+        alert('Party Name required!'); 
+        return; 
+    }
     if(!masterData.parties) masterData.parties = [];
     if(!masterData.partyProfiles) masterData.partyProfiles = {};
     if(!masterData.parties.includes(name)) masterData.parties.push(name);
