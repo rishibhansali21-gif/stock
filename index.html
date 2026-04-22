@@ -4207,19 +4207,8 @@ async function addColor() {
   } 
 }
 
-async function addPartyManual() { 
-  const name = prompt('New party name:'); 
-  if (name?.trim()) {
-    if (!masterData.parties) masterData.parties = [];
-    if (!masterData.parties.includes(name.trim())) {
-      masterData.parties.push(name.trim());
-      await saveMaster();
-      rebuildDatalists();
-      toast('Party added ✅');
-    } else {
-      toast('Party already exists!');
-    }
-  } 
+async function addPartyManual() {
+  openPartyModal('');
 }
 
 async function addParty(name) { 
