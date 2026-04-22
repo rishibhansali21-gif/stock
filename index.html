@@ -2205,6 +2205,13 @@
     display: none !important; 
 }
 
+/* Login screen ke time sidebar aur topbar hide karo */
+#login-screen[style*="flex"] ~ .main .topbar,
+body:has(#login-screen[style*="flex"]) .sb,
+body:has(#login-screen[style*="flex"]) .topbar {
+    display: none !important;
+}
+
 /* Loading overlay ka style */
 #auth-overlay {
     position: fixed;
