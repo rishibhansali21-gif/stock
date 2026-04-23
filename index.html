@@ -2129,6 +2129,92 @@
       color: #4f46e5;
     }
 
+    /* REPORTS TABS */
+.rpt-tab {
+  padding: 12px 18px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text2);
+  font-family: var(--ff);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.rpt-tab:hover { color: var(--text); }
+.rpt-tab.active {
+  color: var(--indigo);
+  border-bottom-color: var(--indigo);
+}
+.rpt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.rpt-table th {
+  background: var(--bg3);
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.rpt-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+}
+.rpt-table tr:hover td { background: var(--bg3); color: var(--text); }
+.rpt-table td.clickable { 
+  color: var(--indigo); 
+  cursor: pointer; 
+  font-weight: 600;
+}
+.rpt-table td.clickable:hover { text-decoration: underline; }
+.rpt-kpi {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.rpt-kpi:hover {
+  border-color: var(--border3);
+  transform: translateY(-2px);
+}
+.rpt-kpi-label {
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.rpt-kpi-value {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: var(--fm);
+  letter-spacing: -1px;
+  margin-bottom: 4px;
+}
+.rpt-kpi-sub {
+  font-size: 11px;
+  color: var(--text3);
+}
+.rpt-kpi-icon {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  font-size: 24px;
+  opacity: 0.3;
+}
     @media print {
       .sb, .topbar, .modal-bg, .qmodal-bg, #toast, #login-screen, #profile-screen, .fab-actions, .search-big, .cat-row {
         display: none !important;
@@ -2908,45 +2994,162 @@ html, body {
     </div>
   </div>
   
-  <div class="page" id="pg-report">
-    <div class="content">
-      <div class="sh">
-        <div>
-          <div class="sh-title">📊 Business &amp; Tax Reports</div>
-          <div class="sh-sub">Financials, GST Estimates, and Outstanding</div>
+ <div class="page" id="pg-report">
+  <!-- REPORT TABS -->
+  <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;gap:4px;flex-shrink:0;overflow-x:auto;">
+    <button class="rpt-tab active" id="rtab-dashboard" onclick="switchRptTab('dashboard')">📊 Dashboard</button>
+    <button class="rpt-tab" id="rtab-sales" onclick="switchRptTab('sales')">💰 Sales</button>
+    <button class="rpt-tab" id="rtab-purchase" onclick="switchRptTab('purchase')">📦 Purchase</button>
+    <button class="rpt-tab" id="rtab-inventory" onclick="switchRptTab('inventory')">🗃️ Inventory</button>
+    <button class="rpt-tab" id="rtab-financial" onclick="switchRptTab('financial')">📈 P&L</button>
+    <button class="rpt-tab" id="rtab-receivables" onclick="switchRptTab('receivables')">⏳ Receivables</button>
+  </div>
+
+  <!-- GLOBAL FILTERS -->
+  <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;flex-shrink:0;">
+    <input type="date" id="rpt-from" style="width:140px;font-size:12px;" onchange="renderActiveRptTab()"/>
+    <span style="color:var(--text3);font-size:12px;">to</span>
+    <input type="date" id="rpt-to" style="width:140px;font-size:12px;" onchange="renderActiveRptTab()"/>
+    <select id="rpt-cat-filter" style="width:150px;font-size:12px;" onchange="renderActiveRptTab()">
+      <option value="">All Categories</option>
+    </select>
+    <button class="btn btn-ghost" style="width:auto;font-size:12px;padding:6px 12px;" onclick="resetRptFilters()">↺ Reset</button>
+    <div style="margin-left:auto;display:flex;gap:8px;">
+      <button class="btn btn-ghost" style="width:auto;font-size:12px;" onclick="exportRptPDF()">📥 PDF</button>
+      <button class="btn btn-primary" style="width:auto;font-size:12px;" onclick="exportCA()">📊 CA Export</button>
+    </div>
+  </div>
+
+  <div class="content" id="rpt-content" style="padding:20px;">
+
+    <!-- ═══ TAB 1: DASHBOARD ═══ -->
+    <div id="rpt-dashboard">
+      <!-- KPI CARDS -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;" id="rpt-kpi-row"></div>
+
+      <!-- CHARTS ROW -->
+      <div class="g2" style="margin-bottom:20px;">
+        <div class="fc" style="padding:16px;margin-bottom:0;">
+          <div class="fc-title">📈 Sales vs Purchase Trend</div>
+          <div style="position:relative;height:200px;">
+            <canvas id="rpt-chart-trend"></canvas>
+          </div>
         </div>
-        <div style="display:flex; gap:8px;">
-          <input type="month" id="rpt-month-picker" onchange="renderReport()" class="btn btn-ghost" style="width:auto; padding:8px; font-family:var(--fm);"/>
-          <button class="btn btn-primary" style="width:auto" onclick="exportCA()">📥 Export for CA</button>
+        <div class="fc" style="padding:16px;margin-bottom:0;">
+          <div class="fc-title">💸 Cash Inflow vs Outflow</div>
+          <div style="position:relative;height:200px;">
+            <canvas id="rpt-chart-cashflow"></canvas>
+          </div>
         </div>
       </div>
-      
-      <div class="fc-title">📈 Financial Overview</div>
-      <div class="rpt-stats" id="rpt-fin-stats"></div>
 
-      <div class="g2">
-        <div class="fc" style="padding:16px; background:linear-gradient(to bottom right, var(--bg2), rgba(59,158,245,0.05)); border-color:var(--border3)">
-          <div class="fc-title" style="color:var(--blue)">🏛️ GST Summary (GSTR-3B Est.)</div>
-          <div id="rpt-gst-summary"></div>
+      <!-- BOTTOM ROW -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+        <div class="fc" style="padding:16px;margin-bottom:0;">
+          <div class="fc-title">🔥 Top Products</div>
+          <div id="rpt-top-products"></div>
         </div>
-        
-        <div class="fc" style="padding:16px; background:linear-gradient(to bottom right, var(--bg2), rgba(245,166,35,0.05)); border-color:var(--border3)">
-          <div class="fc-title" style="color:var(--amber)">⏳ Outstanding (Market Receivables)</div>
-          <div id="rpt-outstanding"></div>
+        <div class="fc" style="padding:16px;margin-bottom:0;">
+          <div class="fc-title">⚠️ Low Stock Alert</div>
+          <div id="rpt-low-stock"></div>
         </div>
-      </div>
-
-      <div class="g2">
-        <div class="fc" style="padding:16px">
-          <div class="fc-title">🤝 Broker Commissions (Dalali)</div>
-          <div id="rpt-broker-comm"></div>
-        </div>
-        <div class="fc" style="padding:16px">
-          <div class="fc-title">🔥 Top Selling Items</div>
-          <div id="rpt-top-items"></div>
+        <div class="fc" style="padding:16px;margin-bottom:0;">
+          <div class="fc-title">🏛️ GST Summary</div>
+          <div id="rpt-gst-mini"></div>
         </div>
       </div>
     </div>
+
+    <!-- ═══ TAB 2: SALES ═══ -->
+    <div id="rpt-sales" style="display:none;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;" id="rpt-sales-kpi"></div>
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="fc" style="padding:16px;margin-bottom:0;">
+          <div class="fc-title">📅 Sales by Date</div>
+          <div style="position:relative;height:180px;"><canvas id="rpt-sales-chart"></canvas></div>
+        </div>
+        <div class="fc" style="padding:16px;margin-bottom:0;">
+          <div class="fc-title">👤 Sales by Customer</div>
+          <div id="rpt-sales-by-customer"></div>
+        </div>
+      </div>
+      <div class="fc" style="padding:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div class="fc-title" style="margin-bottom:0;">📋 All Invoices</div>
+          <input id="rpt-sales-search" placeholder="Search..." style="width:200px;font-size:12px;" oninput="renderSalesRpt()"/>
+        </div>
+        <div id="rpt-sales-table"></div>
+      </div>
+    </div>
+
+    <!-- ═══ TAB 3: PURCHASE ═══ -->
+    <div id="rpt-purchase" style="display:none;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;" id="rpt-pur-kpi"></div>
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="fc" style="padding:16px;margin-bottom:0;">
+          <div class="fc-title">🏭 Supplier-wise Purchases</div>
+          <div id="rpt-pur-by-supplier"></div>
+        </div>
+        <div class="fc" style="padding:16px;margin-bottom:0;">
+          <div class="fc-title">📦 Product-wise Purchases</div>
+          <div id="rpt-pur-by-product"></div>
+        </div>
+      </div>
+      <div class="fc" style="padding:16px;">
+        <div class="fc-title">📋 All Purchases</div>
+        <div id="rpt-pur-table"></div>
+      </div>
+    </div>
+
+    <!-- ═══ TAB 4: INVENTORY ═══ -->
+    <div id="rpt-inventory" style="display:none;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;" id="rpt-inv-kpi"></div>
+      <div class="fc" style="padding:16px;margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div class="fc-title" style="margin-bottom:0;">📦 Stock Summary</div>
+          <div style="display:flex;gap:8px;">
+            <select id="rpt-inv-cat" style="font-size:12px;width:140px;" onchange="renderInventoryRpt()">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+        </div>
+        <div id="rpt-inv-table"></div>
+      </div>
+    </div>
+
+    <!-- ═══ TAB 5: P&L ═══ -->
+    <div id="rpt-financial" style="display:none;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div class="fc" style="padding:20px;margin-bottom:0;border-left:3px solid var(--emerald);">
+          <div class="fc-title" style="color:var(--emerald)">📈 Profit & Loss Statement</div>
+          <div id="rpt-pl"></div>
+        </div>
+        <div class="fc" style="padding:20px;margin-bottom:0;border-left:3px solid var(--blue);">
+          <div class="fc-title" style="color:var(--blue)">🏛️ GST Report (GSTR-3B)</div>
+          <div id="rpt-gst-summary"></div>
+        </div>
+      </div>
+      <div class="fc" style="padding:20px;">
+        <div class="fc-title">🤝 Broker Commission (Dalali)</div>
+        <div id="rpt-broker-comm"></div>
+      </div>
+    </div>
+
+    <!-- ═══ TAB 6: RECEIVABLES ═══ -->
+    <div id="rpt-receivables" style="display:none;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;" id="rpt-recv-kpi"></div>
+      <div class="g2">
+        <div class="fc" style="padding:16px;margin-bottom:0;border-left:3px solid var(--amber);">
+          <div class="fc-title" style="color:var(--amber)">⏳ Customers — Pending Payment</div>
+          <div id="rpt-recv-list"></div>
+        </div>
+        <div class="fc" style="padding:16px;margin-bottom:0;border-left:3px solid var(--blue);">
+          <div class="fc-title" style="color:var(--blue)">📦 Suppliers — Pending Payment</div>
+          <div id="rpt-payable-list"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -6466,8 +6669,11 @@ function goto(pg, btn) {
   document.getElementById('pg-title').textContent = pageMap[pg] || pg; 
   currentPage = pg; 
   
-  if (pg === 'report') { 
-    setTimeout(() => renderReport(), 100); 
+ if (pg === 'report') { 
+    setTimeout(() => {
+      initRptFilters();
+      switchRptTab('dashboard');
+    }, 100); 
   }
   if (pg === 'payments') { 
     renderPayments(); 
@@ -7647,7 +7853,461 @@ function payWithRazorpay(planName, amountInRupees) {
   </div>
 </div>
 
-<div id="toast"></div>
+<script>
+// ══════════════════════════════════════════
+// REPORTS MODULE — FULL IMPLEMENTATION
+// ══════════════════════════════════════════
+
+let currentRptTab = 'dashboard';
+let rptTrendChart = null;
+let rptCashChart = null;
+let rptSalesChart = null;
+
+// Set default dates
+function initRptFilters() {
+  const now = new Date();
+  const from = new Date(now.getFullYear(), now.getMonth(), 1);
+  const to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  document.getElementById('rpt-from').value = from.toISOString().split('T')[0];
+  document.getElementById('rpt-to').value = to.toISOString().split('T')[0];
+  
+  // Populate category filter
+  const sel = document.getElementById('rpt-cat-filter');
+  const invSel = document.getElementById('rpt-inv-cat');
+  if(masterData && masterData.qualities) {
+    masterData.qualities.forEach(q => {
+      sel.innerHTML += `<option value="${q}">${q}</option>`;
+      if(invSel) invSel.innerHTML += `<option value="${q}">${q}</option>`;
+    });
+  }
+}
+
+function getRptFilters() {
+  const from = document.getElementById('rpt-from')?.value || '';
+  const to = document.getElementById('rpt-to')?.value || '';
+  const cat = document.getElementById('rpt-cat-filter')?.value || '';
+  return { from, to, cat };
+}
+
+function filterByDate(list, dateKey) {
+  const { from, to } = getRptFilters();
+  return list.filter(item => {
+    const d = item[dateKey] ? item[dateKey].split('T')[0] : '';
+    if(from && d < from) return false;
+    if(to && d > to) return false;
+    return true;
+  });
+}
+
+function resetRptFilters() {
+  initRptFilters();
+  renderActiveRptTab();
+}
+
+function switchRptTab(tab) {
+  currentRptTab = tab;
+  document.querySelectorAll('.rpt-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('rtab-' + tab)?.classList.add('active');
+  ['dashboard','sales','purchase','inventory','financial','receivables'].forEach(t => {
+    const el = document.getElementById('rpt-' + t);
+    if(el) el.style.display = t === tab ? 'block' : 'none';
+  });
+  renderActiveRptTab();
+}
+
+function renderActiveRptTab() {
+  switch(currentRptTab) {
+    case 'dashboard': renderRptDashboard(); break;
+    case 'sales': renderSalesRpt(); break;
+    case 'purchase': renderPurchaseRpt(); break;
+    case 'inventory': renderInventoryRpt(); break;
+    case 'financial': renderFinancialRpt(); break;
+    case 'receivables': renderReceivablesRpt(); break;
+  }
+}
+
+// ── KPI CARD BUILDER ──
+function kpiCard(label, value, sub, icon, color, onclick) {
+  return `<div class="rpt-kpi" style="border-top:3px solid ${color}" onclick="${onclick||''}">
+    <div class="rpt-kpi-icon">${icon}</div>
+    <div class="rpt-kpi-label">${label}</div>
+    <div class="rpt-kpi-value" style="color:${color}">${value}</div>
+    <div class="rpt-kpi-sub">${sub}</div>
+  </div>`;
+}
+
+// ── BAR ROW BUILDER ──
+function barRow(label, value, max, color) {
+  const pct = max ? Math.min(100, (value/max)*100) : 0;
+  return `<div style="margin-bottom:10px;">
+    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;">
+      <span style="color:var(--text2);font-weight:500">${label}</span>
+      <span style="color:var(--text);font-weight:700;font-family:var(--fm)">${fmt(value)}</span>
+    </div>
+    <div style="height:5px;background:var(--border2);border-radius:3px;">
+      <div style="width:${pct}%;height:100%;background:${color};border-radius:3px;transition:width 0.4s;"></div>
+    </div>
+  </div>`;
+}
+
+// ══ TAB 1: DASHBOARD ══
+function renderRptDashboard() {
+  const f = getRptFilters();
+  const fSales = filterByDate(sales.filter(s=>!s.kacha), 'date');
+  const fPur = filterByDate(purchases, 'date');
+  const fExp = filterByDate(expenses, 'date');
+
+  const totalSales = fSales.reduce((a,s)=>a+(s.total||0),0);
+  const totalPur = fPur.reduce((a,p)=>a+(p.total||0),0);
+  const totalExp = fExp.reduce((a,e)=>a+(e.amount||0),0);
+  const grossProfit = totalSales - totalPur;
+  const netProfit = grossProfit - totalExp;
+  const receivables = sales.filter(s=>!s.kacha&&(s.total||0)>(s.paid||0)).reduce((a,s)=>a+((s.total||0)-(s.paid||0)),0);
+  const lowStock = fabrics.filter(f=>f.meters<=(f.threshold||50)).length;
+
+  // KPI Row
+  document.getElementById('rpt-kpi-row').innerHTML =
+    kpiCard('Total Sales', fmt(totalSales), fSales.length+' invoices', '💰', 'var(--emerald)', "switchRptTab('sales')") +
+    kpiCard('Total Purchases', fmt(totalPur), fPur.length+' entries', '📦', 'var(--blue)', "switchRptTab('purchase')") +
+    kpiCard('Net Profit', fmt(netProfit), netProfit>=0?'▲ Profitable':'▼ Loss', '📈', netProfit>=0?'var(--emerald)':'var(--rose)', "switchRptTab('financial')") +
+    kpiCard('Receivables', fmt(receivables), 'Pending collections', '⏳', 'var(--amber)', "switchRptTab('receivables')");
+
+  // Trend Chart
+  const months = [];
+  const salesByMonth = [];
+  const purByMonth = [];
+  for(let i=5; i>=0; i--) {
+    const d = new Date();
+    d.setMonth(d.getMonth()-i);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    months.push(key.slice(5));
+    salesByMonth.push(sales.filter(s=>!s.kacha&&s.date?.startsWith(key)).reduce((a,s)=>a+(s.total||0),0));
+    purByMonth.push(purchases.filter(p=>p.date?.startsWith(key)).reduce((a,p)=>a+(p.total||0),0));
+  }
+
+  const ctxT = document.getElementById('rpt-chart-trend');
+  if(ctxT) {
+    if(rptTrendChart) rptTrendChart.destroy();
+    rptTrendChart = new Chart(ctxT.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [
+          { label:'Sales', data: salesByMonth, backgroundColor:'rgba(16,185,129,0.7)', borderRadius:4 },
+          { label:'Purchase', data: purByMonth, backgroundColor:'rgba(59,130,246,0.7)', borderRadius:4 }
+        ]
+      },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#a1a1aa'}}}, scales:{x:{grid:{display:false}},y:{beginAtZero:true}} }
+    });
+  }
+
+  // Cashflow Chart
+  const ctxC = document.getElementById('rpt-chart-cashflow');
+  if(ctxC) {
+    if(rptCashChart) rptCashChart.destroy();
+    rptCashChart = new Chart(ctxC.getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Sales Inflow','Expenses','Purchases'],
+        datasets: [{ data:[totalSales, totalExp, totalPur], backgroundColor:['rgba(16,185,129,0.8)','rgba(239,68,68,0.8)','rgba(59,130,246,0.8)'], borderWidth:0 }]
+      },
+      options: { responsive:true, maintainAspectRatio:false, cutout:'65%', plugins:{legend:{position:'right',labels:{color:'#a1a1aa',boxWidth:12}}} }
+    });
+  }
+
+  // Top Products
+  const byFab = {};
+  fSales.forEach(s=>{ byFab[s.fabric]=(byFab[s.fabric]||0)+(s.total||0); });
+  const top = Object.entries(byFab).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topMax = top[0]?.[1]||1;
+  document.getElementById('rpt-top-products').innerHTML = top.length
+    ? top.map(([n,v])=>barRow(n,v,topMax,'var(--emerald)')).join('')
+    : '<div style="color:var(--text3);font-size:12px;padding:10px 0;">No sales data</div>';
+
+  // Low Stock
+  const lowItems = fabrics.filter(f=>f.meters<=(f.threshold||50));
+  document.getElementById('rpt-low-stock').innerHTML = lowItems.length
+    ? lowItems.map(f=>`
+        <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;">
+          <span style="color:var(--text2)">${f.name}</span>
+          <span style="color:var(--rose);font-weight:700">${f.meters} left</span>
+        </div>`).join('')
+    : '<div style="color:var(--emerald);font-size:12px;padding:10px 0;">✅ All stock healthy!</div>';
+
+  // GST Mini
+  const outGst = fSales.reduce((a,s)=>a+(s.gst||0),0);
+  const inGst = fPur.reduce((a,p)=>a+(p.gst||0),0);
+  document.getElementById('rpt-gst-mini').innerHTML = `
+    <div style="font-size:12px;">
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);">
+        <span style="color:var(--text3)">Output GST</span>
+        <span style="color:var(--emerald);font-weight:700">+ ${fmt(outGst)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);">
+        <span style="color:var(--text3)">Input GST (ITC)</span>
+        <span style="color:var(--blue);font-weight:700">- ${fmt(inGst)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:800;font-size:14px;">
+        <span>Net Payable</span>
+        <span style="color:${(outGst-inGst)>0?'var(--rose)':'var(--emerald)'};">${fmt(outGst-inGst)}</span>
+      </div>
+    </div>`;
+}
+
+// ══ TAB 2: SALES ══
+function renderSalesRpt() {
+  const fSales = filterByDate(sales.filter(s=>!s.kacha), 'date');
+  const q = document.getElementById('rpt-sales-search')?.value?.toLowerCase()||'';
+  const totalSales = fSales.reduce((a,s)=>a+(s.total||0),0);
+  const totalPaid = fSales.reduce((a,s)=>a+(s.paid||0),0);
+  const pending = totalSales - totalPaid;
+
+  document.getElementById('rpt-sales-kpi').innerHTML =
+    kpiCard('Total Sales', fmt(totalSales), fSales.length+' invoices', '💰', 'var(--emerald)', '') +
+    kpiCard('Collected', fmt(totalPaid), 'Cash received', '✅', 'var(--blue)', '') +
+    kpiCard('Pending', fmt(pending), 'Yet to collect', '⏳', 'var(--amber)', "switchRptTab('receivables')");
+
+  // Sales by customer
+  const byCust = {};
+  fSales.forEach(s=>{ byCust[s.customer||'Cash']=(byCust[s.customer||'Cash']||0)+(s.total||0); });
+  const custTop = Object.entries(byCust).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const custMax = custTop[0]?.[1]||1;
+  document.getElementById('rpt-sales-by-customer').innerHTML = custTop.map(([n,v])=>barRow(n,v,custMax,'var(--indigo)')).join('') || '<div style="color:var(--text3);font-size:12px;">No data</div>';
+
+  // Sales Chart (last 7 days)
+  const days=[];const dayData=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const key=d.toISOString().split('T')[0];
+    days.push(key.slice(5));
+    dayData.push(fSales.filter(s=>s.date?.startsWith(key)).reduce((a,s)=>a+(s.total||0),0));
+  }
+  const ctxS = document.getElementById('rpt-sales-chart');
+  if(ctxS){
+    if(rptSalesChart) rptSalesChart.destroy();
+    rptSalesChart = new Chart(ctxS.getContext('2d'),{
+      type:'line',
+      data:{labels:days,datasets:[{label:'Sales',data:dayData,borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.1)',fill:true,tension:0.4,borderWidth:2}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{beginAtZero:true}}}
+    });
+  }
+
+  // Invoice Table
+  const filtered = q ? fSales.filter(s=>((s.customer||'')+(s.fabric||'')+(s.invoiceNo||'')).toLowerCase().includes(q)) : fSales;
+  document.getElementById('rpt-sales-table').innerHTML = `
+    <table class="rpt-table">
+      <thead><tr>
+        <th>Date</th><th>Invoice</th><th>Customer</th><th>Item</th><th>Qty</th><th>Total</th><th>Status</th><th></th>
+      </tr></thead>
+      <tbody>${filtered.map(s=>`
+        <tr>
+          <td>${fmtDate(s.date)}</td>
+          <td class="clickable" onclick="viewSavedDoc('sales','${s.id}')">${s.invoiceNo||'—'}</td>
+          <td>${s.customer||'Cash'}</td>
+          <td>${s.fabric||'—'}</td>
+          <td>${s.meters||0} ${s.unit==='Pieces'?'pcs':'m'}</td>
+          <td style="font-weight:700;color:var(--emerald)">${fmt(s.total)}</td>
+          <td><span style="font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;background:${(s.paid||0)>=(s.total||0)?'var(--emerald-dim)':'var(--amber-dim)'};color:${(s.paid||0)>=(s.total||0)?'var(--emerald)':'var(--amber)'}">${(s.paid||0)>=(s.total||0)?'Paid':'Pending'}</span></td>
+          <td>${s.savedDoc?`<button class="le-doc-btn" onclick="viewSavedDoc('sales','${s.id}')">📄</button>`:''}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ══ TAB 3: PURCHASE ══
+function renderPurchaseRpt() {
+  const fPur = filterByDate(purchases, 'date');
+  const total = fPur.reduce((a,p)=>a+(p.total||0),0);
+  const totalGst = fPur.reduce((a,p)=>a+(p.gst||0),0);
+
+  document.getElementById('rpt-pur-kpi').innerHTML =
+    kpiCard('Total Purchases', fmt(total), fPur.length+' entries', '📦', 'var(--blue)', '') +
+    kpiCard('GST Paid (ITC)', fmt(totalGst), 'Input Tax Credit', '🏛️', 'var(--violet)', '') +
+    kpiCard('Net Cost', fmt(total-totalGst), 'Before GST', '💸', 'var(--rose)', '');
+
+  // By Supplier
+  const bySupp = {};
+  fPur.forEach(p=>{ bySupp[p.party||'Unknown']=(bySupp[p.party||'Unknown']||0)+(p.total||0); });
+  const suppTop = Object.entries(bySupp).sort((a,b)=>b[1]-a[1]);
+  const suppMax = suppTop[0]?.[1]||1;
+  document.getElementById('rpt-pur-by-supplier').innerHTML = suppTop.map(([n,v])=>barRow(n,v,suppMax,'var(--blue)')).join('')||'<div style="color:var(--text3);font-size:12px;">No data</div>';
+
+  // By Product
+  const byProd = {};
+  fPur.forEach(p=>{ byProd[p.item||p.party||'Unknown']=(byProd[p.item||p.party||'Unknown']||0)+(p.total||0); });
+  const prodTop = Object.entries(byProd).sort((a,b)=>b[1]-a[1]);
+  const prodMax = prodTop[0]?.[1]||1;
+  document.getElementById('rpt-pur-by-product').innerHTML = prodTop.map(([n,v])=>barRow(n,v,prodMax,'var(--violet)')).join('')||'<div style="color:var(--text3);font-size:12px;">No data</div>';
+
+  // Table
+  document.getElementById('rpt-pur-table').innerHTML = `
+    <table class="rpt-table">
+      <thead><tr><th>Date</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Rate</th><th>GST</th><th>Total</th></tr></thead>
+      <tbody>${fPur.map(p=>`
+        <tr>
+          <td>${fmtDate(p.date)}</td>
+          <td>${p.party||'—'}</td>
+          <td>${p.item||'—'}</td>
+          <td>${p.meters||0}m</td>
+          <td>${fmt(p.rate||0)}</td>
+          <td style="color:var(--blue)">${fmt(p.gst||0)}</td>
+          <td style="font-weight:700;color:var(--blue)">${fmt(p.total||0)}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ══ TAB 4: INVENTORY ══
+function renderInventoryRpt() {
+  const cat = document.getElementById('rpt-inv-cat')?.value||'';
+  let list = cat ? fabrics.filter(f=>f.type===cat) : fabrics;
+
+  const totalVal = list.reduce((a,f)=>a+(f.meters*(f.rate||0)),0);
+  const totalItems = list.length;
+  const lowCount = list.filter(f=>f.meters<=(f.threshold||50)).length;
+  const outCount = list.filter(f=>f.meters===0).length;
+
+  document.getElementById('rpt-inv-kpi').innerHTML =
+    kpiCard('Total Items', totalItems, 'fabric types', '📦', 'var(--indigo)', '') +
+    kpiCard('Stock Value', fmt(totalVal), 'estimated', '💰', 'var(--emerald)', '') +
+    kpiCard('Low Stock', lowCount, 'need reorder', '⚠️', 'var(--amber)', '') +
+    kpiCard('Out of Stock', outCount, 'zero quantity', '❌', 'var(--rose)', '');
+
+  document.getElementById('rpt-inv-table').innerHTML = `
+    <table class="rpt-table">
+      <thead><tr><th>Item Name</th><th>Category</th><th>Color</th><th>Stock</th><th>Rate</th><th>Value</th><th>Status</th></tr></thead>
+      <tbody>${list.map(f=>{
+        const sc = f.meters<=0?'Out':f.meters<=(f.threshold||50)?'Low':'OK';
+        const scColor = sc==='Out'?'var(--rose)':sc==='Low'?'var(--amber)':'var(--emerald)';
+        return `<tr>
+          <td style="font-weight:600">${f.name}</td>
+          <td>${f.type||'—'}</td>
+          <td>${f.color||'—'}</td>
+          <td style="font-weight:700;color:${scColor}">${f.meters} ${f.unit==='Pieces'?'pcs':'m'}</td>
+          <td>${f.rate?fmt(f.rate):'—'}</td>
+          <td style="font-weight:700">${fmt(f.meters*(f.rate||0))}</td>
+          <td><span style="font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;background:${scColor}22;color:${scColor}">${sc}</span></td>
+        </tr>`;
+      }).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ══ TAB 5: FINANCIAL ══
+function renderFinancialRpt() {
+  const fSales = filterByDate(sales.filter(s=>!s.kacha),'date');
+  const fPur = filterByDate(purchases,'date');
+  const fExp = filterByDate(expenses,'date');
+
+  const totalSales = fSales.reduce((a,s)=>a+(s.total||0),0);
+  const totalPur = fPur.reduce((a,s)=>a+(s.total||0),0);
+  const totalExp = fExp.reduce((a,e)=>a+(e.amount||0),0);
+  const grossProfit = totalSales - totalPur;
+  const netProfit = grossProfit - totalExp;
+
+  // P&L
+  const plRow = (label, value, color, bold) => `
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:${bold?'13px':'12px'};font-weight:${bold?'800':'500'};">
+      <span style="color:${bold?'var(--text)':'var(--text2)'}">${label}</span>
+      <span style="color:${color};font-family:var(--fm)">${fmt(value)}</span>
+    </div>`;
+
+  document.getElementById('rpt-pl').innerHTML = `
+    ${plRow('Total Sales (Revenue)', totalSales, 'var(--emerald)', false)}
+    ${plRow('Less: Purchases (COGS)', totalPur, 'var(--rose)', false)}
+    ${plRow('Gross Profit', grossProfit, grossProfit>=0?'var(--emerald)':'var(--rose)', true)}
+    ${plRow('Less: Expenses', totalExp, 'var(--rose)', false)}
+    ${plRow('Net Profit / Loss', netProfit, netProfit>=0?'var(--emerald)':'var(--rose)', true)}
+    <div style="margin-top:12px;padding:10px;background:${netProfit>=0?'var(--emerald-dim)':'var(--rose-dim)'};border-radius:var(--r);text-align:center;">
+      <div style="font-size:10px;color:var(--text3);margin-bottom:2px;">NET RESULT</div>
+      <div style="font-size:20px;font-weight:800;color:${netProfit>=0?'var(--emerald)':'var(--rose)'};">${netProfit>=0?'▲ PROFIT':'▼ LOSS'} ${fmt(Math.abs(netProfit))}</div>
+    </div>`;
+
+  // GST
+  const outGst = fSales.reduce((a,s)=>a+(s.gst||0),0);
+  const inGst = fPur.reduce((a,p)=>a+(p.gst||0),0);
+  const netGst = outGst - inGst;
+  document.getElementById('rpt-gst-summary').innerHTML = `
+    ${plRow('Output GST (Collected)', outGst, 'var(--emerald)', false)}
+    ${plRow('Input GST / ITC (Paid)', inGst, 'var(--blue)', false)}
+    ${plRow('Net GST Liability', netGst, netGst>0?'var(--rose)':'var(--emerald)', true)}
+    <div style="margin-top:10px;font-size:11px;color:var(--text3);line-height:1.6;">
+      CGST: ${fmt(outGst/2)} | SGST: ${fmt(outGst/2)}<br>
+      Net Payable to Govt: <strong style="color:${netGst>0?'var(--rose)':'var(--emerald)'};">${fmt(netGst)}</strong>
+    </div>`;
+
+  // Broker
+  const brokerMap = {};
+  fSales.forEach(s=>{ if(s.broker&&s.commission){ const c=(s.subtotal||0)*s.commission/100; brokerMap[s.broker]=(brokerMap[s.broker]||0)+c; } });
+  const brokers = Object.entries(brokerMap).sort((a,b)=>b[1]-a[1]);
+  const bMax = brokers[0]?.[1]||1;
+  document.getElementById('rpt-broker-comm').innerHTML = brokers.length
+    ? brokers.map(([n,v])=>barRow(n,v,bMax,'var(--violet)')).join('')
+    : '<div style="color:var(--text3);font-size:12px;">No broker commissions</div>';
+}
+
+// ══ TAB 6: RECEIVABLES ══
+function renderReceivablesRpt() {
+  const pending = sales.filter(s=>!s.kacha&&(s.total||0)>(s.paid||0));
+  const totalRecv = pending.reduce((a,s)=>a+((s.total||0)-(s.paid||0)),0);
+  const overdue = pending.filter(s=>{ const d=new Date(s.date); const diff=(new Date()-d)/(1000*60*60*24); return diff>30; });
+
+  document.getElementById('rpt-recv-kpi').innerHTML =
+    kpiCard('Total Receivable', fmt(totalRecv), pending.length+' parties', '⏳', 'var(--amber)', '') +
+    kpiCard('Overdue (>30 days)', overdue.length, 'need urgent follow-up', '🚨', 'var(--rose)', '') +
+    kpiCard('Collected', fmt(sales.filter(s=>!s.kacha).reduce((a,s)=>a+(s.paid||0),0)), 'total received', '✅', 'var(--emerald)', '');
+
+  document.getElementById('rpt-recv-list').innerHTML = pending.length
+    ? `<table class="rpt-table">
+        <thead><tr><th>Customer</th><th>Invoice</th><th>Date</th><th>Pending</th><th></th></tr></thead>
+        <tbody>${pending.map(s=>{
+          const days=Math.floor((new Date()-new Date(s.date))/(1000*60*60*24));
+          const isOverdue=days>30;
+          return `<tr>
+            <td style="font-weight:600">${s.customer||'—'}</td>
+            <td>${s.invoiceNo||'—'}</td>
+            <td style="color:${isOverdue?'var(--rose)':'var(--text3)'};">${fmtDate(s.date)} ${isOverdue?'🚨':''}</td>
+            <td style="font-weight:700;color:var(--amber)">${fmt((s.total||0)-(s.paid||0))}</td>
+            <td><button class="le-doc-btn" onclick="settleUdhaar('${s.id}')">💳 Settle</button></td>
+          </tr>`;
+        }).join('')}
+        </tbody>
+      </table>`
+    : '<div style="color:var(--emerald);padding:20px;text-align:center;">✅ No pending receivables!</div>';
+
+  // Payables (from purchases)
+  const suppMap = {};
+  purchases.forEach(p=>{ suppMap[p.party||'Unknown']=(suppMap[p.party||'Unknown']||0)+(p.total||0); });
+  const suppList = Object.entries(suppMap).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('rpt-payable-list').innerHTML = suppList.length
+    ? `<table class="rpt-table">
+        <thead><tr><th>Supplier</th><th>Total Purchased</th></tr></thead>
+        <tbody>${suppList.map(([n,v])=>`<tr><td style="font-weight:600">${n}</td><td style="font-weight:700;color:var(--blue)">${fmt(v)}</td></tr>`).join('')}
+        </tbody>
+      </table>`
+    : '<div style="color:var(--text3);padding:20px;text-align:center;">No supplier data</div>';
+}
+
+// PDF Export
+function exportRptPDF() {
+  const el = document.getElementById('rpt-content');
+  toast('Generating PDF... ⏳', 2000);
+  html2pdf().set({
+    margin: 0.4,
+    filename: 'StockSaathi_Report.pdf',
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+  }).from(el).save().then(()=>toast('PDF Downloaded! ✅'));
+}
+
+// Override renderReport to use new system
+window.renderReport = function() {
+  initRptFilters();
+  renderRptDashboard();
+}
+</script>
+    <div id="toast"></div>
   <div id="demo-banner" style="display:none; position:fixed; top:0; left:0; right:0; background:var(--amber); color:var(--amber-dim); text-align:center; padding:8px 12px; font-weight:700; z-index:100000; font-size:13px; box-shadow:0 4px 12px rgba(0,0,0,0.2);">
   ⚠️ You are viewing a Live Demo. (Data will not be saved) 
   <button onclick="exitDemo()" style="margin-left:12px; padding:5px 12px; background:#fff; color:var(--amber-dim); border:none; border-radius:6px; font-weight:800; cursor:pointer;">👉 Start Your Shop</button>
