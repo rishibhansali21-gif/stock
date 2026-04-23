@@ -6671,9 +6671,9 @@ function goto(pg, btn) {
   
  if (pg === 'report') { 
     setTimeout(() => {
-      initRptFilters();
-      switchRptTab('dashboard');
-    }, 100); 
+      if(typeof initRptFilters === 'function') initRptFilters();
+      if(typeof switchRptTab === 'function') switchRptTab('dashboard');
+    }, 300); 
   }
   if (pg === 'payments') { 
     renderPayments(); 
